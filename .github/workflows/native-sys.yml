@@ -18,6 +18,10 @@ defaults:
   run:
     working-directory: app/native/yogurt-system
 
+concurrency:
+  group: native-sys-${{ github.ref }}
+  cancel-in-progress: true
+
 jobs:
   lock:
     # every crate version at least 14 days old and not yanked

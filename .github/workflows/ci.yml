@@ -2,30 +2,21 @@
 # The Mac job runs everything; Windows and Linux typecheck, unit-test, build their helpers and run the e2e specs that work there.
 name: CI
 
+# Docs, the website and licence text don't run it (site.yml checks the website). A newer push to the same branch
+# stops the run before it: macOS minutes cost ten times Linux ones.
 on:
   push:
     branches: [main]
+    paths-ignore: ['site/**', 'docs/**', '**/*.md', 'LICENSE', '.github/workflows/site.yml']
   pull_request:
+    paths-ignore: ['site/**', 'docs/**', '**/*.md', 'LICENSE', '.github/workflows/site.yml']
   workflow_dispatch:
 
-jobs:
-  site:
-    runs-on: ubuntu-latest
-    defaults:
-      run:
-        working-directory: site
-    steps:
-      - uses: actions/checkout@v4
-      - uses: pnpm/action-setup@v4
-      - uses: actions/setup-node@v4
-        with:
-          node-version-file: .nvmrc
-          cache: pnpm
-          cache-dependency-path: site/pnpm-lock.yaml
-      - run: pnpm install --ignore-workspace --frozen-lockfile
-      - run: pnpm test
-      - run: pnpm build
+concurrency:
+  group: ci-${{ github.ref }}
+  cancel-in-progress: true
 
+jobs:
   test:
     # Xcode 26: the helpers use macOS 26's speech APIs
     runs-on: macos-26

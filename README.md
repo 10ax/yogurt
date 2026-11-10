@@ -1,23 +1,17 @@
 <p align="center">
-  <picture>
+  <a href="https://yogurt.so?utm_source=github&utm_medium=readme&utm_campaign=yogurt"><picture>
     <source media="(prefers-color-scheme: dark)" srcset="docs/assets/readme-header-dark.svg">
     <source media="(prefers-color-scheme: light)" srcset="docs/assets/readme-header-light.svg">
     <img src="docs/assets/readme-header-light.svg" width="200" height="86" alt="Yogurt. Take note.">
-  </picture>
+  </picture></a>
 </p>
 
 <p align="center">
-  Yogurt takes meeting notes using AI on your computer.<br>
-  Private, free, and open source.
+  Private AI meeting notes. Free and open source.
 </p>
 
 <p align="center">
-  <a href="https://yogurt.so?utm_source=github&utm_medium=readme&utm_campaign=yogurt"><b>Visit yogurt.so →</b></a> &nbsp;·&nbsp;
-  Download for <a href="https://github.com/FrigadeHQ/yogurt/releases/latest/download/Yogurt-mac-arm64.dmg">Mac</a> · <a href="https://github.com/FrigadeHQ/yogurt/releases/latest/download/Yogurt-windows-x64.exe">Windows</a> · <a href="https://github.com/FrigadeHQ/yogurt/releases/latest/download/Yogurt-linux-x86_64.AppImage">Linux</a>
-</p>
-
-<p align="center">
-  <sub>macOS 14.4+ (Apple Silicon) · Windows 10 2004+ (x64) · Ubuntu 22.04+ or similar (x64 AppImage) · 8 GB memory</sub>
+  <b>Download for <a href="https://github.com/FrigadeHQ/yogurt/releases/latest/download/Yogurt-mac-arm64.dmg">Mac</a> · <a href="https://github.com/FrigadeHQ/yogurt/releases/latest/download/Yogurt-windows-x64.exe">Windows</a> · <a href="https://github.com/FrigadeHQ/yogurt/releases/latest/download/Yogurt-linux-x86_64.AppImage">Linux</a></b>
 </p>
 
 <br>
@@ -33,6 +27,7 @@
 </p>
 <p></p>
 <p align="center">
-  <a href="docs/README.md">Help</a> · <a href="docs/building.md">Build from source</a> · <a href="LICENSE">MIT license</a><br><br>
+  <sub>macOS 14.4+ (Apple Silicon) · Windows 10 2004+ (x64) · Ubuntu 22.04+ or similar (x64 AppImage) · 8 GB memory</sub><br><br>
+  <a href="https://yogurt.so?utm_source=github&utm_medium=readme&utm_campaign=yogurt">yogurt.so</a> · <a href="docs/README.md">Help</a> · <a href="docs/building.md">Build from source</a> · <a href="LICENSE">MIT license</a><br><br>
   Made by <a href="https://frigade.com?utm_source=github&utm_medium=readme&utm_campaign=yogurt">Frigade</a>.
 </p>

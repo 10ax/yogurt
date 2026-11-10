@@ -10,7 +10,7 @@ Download Yogurt from [GitHub Releases](https://github.com/FrigadeHQ/yogurt/relea
 - **Windows:** Windows 10 version 2004 or later, x64. Run the `.exe` installer. The installer isn't signed yet: if Windows says it protected your PC, click More info, then Run anyway.
 - **Linux:** x64, Ubuntu 22.04 or a compatible newer system, with PulseAudio or PipeWire. Make the `.AppImage` executable in its file properties, then open it. If it doesn't open, install FUSE 2 first: `sudo apt install libfuse2` on Ubuntu 22.04, `sudo apt install libfuse2t64` on 24.04 and newer. GNOME needs the AppIndicator extension to show the tray icon.
 
-On first run, Yogurt downloads the models it needs. Windows and Linux also check transcription speed and stop setup if the computer cannot keep up. Once setup finishes, recording, notes and questions work offline. Calendar access and speaker names from calls are available on Mac only.
+On first run, Yogurt downloads the models it needs. Windows and Linux also check transcription speed and stop setup if the computer cannot keep up. Recording works as soon as setup finishes. The notes model keeps downloading in the background, and notes and questions work offline once it's in. Calendar access and speaker names from calls are available on Mac only.
 
 ## Mac permissions
 
@@ -28,7 +28,7 @@ If a permission is off, use its button in Yogurt's Settings to open the right sy
 
 Audio, transcripts, notes, and questions are processed locally. Yogurt does not upload your meetings, and there is no telemetry.
 
-Network access downloads models, obtains Apple's optional on-device speech assets (on a Mac), and checks for updates. Links open in your browser. Copying and exporting does not upload your content.
+Yogurt connects to the internet to download models from Hugging Face, to get Apple's optional on-device speech assets (on a Mac), and to check GitHub for updates. After setup it keeps downloading in the background: first a smaller notes model, then the best one your computer can run, which can be large (about 14 GB on a Mac with 64 GB of memory, about 63 GB with 96 GB or more). Updates download in the background and install when you quit. Links open in your browser. Copying and exporting does not upload your content.
 
 If you [connect an AI app](#connect-an-ai-app), it may send what it reads to its own online model.
 

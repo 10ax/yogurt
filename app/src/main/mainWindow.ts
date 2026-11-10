@@ -8,7 +8,9 @@ import type { BrowserWindow } from 'electron'
 export const closeAction = (os: string, trayShown: boolean): 'hide' | 'minimize' => (os === 'darwin' || trayShown ? 'hide' : 'minimize')
 
 /** Closing keeps the renderer alive; only the completed save/quit path may destroy it. */
-export function keepMainWindow(window: BrowserWindow, d: { background: boolean; canClose(): boolean; activate(): void; closeTo?(): 'hide' | 'minimize'; glass?: boolean }) {
+export function keepMainWindow(window: BrowserWindow, d: { background: boolean; canClose(): boolean; activate(): void; closeTo?(): 'hide' | 'minimize'; glass?: boolean
+  /** a Mac: floats the window for a moment when brought forward, see show() */
+  lift?: boolean }) {
   let ready = false, requested = false, foreground = false
   const show = (bringForward = false) => {
     if (d.background || window.isDestroyed()) return
@@ -16,9 +18,14 @@ export function keepMainWindow(window: BrowserWindow, d: { background: boolean; 
     if (!ready) return
     requested = false
     if (window.isMinimized()) window.restore()
+    // macOS may refuse to switch apps (the pill is a non-activating panel, Safari stays active); the window then
+    // landed behind Safari, out of sight. Floating it for the show puts it on top either way.
+    const lift = foreground && d.lift === true
+    if (lift) window.setAlwaysOnTop(true)
     window.show()
     if (foreground) { window.moveTop(); d.activate() }
     window.focus()
+    if (lift) window.setAlwaysOnTop(false)
     foreground = false
   }
   window.once('ready-to-show', () => {

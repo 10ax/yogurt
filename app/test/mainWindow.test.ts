@@ -3,11 +3,11 @@ import type { BrowserWindow } from 'electron'
 import { expect, it, vi } from 'vitest'
 import { closeAction, keepMainWindow } from '../src/main/mainWindow'
 
-function fixture(background = false, more: { closeTo?(): 'hide' | 'minimize'; glass?: boolean } = {}) {
+function fixture(background = false, more: { closeTo?(): 'hide' | 'minimize'; glass?: boolean; lift?: boolean } = {}) {
   let quitting = false
   const window = Object.assign(new EventEmitter(), {
     isDestroyed: vi.fn(() => false), isMinimized: vi.fn(() => false),
-    hide: vi.fn(), minimize: vi.fn(), show: vi.fn(), focus: vi.fn(), restore: vi.fn(), moveTop: vi.fn(), setBackgroundColor: vi.fn(),
+    hide: vi.fn(), minimize: vi.fn(), show: vi.fn(), focus: vi.fn(), restore: vi.fn(), moveTop: vi.fn(), setBackgroundColor: vi.fn(), setAlwaysOnTop: vi.fn(),
   })
   const activate = vi.fn()
   const show = keepMainWindow(window as unknown as BrowserWindow, { background, canClose: () => quitting, activate, ...more })
@@ -68,4 +68,24 @@ it('only a window with native glass (a Mac) turns clear after first paint', () =
   const { window } = fixture(false, { glass: false })
   window.emit('ready-to-show')
   expect(window.setBackgroundColor).not.toHaveBeenCalled()
+})
+
+it('on a Mac, brought forward from the pill or a card, rises above the app in front even when macOS refuses to switch apps, then floats no longer', () => {
+  const { window, show, activate } = fixture(false, { lift: true })
+  window.emit('ready-to-show')
+  show(true)
+  expect(window.setAlwaysOnTop.mock.calls).toEqual([[true], [false]])
+  const [up, down] = window.setAlwaysOnTop.mock.invocationCallOrder
+  expect(up).toBeLessThan(window.show.mock.invocationCallOrder[0])
+  expect(down).toBeGreaterThan(activate.mock.invocationCallOrder[0])
+  expect(down).toBeGreaterThan(window.focus.mock.invocationCallOrder[0])
+})
+
+it('a plain show, Windows and Linux never float the window', () => {
+  const mac = fixture(false, { lift: true })
+  mac.window.emit('ready-to-show'); mac.show()
+  expect(mac.window.setAlwaysOnTop).not.toHaveBeenCalled()
+  const other = fixture()
+  other.window.emit('ready-to-show'); other.show(true)
+  expect(other.window.setAlwaysOnTop).not.toHaveBeenCalled()
 })

@@ -122,7 +122,7 @@ function createWindow() {
     webPreferences: { preload: join(__dirname, '../preload/index.cjs'), sandbox: false, ...(BACKGROUND ? { backgroundThrottling: false } : {}) },
   })
   presentMain = keepMainWindow(win, { background: BACKGROUND, canClose: () => allowQuit, activate: () => app.focus({ steal: true }),
-    closeTo: () => closeAction(process.platform, trayShown()), glass: process.platform === 'darwin' })
+    closeTo: () => closeAction(process.platform, trayShown()), glass: process.platform === 'darwin', lift: process.platform === 'darwin' })
   if (process.platform !== 'darwin') {
     win.setMenuBarVisibility(false)
     // the window buttons follow light and dark mode

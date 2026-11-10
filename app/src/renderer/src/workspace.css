@@ -1,6 +1,8 @@
 /* Only chrome reveals the Mac's blurred backdrop; text and reading surfaces stay opaque. */
-.workspace { position:relative;isolation:isolate;display:flex;height:100%;overflow:hidden;--sidebar-inset:10px;--nav-inset:11px;--workspace-footer-height:52px;--chrome-glass:color-mix(in srgb,var(--chrome) 70%,transparent);--reading-surface:linear-gradient(to bottom,transparent 52px,var(--bg) 52px);background:var(--chrome-glass); }
+.workspace { position:relative;isolation:isolate;display:flex;height:100%;overflow:hidden;--sidebar-inset:10px;--nav-inset:11px;--workspace-footer-height:52px;--chrome-glass:color-mix(in srgb,var(--chrome) 60%,transparent);--reading-surface:linear-gradient(to bottom,transparent 52px,var(--bg) 52px);background:var(--chrome-glass); }
 @media (prefers-reduced-transparency:reduce),(prefers-contrast:more) { .workspace { --chrome-glass:var(--chrome); } }
+/* The Mac title bar is one surface in the reading colour, edge to edge; native glass remains below it. */
+:root:not([data-chrome=overlay]) .workspace { background:linear-gradient(var(--bg) 0 52px,transparent 52px),var(--chrome-glass); }
 /* One stationary drag region; later no-drag controls cut holes in it for native clicks. */
 .workspace-window-bar { width:208px;min-width:124px;position:absolute;left:0;top:0;height:52px;z-index:55;background:transparent;border-bottom:1px solid var(--line); }
 .workspace-drag-region { position:absolute;left:0;top:0;width:100vw;height:100%;pointer-events:none; }

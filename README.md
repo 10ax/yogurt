@@ -2,7 +2,7 @@
   <a href="https://yogurt.so?utm_source=github&utm_medium=readme&utm_campaign=yogurt"><picture>
     <source media="(prefers-color-scheme: dark)" srcset="docs/assets/readme-header-dark.svg">
     <source media="(prefers-color-scheme: light)" srcset="docs/assets/readme-header-light.svg">
-    <img src="docs/assets/readme-header-light.svg" width="200" height="86" alt="Yogurt. Take note.">
+    <img src="docs/assets/readme-header-light.svg" width="212" height="86" alt="Yogurt. Take note.">
   </picture></a>
 </p>
 

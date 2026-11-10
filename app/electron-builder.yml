@@ -35,6 +35,9 @@ extraResources:
   # whisper-server's headers, animate-ui and the CUDA runtime
   - from: resources/licenses
     to: licenses
+  # the Mac's About window shows Resources/Credits.html under the version, with its link
+  - from: resources/about/Credits.html
+    to: Credits.html
 # Electron's switches a shipped app doesn't need, off so nobody can run it as plain Node or attach a debugger to it;
 # the app loads only from its own app.asar, checked against the hash in Info.plist.
 # Local debugging can enable the inspector with YOGURT_FUSES=0 in scripts/release-mac.sh.

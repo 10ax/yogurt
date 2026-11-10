@@ -5,7 +5,10 @@
   "scripts": {
     "dev": "next dev",
     "build": "next build",
-    "start": "next start"
+    "start": "next start",
+    "site:bundle": "node scripts/bundle.mjs",
+    "site:stills": "node scripts/stills.mjs",
+    "test": "node renderer/timeline.test.mjs"
   },
   "dependencies": {
     "next": "16.4.1",

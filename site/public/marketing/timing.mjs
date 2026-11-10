@@ -28,3 +28,18 @@ export function speakerEnvelopes(time){
   }
   return levels;
 }
+
+// The label shares the card clock, including its finished hold and off-screen pause.
+export function stepCircleFrame(age,span){
+  const curve=(x,a,b,c,d)=>{
+    if(x<=0)return 0;if(x>=1)return 1;
+    const sample=(t,p,q)=>3*(1-t)**2*t*p+3*(1-t)*t*t*q+t**3;
+    let low=0,high=1;
+    for(let i=0;i<20;i++){const t=(low+high)/2;if(sample(t,a,c)<x)low=t;else high=t;}
+    return sample((low+high)/2,b,d);
+  };
+  const pull=curve(age/.26,.18,.8,.25,1);
+  const fill=age>span-.16?1-curve((age-span+.16)/.16,.2,0,.25,1):pull;
+  const u=(age-.26)/.28;
+  return {fill,blur:1.6*(1-pull),rebound:u>=0&&u<1?Math.sin(u*Math.PI*2)*(1-u)**2:0};
+}

@@ -46,3 +46,7 @@ site/.vercel/
 .env.*.local
 *.p12
 *.p8
+
+# written by next dev
+site/AGENTS.md
+site/CLAUDE.md

@@ -1,11 +1,30 @@
 import {onVoiceFrame} from './clock.mjs';
-import {speakerEnvelopes} from './timing.mjs';
+import {speakerEnvelopes,stepCircleFrame} from './timing.mjs';
 
 const reduce=matchMedia('(prefers-reduced-motion: reduce)'),phone=matchMedia('(max-width:760px)');
 const cards=[...document.querySelectorAll('.fragment-art')].map(element=>({element,frame:null,ready:false,visible:false,elapsed:0,duration:Number(element.dataset.duration)}));
+for(const card of cards){
+  const svg=card.element.closest('.step').querySelector('.step-number svg');
+  card.circle={liquid:svg.querySelector('.step-liquid'),surface:svg.querySelector('.step-fill'),digit:svg.querySelector('.step-digit-filled'),blur:svg.querySelector('feGaussianBlur'),filter:svg.querySelector('filter').id};
+}
+function drawCircle(card,time){
+  const {liquid,surface,digit,blur,filter}=card.circle;
+  const state=time===null?{fill:0,blur:0,rebound:0}:stepCircleFrame(time,card.duration+.9);
+  if(card.circle.state===JSON.stringify(state))return;
+  card.circle.state=JSON.stringify(state);
+  const {fill:f,rebound:j}=state,size=6+32*f,cx=10+5*f,cy=23-8*f,lobe=Math.sin(Math.PI*f)*4;
+  const attrs=(node,values)=>{for(const [key,value] of Object.entries(values))node.setAttribute(key,String(value));};
+  attrs(liquid.children[0],{x:cx-size/2,y:cy-size/2,width:size,height:size,rx:Math.min(size/2,15)});
+  attrs(liquid.children[1],{cx:cx+size/2+lobe*.3,cy:cy-size*.22,r:lobe});
+  attrs(liquid.children[2],{cx:cx+size*.28,cy:cy+size*.38,r:lobe*.8});
+  if(state.blur>.001){liquid.setAttribute('filter',`url(#${filter})`);blur.setAttribute('stdDeviation',String(state.blur));}else liquid.removeAttribute('filter');
+  surface.setAttribute('opacity',f>0?'1':'0');digit.setAttribute('opacity',f>0?'1':'0');
+  surface.setAttribute('transform',`translate(15 15) scale(${1+.014*j} ${1-.018*j}) translate(-15 -15)`);
+}
 let active=0;
 const send=(card,time)=>card.frame?.contentWindow?.postMessage({type:'yogurt-fragment-time',seconds:time},location.origin);
 function finish(card){
+  drawCircle(card,null);
   delete card.element.dataset.phase;delete card.element.dataset.live;card.element.dataset.complete='true';card.element.closest('.step').dataset.active='false';send(card,99);
 }
 function finishAll(){cards.forEach(card=>{finish(card);card.frame?.remove();card.frame=null;card.ready=false;delete card.element.dataset.live;card.elapsed=0;});active=0;}
@@ -58,7 +77,7 @@ onVoiceFrame(({phase,level,bands})=>{
   if(document.hidden)return;
   const card=cards[active];
   if(!phone.matches&&cards.some(card=>card.visible)&&card?.ready){
-    card.element.closest('.step').dataset.active='true';card.elapsed+=delta;
+    card.element.closest('.step').dataset.active='true';drawCircle(card,card.elapsed);card.elapsed+=delta;
     card.element.dataset.complete=String(card.elapsed>=card.duration);
     render(card,card.elapsed>=card.duration?99:card.elapsed);
     // Reveal only after the first content has arrived underneath the finished still.

@@ -1,0 +1,62 @@
+{
+  "{count} min": {
+    "one": "{count} min",
+    "other": "{count} min"
+  },
+  "Starts in {count} min": {
+    "one": "Starts in {count} min",
+    "other": "Starts in {count} min"
+  },
+  "Exported {count} meetings": {
+    "one": "Exported 1 meeting",
+    "other": "Exported {count} meetings"
+  },
+  "Added {count} meetings.": {
+    "one": "Added 1 meeting.",
+    "other": "Added {count} meetings."
+  },
+  "{count} were already here.": {
+    "one": "1 was already here.",
+    "other": "{count} were already here."
+  },
+  "{count} meetings": {
+    "one": "1 meeting",
+    "other": "{count} meetings"
+  },
+  "Meetings in the Trash are deleted for good after {count} days, with their recordings.": {
+    "one": "Meetings in the Trash are deleted for good after 1 day, with their recordings.",
+    "other": "Meetings in the Trash are deleted for good after {count} days, with their recordings."
+  },
+  "{count} meetings, with their notes, transcripts and recordings, are removed from this Mac for good.": {
+    "one": "1 meeting, with its notes, transcript and recordings, is removed from this Mac for good.",
+    "other": "{count} meetings, with their notes, transcripts and recordings, are removed from this Mac for good."
+  },
+  "{count} meetings, with their notes, transcripts and recordings, are removed from this computer for good.": {
+    "one": "1 meeting, with its notes, transcript and recordings, is removed from this computer for good.",
+    "other": "{count} meetings, with their notes, transcripts and recordings, are removed from this computer for good."
+  },
+  "{count} languages supported": {
+    "one": "{count} language supported",
+    "other": "{count} languages supported"
+  },
+  "and {count} more": {
+    "one": "and {count} more",
+    "other": "and {count} more"
+  },
+  "{count} left": {
+    "one": "{count} left",
+    "other": "{count} left"
+  },
+  "{count} echoed lines": {
+    "one": "{count} echoed line",
+    "other": "{count} echoed lines"
+  },
+  "Reading {count} meetings…": {
+    "one": "Reading 1 meeting…",
+    "other": "Reading {count} meetings…"
+  },
+  "Still reading {count} meetings…": {
+    "one": "Still reading 1 meeting…",
+    "other": "Still reading {count} meetings…"
+  }
+}

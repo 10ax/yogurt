@@ -300,6 +300,8 @@ html.widget { --pill:#232326;--pill-ink:#F7F7FA;--accent:#B780FF;--pill-accent:v
   animation: caret-pulse 2s cubic-bezier(0.4, 0, 0.6, 1) infinite;
 }
 @keyframes caret-pulse { 50% { opacity: 0.35; } }
+/* before the first word the summary is one empty paragraph, whose placeholder line break would push the dot down a line */
+.streaming .note-prose > :last-child > br.ProseMirror-trailingBreak:only-child { display: none; }
 .chat-answer > * + * { margin-top: 0.45em; }
 @media (prefers-reduced-motion: reduce) { .chat-in, .fw { animation: none; transition: none; } .stream-caret::after, .stream-caret *::after, .streaming .note-prose::after, .streaming .note-prose *::after { animation: none; } }
 
@@ -503,7 +505,8 @@ input::selection, textarea::selection, .note-prose ::selection { background: var
   .note-layout[data-tab-pointer=true] .note-tab-indicator { transition:transform 180ms cubic-bezier(.23,1,.32,1),width 180ms cubic-bezier(.23,1,.32,1); }
 }
 .note-content { min-height:0;min-width:0;flex:1; }
-.note-notes-pane { overflow-y:auto; }
+/* The summary grows past the fold while it streams; with a classic scrollbar, a gutter that appears mid-stream would shift the centred text sideways. */
+.main-window .note-notes-pane { overflow-y:auto;scrollbar-gutter:stable both-edges; }
 .note-notes-pane[hidden] { display:none; }
 .note-notes-body { padding-top:22px;padding-bottom:40px; }
 .note-transcript-pane { display:flex;contain:layout style;--transcript-inset:calc(max(0px,(100% - 860px)/2) + clamp(20px,calc(10cqw - 42px),48px)); }

@@ -499,7 +499,7 @@ function Enhanced({ notes, disabled, onChange, onBlur, onRetry, focus }: { focus
         <p data-testid="note-enhanced-model-download" role="status" className="text-[15px] text-muted">{t('Your summary will be written once the notes model finishes downloading: {percent}', { percent })}</p>
       )}>
         <div data-testid="note-enhanced-waiting" aria-live="polite">
-          <p className="writing-label mb-5 text-[15px] text-muted">{status === 'waiting' ? (notes.step === 'loading' ? t('Loading the notes model…') : t('Getting ready to generate your summary…')) : notes.part ? t('Reading a long meeting, part {part} of {of}…', { part: notes.part.part, of: notes.part.of }) : t('Generating your summary…')}</p>
+          <p className="writing-label mb-5 text-[15px] text-muted">{status === 'waiting' ? (notes.step === 'loading' ? t('Loading the notes model…') : t('Reading the meeting…')) : notes.part ? t('Reading a long meeting, part {part} of {of}…', { part: notes.part.part, of: notes.part.of }) : t('Generating your summary…')}</p>
           <div className="flex flex-col gap-3" aria-hidden="true">
             {[42, 88, 76, 64, 0, 36, 82, 70].map((w, i) => (w ? <span key={i} className="skeleton h-3 rounded-md" style={{ width: `${w}%`, animationDelay: `${i * 90}ms` }} /> : <span key={i} className="h-3" />))}
           </div>
@@ -514,7 +514,8 @@ function Enhanced({ notes, disabled, onChange, onBlur, onRetry, focus }: { focus
         <button onClick={onRetry} className="inline-error-action">{t('Try again')}</button>
       </InlineError>}
       <Editor focus={focus} testId="note-enhanced-editor" label={t('Summary')} className="enhanced" markdown={writing ? draft : notes.enhanced ?? ''} streaming={writing} editable={!writing && !disabled} onChange={onChange} onBlur={onBlur} />
-      {writing && <p className="writing-label mt-4 text-xs text-muted" aria-live="polite">{t('Generating your summary…')}</p>}
+      {/* the caret dot and the Summarizing pill show progress; a visible label here would ride the end of the text up and down */}
+      {writing && <p className="sr-only" aria-live="polite">{t('Generating your summary…')}</p>}
     </div>
   )
 }

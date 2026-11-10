@@ -78,7 +78,7 @@ test('a Mac waiting for the notes model shows what it always did (no download li
     await expect(page.getByTestId('home')).toBeVisible({ timeout: 15_000 })
     await record(page)
     await page.getByTestId('note-stop').click()
-    await expect(page.getByTestId('note-enhanced-waiting')).toContainText('Getting ready to generate your summary')
+    await expect(page.getByTestId('note-enhanced-waiting')).toContainText('Reading the meeting')
     await expect(page.getByTestId('note-enhanced-model-download')).toHaveCount(0)
   } finally { await app.close() }
 })

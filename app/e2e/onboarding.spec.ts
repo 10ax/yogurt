@@ -52,7 +52,7 @@ test('first run records as soon as speech and speakers are in; notes say they ar
     await expect.poll(async () => (await page.evaluate((id) => window.yogurt.transcript.get(id), id)).length, { timeout: 30_000 }).toBeGreaterThanOrEqual(2)
     await page.getByTestId('note-stop').click()
     await page.getByRole('tab', { name: 'Summary', exact: true }).click()
-    await expect(page.getByTestId('note-enhanced-waiting')).toContainText('Getting ready to generate your summary')
+    await expect(page.getByTestId('note-enhanced-waiting')).toContainText('Reading the meeting')
     // a question waits too, and says why
     await page.getByTestId('chat-open').click()
     await page.getByTestId('chat-input').fill('What was decided?')

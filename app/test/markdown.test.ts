@@ -82,6 +82,19 @@ describe('markdown', () => {
     }
     expect(mdToDoc('Plan\n-\nDone', { streaming: true }).content).toHaveLength(3)
   })
+  it('while streaming, opens no empty block for a blank line or a bare heading marker', () => {
+    for (const tail of ['\n', '\n\n', ' ', '\n\n#', '\n\n## ', '\n###'])
+      expect(mdToDoc(`Plan${tail}`, { streaming: true })).toEqual(mdToDoc('Plan'))
+    expect(mdToDoc('Plan\n\n## Next', { streaming: true }).content!.at(-1)!.type).toBe('heading')
+    expect(mdToDoc('Plan\n\n')).not.toEqual(mdToDoc('Plan'))
+  })
+  it('while streaming, a block at the end with no text yet waits for its text', () => {
+    for (const tail of ['\n- **', '\n## **', '\n- [', '\n- <mi'])
+      expect(mdToDoc(`Plan${tail}`, { streaming: true })).toEqual(mdToDoc('Plan'))
+    expect(mdToDoc('- one\n  - **', { streaming: true })).toEqual(mdToDoc('- one'))
+    expect(mdToDoc('- one\n- **Chr', { streaming: true }).content![0].content).toHaveLength(2)
+    expect(mdToDoc('**', { streaming: true })).toEqual(mdToDoc(''))
+  })
 
   it('while streaming, a mark still open runs to the end and a half-written tag is hidden', () => {
     const doc = mdToDoc('- **Maya', { streaming: true })

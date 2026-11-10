@@ -130,8 +130,9 @@ const para = (text: string, o: Opts): PMNode => {
 // ---------- blocks ----------
 
 export function mdToDoc(md: string, o: Opts = {}): PMNode {
-  // A trailing list marker is still arriving; showing it as a paragraph makes the text flicker.
-  if (o.streaming) md = md.replace(/(^|\n)[\t ]*(?:[-*+]|\d+[.)])[\t ]*$/, '')
+  // While streaming, nothing shows until it has a character to show: a trailing blank line or a bare list or
+  // heading marker would open an empty block, and the caret dot would drop to it and back up as text arrives.
+  if (o.streaming) md = md.trimEnd().replace(/(^|\n)[\t ]*(?:[-*+]|\d+[.)]|#{1,6})$/, '').trimEnd()
   const content: PMNode[] = []
   // open lists, outermost first: the indent their items start at, and the list node
   let stack: Array<{ indent: number; list: PMNode }> = []
@@ -166,7 +167,16 @@ export function mdToDoc(md: string, o: Opts = {}): PMNode {
     }
     content.push(para(raw, o))
   }
+  if (o.streaming) withoutEmptyEnd(content)
   return { type: 'doc', content: content.length ? content : [{ type: 'paragraph' }] }
+}
+
+const hasText = (n: PMNode): boolean => !!n.text?.trim() || !!n.content?.some(hasText)
+/** while streaming, a block at the end with no text yet (a bullet whose bold has only just opened) waits for its text, so the dot doesn't drop to it and back */
+function withoutEmptyEnd(nodes: PMNode[]) {
+  while (nodes.length && !hasText(nodes.at(-1)!)) nodes.pop()
+  const last = nodes.at(-1)
+  if (last?.content && /List$|^listItem$/.test(last.type)) withoutEmptyEnd(last.content)
 }
 
 // ---------- back to Markdown ----------

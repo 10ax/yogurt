@@ -35,7 +35,8 @@ export function AskConversation({ id, initial, home = false, panel = false, reco
   const [changing, setChanging] = useState(false)
   const [behind, setBehind] = useState(false)
   const [mention, setMention] = useState<{ start: number; end: number; query: string }>()
-  const [targets, setTargets] = useState<ContextTarget[]>([])
+  const [targetResults, setTargetResults] = useState<{ query: string; items: ContextTarget[] }>()
+  const targets = targetResults?.items ?? []
   const [selected, setSelected] = useState(0)
   const input = useRef<HTMLTextAreaElement>(null)
   const focusAfterRemove = useRef(false)
@@ -67,9 +68,11 @@ export function AskConversation({ id, initial, home = false, panel = false, reco
   }, [id])
   useEffect(() => {
     let active = true
-    setTargets([]); setSelected(0)
-    if (mention) void window.yogurt.conversations.targets(mention.query).then(items => {
-      if (active) setTargets(items.filter(c => ![...(chat?.chips ?? []), ...(chat?.draftChips ?? [])].some(x => x.kind === c.kind && x.id === c.id)))
+    if (!mention) { setTargetResults(undefined); setSelected(0); return }
+    // Keep the last completed search visible until the replacement is ready.
+    void window.yogurt.conversations.targets(mention.query).then(items => {
+      if (!active) return
+      setTargetResults({ query: mention.query, items: items.filter(c => ![...(chat?.chips ?? []), ...(chat?.draftChips ?? [])].some(x => x.kind === c.kind && x.id === c.id)) }); setSelected(0)
     }).catch(() => { if (active) setError(true) })
     return () => { active = false }
   }, [mention?.query, !!mention, chat?.chips, chat?.draftChips])
@@ -153,8 +156,9 @@ export function AskConversation({ id, initial, home = false, panel = false, reco
     if (!chat || changing) return
     void window.yogurt.conversations.current(attachContext(chat.chips, chat.draftChips), true).then(onSelect).catch(() => setError(true))
   }
-  const suggestions = !text && unsent && (landing || panel) && <div data-testid={panel ? 'chat-suggestions' : 'chat-starters'} className={`ask-starters${panel ? '' : ' ask-home-starters'}`}>
-    {starters(chat ? attachContext(chat.chips, chat.draftChips) : [], recording).map(q => <button type="button" key={q} title={q} data-testid={panel ? 'chat-suggestion' : 'chat-starter'} disabled={busy} onClick={() => send(q)}>{q}</button>)}
+  const startersHidden = !panel && !!text
+  const suggestions = unsent && (landing || panel) && (!panel || !text) && <div data-testid={panel ? 'chat-suggestions' : 'chat-starters'} aria-hidden={startersHidden || undefined} inert={startersHidden} className={`ask-starters${panel ? '' : ' ask-home-starters'}`}>
+    {starters(chat ? attachContext(chat.chips, chat.draftChips) : [], recording).map(q => <button type="button" key={q} title={q} data-testid={panel ? 'chat-suggestion' : 'chat-starter'} disabled={busy || startersHidden} onClick={() => send(q)}>{q}</button>)}
   </div>
   return <div data-testid={landing ? "chat-empty" : undefined} aria-busy={last?.status === 'answering'} className={`ask-conversation${landing ? ' ask-landing' : ''}`}>
     {landing ? <h1 className="ask-home-title">{t('Ask about your meetings')}</h1> : <header className="ask-conversation-head">
@@ -200,14 +204,15 @@ export function AskConversation({ id, initial, home = false, panel = false, reco
         </div>
         </div>
         {mention && <div className="ask-picker" id={`${prefix}-contexts`} role="listbox" aria-label={t('Add context')}>
-          {(['meeting', 'folder'] as const).map(kind => <div key={kind} role="group" aria-label={kind === 'meeting' ? t('Meetings') : t('Folders')}>
+          {(['meeting', 'folder'] as const).map(kind => targets.some(c => c.kind === kind) && <div key={kind} role="group" aria-label={kind === 'meeting' ? t('Meetings') : t('Folders')}>
             <h3>{kind === 'meeting' ? t('Meetings') : t('Folders')}</h3>
             {targets.map((c, i) => c.kind === kind && <button type="button" role="option" aria-selected={selected === i} id={`${prefix}-context-${i}`} key={`${c.kind}:${c.id}`}
               onMouseDown={e => e.preventDefault()} onClick={() => insert(c)}>
               {kind === 'meeting' ? <FileText size={14} /> : <Folder size={14} />}<span>{chipTitle(c)}</span>{c.startedAt && <small>{dayLabel(c.startedAt)}</small>}
             </button>)}
           </div>)}
-          {!targets.length && <p>{t('Nothing found for “{query}”.', { query: mention.query })}</p>}
+          {!targetResults && !error && <p role="status">{t('Loading…')}</p>}
+          {targetResults && !targets.length && <p>{t('Nothing found for “{query}”.', { query: targetResults.query })}</p>}
         </div>}
       </form></LoadingContent>
     </div>

@@ -167,3 +167,53 @@ test('Ask has soft thread edges, compact bubbles, and expands the same reading p
     await expect(page.getByTestId('chat-latest')).toHaveCount(0)
   } finally { await app.close() }
 })
+
+test('Ask anchors context growth and retains picker results between searches', async () => {
+  const app = await electron.launch({ args: [join(import.meta.dirname, '../out/main/index.js')], env: {
+    ...process.env, YOGURT_FAKE: '1', YOGURT_USER_DATA: mkdtempSync(join(tmpdir(), 'yogurt-ask-layout-')),
+  } })
+  try {
+    const page = await app.firstWindow()
+    await expect(page.getByTestId('home')).toBeVisible()
+    for (const title of ['Project review', 'Team planning', 'Launch notes']) {
+      const id = await app.evaluate(() => (globalThis as any).__fake__.bigMeeting(2)) as string
+      await page.evaluate(({ id, title }) => window.yogurt.meetings.rename(id, title), { id, title })
+    }
+    const targets = await page.evaluate(() => window.yogurt.conversations.targets(''))
+    await app.evaluate(({ ipcMain }, targets) => {
+      ipcMain.removeHandler('conversations:targets')
+      ipcMain.handle('conversations:targets', async (_event, query: string) => {
+        await new Promise(resolve => setTimeout(resolve, 180))
+        return targets.filter(target => target.title.toLowerCase().includes(query.toLowerCase()))
+      })
+    }, targets)
+    await page.getByTestId('nav-chat').click()
+    const input = page.getByTestId('chat-page-input'), title = page.locator('.ask-home-title'), composer = page.locator('.ask-composer')
+    await expect(input).toBeEnabled()
+    const top = await title.boundingBox(), composerTop = (await composer.boundingBox())!.y
+    await input.fill('@')
+    await expect(page.getByRole('option')).toHaveCount(3)
+    await expect(page.getByRole('group', { name: 'Folders', exact: true })).toHaveCount(0)
+    await page.locator('.ask-picker').evaluate(el => {
+      el.dataset.emptyFrame = 'false'
+      const observer = new MutationObserver(() => { if (!el.querySelector('[role=option]')) el.dataset.emptyFrame = 'true' })
+      observer.observe(el, { childList: true, subtree: true })
+    })
+    await input.fill('@p'); await input.fill('@pr')
+    await expect(page.getByRole('option')).toHaveCount(1)
+    await expect(page.locator('.ask-picker')).toHaveAttribute('data-empty-frame', 'false')
+    for (const [index, name] of ['Project review', 'Team planning', 'Launch notes'].entries()) {
+      await input.fill(`@${name}`)
+      await expect(page.getByRole('option')).toHaveCount(1)
+      await expect(page.getByRole('option')).toContainText(name)
+      await input.press('Enter')
+      await expect(page.locator('.ask-context-row')).toHaveCount(index + 1)
+      await expect(input).toHaveValue('')
+      expect(await title.boundingBox()).toEqual(top)
+      expect((await composer.boundingBox())!.y).toBe(composerTop)
+    }
+    await input.fill('@no-match')
+    await expect(page.locator('.ask-picker')).toContainText('Nothing found')
+    await expect(page.locator('.ask-picker h3')).toHaveCount(0)
+  } finally { await app.close() }
+})

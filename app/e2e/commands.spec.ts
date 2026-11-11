@@ -48,8 +48,10 @@ test('the sidebar shortcut, native View menu, command palette and shortcut refer
     await expect(toggle).toHaveAttribute('aria-expanded', 'false')
     await page.keyboard.press('Escape')
     await expect(page.getByTestId('shortcuts-dialog')).toHaveCount(0)
+    // innerWidth changes before the resize event lands, so wait for the event or it can close the sidebar opened below
+    await page.evaluate(() => { (window as unknown as { narrowed: Promise<void> }).narrowed = new Promise(done => addEventListener('resize', function on() { if (innerWidth === 720) { removeEventListener('resize', on); done() } })) })
     await app.evaluate(({ BrowserWindow }) => BrowserWindow.getAllWindows().find(w => !w.webContents.getURL().includes('#'))!.setSize(720, 520))
-    await expect.poll(() => page.evaluate(() => innerWidth)).toBe(720)
+    await page.evaluate(() => (window as unknown as { narrowed: Promise<void> }).narrowed)
     await expect(toggle).toHaveAttribute('aria-expanded', 'false')
     await page.keyboard.press('Control+Meta+s')
     await expect(toggle).toHaveAttribute('aria-expanded', 'true')

@@ -676,5 +676,15 @@
   "Downloading Yogurt's AI: {progress}": "جارٍ تنزيل ذكاء Yogurt الاصطناعي: {progress}",
   "{done} of {total} GB": "{done} من {total} غيغابايت",
   "{progress} · about {minutes} min left": "{progress} · متبقٍ نحو {minutes} د",
-  "You can record now. Yogurt writes your notes and answers questions once this finishes.": "يمكنك التسجيل الآن. يكتب Yogurt ملاحظاتك ويجيب عن الأسئلة بعد انتهاء هذا."
+  "You can record now. Yogurt writes your notes and answers questions once this finishes.": "يمكنك التسجيل الآن. يكتب Yogurt ملاحظاتك ويجيب عن الأسئلة بعد انتهاء هذا.",
+  "Updates": "التحديثات",
+  "Update Yogurt automatically": "تحديث Yogurt تلقائيًا",
+  "New versions download in the background and install when you quit.": "تُنزَّل الإصدارات الجديدة في الخلفية وتُثبَّت عند الإنهاء.",
+  "Version {version}": "الإصدار {version}",
+  "Up to date": "محدَّث",
+  "Checking for updates…": "جارٍ البحث عن تحديثات…",
+  "Downloading version {version}…": "جارٍ تنزيل الإصدار {version}…",
+  "Couldn't check for updates.": "تعذّر البحث عن تحديثات.",
+  "You can restart once the recording stops.": "يمكنك إعادة التشغيل بعد توقف التسجيل.",
+  "Check now": "تحقّق الآن"
 }

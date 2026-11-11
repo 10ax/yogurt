@@ -107,6 +107,8 @@ describe('speed', () => {
     dirs.push(d)
     const store = openStore(join(d, 'yogurt.db'))
     stores.push(store)
+    // seeding commits ~3000 times; a sync per commit takes over a minute on GitHub's Windows runners
+    store.db.exec('PRAGMA synchronous = OFF')
     const library = new Library(store.db)
     const dims = 512
     const rand = () => Float32Array.from({ length: dims }, () => Math.random() - 0.5)

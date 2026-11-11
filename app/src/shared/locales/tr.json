@@ -620,5 +620,15 @@
   "Downloading Yogurt's AI: {progress}": "Yogurt’un yapay zekası indiriliyor: {progress}",
   "{done} of {total} GB": "{done} / {total} GB",
   "{progress} · about {minutes} min left": "{progress} · yaklaşık {minutes} dk kaldı",
-  "You can record now. Yogurt writes your notes and answers questions once this finishes.": "Şimdi kayıt yapabilirsiniz. Bu bittiğinde Yogurt notlarınızı yazar ve soruları yanıtlar."
+  "You can record now. Yogurt writes your notes and answers questions once this finishes.": "Şimdi kayıt yapabilirsiniz. Bu bittiğinde Yogurt notlarınızı yazar ve soruları yanıtlar.",
+  "Updates": "Güncellemeler",
+  "Update Yogurt automatically": "Yogurt'u otomatik güncelle",
+  "New versions download in the background and install when you quit.": "Yeni sürümler arka planda indirilir ve çıktığınızda yüklenir.",
+  "Version {version}": "Sürüm {version}",
+  "Up to date": "Güncel",
+  "Checking for updates…": "Güncellemeler aranıyor…",
+  "Downloading version {version}…": "Sürüm {version} indiriliyor…",
+  "Couldn't check for updates.": "Güncellemeler aranamadı.",
+  "You can restart once the recording stops.": "Kayıt durduğunda yeniden başlatabilirsiniz.",
+  "Check now": "Şimdi denetle"
 }

@@ -633,5 +633,15 @@
   "Downloading Yogurt's AI: {progress}": "Baixando a IA do Yogurt: {progress}",
   "{done} of {total} GB": "{done} de {total} GB",
   "{progress} · about {minutes} min left": "{progress} · faltam cerca de {minutes} min",
-  "You can record now. Yogurt writes your notes and answers questions once this finishes.": "Você já pode gravar. O Yogurt escreve suas notas e responde perguntas quando isso terminar."
+  "You can record now. Yogurt writes your notes and answers questions once this finishes.": "Você já pode gravar. O Yogurt escreve suas notas e responde perguntas quando isso terminar.",
+  "Updates": "Atualizações",
+  "Update Yogurt automatically": "Atualizar o Yogurt automaticamente",
+  "New versions download in the background and install when you quit.": "Novas versões são baixadas em segundo plano e instaladas quando você sai.",
+  "Version {version}": "Versão {version}",
+  "Up to date": "Atualizado",
+  "Checking for updates…": "Procurando atualizações…",
+  "Downloading version {version}…": "Baixando a versão {version}…",
+  "Couldn't check for updates.": "Não foi possível procurar atualizações.",
+  "You can restart once the recording stops.": "Você pode reiniciar quando a gravação parar.",
+  "Check now": "Verificar agora"
 }

@@ -581,5 +581,15 @@
   "Downloading Yogurt's AI: {progress}": "正在下载 Yogurt 的 AI：{progress}",
   "{done} of {total} GB": "{done} / {total} GB",
   "{progress} · about {minutes} min left": "{progress} · 还需约 {minutes} 分钟",
-  "You can record now. Yogurt writes your notes and answers questions once this finishes.": "现在就可以录音。完成后，Yogurt 会写好你的笔记并回答问题。"
+  "You can record now. Yogurt writes your notes and answers questions once this finishes.": "现在就可以录音。完成后，Yogurt 会写好你的笔记并回答问题。",
+  "Updates": "更新",
+  "Update Yogurt automatically": "自动更新 Yogurt",
+  "New versions download in the background and install when you quit.": "新版本会在后台下载，并在你退出时安装。",
+  "Version {version}": "版本 {version}",
+  "Up to date": "已是最新版本",
+  "Checking for updates…": "正在检查更新…",
+  "Downloading version {version}…": "正在下载版本 {version}…",
+  "Couldn't check for updates.": "无法检查更新。",
+  "You can restart once the recording stops.": "录音停止后即可重新启动。",
+  "Check now": "立即检查"
 }

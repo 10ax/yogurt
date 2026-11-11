@@ -159,8 +159,8 @@ test('asking about a finished meeting streams the answer in, word by word, and i
 })
 
 test('opening Ask on a meeting reads it in ahead, and a question says what it is doing until the answer starts', async () => {
-  // a slow first word, so each step can be seen
-  const { app, page } = await launch({ YOGURT_FAKE_LLM_MS: '4500' })
+  // a first word well after the 4s step tick, so a slow machine still sees each step
+  const { app, page } = await launch({ YOGURT_FAKE_LLM_MS: '8000' })
   try {
     const id = await fake<string>(app, 'bigMeeting', 12)
     await fake(app, 'go', `/note/${id}`)

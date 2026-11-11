@@ -144,6 +144,15 @@ export type YogurtApi = {
     set(on: boolean): Promise<McpStatus>
     onClients(fn: (clients: string[]) => void): () => void
   }
+  updates: {
+    status(): Promise<UpdateStatus>
+    set(on: boolean): Promise<UpdateStatus>
+    /** the result arrives through onStatus */
+    check(): Promise<void>
+    /** quits, installs the downloaded version and reopens; false while recording or with nothing downloaded */
+    restart(): Promise<boolean>
+    onStatus(fn: (s: UpdateStatus) => void): () => void
+  }
   backup: {
     /** import waits while a meeting records */
     status(): Promise<{ recording: boolean }>
@@ -396,3 +405,5 @@ export type ConversationSummary = { id: string; title: string; updatedAt: number
 
 /** enabled: in Settings. clients: apps connected now. command: the program to give an AI app */
 export type McpStatus = { enabled: boolean; clients: string[]; command: string }
+/** Settings → Updates. available: this build updates itself (not in development or a preview); next: the version found */
+export type UpdateStatus = { version: string; available: boolean; on: boolean; state: 'idle' | 'checking' | 'latest' | 'downloading' | 'ready' | 'error'; next?: string }

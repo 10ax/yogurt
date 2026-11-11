@@ -496,10 +496,10 @@ function Enhanced({ notes, disabled, onChange, onBlur, onRetry, focus }: { focus
   if (writing && !notes.draft) {
     return (
       <NotesModelWait downloading={(percent) => (
-        <p data-testid="note-enhanced-model-download" role="status" className="text-[15px] text-muted">{t('Your summary will be written once the notes model finishes downloading: {percent}', { percent })}</p>
+        <p data-testid="note-enhanced-model-download" role="status" className="text-[15px] text-muted">{percent ? t('Yogurt is still downloading its AI model. Your notes will be ready in a few minutes. ({percent})', { percent }) : t('Yogurt is still downloading its AI model. Your notes will be ready in a few minutes.')}</p>
       )}>
         <div data-testid="note-enhanced-waiting" aria-live="polite">
-          <p className="writing-label mb-5 text-[15px] text-muted">{status === 'waiting' ? (notes.step === 'loading' ? t('Loading the notes model…') : t('Reading the meeting…')) : notes.part ? t('Reading a long meeting, part {part} of {of}…', { part: notes.part.part, of: notes.part.of }) : t('Generating your summary…')}</p>
+          <p className="writing-label mb-5 text-[15px] text-muted">{status === 'writing' && notes.part ? t('Reading a long meeting, part {part} of {of}…', { part: notes.part.part, of: notes.part.of }) : t('Generating notes…')}</p>
           <div className="flex flex-col gap-3" aria-hidden="true">
             {[42, 88, 76, 64, 0, 36, 82, 70].map((w, i) => (w ? <span key={i} className="skeleton h-3 rounded-md" style={{ width: `${w}%`, animationDelay: `${i * 90}ms` }} /> : <span key={i} className="h-3" />))}
           </div>
@@ -515,7 +515,7 @@ function Enhanced({ notes, disabled, onChange, onBlur, onRetry, focus }: { focus
       </InlineError>}
       <Editor focus={focus} testId="note-enhanced-editor" label={t('Summary')} className="enhanced" markdown={writing ? draft : notes.enhanced ?? ''} streaming={writing} editable={!writing && !disabled} onChange={onChange} onBlur={onBlur} />
       {/* the caret dot and the Summarizing pill show progress; a visible label here would ride the end of the text up and down */}
-      {writing && <p className="sr-only" aria-live="polite">{t('Generating your summary…')}</p>}
+      {writing && <p className="sr-only" aria-live="polite">{t('Generating notes…')}</p>}
     </div>
   )
 }

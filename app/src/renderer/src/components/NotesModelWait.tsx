@@ -4,9 +4,9 @@ import { language, t } from '../../../shared/i18n'
 
 /**
  * Waiting notes and answers share the first model's failure and its existing setup retry. downloading: what to show
- * instead while the first notes model is still downloading (Windows and Linux report how far it is).
+ * instead while the first notes model is still downloading (Windows and Linux report how far it is, as percent).
  */
-export function NotesModelWait({ children, downloading }: { children: ReactNode; downloading?: (percent: string) => ReactNode }) {
+export function NotesModelWait({ children, downloading }: { children: ReactNode; downloading?: (percent?: string) => ReactNode }) {
   const [setup, setSetup] = useState<SetupState>()
   const [retrying, setRetrying] = useState(false)
   const [retryFailed, setRetryFailed] = useState(false)
@@ -22,6 +22,8 @@ export function NotesModelWait({ children, downloading }: { children: ReactNode;
   }
   if (!setup?.notesError) {
     if (downloading && setup?.notesFraction !== undefined) return downloading(new Intl.NumberFormat(language(), { style: 'percent', maximumFractionDigits: 0 }).format(Math.floor(Math.max(0, Math.min(1, setup.notesFraction)) * 100) / 100))
+    // a Mac doesn't say how far
+    if (downloading && setup?.notesDownloading) return downloading()
     return children
   }
   return (

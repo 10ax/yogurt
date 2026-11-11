@@ -155,10 +155,8 @@
   "Forward": "進む",
   "General": "一般",
   "Generate summary": "要約を作成",
-  "Generating your summary…": "要約を作成しています…",
   "Get started": "はじめる",
   "Getting ready to answer. Yogurt is still setting up.": "回答の準備中です。Yogurtはまだセットアップ中です。",
-  "Reading the meeting…": "ミーティングを読んでいます…",
   "Go to": "移動",
   "Graduation cap": "卒業帽",
   "Great. Who is writing the copy?": "いいですね。コピーは誰が書きますか？",
@@ -566,6 +564,7 @@
   "Yogurt runs entirely on your computer, and this one can't keep up with a meeting as it happens. It needs a processor with at least 4 cores, or graphics it can use.": "Yogurtはすべてこのコンピュータ上で動きますが、このコンピュータでは会議にリアルタイムで追いつけません。4コア以上のプロセッサか、利用できるグラフィックスが必要です。",
   "Yogurt runs entirely on your computer, and this one can't write down a meeting as fast as people talk. Updating your graphics driver may help. Otherwise it needs a faster processor, or graphics it can use.": "Yogurtはすべてこのコンピュータ上で動きますが、このコンピュータでは話す速さに追いついて会議を書き取れません。グラフィックスドライバを更新すると改善することがあります。それ以外の場合は、より速いプロセッサか、利用できるグラフィックスが必要です。",
   "Yogurt runs entirely on your computer, and this one can't write down a meeting as fast as people talk. Installing the driver for your graphics card may help. Otherwise it needs a faster processor, or graphics it can use.": "Yogurtはすべてこのコンピュータ上で動きますが、このコンピュータでは話す速さに追いついて会議を書き取れません。グラフィックスカードのドライバをインストールすると改善することがあります。それ以外の場合は、より速いプロセッサか、利用できるグラフィックスが必要です。",
-  "Your summary will be written once the notes model finishes downloading: {percent}": "ノート用のモデルのダウンロードが終わると、要約が書かれます: {percent}",
-  "Loading the notes model…": "ノート用のモデルを読み込んでいます…"
+  "Generating notes…": "ノートを作成しています…",
+  "Yogurt is still downloading its AI model. Your notes will be ready in a few minutes.": "YogurtはまだAIモデルをダウンロードしています。数分でノートができあがります。",
+  "Yogurt is still downloading its AI model. Your notes will be ready in a few minutes. ({percent})": "YogurtはまだAIモデルをダウンロードしています。数分でノートができあがります。（{percent}）"
 }

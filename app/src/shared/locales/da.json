@@ -161,10 +161,8 @@
   "Forward": "Frem",
   "General": "Generelt",
   "Generate summary": "Lav resumé",
-  "Generating your summary…": "Laver dit resumé…",
   "Get started": "Kom i gang",
   "Getting ready to answer. Yogurt is still setting up.": "Gør klar til at svare. Yogurt er stadig ved at blive sat op.",
-  "Reading the meeting…": "Læser mødet…",
   "Go to": "Gå til",
   "Graduation cap": "Studenterhue",
   "Great. Who is writing the copy?": "Super. Hvem skriver teksten?",
@@ -605,6 +603,7 @@
   "Yogurt runs entirely on your computer, and this one can't keep up with a meeting as it happens. It needs a processor with at least 4 cores, or graphics it can use.": "Yogurt kører helt på din computer, og denne kan ikke følge med et møde, mens det foregår. Den skal have en processor med mindst 4 kerner eller grafik, den kan bruge.",
   "Yogurt runs entirely on your computer, and this one can't write down a meeting as fast as people talk. Updating your graphics driver may help. Otherwise it needs a faster processor, or graphics it can use.": "Yogurt kører helt på din computer, og denne kan ikke skrive et møde ned så hurtigt, som folk taler. Det kan hjælpe at opdatere din grafikdriver. Ellers skal den have en hurtigere processor eller grafik, den kan bruge.",
   "Yogurt runs entirely on your computer, and this one can't write down a meeting as fast as people talk. Installing the driver for your graphics card may help. Otherwise it needs a faster processor, or graphics it can use.": "Yogurt kører helt på din computer, og denne kan ikke skrive et møde ned så hurtigt, som folk taler. Det kan hjælpe at installere driveren til dit grafikkort. Ellers skal den have en hurtigere processor eller grafik, den kan bruge.",
-  "Your summary will be written once the notes model finishes downloading: {percent}": "Dit resumé bliver skrevet, når notemodellen er færdig med at blive hentet: {percent}",
-  "Loading the notes model…": "Indlæser notemodellen…"
+  "Generating notes…": "Laver noter…",
+  "Yogurt is still downloading its AI model. Your notes will be ready in a few minutes.": "Yogurt er stadig ved at downloade sin AI-model. Dine noter er klar om et par minutter.",
+  "Yogurt is still downloading its AI model. Your notes will be ready in a few minutes. ({percent})": "Yogurt er stadig ved at downloade sin AI-model. Dine noter er klar om et par minutter. ({percent})"
 }

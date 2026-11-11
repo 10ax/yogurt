@@ -161,10 +161,8 @@
   "Forward": "Εμπρός",
   "General": "Γενικά",
   "Generate summary": "Δημιουργία σύνοψης",
-  "Generating your summary…": "Δημιουργείται η σύνοψή σας…",
   "Get started": "Ξεκινήστε",
   "Getting ready to answer. Yogurt is still setting up.": "Προετοιμάζεται η απάντηση. Το Yogurt ρυθμίζεται ακόμα.",
-  "Reading the meeting…": "Ανάγνωση της σύσκεψης…",
   "Go to": "Μετάβαση",
   "Graduation cap": "Καπέλο αποφοίτησης",
   "Great. Who is writing the copy?": "Τέλεια. Ποιος γράφει το κείμενο;",
@@ -605,6 +603,7 @@
   "Yogurt runs entirely on your computer, and this one can't keep up with a meeting as it happens. It needs a processor with at least 4 cores, or graphics it can use.": "Το Yogurt λειτουργεί εξ ολοκλήρου στον υπολογιστή σας, και αυτός δεν προλαβαίνει μια σύσκεψη την ώρα που γίνεται. Χρειάζεται επεξεργαστή με τουλάχιστον 4 πυρήνες ή γραφικά που μπορεί να χρησιμοποιήσει.",
   "Yogurt runs entirely on your computer, and this one can't write down a meeting as fast as people talk. Updating your graphics driver may help. Otherwise it needs a faster processor, or graphics it can use.": "Το Yogurt λειτουργεί εξ ολοκλήρου στον υπολογιστή σας, και αυτός δεν μπορεί να καταγράφει μια σύσκεψη τόσο γρήγορα όσο μιλούν οι άνθρωποι. Μπορεί να βοηθήσει η ενημέρωση του προγράμματος οδήγησης γραφικών. Αλλιώς χρειάζεται ταχύτερο επεξεργαστή ή γραφικά που μπορεί να χρησιμοποιήσει.",
   "Yogurt runs entirely on your computer, and this one can't write down a meeting as fast as people talk. Installing the driver for your graphics card may help. Otherwise it needs a faster processor, or graphics it can use.": "Το Yogurt λειτουργεί εξ ολοκλήρου στον υπολογιστή σας, και αυτός δεν μπορεί να καταγράφει μια σύσκεψη τόσο γρήγορα όσο μιλούν οι άνθρωποι. Μπορεί να βοηθήσει η εγκατάσταση του προγράμματος οδήγησης της κάρτας γραφικών σας. Αλλιώς χρειάζεται ταχύτερο επεξεργαστή ή γραφικά που μπορεί να χρησιμοποιήσει.",
-  "Your summary will be written once the notes model finishes downloading: {percent}": "Η σύνοψή σας θα γραφτεί μόλις ολοκληρωθεί η λήψη του μοντέλου σημειώσεων: {percent}",
-  "Loading the notes model…": "Φόρτωση του μοντέλου σημειώσεων…"
+  "Generating notes…": "Δημιουργούνται οι σημειώσεις…",
+  "Yogurt is still downloading its AI model. Your notes will be ready in a few minutes.": "Το Yogurt κατεβάζει ακόμα το μοντέλο AI του. Οι σημειώσεις σας θα είναι έτοιμες σε λίγα λεπτά.",
+  "Yogurt is still downloading its AI model. Your notes will be ready in a few minutes. ({percent})": "Το Yogurt κατεβάζει ακόμα το μοντέλο AI του. Οι σημειώσεις σας θα είναι έτοιμες σε λίγα λεπτά. ({percent})"
 }

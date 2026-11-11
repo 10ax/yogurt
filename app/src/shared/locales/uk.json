@@ -165,10 +165,8 @@
   "Forward": "Уперед",
   "General": "Загальні",
   "Generate summary": "Створити підсумок",
-  "Generating your summary…": "Створюємо підсумок…",
   "Get started": "Почати",
   "Getting ready to answer. Yogurt is still setting up.": "Готуємо відповідь. Yogurt ще налаштовується.",
-  "Reading the meeting…": "Читаємо зустріч…",
   "Go to": "Перейти",
   "Graduation cap": "Академічна шапочка",
   "Great. Who is writing the copy?": "Чудово. Хто пише текст?",
@@ -631,6 +629,7 @@
   "Yogurt runs entirely on your computer, and this one can't keep up with a meeting as it happens. It needs a processor with at least 4 cores, or graphics it can use.": "Yogurt працює повністю на вашому комп’ютері, а цей не встигає за зустріччю в реальному часі. Потрібен процесор щонайменше з 4 ядрами або відеокарта, яку можна використати.",
   "Yogurt runs entirely on your computer, and this one can't write down a meeting as fast as people talk. Updating your graphics driver may help. Otherwise it needs a faster processor, or graphics it can use.": "Yogurt працює повністю на вашому комп’ютері, а цей не встигає записувати зустріч так само швидко, як говорять люди. Може допомогти оновлення драйвера відеокарти. Інакше потрібен швидший процесор або відеокарта, яку можна використати.",
   "Yogurt runs entirely on your computer, and this one can't write down a meeting as fast as people talk. Installing the driver for your graphics card may help. Otherwise it needs a faster processor, or graphics it can use.": "Yogurt працює повністю на вашому комп’ютері, а цей не встигає записувати зустріч так само швидко, як говорять люди. Може допомогти встановлення драйвера для вашої відеокарти. Інакше потрібен швидший процесор або відеокарта, яку можна використати.",
-  "Your summary will be written once the notes model finishes downloading: {percent}": "Підсумок буде написано, щойно модель для нотаток завантажиться: {percent}",
-  "Loading the notes model…": "Завантажуємо модель для нотаток…"
+  "Generating notes…": "Створюємо нотатки…",
+  "Yogurt is still downloading its AI model. Your notes will be ready in a few minutes.": "Yogurt ще завантажує модель ШІ. Нотатки будуть готові за кілька хвилин.",
+  "Yogurt is still downloading its AI model. Your notes will be ready in a few minutes. ({percent})": "Yogurt ще завантажує модель ШІ. Нотатки будуть готові за кілька хвилин. ({percent})"
 }

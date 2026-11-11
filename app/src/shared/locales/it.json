@@ -163,10 +163,8 @@
   "Forward": "Avanti",
   "General": "Generali",
   "Generate summary": "Genera riepilogo",
-  "Generating your summary…": "Creazione del riepilogo…",
   "Get started": "Inizia",
   "Getting ready to answer. Yogurt is still setting up.": "Preparazione della risposta. Yogurt è ancora in configurazione.",
-  "Reading the meeting…": "Lettura della riunione…",
   "Go to": "Vai a",
   "Graduation cap": "Tocco di laurea",
   "Great. Who is writing the copy?": "Ottimo. Chi scrive i testi?",
@@ -621,6 +619,7 @@
   "Yogurt runs entirely on your computer, and this one can't keep up with a meeting as it happens. It needs a processor with at least 4 cores, or graphics it can use.": "Yogurt funziona interamente sul tuo computer, e questo non riesce a stare al passo con una riunione mentre si svolge. Serve un processore con almeno 4 core o una grafica che possa usare.",
   "Yogurt runs entirely on your computer, and this one can't write down a meeting as fast as people talk. Updating your graphics driver may help. Otherwise it needs a faster processor, or graphics it can use.": "Yogurt funziona interamente sul tuo computer, e questo non riesce a trascrivere una riunione alla velocità con cui si parla. Aggiornare il driver grafico può aiutare. Altrimenti serve un processore più veloce o una grafica che possa usare.",
   "Yogurt runs entirely on your computer, and this one can't write down a meeting as fast as people talk. Installing the driver for your graphics card may help. Otherwise it needs a faster processor, or graphics it can use.": "Yogurt funziona interamente sul tuo computer, e questo non riesce a trascrivere una riunione alla velocità con cui si parla. Installare il driver della scheda grafica può aiutare. Altrimenti serve un processore più veloce o una grafica che possa usare.",
-  "Your summary will be written once the notes model finishes downloading: {percent}": "Il riepilogo verrà scritto quando il modello delle note avrà finito di scaricarsi: {percent}",
-  "Loading the notes model…": "Caricamento del modello delle note…"
+  "Generating notes…": "Creazione delle note…",
+  "Yogurt is still downloading its AI model. Your notes will be ready in a few minutes.": "Yogurt sta ancora scaricando il suo modello di IA. Le tue note saranno pronte tra pochi minuti.",
+  "Yogurt is still downloading its AI model. Your notes will be ready in a few minutes. ({percent})": "Yogurt sta ancora scaricando il suo modello di IA. Le tue note saranno pronte tra pochi minuti. ({percent})"
 }

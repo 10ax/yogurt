@@ -344,6 +344,15 @@ describe('the speed check (Windows and Linux): speech models timed on this compu
     expect(states.some((x) => x.notesFraction !== undefined)).toBe(false)
   })
 
+  it('every system says the first notes model is still downloading, until it is in', async () => {
+    for (const hw of [undefined, cpuPc]) {
+      const { c, states } = setup(hw ? { getHardware: async () => hw, speed: speed({ 'whisper-small-q5_1': 0.3 }).deps } : {})
+      await c.start(); await c.idle()
+      expect(states.some((x) => x.phase === 'ready' && x.notesDownloading)).toBe(true)
+      expect(c.state.notesDownloading).toBeUndefined()
+    }
+  })
+
   it('a Mac never runs it, even when it is offered: turbo as always, nothing timed or stored', async () => {
     const s = speed({ 'whisper-large-v3-turbo-q5_0': 9 })
     const { c, rec } = setup({ speed: s.deps })

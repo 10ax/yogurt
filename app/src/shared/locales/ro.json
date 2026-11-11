@@ -163,10 +163,8 @@
   "Forward": "Înainte",
   "General": "General",
   "Generate summary": "Generați rezumatul",
-  "Generating your summary…": "Se generează rezumatul…",
   "Get started": "Să începem",
   "Getting ready to answer. Yogurt is still setting up.": "Se pregătește răspunsul. Yogurt încă se configurează.",
-  "Reading the meeting…": "Se citește întâlnirea…",
   "Go to": "Mergi la",
   "Graduation cap": "Tocă de absolvire",
   "Great. Who is writing the copy?": "Super. Cine scrie textul?",
@@ -618,6 +616,7 @@
   "Yogurt runs entirely on your computer, and this one can't keep up with a meeting as it happens. It needs a processor with at least 4 cores, or graphics it can use.": "Yogurt rulează în întregime pe computerul dvs., iar acesta nu poate ține pasul cu o întâlnire în timp real. Are nevoie de un procesor cu cel puțin 4 nuclee sau de o placă grafică pe care o poate folosi.",
   "Yogurt runs entirely on your computer, and this one can't write down a meeting as fast as people talk. Updating your graphics driver may help. Otherwise it needs a faster processor, or graphics it can use.": "Yogurt rulează în întregime pe computerul dvs., iar acesta nu poate scrie o întâlnire la fel de repede cum vorbesc oamenii. Actualizarea driverului plăcii grafice poate ajuta. Altfel, are nevoie de un procesor mai rapid sau de o placă grafică pe care o poate folosi.",
   "Yogurt runs entirely on your computer, and this one can't write down a meeting as fast as people talk. Installing the driver for your graphics card may help. Otherwise it needs a faster processor, or graphics it can use.": "Yogurt rulează în întregime pe computerul dvs., iar acesta nu poate scrie o întâlnire la fel de repede cum vorbesc oamenii. Instalarea driverului pentru placa grafică poate ajuta. Altfel, are nevoie de un procesor mai rapid sau de o placă grafică pe care o poate folosi.",
-  "Your summary will be written once the notes model finishes downloading: {percent}": "Rezumatul va fi scris după ce modelul pentru notițe se descarcă: {percent}",
-  "Loading the notes model…": "Se încarcă modelul pentru notițe…"
+  "Generating notes…": "Se generează notițele…",
+  "Yogurt is still downloading its AI model. Your notes will be ready in a few minutes.": "Yogurt încă descarcă modelul AI. Notițele tale vor fi gata în câteva minute.",
+  "Yogurt is still downloading its AI model. Your notes will be ready in a few minutes. ({percent})": "Yogurt încă descarcă modelul AI. Notițele tale vor fi gata în câteva minute. ({percent})"
 }

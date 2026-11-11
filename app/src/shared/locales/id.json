@@ -155,10 +155,8 @@
   "Forward": "Maju",
   "General": "Umum",
   "Generate summary": "Buat ringkasan",
-  "Generating your summary…": "Membuat ringkasan Anda…",
   "Get started": "Mulai",
   "Getting ready to answer. Yogurt is still setting up.": "Bersiap menjawab. Yogurt masih disiapkan.",
-  "Reading the meeting…": "Membaca rapat…",
   "Go to": "Buka",
   "Graduation cap": "Topi wisuda",
   "Great. Who is writing the copy?": "Bagus. Siapa yang menulis teksnya?",
@@ -566,6 +564,7 @@
   "Yogurt runs entirely on your computer, and this one can't keep up with a meeting as it happens. It needs a processor with at least 4 cores, or graphics it can use.": "Yogurt berjalan sepenuhnya di komputer Anda, dan komputer ini tidak bisa mengikuti rapat secara langsung. Perlu prosesor dengan setidaknya 4 inti, atau grafis yang bisa dipakai.",
   "Yogurt runs entirely on your computer, and this one can't write down a meeting as fast as people talk. Updating your graphics driver may help. Otherwise it needs a faster processor, or graphics it can use.": "Yogurt berjalan sepenuhnya di komputer Anda, dan komputer ini tidak bisa mencatat rapat secepat orang berbicara. Memperbarui driver grafis mungkin membantu. Jika tidak, perlu prosesor yang lebih cepat, atau grafis yang bisa dipakai.",
   "Yogurt runs entirely on your computer, and this one can't write down a meeting as fast as people talk. Installing the driver for your graphics card may help. Otherwise it needs a faster processor, or graphics it can use.": "Yogurt berjalan sepenuhnya di komputer Anda, dan komputer ini tidak bisa mencatat rapat secepat orang berbicara. Memasang driver untuk kartu grafis Anda mungkin membantu. Jika tidak, perlu prosesor yang lebih cepat, atau grafis yang bisa dipakai.",
-  "Your summary will be written once the notes model finishes downloading: {percent}": "Ringkasan Anda akan ditulis setelah model catatan selesai diunduh: {percent}",
-  "Loading the notes model…": "Memuat model catatan…"
+  "Generating notes…": "Membuat catatan…",
+  "Yogurt is still downloading its AI model. Your notes will be ready in a few minutes.": "Yogurt masih mengunduh model AI-nya. Catatan Anda akan siap dalam beberapa menit.",
+  "Yogurt is still downloading its AI model. Your notes will be ready in a few minutes. ({percent})": "Yogurt masih mengunduh model AI-nya. Catatan Anda akan siap dalam beberapa menit. ({percent})"
 }

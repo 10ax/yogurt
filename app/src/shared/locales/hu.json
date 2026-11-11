@@ -161,10 +161,8 @@
   "Forward": "Előre",
   "General": "Általános",
   "Generate summary": "Összefoglaló készítése",
-  "Generating your summary…": "Készül az összefoglaló…",
   "Get started": "Kezdjük",
   "Getting ready to answer. Yogurt is still setting up.": "Készül a válasz. A Yogurt beállítása még tart.",
-  "Reading the meeting…": "A megbeszélés olvasása…",
   "Go to": "Ugrás",
   "Graduation cap": "Diplomás sapka",
   "Great. Who is writing the copy?": "Szuper. Ki írja a szöveget?",
@@ -605,6 +603,7 @@
   "Yogurt runs entirely on your computer, and this one can't keep up with a meeting as it happens. It needs a processor with at least 4 cores, or graphics it can use.": "A Yogurt teljes egészében a számítógépeden fut, és ez a gép nem tud lépést tartani egy megbeszéléssel valós időben. Legalább 4 magos processzor kell, vagy használható grafikus kártya.",
   "Yogurt runs entirely on your computer, and this one can't write down a meeting as fast as people talk. Updating your graphics driver may help. Otherwise it needs a faster processor, or graphics it can use.": "A Yogurt teljes egészében a számítógépeden fut, és ez a gép nem tudja olyan gyorsan leírni a megbeszélést, ahogy az emberek beszélnek. Segíthet a grafikus illesztőprogram frissítése. Különben gyorsabb processzor kell, vagy használható grafikus kártya.",
   "Yogurt runs entirely on your computer, and this one can't write down a meeting as fast as people talk. Installing the driver for your graphics card may help. Otherwise it needs a faster processor, or graphics it can use.": "A Yogurt teljes egészében a számítógépeden fut, és ez a gép nem tudja olyan gyorsan leírni a megbeszélést, ahogy az emberek beszélnek. Segíthet a grafikus kártya illesztőprogramjának telepítése. Különben gyorsabb processzor kell, vagy használható grafikus kártya.",
-  "Your summary will be written once the notes model finishes downloading: {percent}": "Az összefoglaló akkor készül el, amikor a jegyzetmodell letöltése befejeződik: {percent}",
-  "Loading the notes model…": "A jegyzetmodell betöltése…"
+  "Generating notes…": "Készülnek a jegyzetek…",
+  "Yogurt is still downloading its AI model. Your notes will be ready in a few minutes.": "A Yogurt még tölti le az MI-modelljét. A jegyzeteid néhány perc múlva elkészülnek.",
+  "Yogurt is still downloading its AI model. Your notes will be ready in a few minutes. ({percent})": "A Yogurt még tölti le az MI-modelljét. A jegyzeteid néhány perc múlva elkészülnek. ({percent})"
 }

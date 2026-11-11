@@ -72,7 +72,7 @@ test('a failed notes-model download explains waiting notes and answers, and retr
     await expect(chatError).toBeVisible()
     await chatError.getByTestId('notes-model-retry').click()
     await expect(page.getByTestId('notes-model-error')).toHaveCount(0)
-    await expect(page.getByTestId('note-enhanced-waiting')).toContainText('Reading the meeting')
+    await expect(page.getByTestId('note-enhanced-model-download').or(page.getByTestId('note-enhanced-waiting'))).toContainText(/still downloading its AI model|Generating notes/)
     await expect(page.getByTestId('note-enhanced')).toHaveAttribute('data-status', 'done', { timeout: 45_000 })
     await expect(page.getByTestId('chat-turn').last()).toContainText('Tuesday', { timeout: 30_000 })
     await expect(page.getByTestId('chat-turn').first()).toHaveAttribute('data-status', 'stopped')

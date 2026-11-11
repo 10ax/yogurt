@@ -161,10 +161,8 @@
   "Forward": "Eteenpäin",
   "General": "Yleiset",
   "Generate summary": "Luo yhteenveto",
-  "Generating your summary…": "Luodaan yhteenvetoa…",
   "Get started": "Aloita",
   "Getting ready to answer. Yogurt is still setting up.": "Valmistellaan vastausta. Yogurtin käyttöönotto on vielä kesken.",
-  "Reading the meeting…": "Luetaan kokousta…",
   "Go to": "Siirry",
   "Graduation cap": "Valmistujaislakki",
   "Great. Who is writing the copy?": "Hienoa. Kuka kirjoittaa tekstin?",
@@ -608,6 +606,7 @@
   "Yogurt runs entirely on your computer, and this one can't keep up with a meeting as it happens. It needs a processor with at least 4 cores, or graphics it can use.": "Yogurt toimii kokonaan tietokoneellasi, eikä tämä ehdi pysyä kokouksen tahdissa. Se tarvitsee vähintään 4-ytimisen suorittimen tai näytönohjaimen, jota se voi käyttää.",
   "Yogurt runs entirely on your computer, and this one can't write down a meeting as fast as people talk. Updating your graphics driver may help. Otherwise it needs a faster processor, or graphics it can use.": "Yogurt toimii kokonaan tietokoneellasi, eikä tämä ehdi kirjoittaa kokousta ylös niin nopeasti kuin ihmiset puhuvat. Näytönohjaimen ajurin päivittäminen voi auttaa. Muuten se tarvitsee nopeamman suorittimen tai näytönohjaimen, jota se voi käyttää.",
   "Yogurt runs entirely on your computer, and this one can't write down a meeting as fast as people talk. Installing the driver for your graphics card may help. Otherwise it needs a faster processor, or graphics it can use.": "Yogurt toimii kokonaan tietokoneellasi, eikä tämä ehdi kirjoittaa kokousta ylös niin nopeasti kuin ihmiset puhuvat. Näytönohjaimesi ajurin asentaminen voi auttaa. Muuten se tarvitsee nopeamman suorittimen tai näytönohjaimen, jota se voi käyttää.",
-  "Your summary will be written once the notes model finishes downloading: {percent}": "Yhteenveto kirjoitetaan, kun muistiinpanomalli on ladattu: {percent}",
-  "Loading the notes model…": "Muistiinpanomallia käynnistetään…"
+  "Generating notes…": "Luodaan muistiinpanoja…",
+  "Yogurt is still downloading its AI model. Your notes will be ready in a few minutes.": "Yogurt lataa vielä tekoälymalliaan. Muistiinpanosi ovat valmiina muutaman minuutin päästä.",
+  "Yogurt is still downloading its AI model. Your notes will be ready in a few minutes. ({percent})": "Yogurt lataa vielä tekoälymalliaan. Muistiinpanosi ovat valmiina muutaman minuutin päästä. ({percent})"
 }

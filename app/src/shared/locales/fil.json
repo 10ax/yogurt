@@ -161,10 +161,8 @@
   "Forward": "Pasulong",
   "General": "General",
   "Generate summary": "Gumawa ng buod",
-  "Generating your summary…": "Ginagawa ang buod mo…",
   "Get started": "Magsimula",
   "Getting ready to answer. Yogurt is still setting up.": "Naghahandang sumagot. Sine-set up pa ang Yogurt.",
-  "Reading the meeting…": "Binabasa ang meeting…",
   "Go to": "Pumunta sa",
   "Graduation cap": "Toga cap",
   "Great. Who is writing the copy?": "Ayos. Sino ang sumusulat ng copy?",
@@ -605,6 +603,7 @@
   "Yogurt runs entirely on your computer, and this one can't keep up with a meeting as it happens. It needs a processor with at least 4 cores, or graphics it can use.": "Tumatakbo ang Yogurt nang buo sa computer mo, at hindi makasabay ang isang ito sa meeting habang nangyayari. Kailangan nito ng processor na may hindi bababa sa 4 na core, o graphics na magagamit nito.",
   "Yogurt runs entirely on your computer, and this one can't write down a meeting as fast as people talk. Updating your graphics driver may help. Otherwise it needs a faster processor, or graphics it can use.": "Tumatakbo ang Yogurt nang buo sa computer mo, at hindi kayang isulat ng isang ito ang meeting nang kasimbilis ng pagsasalita ng mga tao. Baka makatulong ang pag-update ng graphics driver mo. Kung hindi, kailangan nito ng mas mabilis na processor, o graphics na magagamit nito.",
   "Yogurt runs entirely on your computer, and this one can't write down a meeting as fast as people talk. Installing the driver for your graphics card may help. Otherwise it needs a faster processor, or graphics it can use.": "Tumatakbo ang Yogurt nang buo sa computer mo, at hindi kayang isulat ng isang ito ang meeting nang kasimbilis ng pagsasalita ng mga tao. Baka makatulong ang pag-install ng driver ng graphics card mo. Kung hindi, kailangan nito ng mas mabilis na processor, o graphics na magagamit nito.",
-  "Your summary will be written once the notes model finishes downloading: {percent}": "Isusulat ang buod mo kapag tapos nang ma-download ang notes model: {percent}",
-  "Loading the notes model…": "Nilo-load ang notes model…"
+  "Generating notes…": "Ginagawa ang mga note…",
+  "Yogurt is still downloading its AI model. Your notes will be ready in a few minutes.": "Dina-download pa ng Yogurt ang AI model nito. Handa na ang mga note mo sa loob ng ilang minuto.",
+  "Yogurt is still downloading its AI model. Your notes will be ready in a few minutes. ({percent})": "Dina-download pa ng Yogurt ang AI model nito. Handa na ang mga note mo sa loob ng ilang minuto. ({percent})"
 }

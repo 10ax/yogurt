@@ -155,10 +155,8 @@
   "Forward": "Tiến",
   "General": "Chung",
   "Generate summary": "Tạo tóm tắt",
-  "Generating your summary…": "Đang tạo tóm tắt…",
   "Get started": "Bắt đầu",
   "Getting ready to answer. Yogurt is still setting up.": "Đang chuẩn bị trả lời. Yogurt vẫn đang được thiết lập.",
-  "Reading the meeting…": "Đang đọc cuộc họp…",
   "Go to": "Đi đến",
   "Graduation cap": "Mũ tốt nghiệp",
   "Great. Who is writing the copy?": "Tuyệt. Ai viết nội dung?",
@@ -566,6 +564,7 @@
   "Yogurt runs entirely on your computer, and this one can't keep up with a meeting as it happens. It needs a processor with at least 4 cores, or graphics it can use.": "Yogurt chạy hoàn toàn trên máy tính của bạn, và máy này không theo kịp cuộc họp khi đang diễn ra. Cần bộ xử lý có ít nhất 4 nhân, hoặc card đồ họa có thể dùng được.",
   "Yogurt runs entirely on your computer, and this one can't write down a meeting as fast as people talk. Updating your graphics driver may help. Otherwise it needs a faster processor, or graphics it can use.": "Yogurt chạy hoàn toàn trên máy tính của bạn, và máy này không ghi lại cuộc họp kịp với tốc độ mọi người nói. Cập nhật trình điều khiển đồ họa có thể giúp ích. Nếu không, cần bộ xử lý nhanh hơn, hoặc card đồ họa có thể dùng được.",
   "Yogurt runs entirely on your computer, and this one can't write down a meeting as fast as people talk. Installing the driver for your graphics card may help. Otherwise it needs a faster processor, or graphics it can use.": "Yogurt chạy hoàn toàn trên máy tính của bạn, và máy này không ghi lại cuộc họp kịp với tốc độ mọi người nói. Cài trình điều khiển cho card đồ họa của bạn có thể giúp ích. Nếu không, cần bộ xử lý nhanh hơn, hoặc card đồ họa có thể dùng được.",
-  "Your summary will be written once the notes model finishes downloading: {percent}": "Bản tóm tắt sẽ được viết khi mô hình ghi chú tải xuống xong: {percent}",
-  "Loading the notes model…": "Đang tải mô hình ghi chú…"
+  "Generating notes…": "Đang tạo ghi chú…",
+  "Yogurt is still downloading its AI model. Your notes will be ready in a few minutes.": "Yogurt vẫn đang tải mô hình AI. Ghi chú của bạn sẽ sẵn sàng sau vài phút.",
+  "Yogurt is still downloading its AI model. Your notes will be ready in a few minutes. ({percent})": "Yogurt vẫn đang tải mô hình AI. Ghi chú của bạn sẽ sẵn sàng sau vài phút. ({percent})"
 }

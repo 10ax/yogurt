@@ -52,12 +52,13 @@ test('first run records as soon as speech and speakers are in; notes say they ar
     await expect.poll(async () => (await page.evaluate((id) => window.yogurt.transcript.get(id), id)).length, { timeout: 30_000 }).toBeGreaterThanOrEqual(2)
     await page.getByTestId('note-stop').click()
     await page.getByRole('tab', { name: 'Summary', exact: true }).click()
-    await expect(page.getByTestId('note-enhanced-waiting')).toContainText('Reading the meeting')
-    // a question waits too, and says why
+    await expect(page.getByTestId('note-enhanced-model-download')).toContainText('Yogurt is still downloading its AI model.')
+    // a question waits too, and says why (never as if notes were being written)
     await page.getByTestId('chat-open').click()
     await page.getByTestId('chat-input').fill('What was decided?')
     await page.getByTestId('chat-input').press('Enter')
     await expect(page.getByTestId('chat-turn').last()).toContainText('Getting ready to answer')
+    await expect(page.getByTestId('chat-turn').last()).not.toContainText('Generating notes')
     // the notes model lands: the notes are written without anyone asking, and the question is answered
     await expect(page.getByTestId('note-enhanced')).toHaveAttribute('data-status', 'done', { timeout: 45_000 })
     await expect(page.getByTestId('chat-turn').last()).toContainText('Tuesday', { timeout: 30_000 })

@@ -161,10 +161,8 @@
   "Forward": "সামনে",
   "General": "সাধারণ",
   "Generate summary": "সারাংশ তৈরি করুন",
-  "Generating your summary…": "আপনার সারাংশ তৈরি হচ্ছে…",
   "Get started": "শুরু করুন",
   "Getting ready to answer. Yogurt is still setting up.": "উত্তরের প্রস্তুতি চলছে। Yogurt এখনও সেট আপ হচ্ছে।",
-  "Reading the meeting…": "মিটিং পড়া হচ্ছে…",
   "Go to": "এখানে যান",
   "Graduation cap": "স্নাতকের টুপি",
   "Great. Who is writing the copy?": "দারুণ। কপি কে লিখছে?",
@@ -605,6 +603,7 @@
   "Yogurt runs entirely on your computer, and this one can't keep up with a meeting as it happens. It needs a processor with at least 4 cores, or graphics it can use.": "Yogurt পুরোপুরি আপনার কম্পিউটারে চলে, আর এই কম্পিউটারটি মিটিং চলার সাথে তাল মেলাতে পারছে না। এর অন্তত ৪ কোরের প্রসেসর, অথবা ব্যবহারযোগ্য গ্রাফিক্স দরকার।",
   "Yogurt runs entirely on your computer, and this one can't write down a meeting as fast as people talk. Updating your graphics driver may help. Otherwise it needs a faster processor, or graphics it can use.": "Yogurt পুরোপুরি আপনার কম্পিউটারে চলে, আর এই কম্পিউটারটি মানুষ যত দ্রুত কথা বলে তত দ্রুত মিটিং লিখে রাখতে পারছে না। গ্রাফিক্স ড্রাইভার আপডেট করলে কাজ হতে পারে। না হলে এর আরও দ্রুত প্রসেসর, অথবা ব্যবহারযোগ্য গ্রাফিক্স দরকার।",
   "Yogurt runs entirely on your computer, and this one can't write down a meeting as fast as people talk. Installing the driver for your graphics card may help. Otherwise it needs a faster processor, or graphics it can use.": "Yogurt পুরোপুরি আপনার কম্পিউটারে চলে, আর এই কম্পিউটারটি মানুষ যত দ্রুত কথা বলে তত দ্রুত মিটিং লিখে রাখতে পারছে না। গ্রাফিক্স কার্ডের ড্রাইভার ইনস্টল করলে কাজ হতে পারে। না হলে এর আরও দ্রুত প্রসেসর, অথবা ব্যবহারযোগ্য গ্রাফিক্স দরকার।",
-  "Your summary will be written once the notes model finishes downloading: {percent}": "নোটের মডেল ডাউনলোড শেষ হলে আপনার সারাংশ লেখা হবে: {percent}",
-  "Loading the notes model…": "নোটের মডেল লোড হচ্ছে…"
+  "Generating notes…": "নোট তৈরি হচ্ছে…",
+  "Yogurt is still downloading its AI model. Your notes will be ready in a few minutes.": "Yogurt এখনও তার AI মডেল ডাউনলোড করছে। কয়েক মিনিটের মধ্যে আপনার নোট তৈরি হয়ে যাবে।",
+  "Yogurt is still downloading its AI model. Your notes will be ready in a few minutes. ({percent})": "Yogurt এখনও তার AI মডেল ডাউনলোড করছে। কয়েক মিনিটের মধ্যে আপনার নোট তৈরি হয়ে যাবে। ({percent})"
 }

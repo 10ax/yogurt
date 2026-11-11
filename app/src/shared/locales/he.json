@@ -163,10 +163,8 @@
   "Forward": "קדימה",
   "General": "כללי",
   "Generate summary": "יצירת סיכום",
-  "Generating your summary…": "יוצר את הסיכום…",
   "Get started": "מתחילים",
   "Getting ready to answer. Yogurt is still setting up.": "מתכונן לענות. Yogurt עדיין בהגדרה.",
-  "Reading the meeting…": "קורא את הפגישה…",
   "Go to": "מעבר אל",
   "Graduation cap": "כובע סיום לימודים",
   "Great. Who is writing the copy?": "מעולה. מי כותב את הטקסט?",
@@ -618,6 +616,7 @@
   "Yogurt runs entirely on your computer, and this one can't keep up with a meeting as it happens. It needs a processor with at least 4 cores, or graphics it can use.": "Yogurt פועל כולו במחשב שלך, והמחשב הזה לא מצליח לעמוד בקצב של פגישה בזמן אמת. צריך מעבד עם 4 ליבות לפחות, או כרטיס גרפי שאפשר להשתמש בו.",
   "Yogurt runs entirely on your computer, and this one can't write down a meeting as fast as people talk. Updating your graphics driver may help. Otherwise it needs a faster processor, or graphics it can use.": "Yogurt פועל כולו במחשב שלך, והמחשב הזה לא מצליח לכתוב פגישה מהר כמו שאנשים מדברים. עדכון מנהל ההתקן של הגרפיקה עשוי לעזור. אחרת צריך מעבד מהיר יותר, או כרטיס גרפי שאפשר להשתמש בו.",
   "Yogurt runs entirely on your computer, and this one can't write down a meeting as fast as people talk. Installing the driver for your graphics card may help. Otherwise it needs a faster processor, or graphics it can use.": "Yogurt פועל כולו במחשב שלך, והמחשב הזה לא מצליח לכתוב פגישה מהר כמו שאנשים מדברים. התקנת מנהל ההתקן של הכרטיס הגרפי עשויה לעזור. אחרת צריך מעבד מהיר יותר, או כרטיס גרפי שאפשר להשתמש בו.",
-  "Your summary will be written once the notes model finishes downloading: {percent}": "הסיכום ייכתב כשהורדת מודל ההערות תסתיים: {percent}",
-  "Loading the notes model…": "טוען את מודל ההערות…"
+  "Generating notes…": "יוצר הערות…",
+  "Yogurt is still downloading its AI model. Your notes will be ready in a few minutes.": "Yogurt עדיין מוריד את מודל ה-AI שלו. ההערות שלך יהיו מוכנות בעוד כמה דקות.",
+  "Yogurt is still downloading its AI model. Your notes will be ready in a few minutes. ({percent})": "Yogurt עדיין מוריד את מודל ה-AI שלו. ההערות שלך יהיו מוכנות בעוד כמה דקות. ({percent})"
 }

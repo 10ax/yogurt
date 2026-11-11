@@ -228,12 +228,12 @@ export class SetupController {
       const already = isVerified(first.dir, first.fileName, this.sha(first))
       if (!already) console.info('NOTES', `downloading the notes model ${first.fileName}`)
       for (let i = 0; ; i++) {
-        this.set({ ...this._state, notesError: undefined })
+        this.set({ ...this._state, notesError: undefined, ...(already ? {} : { notesDownloading: true }) })
         try {
           const path = await this.fetch(first, already ? undefined : progress)
           if (this.paths) this.paths = { ...this.paths, llm: path }
           if (!already) console.info('NOTES', 'the notes model is in')
-          if (this._state.notesFraction !== undefined) this.set({ ...this._state, notesFraction: undefined })
+          if (this._state.notesFraction !== undefined || this._state.notesDownloading) this.set({ ...this._state, notesFraction: undefined, notesDownloading: undefined })
           break
         } catch (err) {
           console.warn('the notes model did not download yet, trying again', err)
@@ -241,7 +241,7 @@ export class SetupController {
             const wake = () => { clearTimeout(timer); this.retryNotes = undefined; resolve() }
             const timer = setTimeout(wake, waits[Math.min(i, waits.length - 1)])
             this.retryNotes = wake
-            this.set({ ...this._state, notesError: friendly(err), notesFraction: undefined })
+            this.set({ ...this._state, notesError: friendly(err), notesFraction: undefined, notesDownloading: undefined })
           })
         }
       }

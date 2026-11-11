@@ -155,10 +155,8 @@
   "Forward": "앞으로",
   "General": "일반",
   "Generate summary": "요약 만들기",
-  "Generating your summary…": "요약을 만드는 중…",
   "Get started": "시작하기",
   "Getting ready to answer. Yogurt is still setting up.": "답변을 준비하는 중이에요. Yogurt를 아직 설정하고 있어요.",
-  "Reading the meeting…": "회의를 읽는 중…",
   "Go to": "이동",
   "Graduation cap": "학사모",
   "Great. Who is writing the copy?": "좋아요. 문구는 누가 쓰나요?",
@@ -566,6 +564,7 @@
   "Yogurt runs entirely on your computer, and this one can't keep up with a meeting as it happens. It needs a processor with at least 4 cores, or graphics it can use.": "Yogurt는 모두 이 컴퓨터에서 실행되는데, 이 컴퓨터는 회의를 실시간으로 따라가지 못해요. 4코어 이상의 프로세서나 사용할 수 있는 그래픽이 필요해요.",
   "Yogurt runs entirely on your computer, and this one can't write down a meeting as fast as people talk. Updating your graphics driver may help. Otherwise it needs a faster processor, or graphics it can use.": "Yogurt는 모두 이 컴퓨터에서 실행되는데, 이 컴퓨터는 사람들이 말하는 속도만큼 회의를 받아 적지 못해요. 그래픽 드라이버를 업데이트하면 나아질 수 있어요. 그렇지 않으면 더 빠른 프로세서나 사용할 수 있는 그래픽이 필요해요.",
   "Yogurt runs entirely on your computer, and this one can't write down a meeting as fast as people talk. Installing the driver for your graphics card may help. Otherwise it needs a faster processor, or graphics it can use.": "Yogurt는 모두 이 컴퓨터에서 실행되는데, 이 컴퓨터는 사람들이 말하는 속도만큼 회의를 받아 적지 못해요. 그래픽 카드 드라이버를 설치하면 나아질 수 있어요. 그렇지 않으면 더 빠른 프로세서나 사용할 수 있는 그래픽이 필요해요.",
-  "Your summary will be written once the notes model finishes downloading: {percent}": "노트 모델 다운로드가 끝나면 요약을 작성해요: {percent}",
-  "Loading the notes model…": "노트 모델을 불러오는 중…"
+  "Generating notes…": "노트를 만드는 중…",
+  "Yogurt is still downloading its AI model. Your notes will be ready in a few minutes.": "Yogurt가 아직 AI 모델을 다운로드하고 있어요. 몇 분 안에 노트가 준비돼요.",
+  "Yogurt is still downloading its AI model. Your notes will be ready in a few minutes. ({percent})": "Yogurt가 아직 AI 모델을 다운로드하고 있어요. 몇 분 안에 노트가 준비돼요. ({percent})"
 }

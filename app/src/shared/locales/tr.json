@@ -161,10 +161,8 @@
   "Forward": "İleri",
   "General": "Genel",
   "Generate summary": "Özet oluştur",
-  "Generating your summary…": "Özetiniz oluşturuluyor…",
   "Get started": "Başlayalım",
   "Getting ready to answer. Yogurt is still setting up.": "Yanıt hazırlanıyor. Yogurt hâlâ kuruluyor.",
-  "Reading the meeting…": "Toplantı okunuyor…",
   "Go to": "Git",
   "Graduation cap": "Mezuniyet kepi",
   "Great. Who is writing the copy?": "Harika. Metni kim yazıyor?",
@@ -605,6 +603,7 @@
   "Yogurt runs entirely on your computer, and this one can't keep up with a meeting as it happens. It needs a processor with at least 4 cores, or graphics it can use.": "Yogurt tamamen bilgisayarınızda çalışır ve bu bilgisayar bir toplantıya anında yetişemiyor. En az 4 çekirdekli bir işlemci veya kullanabileceği bir grafik birimi gerekiyor.",
   "Yogurt runs entirely on your computer, and this one can't write down a meeting as fast as people talk. Updating your graphics driver may help. Otherwise it needs a faster processor, or graphics it can use.": "Yogurt tamamen bilgisayarınızda çalışır ve bu bilgisayar bir toplantıyı insanların konuştuğu hızda yazıya dökemiyor. Grafik sürücünüzü güncellemek işe yarayabilir. Aksi halde daha hızlı bir işlemci veya kullanabileceği bir grafik birimi gerekiyor.",
   "Yogurt runs entirely on your computer, and this one can't write down a meeting as fast as people talk. Installing the driver for your graphics card may help. Otherwise it needs a faster processor, or graphics it can use.": "Yogurt tamamen bilgisayarınızda çalışır ve bu bilgisayar bir toplantıyı insanların konuştuğu hızda yazıya dökemiyor. Ekran kartınızın sürücüsünü yüklemek işe yarayabilir. Aksi halde daha hızlı bir işlemci veya kullanabileceği bir grafik birimi gerekiyor.",
-  "Your summary will be written once the notes model finishes downloading: {percent}": "Özetiniz, not modelinin indirilmesi bitince yazılacak: {percent}",
-  "Loading the notes model…": "Not modeli yükleniyor…"
+  "Generating notes…": "Notlar oluşturuluyor…",
+  "Yogurt is still downloading its AI model. Your notes will be ready in a few minutes.": "Yogurt hâlâ yapay zekâ modelini indiriyor. Notlarınız birkaç dakika içinde hazır olacak.",
+  "Yogurt is still downloading its AI model. Your notes will be ready in a few minutes. ({percent})": "Yogurt hâlâ yapay zekâ modelini indiriyor. Notlarınız birkaç dakika içinde hazır olacak. ({percent})"
 }

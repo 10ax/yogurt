@@ -165,10 +165,8 @@
   "Forward": "Vpřed",
   "General": "Obecné",
   "Generate summary": "Vytvořit souhrn",
-  "Generating your summary…": "Vytváření souhrnu…",
   "Get started": "Začít",
   "Getting ready to answer. Yogurt is still setting up.": "Příprava odpovědi. Yogurt se ještě nastavuje.",
-  "Reading the meeting…": "Čtení schůzky…",
   "Go to": "Přejít na",
   "Graduation cap": "Absolventská čepice",
   "Great. Who is writing the copy?": "Super. Kdo píše text?",
@@ -631,6 +629,7 @@
   "Yogurt runs entirely on your computer, and this one can't keep up with a meeting as it happens. It needs a processor with at least 4 cores, or graphics it can use.": "Yogurt běží celý na vašem počítači a tento nestíhá schůzku sledovat v reálném čase. Potřebuje procesor s alespoň 4 jádry, nebo grafiku, kterou může použít.",
   "Yogurt runs entirely on your computer, and this one can't write down a meeting as fast as people talk. Updating your graphics driver may help. Otherwise it needs a faster processor, or graphics it can use.": "Yogurt běží celý na vašem počítači a tento nestíhá zapisovat schůzku tak rychle, jak lidé mluví. Může pomoct aktualizace ovladače grafiky. Jinak potřebuje rychlejší procesor, nebo grafiku, kterou může použít.",
   "Yogurt runs entirely on your computer, and this one can't write down a meeting as fast as people talk. Installing the driver for your graphics card may help. Otherwise it needs a faster processor, or graphics it can use.": "Yogurt běží celý na vašem počítači a tento nestíhá zapisovat schůzku tak rychle, jak lidé mluví. Může pomoct instalace ovladače grafické karty. Jinak potřebuje rychlejší procesor, nebo grafiku, kterou může použít.",
-  "Your summary will be written once the notes model finishes downloading: {percent}": "Souhrn se napíše, až se dokončí stahování modelu pro poznámky: {percent}",
-  "Loading the notes model…": "Načítá se model pro poznámky…"
+  "Generating notes…": "Vytváření poznámek…",
+  "Yogurt is still downloading its AI model. Your notes will be ready in a few minutes.": "Yogurt ještě stahuje svůj model AI. Poznámky budou hotové za pár minut.",
+  "Yogurt is still downloading its AI model. Your notes will be ready in a few minutes. ({percent})": "Yogurt ještě stahuje svůj model AI. Poznámky budou hotové za pár minut. ({percent})"
 }

@@ -155,10 +155,8 @@
   "Forward": "前进",
   "General": "通用",
   "Generate summary": "生成摘要",
-  "Generating your summary…": "正在生成摘要…",
   "Get started": "开始使用",
   "Getting ready to answer. Yogurt is still setting up.": "正在准备回答。Yogurt 仍在设置中。",
-  "Reading the meeting…": "正在读取会议…",
   "Go to": "前往",
   "Graduation cap": "毕业帽",
   "Great. Who is writing the copy?": "好的。文案谁来写？",
@@ -566,6 +564,7 @@
   "Yogurt runs entirely on your computer, and this one can't keep up with a meeting as it happens. It needs a processor with at least 4 cores, or graphics it can use.": "Yogurt 完全在你的电脑上运行，而这台电脑跟不上会议的实时进度。它需要至少 4 核的处理器，或可用的显卡。",
   "Yogurt runs entirely on your computer, and this one can't write down a meeting as fast as people talk. Updating your graphics driver may help. Otherwise it needs a faster processor, or graphics it can use.": "Yogurt 完全在你的电脑上运行，而这台电脑记录会议的速度跟不上大家说话的速度。更新显卡驱动程序可能会有帮助。否则，它需要更快的处理器，或可用的显卡。",
   "Yogurt runs entirely on your computer, and this one can't write down a meeting as fast as people talk. Installing the driver for your graphics card may help. Otherwise it needs a faster processor, or graphics it can use.": "Yogurt 完全在你的电脑上运行，而这台电脑记录会议的速度跟不上大家说话的速度。安装显卡的驱动程序可能会有帮助。否则，它需要更快的处理器，或可用的显卡。",
-  "Your summary will be written once the notes model finishes downloading: {percent}": "笔记模型下载完成后就会写摘要：{percent}",
-  "Loading the notes model…": "正在载入笔记模型…"
+  "Generating notes…": "正在生成笔记…",
+  "Yogurt is still downloading its AI model. Your notes will be ready in a few minutes.": "Yogurt 仍在下载 AI 模型。你的笔记几分钟后就好。",
+  "Yogurt is still downloading its AI model. Your notes will be ready in a few minutes. ({percent})": "Yogurt 仍在下载 AI 模型。你的笔记几分钟后就好。（{percent}）"
 }

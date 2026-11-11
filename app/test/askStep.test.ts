@@ -23,4 +23,8 @@ describe('stepText: what an answer that has not started says it is doing', () =>
     expect(stepText({ kind: 'reading', meetings: 4 }, 1)).toBe('Still reading 4 meetings…')
     expect(STEP_EVERY_MS).toBe(4000)
   })
+  it('never says notes are being generated: that is the summary\'s wording, not an answer\'s', () => {
+    const steps = [undefined, { kind: 'loading' as const }, { kind: 'searching' as const }, { kind: 'reading' as const, title: 'Standup' }, { kind: 'reading' as const, meetings: 2 }]
+    for (const step of steps) for (const n of [0, 1, 2, 9]) expect(stepText(step, n)).not.toMatch(/generating/i)
+  })
 })

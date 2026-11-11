@@ -287,6 +287,8 @@ export type SetupState = {
   notesError?: string
   /** Windows and Linux: the first notes model is still downloading after ready, this far (0 to 1); waiting notes say so */
   notesFraction?: number
+  /** the first notes model is still downloading after ready (every system; only Windows and Linux say how far) */
+  notesDownloading?: boolean
 }
 
 export type { Meeting, Person, Segment, SnippetPart, Folder } from '../main/store'

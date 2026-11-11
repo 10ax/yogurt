@@ -44,8 +44,9 @@ for (const platform of platforms) {
       await expect.poll(async () => (await page.evaluate((id) => window.yogurt.transcript.get(id), id)).length, { timeout: 30_000 }).toBeGreaterThanOrEqual(1)
       await page.getByTestId('note-stop').click()
       const wait = page.getByTestId('note-enhanced-model-download')
-      await expect(wait).toContainText('Your summary will be written once the notes model finishes downloading')
+      await expect(wait).toContainText('Yogurt is still downloading its AI model. Your notes will be ready in a few minutes.')
       await expect(wait).toContainText('%')
+      await expect(page.getByTestId('note-enhanced-waiting')).toHaveCount(0)
       await expect(page.getByTestId('note-enhanced')).toHaveAttribute('data-status', 'done', { timeout: 40_000 })
     } finally { await app.close() }
   })
@@ -71,14 +72,15 @@ for (const platform of platforms) {
   })
 }
 
-test('a Mac waiting for the notes model shows what it always did (no download line)', async () => {
+test('a Mac waiting for the notes model says it is still downloading, without how far', async () => {
   const app = await electron.launch({ args: [main], env: { ...process.env, YOGURT_FAKE: '1', YOGURT_USER_DATA: mkdtempSync(join(tmpdir(), 'yogurt-e2e-')), YOGURT_FAKE_NOTES_MODEL_MS: '16000' } })
   try {
     const page = await app.firstWindow()
     await expect(page.getByTestId('home')).toBeVisible({ timeout: 15_000 })
     await record(page)
     await page.getByTestId('note-stop').click()
-    await expect(page.getByTestId('note-enhanced-waiting')).toContainText('Reading the meeting')
-    await expect(page.getByTestId('note-enhanced-model-download')).toHaveCount(0)
+    const wait = page.getByTestId('note-enhanced-model-download')
+    await expect(wait).toHaveText('Yogurt is still downloading its AI model. Your notes will be ready in a few minutes.')
+    await expect(page.getByText('Generating notes')).toHaveCount(0)
   } finally { await app.close() }
 })

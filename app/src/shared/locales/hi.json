@@ -161,10 +161,8 @@
   "Forward": "आगे",
   "General": "सामान्य",
   "Generate summary": "सारांश बनाएँ",
-  "Generating your summary…": "आपका सारांश बन रहा है…",
   "Get started": "शुरू करें",
   "Getting ready to answer. Yogurt is still setting up.": "जवाब की तैयारी हो रही है। Yogurt अभी भी सेट हो रहा है।",
-  "Reading the meeting…": "मीटिंग पढ़ी जा रही है…",
   "Go to": "यहाँ जाएँ",
   "Graduation cap": "स्नातक टोपी",
   "Great. Who is writing the copy?": "बढ़िया। कॉपी कौन लिख रहा है?",
@@ -605,6 +603,7 @@
   "Yogurt runs entirely on your computer, and this one can't keep up with a meeting as it happens. It needs a processor with at least 4 cores, or graphics it can use.": "Yogurt पूरी तरह आपके कंप्यूटर पर चलता है, और यह कंप्यूटर मीटिंग के साथ-साथ नहीं चल पा रहा। इसे कम से कम 4 कोर वाला प्रोसेसर, या ऐसे ग्राफ़िक्स चाहिए जिन्हें यह इस्तेमाल कर सके।",
   "Yogurt runs entirely on your computer, and this one can't write down a meeting as fast as people talk. Updating your graphics driver may help. Otherwise it needs a faster processor, or graphics it can use.": "Yogurt पूरी तरह आपके कंप्यूटर पर चलता है, और यह कंप्यूटर मीटिंग को उतनी तेज़ी से नहीं लिख पा रहा जितनी तेज़ी से लोग बोलते हैं। ग्राफ़िक्स ड्राइवर अपडेट करने से मदद मिल सकती है। नहीं तो इसे तेज़ प्रोसेसर, या ऐसे ग्राफ़िक्स चाहिए जिन्हें यह इस्तेमाल कर सके।",
   "Yogurt runs entirely on your computer, and this one can't write down a meeting as fast as people talk. Installing the driver for your graphics card may help. Otherwise it needs a faster processor, or graphics it can use.": "Yogurt पूरी तरह आपके कंप्यूटर पर चलता है, और यह कंप्यूटर मीटिंग को उतनी तेज़ी से नहीं लिख पा रहा जितनी तेज़ी से लोग बोलते हैं। अपने ग्राफ़िक्स कार्ड का ड्राइवर इंस्टॉल करने से मदद मिल सकती है। नहीं तो इसे तेज़ प्रोसेसर, या ऐसे ग्राफ़िक्स चाहिए जिन्हें यह इस्तेमाल कर सके।",
-  "Your summary will be written once the notes model finishes downloading: {percent}": "नोट्स का मॉडल डाउनलोड होते ही आपका सारांश लिखा जाएगा: {percent}",
-  "Loading the notes model…": "नोट्स का मॉडल लोड हो रहा है…"
+  "Generating notes…": "नोट्स बन रहे हैं…",
+  "Yogurt is still downloading its AI model. Your notes will be ready in a few minutes.": "Yogurt अभी अपना AI मॉडल डाउनलोड कर रहा है। आपके नोट्स कुछ मिनटों में तैयार हो जाएंगे।",
+  "Yogurt is still downloading its AI model. Your notes will be ready in a few minutes. ({percent})": "Yogurt अभी अपना AI मॉडल डाउनलोड कर रहा है। आपके नोट्स कुछ मिनटों में तैयार हो जाएंगे। ({percent})"
 }

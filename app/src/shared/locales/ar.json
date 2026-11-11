@@ -169,10 +169,8 @@
   "Forward": "للأمام",
   "General": "عام",
   "Generate summary": "إنشاء الملخص",
-  "Generating your summary…": "جارٍ إنشاء ملخصك…",
   "Get started": "لنبدأ",
   "Getting ready to answer. Yogurt is still setting up.": "جارٍ التجهيز للإجابة. لا يزال Yogurt قيد الإعداد.",
-  "Reading the meeting…": "جارٍ قراءة الاجتماع…",
   "Go to": "الانتقال إلى",
   "Graduation cap": "قبعة تخرج",
   "Great. Who is writing the copy?": "رائع. من سيكتب النص؟",
@@ -661,6 +659,7 @@
   "Yogurt runs entirely on your computer, and this one can't keep up with a meeting as it happens. It needs a processor with at least 4 cores, or graphics it can use.": "يعمل Yogurt بالكامل على جهاز الكمبيوتر، وهذا الجهاز لا يستطيع مواكبة الاجتماع أثناء حدوثه. يحتاج إلى معالج بأربع أنوية على الأقل، أو رسوميات يمكنه استخدامها.",
   "Yogurt runs entirely on your computer, and this one can't write down a meeting as fast as people talk. Updating your graphics driver may help. Otherwise it needs a faster processor, or graphics it can use.": "يعمل Yogurt بالكامل على جهاز الكمبيوتر، وهذا الجهاز لا يستطيع كتابة الاجتماع بسرعة كلام الناس. قد يساعد تحديث برنامج تشغيل الرسوميات. وإلا فهو يحتاج إلى معالج أسرع، أو رسوميات يمكنه استخدامها.",
   "Yogurt runs entirely on your computer, and this one can't write down a meeting as fast as people talk. Installing the driver for your graphics card may help. Otherwise it needs a faster processor, or graphics it can use.": "يعمل Yogurt بالكامل على جهاز الكمبيوتر، وهذا الجهاز لا يستطيع كتابة الاجتماع بسرعة كلام الناس. قد يساعد تثبيت برنامج تشغيل بطاقة الرسوميات. وإلا فهو يحتاج إلى معالج أسرع، أو رسوميات يمكنه استخدامها.",
-  "Your summary will be written once the notes model finishes downloading: {percent}": "سيُكتب ملخصك بعد انتهاء تنزيل نموذج الملاحظات: {percent}",
-  "Loading the notes model…": "جارٍ تحميل نموذج الملاحظات…"
+  "Generating notes…": "جارٍ إنشاء الملاحظات…",
+  "Yogurt is still downloading its AI model. Your notes will be ready in a few minutes.": "لا يزال Yogurt يُنزّل نموذج الذكاء الاصطناعي. ستكون ملاحظاتك جاهزة خلال بضع دقائق.",
+  "Yogurt is still downloading its AI model. Your notes will be ready in a few minutes. ({percent})": "لا يزال Yogurt يُنزّل نموذج الذكاء الاصطناعي. ستكون ملاحظاتك جاهزة خلال بضع دقائق. ({percent})"
 }

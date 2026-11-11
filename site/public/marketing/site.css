@@ -1127,6 +1127,8 @@ body[data-demo=transcript] .hero-listening-widget{top:-52px;right:22px;bottom:au
 @media(max-width:760px){.yc-pill{margin-bottom:28px}.hero-copy{padding-top:32px}.hero h1{margin-bottom:20px}.hero-actions{margin-top:24px}}
 
 .hero-copy p>span{white-space:nowrap}
+/* the longest sentence may wrap on a phone rather than run off the edge */
+.hero-copy p>span.hero-wrap{white-space:normal}
 
 /* Keep each phone step's introduction directly above its own illustration. */
 @media(max-width:760px){

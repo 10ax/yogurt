@@ -620,5 +620,14 @@
   "Downloading Yogurt's AI: {progress}": "AI van Yogurt downloaden: {progress}",
   "{done} of {total} GB": "{done} van {total} GB",
   "{progress} · about {minutes} min left": "{progress} · nog ongeveer {minutes} min",
-  "You can record now. Yogurt writes your notes and answers questions once this finishes.": "Je kunt nu al opnemen. Zodra dit klaar is, schrijft Yogurt je notities en beantwoordt het vragen."
+  "You can record now. Yogurt writes your notes and answers questions once this finishes.": "Je kunt nu al opnemen. Zodra dit klaar is, schrijft Yogurt je notities en beantwoordt het vragen.",
+  "Updates": "Updates",
+  "Update Yogurt automatically": "Yogurt automatisch bijwerken",
+  "New versions download in the background and install when you quit.": "Nieuwe versies worden op de achtergrond gedownload en geïnstalleerd als je stopt.",
+  "Version {version}": "Versie {version}",
+  "Up to date": "Bijgewerkt",
+  "Checking for updates…": "Zoeken naar updates…",
+  "Downloading version {version}…": "Versie {version} downloaden…",
+  "Couldn't check for updates.": "Kan niet zoeken naar updates.",
+  "You can restart once the recording stops.": "Je kunt opnieuw starten zodra de opname stopt."
 }

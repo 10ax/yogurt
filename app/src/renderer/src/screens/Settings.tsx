@@ -1,7 +1,7 @@
 import { LoadingContent } from '../components/LoadingContent'
 import { useCallback, useEffect, useState } from 'react'
 import { Check, ChevronDown, Copy, Download, ExternalLink, Globe, Lock, Upload } from 'lucide-react'
-import type { Access, McpStatus, PermissionKind, PermissionStatus, Theme } from '../../../shared/types'
+import type { Access, McpStatus, PermissionKind, PermissionStatus, Theme, UpdateStatus } from '../../../shared/types'
 import { permissionCopy } from '../permissionCopy'
 import { LOCALES, t } from '../../../shared/i18n'
 import { osWords } from '../keys'
@@ -20,7 +20,7 @@ const THEMES = () => [['system', osWords({ mac: t('Match my Mac'), windows: t('M
 const loginLabel = () => osWords({ mac: t('Open Yogurt when your Mac starts'), windows: t('Open Yogurt when Windows starts'), linux: t('Open Yogurt when you log in') })
 const trayLabel = () => osWords({ mac: t('Show Yogurt in the menu bar'), windows: t('Show Yogurt in the notification area'), linux: t('Show Yogurt in the tray') })
 
-/** Settings, kept small: what Yogurt may use, your name, open at login, stop when the call ends, light or dark, and a backup. Nothing technical. */
+/** Settings, kept small: what Yogurt may use, your name, open at login, stop when the call ends, light or dark, a backup and updates. Nothing technical. */
 export function Settings({ revision = 0 }: { revision?: number }) {
   const [perms, setPerms] = useState<PermissionStatus>()
   const [prefs, setPrefs] = useState<{ theme: Theme; openAtLogin: boolean; showInMenuBar: boolean; myName: string; macName: string; stopWhenCallEnds: boolean; recordingReminder: boolean }>()
@@ -138,6 +138,8 @@ export function Settings({ revision = 0 }: { revision?: number }) {
           <Backup />
 
           <AiApps />
+
+          <Updates />
 
           <h2 className="settings-section-heading">{t('Keyboard shortcuts')}</h2>
           <dl data-testid="settings-shortcuts" className="settings-group settings-shortcuts">
@@ -319,6 +321,48 @@ function AiApps() {
             </div>
           </div>
         }
+      </div></LoadingContent>
+    </>
+  )
+}
+
+/** the version, and in a build that updates itself: the switch, what it's doing, and Restart Yogurt once a new version is ready */
+function Updates() {
+  const [status, setStatus] = useState<UpdateStatus>()
+  const [blocked, setBlocked] = useState(false)
+  useEffect(() => {
+    void window.yogurt.updates.status().then(setStatus)
+    return window.yogurt.updates.onStatus(setStatus)
+  }, [])
+  const toggle = () => { if (status) { setStatus({ ...status, on: !status.on }); void window.yogurt.updates.set(!status.on).then(setStatus) } }
+  const restart = () => void window.yogurt.updates.restart().then((ok) => setBlocked(!ok))
+  const said = status?.available ? {
+    idle: '', latest: t('Up to date'), checking: t('Checking for updates…'), error: t("Couldn't check for updates."),
+    downloading: t('Downloading version {version}…', { version: status.next ?? '' }), ready: t('Yogurt {version} is ready', { version: status.next ?? '' }),
+  }[status.state] : ''
+  return (
+    <>
+      <h2 className="settings-section-heading">{t('Updates')}</h2>
+      <LoadingContent pending={!status} testId="updates-loading"><div data-testid="updates" className="settings-group">
+        {status?.available &&
+          <div className="settings-row">
+            <div className="settings-row-copy">
+              <p className="settings-label">{t('Update Yogurt automatically')}</p>
+              <p className="settings-description">{t('New versions download in the background and install when you quit.')}</p>
+            </div>
+            <button data-testid="updates-toggle" role="switch" aria-checked={status.on} aria-label={t('Update Yogurt automatically')} onClick={toggle} className="settings-toggle">
+              <span className="settings-toggle-knob" />
+            </button>
+          </div>}
+        <div className="settings-row">
+          <div className="settings-row-copy" aria-live="polite">
+            <p data-testid="updates-version" className="settings-label">{t('Version {version}', { version: status?.version ?? '' })}</p>
+            {said && <p data-testid="updates-state" data-state={status?.state} className="settings-description">{said}</p>}
+            {blocked && <p className="settings-description">{t('You can restart once the recording stops.')}</p>}
+          </div>
+          {status?.state === 'ready' &&
+            <button data-testid="updates-restart" onClick={restart} className="workspace-button settings-action primary">{t('Restart Yogurt')}</button>}
+        </div>
       </div></LoadingContent>
     </>
   )

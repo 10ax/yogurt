@@ -33,7 +33,9 @@ export type Settings = { theme?: 'light' | 'dark'; language?: string; /** what t
   /** names, products and acronyms to spell right in transcripts and notes (shared/jargon.ts) */
   jargon?: string[]
   /** the language people speak in meetings: English only unless 'multi' (shared/spoken.ts) */
-  spoken?: Spoken }
+  spoken?: Spoken
+  /** new versions download by themselves; on unless turned off */
+  autoUpdate?: boolean }
 
 /** "English only" unless Multi-language was picked */
 export const spokenSetting = (s: Settings): Spoken => spokenOf(s.spoken)
@@ -41,6 +43,7 @@ export const spokenSetting = (s: Settings): Spoken => spokenOf(s.spoken)
 /** "Finish recording when the call ends": on by default */
 export const stopsWhenCallEnds = (s: Settings): boolean => s.stopWhenCallEnds !== false
 export const recordingReminderOn = (s: Settings): boolean => s.recordingReminder !== false
+export const autoUpdateOn = (s: Settings): boolean => s.autoUpdate !== false
 
 export function loadSettings(path: string): Settings {
   try { return existsSync(path) ? JSON.parse(readFileSync(path, 'utf8')) : {} } catch { return {} }

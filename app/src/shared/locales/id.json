@@ -581,5 +581,14 @@
   "Downloading Yogurt's AI: {progress}": "Mengunduh AI Yogurt: {progress}",
   "{done} of {total} GB": "{done} dari {total} GB",
   "{progress} · about {minutes} min left": "{progress} · sekitar {minutes} mnt lagi",
-  "You can record now. Yogurt writes your notes and answers questions once this finishes.": "Anda sudah bisa merekam. Yogurt akan menulis catatan Anda dan menjawab pertanyaan setelah ini selesai."
+  "You can record now. Yogurt writes your notes and answers questions once this finishes.": "Anda sudah bisa merekam. Yogurt akan menulis catatan Anda dan menjawab pertanyaan setelah ini selesai.",
+  "Updates": "Pembaruan",
+  "Update Yogurt automatically": "Perbarui Yogurt secara otomatis",
+  "New versions download in the background and install when you quit.": "Versi baru diunduh di latar belakang dan dipasang saat Anda keluar.",
+  "Version {version}": "Versi {version}",
+  "Up to date": "Sudah terbaru",
+  "Checking for updates…": "Memeriksa pembaruan…",
+  "Downloading version {version}…": "Mengunduh versi {version}…",
+  "Couldn't check for updates.": "Tidak dapat memeriksa pembaruan.",
+  "You can restart once the recording stops.": "Anda bisa memulai ulang setelah perekaman berhenti."
 }

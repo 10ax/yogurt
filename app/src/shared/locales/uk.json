@@ -646,5 +646,14 @@
   "Downloading Yogurt's AI: {progress}": "Завантаження ШІ Yogurt: {progress}",
   "{done} of {total} GB": "{done} із {total} ГБ",
   "{progress} · about {minutes} min left": "{progress} · залишилося близько {minutes} хв",
-  "You can record now. Yogurt writes your notes and answers questions once this finishes.": "Записувати можна вже зараз. Коли завантаження завершиться, Yogurt напише нотатки й відповідатиме на запитання."
+  "You can record now. Yogurt writes your notes and answers questions once this finishes.": "Записувати можна вже зараз. Коли завантаження завершиться, Yogurt напише нотатки й відповідатиме на запитання.",
+  "Updates": "Оновлення",
+  "Update Yogurt automatically": "Оновлювати Yogurt автоматично",
+  "New versions download in the background and install when you quit.": "Нові версії завантажуються у фоні й встановлюються, коли ви виходите.",
+  "Version {version}": "Версія {version}",
+  "Up to date": "Остання версія",
+  "Checking for updates…": "Пошук оновлень…",
+  "Downloading version {version}…": "Завантаження версії {version}…",
+  "Couldn't check for updates.": "Не вдалося перевірити оновлення.",
+  "You can restart once the recording stops.": "Перезапустити можна після зупинки запису."
 }

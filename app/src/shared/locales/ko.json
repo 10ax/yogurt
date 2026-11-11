@@ -581,5 +581,14 @@
   "Downloading Yogurt's AI: {progress}": "Yogurt AI 다운로드 중: {progress}",
   "{done} of {total} GB": "{total} GB 중 {done} GB",
   "{progress} · about {minutes} min left": "{progress} · 약 {minutes}분 남음",
-  "You can record now. Yogurt writes your notes and answers questions once this finishes.": "지금 바로 녹음할 수 있어요. 이 작업이 끝나면 Yogurt가 노트를 작성하고 질문에 답해요."
+  "You can record now. Yogurt writes your notes and answers questions once this finishes.": "지금 바로 녹음할 수 있어요. 이 작업이 끝나면 Yogurt가 노트를 작성하고 질문에 답해요.",
+  "Updates": "업데이트",
+  "Update Yogurt automatically": "Yogurt 자동 업데이트",
+  "New versions download in the background and install when you quit.": "새 버전은 백그라운드에서 다운로드되고 종료할 때 설치됩니다.",
+  "Version {version}": "버전 {version}",
+  "Up to date": "최신 버전",
+  "Checking for updates…": "업데이트 확인 중…",
+  "Downloading version {version}…": "버전 {version} 다운로드 중…",
+  "Couldn't check for updates.": "업데이트를 확인할 수 없습니다.",
+  "You can restart once the recording stops.": "녹음이 끝나면 다시 시작할 수 있습니다."
 }

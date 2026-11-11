@@ -620,5 +620,14 @@
   "Downloading Yogurt's AI: {progress}": "Laster ned Yogurts KI: {progress}",
   "{done} of {total} GB": "{done} av {total} GB",
   "{progress} · about {minutes} min left": "{progress} · omtrent {minutes} min igjen",
-  "You can record now. Yogurt writes your notes and answers questions once this finishes.": "Du kan ta opp nå. Yogurt skriver notatene dine og svarer på spørsmål når dette er ferdig."
+  "You can record now. Yogurt writes your notes and answers questions once this finishes.": "Du kan ta opp nå. Yogurt skriver notatene dine og svarer på spørsmål når dette er ferdig.",
+  "Updates": "Oppdateringer",
+  "Update Yogurt automatically": "Oppdater Yogurt automatisk",
+  "New versions download in the background and install when you quit.": "Nye versjoner lastes ned i bakgrunnen og installeres når du avslutter.",
+  "Version {version}": "Versjon {version}",
+  "Up to date": "Oppdatert",
+  "Checking for updates…": "Ser etter oppdateringer …",
+  "Downloading version {version}…": "Laster ned versjon {version} …",
+  "Couldn't check for updates.": "Kunne ikke se etter oppdateringer.",
+  "You can restart once the recording stops.": "Du kan starte på nytt når opptaket stopper."
 }

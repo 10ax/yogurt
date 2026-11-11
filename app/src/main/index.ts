@@ -72,7 +72,7 @@ import { hookFolders } from './foldersIpc'
 import { hookMcp } from './mcp'
 import { startedHidden } from './mcp/paths'
 import { AUDIO_SCHEME, audioExts, createAudioHandler, trackFile, type AudioExt } from './audio'
-import { isPreviewBuild, startUpdates, updatesOn } from './updates'
+import { finishQuit, hookUpdates, isPreviewBuild, updatesOn } from './updates'
 import type { NoteSaveResult, StartResult } from '../shared/types'
 
 // the transcript's player streams each meeting's audio from here; seeking needs stream support (before ready)
@@ -762,7 +762,7 @@ app.whenReady().then(() => {
       // Music, recorder files and transcription still receive the same bounded graceful shutdown.
       await Promise.all([media.resume(), settleRecording().then(() => settleTranscription())])
       allowQuit = true
-      app.quit()
+      finishQuit()
     })().catch((err) => console.error('quit was cancelled because saving or shutdown failed', err)).finally(() => {
       if (!allowQuit) resumeEditing()
     })
@@ -924,11 +924,11 @@ app.whenReady().then(() => {
   startDetection()
   void setup.start()
   // new versions from GitHub Releases, downloaded in the background and installed on quit
-  if (updatesOn({ packaged: app.isPackaged, fake: isFake(), profile: !!process.env.YOGURT_USER_DATA, platform: process.platform, appImage: !!process.env.APPIMAGE,
+  const updatesAvailable = updatesOn({ packaged: app.isPackaged, fake: isFake(), profile: !!process.env.YOGURT_USER_DATA, platform: process.platform, appImage: !!process.env.APPIMAGE,
     feed: app.isPackaged && existsSync(join(process.resourcesPath, 'app-update.yml')),
-    preview: app.isPackaged && isPreviewBuild((() => { try { return readFileSync(join(app.getAppPath(), 'package.json'), 'utf8') } catch { return '' } })()) })) {
-    startUpdates().catch((err) => console.warn("couldn't start looking for new versions", err))
-  }
+    preview: app.isPackaged && isPreviewBuild((() => { try { return readFileSync(join(app.getAppPath(), 'package.json'), 'utf8') } catch { return '' } })()) })
+  hookUpdates({ file: join(userDataDir(), 'settings.json'), available: updatesAvailable, recording: () => !!activeMeeting() })
+    .catch((err) => console.warn("couldn't start looking for new versions", err))
   // the Dock icon: the main window, even while the widget is up
   app.on('activate', showMain)
 })

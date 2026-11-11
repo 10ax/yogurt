@@ -620,5 +620,14 @@
   "Downloading Yogurt's AI: {progress}": "Γίνεται λήψη της AI του Yogurt: {progress}",
   "{done} of {total} GB": "{done} από {total} GB",
   "{progress} · about {minutes} min left": "{progress} · απομένουν περίπου {minutes} λεπ.",
-  "You can record now. Yogurt writes your notes and answers questions once this finishes.": "Μπορείτε να ηχογραφήσετε τώρα. Το Yogurt γράφει τις σημειώσεις σας και απαντά σε ερωτήσεις μόλις ολοκληρωθεί αυτό."
+  "You can record now. Yogurt writes your notes and answers questions once this finishes.": "Μπορείτε να ηχογραφήσετε τώρα. Το Yogurt γράφει τις σημειώσεις σας και απαντά σε ερωτήσεις μόλις ολοκληρωθεί αυτό.",
+  "Updates": "Ενημερώσεις",
+  "Update Yogurt automatically": "Αυτόματη ενημέρωση του Yogurt",
+  "New versions download in the background and install when you quit.": "Οι νέες εκδόσεις λαμβάνονται στο παρασκήνιο και εγκαθίστανται όταν κλείνεις την εφαρμογή.",
+  "Version {version}": "Έκδοση {version}",
+  "Up to date": "Ενημερωμένο",
+  "Checking for updates…": "Έλεγχος για ενημερώσεις…",
+  "Downloading version {version}…": "Λήψη έκδοσης {version}…",
+  "Couldn't check for updates.": "Δεν ήταν δυνατός ο έλεγχος για ενημερώσεις.",
+  "You can restart once the recording stops.": "Μπορείς να κάνεις επανεκκίνηση όταν σταματήσει η εγγραφή."
 }

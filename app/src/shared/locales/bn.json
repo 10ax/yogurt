@@ -620,5 +620,14 @@
   "Downloading Yogurt's AI: {progress}": "Yogurt-এর AI ডাউনলোড হচ্ছে: {progress}",
   "{done} of {total} GB": "{total} GB-এর মধ্যে {done}",
   "{progress} · about {minutes} min left": "{progress} · প্রায় {minutes} মিনিট বাকি",
-  "You can record now. Yogurt writes your notes and answers questions once this finishes.": "আপনি এখনই রেকর্ড করতে পারেন। এটি শেষ হলে Yogurt আপনার নোট লিখবে এবং প্রশ্নের উত্তর দেবে।"
+  "You can record now. Yogurt writes your notes and answers questions once this finishes.": "আপনি এখনই রেকর্ড করতে পারেন। এটি শেষ হলে Yogurt আপনার নোট লিখবে এবং প্রশ্নের উত্তর দেবে।",
+  "Updates": "আপডেট",
+  "Update Yogurt automatically": "Yogurt নিজে থেকে আপডেট করুন",
+  "New versions download in the background and install when you quit.": "নতুন ভার্সন ব্যাকগ্রাউন্ডে ডাউনলোড হয় এবং বন্ধ করলে ইনস্টল হয়।",
+  "Version {version}": "ভার্সন {version}",
+  "Up to date": "সর্বশেষ ভার্সন আছে",
+  "Checking for updates…": "আপডেট খোঁজা হচ্ছে…",
+  "Downloading version {version}…": "ভার্সন {version} ডাউনলোড হচ্ছে…",
+  "Couldn't check for updates.": "আপডেট খোঁজা যায়নি।",
+  "You can restart once the recording stops.": "রেকর্ডিং থামলে আবার চালু করতে পারবেন।"
 }

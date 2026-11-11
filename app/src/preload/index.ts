@@ -1,7 +1,7 @@
 import type { WidgetLayout } from '../shared/widgetMorph'
 import { contextBridge, ipcRenderer } from 'electron'
 import { capabilities, platformOf } from '../shared/platform'
-import type { ChatView, ConversationSummary, ConversationView, NoteView, PromptAction, SetupState, WidgetView, YogurtApi } from '../shared/types'
+import type { ChatView, ConversationSummary, ConversationView, NoteView, PromptAction, SetupState, UpdateStatus, WidgetView, YogurtApi } from '../shared/types'
 
 const api: YogurtApi = {
   platform: process.platform,
@@ -197,6 +197,12 @@ const api: YogurtApi = {
     status: () => ipcRenderer.invoke('mcp:status'),
     set: (on) => ipcRenderer.invoke('mcp:set', on),
     onClients: (fn) => { const f = (_e: unknown, c: string[]) => fn(c); ipcRenderer.on('mcp:clients', f); return () => { ipcRenderer.off('mcp:clients', f) } },
+  },
+  updates: {
+    status: () => ipcRenderer.invoke('updates:status'),
+    set: (on) => ipcRenderer.invoke('updates:set', on),
+    restart: () => ipcRenderer.invoke('updates:restart'),
+    onStatus: (fn) => { const f = (_e: unknown, s: UpdateStatus) => fn(s); ipcRenderer.on('updates:status', f); return () => { ipcRenderer.off('updates:status', f) } },
   },
   backup: {
     status: () => ipcRenderer.invoke('backup:status'),

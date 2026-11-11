@@ -620,5 +620,14 @@
   "Downloading Yogurt's AI: {progress}": "A Yogurt AI letöltése: {progress}",
   "{done} of {total} GB": "{done} / {total} GB",
   "{progress} · about {minutes} min left": "{progress} · még kb. {minutes} perc",
-  "You can record now. Yogurt writes your notes and answers questions once this finishes.": "Már most rögzíthetsz. Amint ez befejeződik, a Yogurt megírja a jegyzeteidet és válaszol a kérdésekre."
+  "You can record now. Yogurt writes your notes and answers questions once this finishes.": "Már most rögzíthetsz. Amint ez befejeződik, a Yogurt megírja a jegyzeteidet és válaszol a kérdésekre.",
+  "Updates": "Frissítések",
+  "Update Yogurt automatically": "A Yogurt automatikus frissítése",
+  "New versions download in the background and install when you quit.": "Az új verziók a háttérben töltődnek le, és kilépéskor települnek.",
+  "Version {version}": "{version} verzió",
+  "Up to date": "Naprakész",
+  "Checking for updates…": "Frissítések keresése…",
+  "Downloading version {version}…": "A(z) {version} verzió letöltése…",
+  "Couldn't check for updates.": "Nem sikerült frissítéseket keresni.",
+  "You can restart once the recording stops.": "A felvétel leállása után indíthatod újra."
 }

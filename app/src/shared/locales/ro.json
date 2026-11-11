@@ -633,5 +633,14 @@
   "Downloading Yogurt's AI: {progress}": "Se descarcă AI-ul Yogurt: {progress}",
   "{done} of {total} GB": "{done} din {total} GB",
   "{progress} · about {minutes} min left": "{progress} · mai sunt aproximativ {minutes} min",
-  "You can record now. Yogurt writes your notes and answers questions once this finishes.": "Poți înregistra de acum. Yogurt îți scrie notițele și răspunde la întrebări după ce se termină."
+  "You can record now. Yogurt writes your notes and answers questions once this finishes.": "Poți înregistra de acum. Yogurt îți scrie notițele și răspunde la întrebări după ce se termină.",
+  "Updates": "Actualizări",
+  "Update Yogurt automatically": "Actualizează Yogurt automat",
+  "New versions download in the background and install when you quit.": "Versiunile noi se descarcă în fundal și se instalează când închizi aplicația.",
+  "Version {version}": "Versiunea {version}",
+  "Up to date": "La zi",
+  "Checking for updates…": "Se caută actualizări…",
+  "Downloading version {version}…": "Se descarcă versiunea {version}…",
+  "Couldn't check for updates.": "Nu s-au putut căuta actualizări.",
+  "You can restart once the recording stops.": "Poți reporni după ce se oprește înregistrarea."
 }

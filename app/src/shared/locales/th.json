@@ -581,5 +581,14 @@
   "Downloading Yogurt's AI: {progress}": "กำลังดาวน์โหลด AI ของ Yogurt: {progress}",
   "{done} of {total} GB": "{done} จาก {total} GB",
   "{progress} · about {minutes} min left": "{progress} · เหลือประมาณ {minutes} นาที",
-  "You can record now. Yogurt writes your notes and answers questions once this finishes.": "คุณบันทึกได้เลยตอนนี้ Yogurt จะเขียนโน้ตและตอบคำถามให้เมื่อเสร็จแล้ว"
+  "You can record now. Yogurt writes your notes and answers questions once this finishes.": "คุณบันทึกได้เลยตอนนี้ Yogurt จะเขียนโน้ตและตอบคำถามให้เมื่อเสร็จแล้ว",
+  "Updates": "อัปเดต",
+  "Update Yogurt automatically": "อัปเดต Yogurt อัตโนมัติ",
+  "New versions download in the background and install when you quit.": "เวอร์ชันใหม่จะดาวน์โหลดในเบื้องหลังและติดตั้งเมื่อคุณออกจากแอป",
+  "Version {version}": "เวอร์ชัน {version}",
+  "Up to date": "เป็นเวอร์ชันล่าสุด",
+  "Checking for updates…": "กำลังตรวจหาอัปเดต…",
+  "Downloading version {version}…": "กำลังดาวน์โหลดเวอร์ชัน {version}…",
+  "Couldn't check for updates.": "ตรวจหาอัปเดตไม่ได้",
+  "You can restart once the recording stops.": "คุณรีสตาร์ทได้เมื่อการบันทึกหยุดแล้ว"
 }

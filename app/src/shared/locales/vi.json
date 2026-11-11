@@ -581,5 +581,14 @@
   "Downloading Yogurt's AI: {progress}": "Đang tải AI của Yogurt: {progress}",
   "{done} of {total} GB": "{done} trên {total} GB",
   "{progress} · about {minutes} min left": "{progress} · còn khoảng {minutes} phút",
-  "You can record now. Yogurt writes your notes and answers questions once this finishes.": "Bạn có thể ghi âm ngay bây giờ. Yogurt sẽ viết ghi chú và trả lời câu hỏi khi việc này hoàn tất."
+  "You can record now. Yogurt writes your notes and answers questions once this finishes.": "Bạn có thể ghi âm ngay bây giờ. Yogurt sẽ viết ghi chú và trả lời câu hỏi khi việc này hoàn tất.",
+  "Updates": "Cập nhật",
+  "Update Yogurt automatically": "Tự động cập nhật Yogurt",
+  "New versions download in the background and install when you quit.": "Phiên bản mới được tải xuống ở chế độ nền và cài đặt khi bạn thoát.",
+  "Version {version}": "Phiên bản {version}",
+  "Up to date": "Đã cập nhật",
+  "Checking for updates…": "Đang kiểm tra bản cập nhật…",
+  "Downloading version {version}…": "Đang tải phiên bản {version}…",
+  "Couldn't check for updates.": "Không thể kiểm tra bản cập nhật.",
+  "You can restart once the recording stops.": "Bạn có thể khởi động lại khi bản ghi dừng."
 }

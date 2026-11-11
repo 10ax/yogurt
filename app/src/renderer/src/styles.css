@@ -191,6 +191,10 @@ html.widget { --pill:#232326;--pill-ink:#F7F7FA;--accent:#B780FF;--pill-accent:v
 .widget-details>* { position:absolute;left:0;top:0;margin:0; }
 .widget-time { white-space:nowrap;font-size:10px;font-weight:500;font-variant-numeric:tabular-nums;line-height:15px;opacity:.8; }
 .widget-preview { position:absolute;left:0;top:52px;display:flex;flex-direction:column;padding:0 4px 12px 12px;color:var(--pill-ink);font-size:14px;line-height:21px;transform-origin:50% 0;cursor:default; }
+/* closed: the transcript stays mounted but unpainted (hidden once the close has played, its live dots paused); the meter repaints only itself */
+.widget-preview[aria-hidden=true] { visibility:hidden;transition:visibility 0s linear 250ms; }
+.widget-preview[aria-hidden=true] * { animation-play-state:paused !important; }
+[data-testid=widget-wave] { will-change:transform; }
 .widget-preview[aria-hidden=true] { pointer-events:none; }
 .widget-preview-conversation { flex:1 1 auto;min-height:0;overflow-x:hidden;overflow-y:scroll;overscroll-behavior:contain;padding:8px 4px 4px 0;scrollbar-gutter:stable;scrollbar-width:auto;scrollbar-color:auto; }
 /* Custom scrollbars stay visible even when macOS uses automatic overlay scrollbars. */

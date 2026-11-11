@@ -656,5 +656,7 @@
   "Downloading version {version}…": "Загрузка версии {version}…",
   "Couldn't check for updates.": "Не удалось проверить обновления.",
   "You can restart once the recording stops.": "Перезапустить можно после остановки записи.",
-  "Check now": "Проверить"
+  "Check now": "Проверить",
+  "Eject the Yogurt installer?": "Извлечь установщик Yogurt?",
+  "Eject": "Извлечь"
 }

@@ -630,5 +630,7 @@
   "Downloading version {version}…": "Versie {version} downloaden…",
   "Couldn't check for updates.": "Kan niet zoeken naar updates.",
   "You can restart once the recording stops.": "Je kunt opnieuw starten zodra de opname stopt.",
-  "Check now": "Nu zoeken"
+  "Check now": "Nu zoeken",
+  "Eject the Yogurt installer?": "Yogurt-installatieprogramma verwijderen?",
+  "Eject": "Verwijder"
 }

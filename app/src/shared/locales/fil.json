@@ -630,5 +630,7 @@
   "Downloading version {version}…": "Dina-download ang bersyon {version}…",
   "Couldn't check for updates.": "Hindi makahanap ng mga update.",
   "You can restart once the recording stops.": "Puwede kang mag-restart kapag huminto na ang recording.",
-  "Check now": "Tingnan ngayon"
+  "Check now": "Tingnan ngayon",
+  "Eject the Yogurt installer?": "I-eject ang installer ng Yogurt?",
+  "Eject": "I-eject"
 }

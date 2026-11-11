@@ -591,5 +591,7 @@
   "Downloading version {version}…": "バージョン {version} をダウンロード中…",
   "Couldn't check for updates.": "アップデートを確認できませんでした。",
   "You can restart once the recording stops.": "録音が止まったら再起動できます。",
-  "Check now": "今すぐ確認"
+  "Check now": "今すぐ確認",
+  "Eject the Yogurt installer?": "Yogurt インストーラを取り出しますか？",
+  "Eject": "取り出す"
 }

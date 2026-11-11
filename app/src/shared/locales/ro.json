@@ -643,5 +643,7 @@
   "Downloading version {version}…": "Se descarcă versiunea {version}…",
   "Couldn't check for updates.": "Nu s-au putut căuta actualizări.",
   "You can restart once the recording stops.": "Poți reporni după ce se oprește înregistrarea.",
-  "Check now": "Verifică acum"
+  "Check now": "Verifică acum",
+  "Eject the Yogurt installer?": "Scoți programul de instalare Yogurt?",
+  "Eject": "Scoate"
 }

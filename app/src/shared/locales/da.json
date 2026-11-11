@@ -630,5 +630,7 @@
   "Downloading version {version}…": "Henter version {version}…",
   "Couldn't check for updates.": "Kunne ikke søge efter opdateringer.",
   "You can restart once the recording stops.": "Du kan genstarte, når optagelsen stopper.",
-  "Check now": "Søg nu"
+  "Check now": "Søg nu",
+  "Eject the Yogurt installer?": "Skub Yogurt-installationsprogrammet ud?",
+  "Eject": "Skub ud"
 }

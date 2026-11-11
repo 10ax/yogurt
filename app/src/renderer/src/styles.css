@@ -228,7 +228,8 @@ html.widget { --pill:#232326;--pill-ink:#F7F7FA;--accent:#B780FF;--pill-accent:v
 .share-btn:hover { background:var(--control-hover); }
 .person-remove { opacity: 0; }
 .person-row:hover { background: color-mix(in srgb, var(--line) 45%, transparent); }
-.person-row:hover .person-remove, .person-row:focus-within .person-remove { opacity: 1; }
+/* keyboard focus shows a row's actions; the focus the card takes when it opens doesn't, so only the hovered row shows them */
+.person-row:hover .person-remove, .person-row:has(:focus-visible) .person-remove { opacity: 1; }
 .menu-entry { transform-origin: top right; }
 /* Menus share the floating surface in each theme. */
 .menu-entry[role="menu"] { color:var(--ink);border-color:var(--line);border-radius:9px;padding:5px;background:var(--float);box-shadow:var(--shadow); }

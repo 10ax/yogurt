@@ -74,7 +74,11 @@ for (const theme of ['light', 'dark'] as const) test(`split metadata popovers st
     const people = page.getByTestId('people-card')
     await expect(people.getByTestId('people-email')).toHaveText('jamie@example.com')
     await expect(people).not.toContainText('Planning with Jamie')
+    // a mouse-opened card shows no row actions until hovered or reached by keyboard
+    await expect(people.getByTestId('people-edit')).toHaveCSS('opacity', '0')
     await people.getByTestId('people-name').focus()
+    await page.keyboard.press('Tab')
+    await expect(people.getByTestId('people-edit')).toBeFocused()
     await expect(people.getByTestId('people-edit')).toHaveCSS('opacity', '1')
     const bounds = await people.boundingBox(), note = await page.getByTestId('note').boundingBox()
     expect(bounds!.y + bounds!.height).toBeLessThanOrEqual(note!.y + note!.height)

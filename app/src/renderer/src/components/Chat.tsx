@@ -17,6 +17,8 @@ export function Ask({ id, recording, anchor, onSource }: { id: string; recording
   const [narrow, setNarrow] = useState(() => window.matchMedia('(max-width: 999px)').matches)
   const trigger = useRef<HTMLButtonElement>(null)
   const panel = useRef<HTMLDialogElement>(null)
+  const surface = useRef<HTMLDivElement>(null)
+  const contents = useRef<HTMLDivElement>(null)
   const motion = useRef<Animation[]>([])
   const animateOpen = useRef(false)
   const closing = useRef(false)
@@ -33,16 +35,38 @@ export function Ask({ id, recording, anchor, onSource }: { id: string; recording
     void window.yogurt.conversations.current([{ kind: 'meeting', id }]).then(cid => { if (active) setConversationId(cid) }).catch(() => { if (active) setError(true) })
     return () => { active = false }
   }, [open, id, conversationId])
-  const fade = (expand: boolean, animate: boolean) => {
-    const dialog = panel.current
-    if (!dialog) return
+  // Ask grows out of its button and folds back into it. Only the surface stretches; the chat stays at its final size,
+  // cropped to the surface so none of it shows outside, and the button and the surface trade places where they meet.
+  const morph = (expand: boolean, animate: boolean) => {
+    const shell = surface.current, body = contents.current, dialog = panel.current, button = trigger.current
+    if (!shell || !body || !dialog || !button) return
     const running = motion.current.some(animation => animation.playState === 'running')
-    const opacity = getComputedStyle(dialog).opacity
+    const was = { transform: getComputedStyle(shell).transform, radius: getComputedStyle(shell).borderRadius, shell: getComputedStyle(shell).opacity,
+      body: getComputedStyle(body).opacity, clip: getComputedStyle(body).clipPath, button: getComputedStyle(button).opacity }
     motion.current.forEach(animation => animation.cancel()); motion.current = []
     if (!animate || window.matchMedia('(prefers-reduced-motion: reduce)').matches) return
-    const animation = dialog.animate([{ opacity: running ? opacity : expand ? 0 : 1 }, { opacity: expand ? 1 : 0 }], { duration: 160, easing: 'ease-out', fill: 'both' })
-    motion.current = [animation]
-    return animation
+    const from = button.getBoundingClientRect(), to = dialog.getBoundingClientRect(), box = body.getBoundingClientRect()
+    const scaleX = from.width / to.width, scaleY = from.height / to.height
+    const collapsed = `translate(${from.x - to.x}px, ${from.y - to.y}px) scale(${scaleX}, ${scaleY})`
+    const buttonRadius = parseFloat(getComputedStyle(button).borderRadius)
+    const collapsedRadius = `${buttonRadius / scaleX}px / ${buttonRadius / scaleY}px`
+    const cropped = `inset(${from.top - box.top}px ${box.right - from.right}px ${box.bottom - from.bottom}px ${from.left - box.left}px round ${buttonRadius}px)`
+    // opening springs out of the button; closing speeds up into it, so it lands as the button fades back in
+    const duration = expand ? 260 : 220, easing = expand ? 'cubic-bezier(.22,1.06,.36,1)' : 'cubic-bezier(.4,0,.2,1)', handoff = expand ? 50 : 90
+    const shape = shell.animate([
+      { transform: running ? was.transform : expand ? collapsed : 'none', borderRadius: running ? was.radius : expand ? collapsedRadius : '12px' },
+      { transform: expand ? 'none' : collapsed, borderRadius: expand ? '12px' : collapsedRadius },
+    ], { duration, easing, fill: 'both' })
+    const crop = body.animate([{ clipPath: running && was.clip !== 'none' ? was.clip : expand ? cropped : 'inset(0px round 12px)' }, { clipPath: expand ? 'inset(0px round 12px)' : cropped }],
+      { duration, easing, fill: expand ? 'backwards' : 'forwards' })
+    const content = body.animate([{ opacity: running ? was.body : expand ? 0 : 1 }, { opacity: expand ? 1 : 0 }],
+      { duration: expand ? 160 : 120, delay: expand ? 60 : 0, easing: 'ease-out', fill: 'both' })
+    // opening: the button fades as the surface appears over it; closing: the surface fades as it lands on the button
+    const trade = { duration: handoff, delay: expand ? 0 : duration - handoff, easing: 'ease-out', fill: 'both' as const }
+    const cover = shell.animate([{ opacity: running ? was.shell : expand ? 0 : 1 }, { opacity: expand ? 1 : 0 }], trade)
+    const label = button.animate([{ opacity: running ? was.button : expand ? 1 : 0 }, { opacity: expand ? 0 : 1 }], trade)
+    motion.current = [shape, crop, content, cover, label]
+    return shape
   }
   useEffect(() => () => motion.current.forEach((animation) => animation.cancel()), [])
   useLayoutEffect(() => {
@@ -58,7 +82,7 @@ export function Ask({ id, recording, anchor, onSource }: { id: string; recording
     // Native modal behavior makes the covered note inert at narrow widths; desktop stays editable.
     if (narrow) dialog.showModal(); else dialog.show()
     setToastDialog(narrow ? dialog : null)
-    fade(true, animateOpen.current)
+    morph(true, animateOpen.current)
     animateOpen.current = false
     panel.current?.querySelector('textarea')?.focus({ preventScroll: true })
     const observer = new ResizeObserver(position)
@@ -69,7 +93,7 @@ export function Ask({ id, recording, anchor, onSource }: { id: string; recording
   const close = (animate = true) => {
     if (closing.current) return
     closing.current = true
-    const animation = fade(false, animate)
+    const animation = morph(false, animate)
     const done = () => {
       if (!closing.current) return
       closing.current = false
@@ -82,9 +106,10 @@ export function Ask({ id, recording, anchor, onSource }: { id: string; recording
 
   const conversation = open && <dialog id="meeting-chat" ref={panel} data-testid="chat-panel" className="chat-panel no-drag"
     aria-labelledby="meeting-chat-title" aria-modal={narrow || undefined}
-    onKeyDown={event => { if (event.key === 'Escape' && !event.defaultPrevented && !panel.current?.querySelector('.citation-card:not([data-ending-style])') && !(event.target as HTMLElement).closest('[role="alertdialog"], [role="dialog"], [role="menu"]')) { event.preventDefault(); event.stopPropagation(); close(false) } }}
-    onCancel={event => { event.preventDefault(); close(false) }}>
-    <div className="chat-panel-contents">
+    onKeyDown={event => { if (event.key === 'Escape' && !event.defaultPrevented && !panel.current?.querySelector('.citation-card:not([data-ending-style])') && !(event.target as HTMLElement).closest('[role="alertdialog"], [role="dialog"], [role="menu"]')) { event.preventDefault(); event.stopPropagation(); close() } }}
+    onCancel={event => { event.preventDefault(); close() }}>
+    <div ref={surface} className="chat-morph-surface" aria-hidden="true" />
+    <div ref={contents} className="chat-panel-contents">
       {!conversationId && <header className="ask-conversation-head"><h2 id="meeting-chat-title">{t('New chat')}</h2>
         <button data-testid="chat-close" className="chat-icon" onClick={() => close()} aria-label={t('Close')}><X size={16} aria-hidden="true" /></button>
       </header>}
@@ -98,8 +123,9 @@ export function Ask({ id, recording, anchor, onSource }: { id: string; recording
   return <>
     <button id="meeting-ask" ref={trigger} data-testid="chat-open" className="chat-trigger" type="button" aria-expanded={open} aria-controls="meeting-chat"
       title={onMac() ? t('Ask Yogurt (⌘J)') : `${t('Ask Yogurt')} (${keys('⌘J')})`} onClick={event => {
-        if (closing.current) { closing.current = false; fade(true, event.detail > 0) }
-        animateOpen.current = event.detail > 0; setError(false); setOpen(true)
+        // ⌘J opens through a programmatic click, so it morphs the same as a mouse click
+        if (closing.current) { closing.current = false; morph(true, true) }
+        animateOpen.current = true; setError(false); setOpen(true)
         panel.current?.querySelector('textarea')?.focus({ preventScroll: true })
       }}><MessageCircle size={16} strokeWidth={1.75} aria-hidden="true" /><span>{t('Ask Yogurt')}</span><kbd aria-hidden="true">{keys('⌘J')}</kbd></button>
     {anchor && createPortal(conversation, anchor)}

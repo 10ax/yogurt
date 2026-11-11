@@ -1,8 +1,10 @@
 /* Only chrome reveals the Mac's blurred backdrop; text and reading surfaces stay opaque. */
-.workspace { position:relative;isolation:isolate;display:flex;height:100%;overflow:hidden;--sidebar-inset:10px;--nav-inset:11px;--workspace-footer-height:52px;--chrome-glass:color-mix(in srgb,var(--chrome) 60%,transparent);--reading-surface:linear-gradient(to bottom,transparent 52px,var(--bg) 52px);background:var(--chrome-glass); }
+.workspace { position:relative;isolation:isolate;display:flex;height:100%;overflow:hidden;--sidebar-inset:10px;--nav-inset:11px;--workspace-footer-height:52px;--chrome-glass:color-mix(in srgb,var(--chrome) 85%,transparent);--sidebar-field:#FAFAFB;--sidebar-field-edge:#E8E8EB;--sidebar-selected:#E7E1EF;--reading-surface:linear-gradient(to bottom,transparent 52px,var(--bg) 52px);background:var(--chrome-glass); }
 @media (prefers-reduced-transparency:reduce),(prefers-contrast:more) { .workspace { --chrome-glass:var(--chrome); } }
-/* The Mac title bar is one surface in the reading colour, edge to edge; native glass remains below it. */
-:root:not([data-chrome=overlay]) .workspace { background:linear-gradient(var(--bg) 0 52px,transparent 52px),var(--chrome-glass); }
+/* 85% glass keeps a trace of the desktop without a light page behind the window washing the sidebar out; search is a filled field with a quiet edge. */
+@media (prefers-color-scheme:dark) { .workspace { --sidebar-field:#2F2F31;--sidebar-field-edge:#363638;--sidebar-selected:#38313F; } }
+/* The Mac title bar is one opaque surface in the sidebar's colour, edge to edge, ruled off from the page; native glass remains below it. */
+:root:not([data-chrome=overlay]) .workspace { background:linear-gradient(var(--chrome) 0 52px,transparent 52px),var(--chrome-glass); }
 /* One stationary drag region; later no-drag controls cut holes in it for native clicks. */
 .workspace-window-bar { width:208px;min-width:124px;position:absolute;left:0;top:0;height:52px;z-index:55;background:transparent;border-bottom:1px solid var(--line); }
 .workspace-drag-region { position:absolute;left:0;top:0;width:100vw;height:100%;pointer-events:none; }
@@ -44,16 +46,16 @@
 }
 .sidebar-titlebar { height:52px;flex:none;display:flex;align-items:center;justify-content:flex-end;padding:0 16px; }
 .workspace-sidebar-body { padding:16px var(--sidebar-inset) 5px;flex:1;overflow:auto;overflow-x:hidden; }
-.workspace-search { display:flex;align-items:center;gap:10px;width:100%;height:34px;padding:0 10px;margin-bottom:17px;border:1px solid var(--line);border-radius:6px;background:var(--float);box-shadow:0 1px 2px #0000000A;color:var(--ink);font-size:13px;font-weight:500; }
+.workspace-search { display:flex;align-items:center;gap:10px;width:100%;height:34px;padding:0 10px;margin-bottom:17px;border:1px solid var(--sidebar-field-edge);border-radius:6px;background:var(--sidebar-field);box-shadow:none;color:var(--ink);font-size:13px;font-weight:500; }
 .workspace-search>svg { width:16px;height:16px;color:var(--muted); }
 .workspace-search kbd { margin-inline-start:auto;font:10px var(--font-sans);color:var(--muted); }
-.workspace-search:hover { background:color-mix(in srgb,var(--float) 97%,var(--ink)); }
+.workspace-search:hover { background:color-mix(in srgb,var(--sidebar-field) 97%,var(--ink)); }
 .workspace-nav { display:flex;align-items:center;gap:10px;width:100%;height:35px;padding:0 var(--nav-inset);border-radius:6px;font-size:13px;font-weight:500;text-align:start;position:relative; }
 .workspace-nav>svg { color:var(--muted);flex:none; }
 .workspace-nav>span:not(.folder-glyph) { overflow:hidden;text-overflow:ellipsis;white-space:nowrap; }
 .workspace-nav small { margin-inline-start:auto;font-size:9px;line-height:17px;font-weight:400;color:var(--muted); }
 .workspace-nav:hover,.workspace-icon:hover { background:color-mix(in srgb,var(--ink) 5%,transparent); }
-.workspace-nav[aria-current=page] { background:var(--selected);color:var(--ink); }
+.workspace-nav[aria-current=page] { background:var(--sidebar-selected);color:var(--ink); }
 .workspace-nav[aria-current=page]:before { content:none; }
 .workspace-nav[aria-current=page]>svg { color:var(--written); }
 .workspace-folder-label { margin:30px var(--nav-inset) 8px;color:var(--muted);font-size:11px; }

@@ -78,7 +78,7 @@ export function useWidgetMorph(card: React.RefObject<HTMLDivElement | null>, war
   useLayoutEffect(() => {
     if (intent.pressed) return
     const timer = card.current?.querySelector<HTMLElement>('[data-testid="widget-time"]')
-    if (timer) window.yogurt.widget.size(95 + timer.getBoundingClientRect().width, 42)
+    if (timer) window.yogurt.widget.size(93 + timer.getBoundingClientRect().width, 42)
   }, [time, open, layout?.pill.width])
   useEffect(() => {
     let frame = 0, lastPoint = { x: -1, y: -1 }, lastSurface = ''
@@ -125,7 +125,7 @@ export function useWidgetMorph(card: React.RefObject<HTMLDivElement | null>, war
       wake.current()
       window.yogurt.widget.pressed(false)
       const timer = card.current?.querySelector<HTMLElement>('[data-testid="widget-time"]')
-      if (timer) window.yogurt.widget.size(95 + timer.getBoundingClientRect().width, 42)
+      if (timer) window.yogurt.widget.size(93 + timer.getBoundingClientRect().width, 42)
     },
   }
 }

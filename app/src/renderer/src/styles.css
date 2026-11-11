@@ -196,7 +196,8 @@ html.widget { --pill:#232326;--pill-ink:#F7F7FA;--accent:#B780FF;--pill-accent:v
 .widget-preview[aria-hidden=true] * { animation-play-state:paused !important; }
 [data-testid=widget-wave] { will-change:transform; }
 .widget-preview[aria-hidden=true] { pointer-events:none; }
-.widget-preview-conversation { flex:1 1 auto;min-height:0;overflow-x:hidden;overflow-y:scroll;overscroll-behavior:contain;padding:8px 4px 4px 0;scrollbar-gutter:stable;scrollbar-width:auto;scrollbar-color:auto; }
+/* the scroll fade sets overflow inline; the reserved thin scrollbar keeps the reading edge still */
+.widget-preview-conversation { flex:1 1 auto;min-height:0;overflow-x:hidden;overflow-y:scroll !important;overscroll-behavior:contain;padding:8px 4px 4px 0;scrollbar-gutter:stable;scrollbar-width:auto;scrollbar-color:auto; }
 /* Custom scrollbars stay visible even when macOS uses automatic overlay scrollbars. */
 .widget-preview-conversation::-webkit-scrollbar { width:4px; }
 .widget-preview-conversation::-webkit-scrollbar-thumb { border-radius:3px;background:#FFFFFF50; }

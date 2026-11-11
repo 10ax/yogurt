@@ -40,8 +40,8 @@ test('with fake downloads setup finishes by itself, and the second launch goes s
 
 test('first run records as soon as speech and speakers are in; notes say they are getting ready, then write themselves once the notes model lands', async () => {
   const userData = mkdtempSync(join(tmpdir(), 'yogurt-e2e-'))
-  // the notes model takes its time: everything else is quick
-  const app = await electron.launch({ args: [main], env: { ...process.env, YOGURT_FAKE: '1', YOGURT_USER_DATA: userData, YOGURT_FAKE_NOTES_MODEL_MS: '15000' } })
+  // the notes model takes its time: everything else is quick; it lands well after the meeting and the question, however slow the machine
+  const app = await electron.launch({ args: [main], env: { ...process.env, YOGURT_FAKE: '1', YOGURT_USER_DATA: userData, YOGURT_FAKE_NOTES_MODEL_MS: '40000' } })
   try {
     const page = await app.firstWindow()
     await expect(page.getByTestId('home')).toBeVisible({ timeout: 10_000 })
@@ -57,10 +57,10 @@ test('first run records as soon as speech and speakers are in; notes say they ar
     await page.getByTestId('chat-open').click()
     await page.getByTestId('chat-input').fill('What was decided?')
     await page.getByTestId('chat-input').press('Enter')
-    await expect(page.getByTestId('chat-turn').last()).toContainText('Getting ready to answer')
+    await expect(page.getByTestId('chat-turn').last()).toContainText("Waiting for Yogurt's AI to finish downloading")
     await expect(page.getByTestId('chat-turn').last()).not.toContainText('Generating notes')
     // the notes model lands: the notes are written without anyone asking, and the question is answered
-    await expect(page.getByTestId('note-enhanced')).toHaveAttribute('data-status', 'done', { timeout: 45_000 })
+    await expect(page.getByTestId('note-enhanced')).toHaveAttribute('data-status', 'done', { timeout: 60_000 })
     await expect(page.getByTestId('chat-turn').last()).toContainText('Tuesday', { timeout: 30_000 })
   } finally { await app.close() }
 })

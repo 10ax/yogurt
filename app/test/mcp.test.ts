@@ -78,7 +78,7 @@ describe('the MCP server', () => {
       expect(audio).toContain('Ogg Opus in .ogg')
       expect(`${instructions} ${audio}`).not.toMatch(/this Mac/)
     }
-  })
+  }, 30_000) // five databases: under a second on a Mac, over 5 s on GitHub's Windows runners
   it('answers notifications with nothing, pings with an empty result, and anything else with method not found', async () => {
     const { mcp } = setup()
     expect(await mcp.handle({ jsonrpc: '2.0', method: 'notifications/initialized' })).toBeNull()

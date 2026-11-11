@@ -4,6 +4,11 @@ Both clips are public-domain LibriVox recordings, 16.5 s each, cut from 0:40 and
 with `ffmpeg -ss 40 -t 16.5 -i <mp3> -ac 1 -ar 16000 -c:a pcm_s16le -map_metadata -1 -fflags +bitexact <wav>`.
 Two different readers, so the two sides of a meeting sound like two people.
 
+They are then laid out as a short call, silent between turns, the way the fake transcriber (`src/main/asr/fake.ts`)
+expects: me talks 0.5–4.0 s (the clip's 0–3.5 s) and 10.5–12.4 s (its 5.0–6.9 s); them talks 5.2–8.7 s (its 2.5–6.0 s)
+and 13.3–14.8 s (its 7.0–8.5 s), each piece faded in and out over 20 ms. Speech on both sides the whole time put the
+other side's first line at 0:00 and the tests found it twice.
+
 | File | Source | Reader | Licence |
 |---|---|---|---|
 | meeting-me.wav | The Art of War by Sun Tzu, tr. Lionel Giles, chapters 1-2: https://archive.org/download/art_of_war_librivox/art_of_war_01-02_sun_tzu_64kb.mp3 (catalog: https://librivox.org/the-art-of-war-by-sun-tzu/) | Moira Fogarty | Public domain (LibriVox) |

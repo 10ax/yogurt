@@ -23,6 +23,9 @@ export const languageCode = (whisperName: string | null | undefined): string | n
   return CODES[n] ?? (/^[a-z]{2}$/.test(n) ? n : null)
 }
 
+/** whisper's name for a language code ('en' → 'english'), as its guesses name them */
+export const languageName = (code: string): string => Object.keys(CODES).find((n) => CODES[n] === code) ?? code
+
 const lang = (locale: string) => locale.split(/[-_]/)[0].toLowerCase()
 const region = (locale: string) => locale.split(/[-_]/)[1]?.toUpperCase()
 /** the region to listen in when the interface names none: the biggest one for each language Apple covers */

@@ -144,6 +144,21 @@ describe('transcribe', () => {
     expect(out[0].text).toBe('Hola de nuevo')
   })
 
+  it("English only: no request asks whisper to guess the language, and what was heard is reported as English, not a guess", async () => {
+    const s = await stub([say('Hello everyone', 'welsh', 0.6), say('Next', 'welsh'), say('Next point', 'spanish')])
+    let forced: string | undefined = 'en'
+    const heard: Array<[string, number, boolean]> = []
+    const tr = createTranscriber({ url: async () => s.url, language: () => forced, onLanguage: (_t, lang, n, locked) => heard.push([lang, n, locked]) })
+    await tr(chunk('me', 0))
+    await tr(chunk('me', 2000), { partial: true })
+    expect(s.seen.map((x) => x.fields.no_language_probabilities)).toEqual(['true', 'true'])
+    expect(heard).toEqual([['english', 'Hello everyone'.length, true]])
+    // Multi-language: the final asks for the guess again
+    forced = undefined
+    await tr(chunk('them', 6000))
+    expect(s.seen[2].fields.no_language_probabilities).toBeUndefined()
+  })
+
   it('English only: every chunk, quick or careful, is told English, never auto-detected, and still reports what it heard', async () => {
     const s = await stub([say('Hello everyone'), say('Next'), say('la la la la la la la la la la la la'), say('Next point')])
     let forced: string | undefined = 'en'

@@ -1,6 +1,7 @@
 import type { Segment } from '../store'
 import type { Track } from '../capture'
 import type { Chunk } from './chunker'
+import { languageName } from './appleSpeech'
 import { tokens } from './echo'
 import { isPromptEcho, isSilenceGuess } from './hallucination'
 
@@ -72,7 +73,7 @@ export function createTranscriber(o: Opts): Transcribe {
   const fetchFn = o.fetchFn ?? fetch
   const locked: Partial<Record<Track, string>> = {}
 
-  const call = async (c: Chunk, language: string, partial = false): Promise<{ lines: Line[]; text: string; language: string; prob: number }> => {
+  const call = async (c: Chunk, language: string, partial = false, guess = !partial): Promise<{ lines: Line[]; text: string; language: string; prob: number }> => {
     let used: string | undefined
     const prompt = o.prompt?.() ?? ''
     // under 300 ms of clearly loud audio: a faint sound, where whisper's stock lines are made up
@@ -86,8 +87,8 @@ export function createTranscriber(o: Opts): Transcribe {
       form.set('no_timestamps', 'false')
       // a partial is read once, greedily: a few times faster than the server's beam search, good enough for a first look
       if (partial) { form.set('beam_size', '1'); form.set('best_of', '1') }
-      // its language is never read: no second pass of the encoder to guess it (about a third of each request)
-      if (partial) form.set('no_language_probabilities', 'true')
+      // a language guess nobody reads costs a second pass of the encoder, about a third of the request
+      if (!guess) form.set('no_language_probabilities', 'true')
       if (prompt) form.set('prompt', prompt)
       used = await o.url()
       return fetchFn(`${used}/inference`, { method: 'POST', body: form, signal: AbortSignal.timeout(o.timeoutMs ?? requestTimeoutMs(c.samples.length)) })
@@ -118,8 +119,8 @@ export function createTranscriber(o: Opts): Transcribe {
     const forced = o.language?.()
     if (forced) {
       // the person said which language it is: nothing to detect, lock or look at again
-      const r = await call(c, forced, !!opt?.partial)
-      if (!opt?.partial && r.text.trim() && !isGarbled(r.text)) o.onLanguage?.(c.track, r.language, r.text.length, true)
+      const r = await call(c, forced, !!opt?.partial, false)
+      if (!opt?.partial && r.text.trim() && !isGarbled(r.text)) o.onLanguage?.(c.track, languageName(forced), r.text.length, true)
       return r.lines
     }
     const had = locked[c.track]

@@ -47,6 +47,8 @@ electronFuses:
   enableNodeCliInspectArguments: false
   onlyLoadAppFromAsar: true
   enableEmbeddedAsarIntegrityValidation: true
+# Linux: `yogurt` becomes a launcher that starts Electron on X11 on a Wayland desktop (build/linux-launcher.sh)
+afterPack: scripts/linux-launcher.cjs
 asarUnpack:
   # the notes model's engine loads native binaries; they can't run from inside the asar archive
   - "**/node_modules/node-llama-cpp/**"

@@ -4,8 +4,6 @@ import { x11Relaunch } from '../src/main/display'
 const wayland = { WAYLAND_DISPLAY: 'wayland-0', DISPLAY: ':0' }
 
 it('Linux on Wayland starts again through XWayland, where the widget and the card can float and stay put', () => {
-  expect(x11Relaunch('linux', ['/opt/Yogurt/yogurt', '--hidden'], { ...wayland, APPIMAGE: '/home/sam/Yogurt.AppImage' }, '/tmp/.mount_x/yogurt'))
-    .toEqual({ execPath: '/home/sam/Yogurt.AppImage', args: ['--hidden', '--ozone-platform=x11'] })
   expect(x11Relaunch('linux', ['/usr/lib/electron', '.'], wayland, '/usr/lib/electron')).toEqual({ execPath: '/usr/lib/electron', args: ['.', '--ozone-platform=x11'] })
 })
 
@@ -17,4 +15,6 @@ it('never twice, never without XWayland, never on X11, a Mac or Windows, and nev
   expect(x11Relaunch('darwin', ['y'], wayland, 'y')).toBeNull()
   expect(x11Relaunch('win32', ['y'], wayland, 'y')).toBeNull()
   expect(x11Relaunch('linux', ['y'], { ...wayland, YOGURT_FAKE: '1' }, 'y')).toBeNull()
+  // the AppImage's launcher picks X11 itself: starting it again couldn't mount it (#8)
+  expect(x11Relaunch('linux', ['/tmp/.mount_x/yogurt-bin'], { ...wayland, APPIMAGE: '/home/sam/Yogurt.AppImage' }, '/tmp/.mount_x/yogurt-bin')).toBeNull()
 })

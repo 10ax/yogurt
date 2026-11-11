@@ -27,3 +27,7 @@ it("only Windows and Linux carry the speed check's clip: a Mac never times its s
   for (const os of ['win', 'linux']) expect(block(os)).toContain('{ from: resources/speed, to: speed }')
   expect(config.split(/^win:$/m)[0]).not.toContain('resources/speed')
 })
+
+it('the Linux build starts through the launcher that picks X11 on Wayland (#8)', () => {
+  expect(config).toMatch(/^afterPack: scripts\/linux-launcher\.cjs$/m)
+})

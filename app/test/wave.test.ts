@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest'
-import { barPlan, micLevel, Wave } from '../src/shared/wave'
+import { barPlan, frameKey, micLevel, Wave } from '../src/shared/wave'
 
 describe('microphone meter', () => {
   it('keeps silence quiet and makes ordinary speech visible without using call audio', () => {
@@ -40,5 +40,24 @@ describe('microphone meter', () => {
       expect(rest.heights).toEqual([0, 0, 0])
       expect(barPlan({ level: 1, reduced, paused })).toEqual(rest)
     }
+  })
+  it('a frame that would draw the same pixels is the same frame, so it is not drawn again', () => {
+    const at = (level: number) => frameKey(barPlan({ level, reduced: false, paused: false }), 16)
+    expect(at(.5)).toBe(at(.5001))
+    expect(at(0)).toBe(at(.0004))
+    expect(at(.5)).not.toBe(at(.6))
+    // the bars fade in with the level even before they grow a pixel
+    expect(at(0)).not.toBe(at(.02))
+  })
+  it('the meter settles at silence, and only then may its loop sleep', () => {
+    const w = new Wave()
+    expect(w.settled()).toBe(true)
+    w.target = 1; w.step(60)
+    expect(w.settled()).toBe(false)
+    w.target = 0; w.step(60)
+    expect(w.settled()).toBe(false)
+    w.step(2000)
+    expect(w.settled()).toBe(true)
+    expect(w.level).toBe(0)
   })
 })

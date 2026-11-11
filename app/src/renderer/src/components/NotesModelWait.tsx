@@ -1,12 +1,13 @@
 import { useEffect, useState, type ReactNode } from 'react'
 import type { SetupState } from '../../../shared/types'
-import { language, t } from '../../../shared/i18n'
+import { t } from '../../../shared/i18n'
+import { notesPercent } from '../notesSetup'
 
 /**
  * Waiting notes and answers share the first model's failure and its existing setup retry. downloading: what to show
- * instead while the first notes model is still downloading (Windows and Linux report how far it is, as percent).
+ * instead while the first notes model is still downloading (every system reports how far it is, as percent).
  */
-export function NotesModelWait({ children, downloading }: { children: ReactNode; downloading?: (percent?: string) => ReactNode }) {
+export function NotesModelWait({ children, downloading }: { children: ReactNode; downloading?: (percent: string) => ReactNode }) {
   const [setup, setSetup] = useState<SetupState>()
   const [retrying, setRetrying] = useState(false)
   const [retryFailed, setRetryFailed] = useState(false)
@@ -21,9 +22,7 @@ export function NotesModelWait({ children, downloading }: { children: ReactNode;
     finally { setRetrying(false) }
   }
   if (!setup?.notesError) {
-    if (downloading && setup?.notesFraction !== undefined) return downloading(new Intl.NumberFormat(language(), { style: 'percent', maximumFractionDigits: 0 }).format(Math.floor(Math.max(0, Math.min(1, setup.notesFraction)) * 100) / 100))
-    // a Mac doesn't say how far
-    if (downloading && setup?.notesDownloading) return downloading()
+    if (downloading && setup && (setup.notesFraction !== undefined || setup.notesDownloading)) return downloading(notesPercent(setup.notesFraction ?? 0))
     return children
   }
   return (

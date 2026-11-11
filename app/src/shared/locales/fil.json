@@ -610,5 +610,10 @@
   "Disconnect": "Idiskonekta",
   "Yogurt stops using these calendars.": "Hihinto ang Yogurt sa paggamit ng mga kalendaryong ito.",
   "Calendar access": "Access sa kalendaryo",
-  "Remove Yogurt’s access in System Settings.": "Alisin ang access ng Yogurt sa System Settings."
+  "Remove Yogurt’s access in System Settings.": "Alisin ang access ng Yogurt sa System Settings.",
+  "Setting up notes": "Inihahanda ang mga tala",
+  "Setting up notes · {percent}": "Inihahanda ang mga tala · {percent}",
+  "Recording works now. Summaries and Ask start when Yogurt's AI finishes downloading.": "Puwede ka nang mag-record. Gagana ang mga buod at mga tanong kapag natapos ang pag-download ng AI ng Yogurt.",
+  "Waiting for Yogurt's AI to finish downloading ({percent}). Your answer comes as soon as it's ready.": "Hinihintay matapos ang pag-download ng AI ng Yogurt ({percent}). Makukuha mo ang sagot kapag handa na ito.",
+  "Yogurt's AI is ready. Summaries and Ask now work.": "Handa na ang AI ng Yogurt. Gumagana na ang mga buod at mga tanong."
 }

@@ -610,5 +610,10 @@
   "Disconnect": "বিচ্ছিন্ন করুন",
   "Yogurt stops using these calendars.": "Yogurt এই ক্যালেন্ডারগুলো ব্যবহার করা বন্ধ করে।",
   "Calendar access": "ক্যালেন্ডার অ্যাক্সেস",
-  "Remove Yogurt’s access in System Settings.": "সিস্টেম সেটিংসে Yogurt-এর অ্যাক্সেস সরান।"
+  "Remove Yogurt’s access in System Settings.": "সিস্টেম সেটিংসে Yogurt-এর অ্যাক্সেস সরান।",
+  "Setting up notes": "নোট প্রস্তুত হচ্ছে",
+  "Setting up notes · {percent}": "নোট প্রস্তুত হচ্ছে · {percent}",
+  "Recording works now. Summaries and Ask start when Yogurt's AI finishes downloading.": "এখনই রেকর্ড করা যায়। Yogurt-এর AI ডাউনলোড শেষ হলে সারাংশ ও প্রশ্ন করার সুবিধা চালু হবে।",
+  "Waiting for Yogurt's AI to finish downloading ({percent}). Your answer comes as soon as it's ready.": "Yogurt-এর AI ডাউনলোড শেষ হওয়ার অপেক্ষায় ({percent})। প্রস্তুত হলেই আপনার উত্তর আসবে।",
+  "Yogurt's AI is ready. Summaries and Ask now work.": "Yogurt-এর AI প্রস্তুত। সারাংশ ও প্রশ্ন করার সুবিধা এখন কাজ করছে।"
 }

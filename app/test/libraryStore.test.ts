@@ -3,7 +3,7 @@ import { mkdtempSync, rmSync } from 'node:fs'
 import { tmpdir } from 'node:os'
 import { join } from 'node:path'
 import { openStore, type Store } from '../src/main/store'
-import { Library } from '../src/main/library/store'
+import { Library, libraryTables } from '../src/main/library/store'
 
 const dirs: string[] = []
 const stores: Store[] = []
@@ -96,11 +96,30 @@ describe('conversations', () => {
     lib.setTurn(t, 'It is 20 dollars [1].', false, [{ n: 1, meetingId: 'm1', title: 'Pricing', startedAt: 5, atMs: 6000 }])
     // asking moves a conversation to the top
     expect(lib.conversations().map((c) => c.id)).toEqual([a, b])
-    expect(lib.turns(a)).toEqual([{ id: t, question: 'what about pricing?', answer: 'It is 20 dollars [1].', stopped: false, sources: [{ n: 1, meetingId: 'm1', title: 'Pricing', startedAt: 5, atMs: 6000 }] }])
+    expect(lib.turns(a)).toEqual([{ id: t, question: 'what about pricing?', answer: 'It is 20 dollars [1].', stopped: false, waitingModel: false, sources: [{ n: 1, meetingId: 'm1', title: 'Pricing', startedAt: 5, atMs: 6000 }] }])
     lib.renameConversation(a, 'Pricing questions')
     expect(lib.conversation(a)?.title).toBe('Pricing questions')
     lib.deleteConversation(a)
     expect(lib.conversation(a)).toBeUndefined()
     expect(lib.turns(a)).toEqual([])
   })
+})
+
+
+it('adds download-wait persistence to an existing database without reclassifying old turns', () => {
+  const { s, lib } = fresh()
+  const id = lib.createConversation('Existing conversation')
+  const answered = lib.addTurn(id, 'Answered question')
+  lib.setTurn(answered, 'Saved answer', false, [])
+  const interrupted = lib.addTurn(id, 'Interrupted question')
+  s.db.exec('ALTER TABLE conversation_turns DROP COLUMN waiting_model')
+  libraryTables(s.db)
+  expect(lib.turns(id)).toMatchObject([
+    { id: answered, answer: 'Saved answer', waitingModel: false },
+    { id: interrupted, answer: '', waitingModel: false },
+  ])
+  expect(lib.waitingTurns()).toEqual([])
+  const waiting = lib.addTurn(id, 'Waiting for the download', 3000, true)
+  libraryTables(s.db)
+  expect(lib.waitingTurns()).toEqual([{ conversationId: id, id: waiting, question: 'Waiting for the download' }])
 })

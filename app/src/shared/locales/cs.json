@@ -636,5 +636,10 @@
   "Disconnect": "Odpojit",
   "Yogurt stops using these calendars.": "Yogurt přestane tyto kalendáře používat.",
   "Calendar access": "Přístup ke kalendáři",
-  "Remove Yogurt’s access in System Settings.": "Přístup Yogurtu odeberete v Nastavení systému."
+  "Remove Yogurt’s access in System Settings.": "Přístup Yogurtu odeberete v Nastavení systému.",
+  "Setting up notes": "Příprava poznámek",
+  "Setting up notes · {percent}": "Příprava poznámek · {percent}",
+  "Recording works now. Summaries and Ask start when Yogurt's AI finishes downloading.": "Nahrávání už funguje. Souhrny a dotazy začnou fungovat po stažení AI Yogurtu.",
+  "Waiting for Yogurt's AI to finish downloading ({percent}). Your answer comes as soon as it's ready.": "Čeká se na stažení AI Yogurtu ({percent}). Odpověď dostanete, jakmile bude připravena.",
+  "Yogurt's AI is ready. Summaries and Ask now work.": "AI Yogurtu je připravena. Souhrny a dotazy už fungují."
 }

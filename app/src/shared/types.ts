@@ -285,9 +285,9 @@ export type SetupState = {
   message?: string
   /** Speech is ready, but the first notes-model download failed. Recording and transcription still work. */
   notesError?: string
-  /** Windows and Linux: the first notes model is still downloading after ready, this far (0 to 1); waiting notes say so */
+  /** The first notes model is still downloading after ready, this far (0 to 1), on every system. */
   notesFraction?: number
-  /** the first notes model is still downloading after ready (every system; only Windows and Linux say how far) */
+  /** The first notes model is still downloading after ready, on every system. */
   notesDownloading?: boolean
 }
 

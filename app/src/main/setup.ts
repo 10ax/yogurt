@@ -181,7 +181,7 @@ export class SetupController {
       }
       this.paths = { asr: asrPath }
       this.set({ phase: 'ready', fraction: 1 })
-      this.startNotes(starterItem, embedItem, later && llmItem(dirs.llm, later), hw.os !== 'darwin')
+      this.startNotes(starterItem, embedItem, later && llmItem(dirs.llm, later))
     } catch (err) {
       console.error('setup failed', err)
       this.set({ phase: 'error', fraction: this._state.fraction, message: friendly(err) })
@@ -215,20 +215,20 @@ export class SetupController {
    * The first notes model downloads while Yogurt already records: it is tried until it lands (meetings recorded
    * meanwhile get their notes then). The bigger one follows.
    */
-  private startNotes(first: Item, embed: Item, later: Item | undefined, showProgress: boolean) {
+  private startNotes(first: Item, embed: Item, later: Item | undefined) {
     this.background = (async () => {
       const waits = this.deps.notesRetryMs ?? NOTES_RETRY_MS
-      // Windows and Linux: notes waiting for it show how far it is (whole percents); every 10% goes in the log
+      // Waiting notes show whole percents; every 10% goes in the log.
       let shown = -1, logged = -1
       const progress = (p: { fraction: number }) => {
         const pct = Math.floor(p.fraction * 100)
         if (Math.floor(pct / 10) > logged) { logged = Math.floor(pct / 10); console.info('NOTES', `notes model download ${pct}%`) }
-        if (showProgress && pct !== shown) { shown = pct; this.set({ ...this._state, notesFraction: p.fraction }) }
+        if (pct !== shown) { shown = pct; this.set({ ...this._state, notesFraction: p.fraction }) }
       }
       const already = isVerified(first.dir, first.fileName, this.sha(first))
       if (!already) console.info('NOTES', `downloading the notes model ${first.fileName}`)
       for (let i = 0; ; i++) {
-        this.set({ ...this._state, notesError: undefined, ...(already ? {} : { notesDownloading: true }) })
+        this.set({ ...this._state, notesError: undefined, ...(already ? {} : { notesDownloading: true, notesFraction: 0 }) })
         try {
           const path = await this.fetch(first, already ? undefined : progress)
           if (this.paths) this.paths = { ...this.paths, llm: path }

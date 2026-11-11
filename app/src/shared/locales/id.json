@@ -571,5 +571,10 @@
   "Disconnect": "Putuskan",
   "Yogurt stops using these calendars.": "Yogurt berhenti menggunakan kalender ini.",
   "Calendar access": "Akses kalender",
-  "Remove Yogurt’s access in System Settings.": "Hapus akses Yogurt di Pengaturan Sistem."
+  "Remove Yogurt’s access in System Settings.": "Hapus akses Yogurt di Pengaturan Sistem.",
+  "Setting up notes": "Menyiapkan catatan",
+  "Setting up notes · {percent}": "Menyiapkan catatan · {percent}",
+  "Recording works now. Summaries and Ask start when Yogurt's AI finishes downloading.": "Perekaman sudah bisa digunakan. Ringkasan dan pertanyaan akan tersedia setelah AI Yogurt selesai diunduh.",
+  "Waiting for Yogurt's AI to finish downloading ({percent}). Your answer comes as soon as it's ready.": "Menunggu AI Yogurt selesai diunduh ({percent}). Jawaban akan muncul begitu siap.",
+  "Yogurt's AI is ready. Summaries and Ask now work.": "AI Yogurt sudah siap. Ringkasan dan pertanyaan kini bisa digunakan."
 }

@@ -610,5 +610,10 @@
   "Disconnect": "Bağlantıyı kes",
   "Yogurt stops using these calendars.": "Yogurt bu takvimleri kullanmayı bırakır.",
   "Calendar access": "Takvim erişimi",
-  "Remove Yogurt’s access in System Settings.": "Yogurt’un erişimini Sistem Ayarları’ndan kaldır."
+  "Remove Yogurt’s access in System Settings.": "Yogurt’un erişimini Sistem Ayarları’ndan kaldır.",
+  "Setting up notes": "Notlar hazırlanıyor",
+  "Setting up notes · {percent}": "Notlar hazırlanıyor · {percent}",
+  "Recording works now. Summaries and Ask start when Yogurt's AI finishes downloading.": "Şimdi kayıt yapabilirsiniz. Yogurt’un yapay zekası indirildiğinde özetler ve sorular çalışacak.",
+  "Waiting for Yogurt's AI to finish downloading ({percent}). Your answer comes as soon as it's ready.": "Yogurt’un yapay zekasının indirilmesi bekleniyor ({percent}). Hazır olur olmaz yanıtınızı alacaksınız.",
+  "Yogurt's AI is ready. Summaries and Ask now work.": "Yogurt’un yapay zekası hazır. Özetler ve sorular artık çalışıyor."
 }

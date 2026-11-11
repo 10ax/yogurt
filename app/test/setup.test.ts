@@ -328,27 +328,30 @@ describe('the speed check (Windows and Linux): speech models timed on this compu
     return { deps, timed, stored: () => stored }
   }
 
-  it('the first notes model shows how far its download is (off a Mac), and stops showing it once it is in', async () => {
+  it('the first notes model shows progress on Windows, then clears it when installed', async () => {
     const s = speed({ 'whisper-small-q5_1': 0.3 })
     const { c, states } = setup({ getHardware: async () => cpuPc, speed: s.deps })
     await c.start(); await c.idle()
     const shown = states.filter((x) => x.phase === 'ready' && x.notesFraction !== undefined).map((x) => x.notesFraction)
-    expect(shown).toEqual([0.25, 0.5, 0.75, 1])
+    expect(shown).toEqual([0, 0.25, 0.5, 0.75, 1])
     expect(c.state.notesFraction).toBeUndefined()
     expect(c.installed()?.llm).toBeTruthy()
   })
 
-  it('a Mac shows no notes download progress (as before)', async () => {
+  it('a Mac reports the same notes download progress', async () => {
     const { c, states } = setup()
     await c.start(); await c.idle()
-    expect(states.some((x) => x.notesFraction !== undefined)).toBe(false)
+    expect(states.filter(x => x.notesFraction !== undefined).map(x => x.notesFraction)).toEqual([0, 0.25, 0.5, 0.75, 1])
+    expect(c.state.notesFraction).toBeUndefined()
   })
 
   it('every system says the first notes model is still downloading, until it is in', async () => {
-    for (const hw of [undefined, cpuPc]) {
-      const { c, states } = setup(hw ? { getHardware: async () => hw, speed: speed({ 'whisper-small-q5_1': 0.3 }).deps } : {})
+    for (const hw of [m1max, cpuPc, gpuPc]) {
+      const { c, states } = setup({ getHardware: async () => hw })
       await c.start(); await c.idle()
-      expect(states.some((x) => x.phase === 'ready' && x.notesDownloading)).toBe(true)
+      expect(states.some((x) => x.phase === 'ready' && x.notesDownloading && x.notesFraction === 0)).toBe(true)
+      expect(states.some((x) => (x.notesFraction ?? 0) > 0)).toBe(true)
+      expect(c.state.notesFraction).toBeUndefined()
       expect(c.state.notesDownloading).toBeUndefined()
     }
   })

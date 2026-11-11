@@ -52,9 +52,9 @@ export function hookConversations(p: Deps) {
   const turns = (id: string) => {
     let list = open.get(id)
     if (!list) {
-      // Preserve interrupted questions too; they can be asked again.
+      // Only a question that was waiting for the download resumes after a restart.
       list = p.library.turns(id)
-        .map((t) => ({ id: t.id, question: t.question, answer: t.answer, status: t.stopped || !t.answer ? 'stopped' as const : 'done' as const, sources: t.sources }))
+        .map((t) => ({ id: t.id, question: t.question, answer: t.answer, status: t.waitingModel ? 'waiting' as const : t.stopped || !t.answer ? 'stopped' as const : 'done' as const, sources: t.sources }))
       open.set(id, list)
     }
     return list
@@ -93,115 +93,123 @@ export function hookConversations(p: Deps) {
     return { items: kept, history: recent }
   }
 
-  return {
+  /** A resumed question keeps its saved turn and context. */
+  function ask(id: string | null, raw: string, o: { scope?: string[] } = {}, resume?: number): { id: string; done: Promise<void> } {
+    const question = raw.trim().slice(0, 4000)
+    if (id && !p.library.conversation(id)) throw new Error('Conversation not found')
+    if (id && running.has(id)) throw new Error('An answer is already running')
+    if (!question) return { id: id ?? '', done: Promise.resolve() }
+    const cid = id ?? p.library.current([], true)
+    if (!p.library.conversation(cid)?.title) p.library.renameConversation(cid, titleOf(question))
+    const conversation = p.library.conversation(cid)!
+    const chips = attachContext(conversation.chips, conversation.draftChips)
+    const scope = p.library.scope(chips) ?? o.scope
+    const single = singleOf(chips)
+    const all = turns(cid)
+    // asking again after a failure replaces the failed turn
+    while (all.at(-1)?.status === 'failed') all.pop()
+    // only full answers follow on: a stopped one may be cut mid-sentence
+    const done = all.filter((t) => t.status === 'done' && t.answer)
+    const history = done.map((t) => ({ question: t.question, answer: t.answer }))
+    const turn: ConversationTurn = resume === undefined
+      ? { id: p.library.addTurn(cid, question, now(), p.waitsForModel()), question, answer: '', status: 'waiting', sources: [] }
+      : all.find(t => t.id === resume)!
+    if (resume === undefined) all.push(turn)
+    const ac = new AbortController()
+    running.set(cid, ac)
+    p.sendList(list())
+    push(cid)
+
+    let timer: NodeJS.Timeout | undefined, last = 0, over = false
+    const flush = () => { timer = undefined; last = Date.now(); if (!over) push(cid) }
+    const later = () => {
+      // a stopped job can still be finishing in the queue: the turn is settled, nothing more to show
+      if (timer || over) return
+      const wait = SEND_EVERY_MS - (Date.now() - last)
+      if (wait <= 0) flush(); else timer = setTimeout(flush, wait)
+    }
+    let written = '', completed: string | undefined
+    const job = single ? (async () => {
+      for await (const text of askMeeting(p, single, question, history, {
+        signal: ac.signal,
+        onStart: () => { p.library.startTurn(turn.id); turn.status = 'answering'; later() },
+        onStep: (step) => { turn.step = step; later() },
+        onRestart: () => { written = ''; completed = undefined; turn.answer = ''; turn.status = 'waiting'; turn.step = undefined; later() },
+        onComplete: answer => { completed = answer },
+      })) { written += text; turn.answer = written; later() }
+    })() : p.queue.enqueue(async (stop) => {
+      if (ac.signal.aborted) return
+      const signal = AbortSignal.any([stop, ac.signal])
+      p.library.startTurn(turn.id)
+      turn.status = 'answering'; turn.step = { kind: 'searching' }; later()
+      try {
+        const got = await retrieve(p, question, { now: now(), scope, context: done.at(-1)?.question })
+        if (p.model.needsLoad?.()) { turn.step = { kind: 'loading' }; later() }
+        const llm = await p.model.llm(signal)
+        // the names of every meeting found, spelled right
+        const words = got.items.map((i) => p.store.meeting(i.meetingId)).filter((m) => !!m).map((m) => meetingWords(m))
+        // the person's jargon too, found meetings or none
+        const { jargon } = meetingWords({ title: '', titleSource: 'generic', attendees: [] })
+        const spelling = spellingLine({ title: '', names: words.flatMap((w) => w.names), companies: words.flatMap((w) => w.companies), ...(jargon ? { jargon } : {}) })
+        const fitted = await fit(llm, got.items, question, history, spelling)
+        const items = byMeeting(fitted.items), recent = fitted.history
+        turn.sources = items.map((i, k): LibrarySource => {
+          const source: LibrarySource = { n: k + 1, meetingId: i.meetingId, title: i.title, startedAt: i.startedAt, atMs: i.atMs, excerpt: i.text }
+          const range = i.transcriptRange, meeting = p.store.meeting(i.meetingId)
+          if (range && meeting) source.transcript = {
+            speakers: p.store.speakerOrder(i.meetingId),
+            lines: p.store.segments(i.meetingId).filter(s => s.startMs >= range.startMs && s.startMs < range.endMs)
+              .map(({ text, track, speaker, startMs }) => ({ text: respell(text, meetingWords(meeting)), track, speaker, startMs })),
+          }
+          return source
+        })
+        const found = [...new Set(items.map((i) => i.meetingId))]
+        turn.step = { kind: 'reading', meetings: found.length, ...(found.length === 1 ? { title: items[0].title } : {}) }
+        // the sources go out at once, so citations become links as they are written
+        if (!over) flush()
+        if (signal.aborted) return
+        const answer = await llm.chat(libraryPrompt({ items, question, history: recent, now: now(), spelling }), (t) => {
+          if (signal.aborted) return
+          written += t; turn.answer = written; later()
+        }, { maxTokens: ANSWER_TOKENS })
+        if (!signal.aborted) completed = answer
+      } finally {
+        // stopped by the queue alone (a recording needs the room): it starts over later, so what was written goes
+        if (stop.aborted && !ac.signal.aborted) { written = ''; completed = undefined; turn.answer = ''; turn.sources = []; turn.status = 'waiting'; turn.step = undefined; later() }
+      }
+    }, 'chat')
+    // a stop ends it at once, even while it still waits in the queue (the job then does nothing when its turn comes)
+    const stopped = new Promise<void>((r) => ac.signal.addEventListener('abort', () => r(), { once: true }))
+
+    const finished = (async () => {
+      try {
+        await Promise.race([job, stopped])
+        turn.answer = single ? (completed ?? written).trim() : tidyCitations((completed ?? written).trim(), turn.sources)
+        turn.status = ac.signal.aborted ? 'stopped' : 'done'
+        turn.step = undefined
+        const cited = new Set(citedIn(turn.answer))
+        p.library.setTurn(turn.id, turn.answer, turn.status === 'stopped', turn.sources.filter((s) => cited.has(s.n)))
+      } catch (e) {
+        console.error('answering a question across meetings failed', e)
+        turn.status = 'failed'
+        p.library.deleteTurn(turn.id)
+      } finally {
+        over = true
+        if (timer) clearTimeout(timer)
+        if (running.get(cid) === ac) running.delete(cid)
+        if (open.get(cid) === all) push(cid)
+      }
+    })()
+    return { id: cid, done: finished }
+  }
+
+  const recover = () => {
+    for (const turn of p.library.waitingTurns()) if (!running.has(turn.conversationId)) void ask(turn.conversationId, turn.question, {}, turn.id).done
+  }
+  const api = {
     list,
     view,
-    /** id null: a new conversation. Returns its id once the question is saved; done once the answer is */
-    ask(id: string | null, raw: string, o: { scope?: string[] } = {}): { id: string; done: Promise<void> } {
-      const question = raw.trim().slice(0, 4000)
-      if (id && !p.library.conversation(id)) throw new Error('Conversation not found')
-      if (id && running.has(id)) throw new Error('An answer is already running')
-      if (!question) return { id: id ?? '', done: Promise.resolve() }
-      const cid = id ?? p.library.current([], true)
-      if (!p.library.conversation(cid)?.title) p.library.renameConversation(cid, titleOf(question))
-      const conversation = p.library.conversation(cid)!
-      const chips = attachContext(conversation.chips, conversation.draftChips)
-      const scope = p.library.scope(chips) ?? o.scope
-      const single = singleOf(chips)
-      const all = turns(cid)
-      // asking again after a failure replaces the failed turn
-      while (all.at(-1)?.status === 'failed') all.pop()
-      // only full answers follow on: a stopped one may be cut mid-sentence
-      const done = all.filter((t) => t.status === 'done' && t.answer)
-      const history = done.map((t) => ({ question: t.question, answer: t.answer }))
-      const turn: ConversationTurn = { id: p.library.addTurn(cid, question, now()), question, answer: '', status: 'waiting', sources: [] }
-      all.push(turn)
-      const ac = new AbortController()
-      running.set(cid, ac)
-      p.sendList(list())
-      push(cid)
-
-      let timer: NodeJS.Timeout | undefined, last = 0, over = false
-      const flush = () => { timer = undefined; last = Date.now(); if (!over) push(cid) }
-      const later = () => {
-        // a stopped job can still be finishing in the queue: the turn is settled, nothing more to show
-        if (timer || over) return
-        const wait = SEND_EVERY_MS - (Date.now() - last)
-        if (wait <= 0) flush(); else timer = setTimeout(flush, wait)
-      }
-      let written = '', completed: string | undefined
-      const job = single ? (async () => {
-        for await (const text of askMeeting(p, single, question, history, {
-          signal: ac.signal,
-          onStart: () => { turn.status = 'answering'; later() },
-          onStep: (step) => { turn.step = step; later() },
-          onRestart: () => { written = ''; completed = undefined; turn.answer = ''; turn.status = 'waiting'; turn.step = undefined; later() },
-          onComplete: answer => { completed = answer },
-        })) { written += text; turn.answer = written; later() }
-      })() : p.queue.enqueue(async (stop) => {
-        if (ac.signal.aborted) return
-        const signal = AbortSignal.any([stop, ac.signal])
-        turn.status = 'answering'; turn.step = { kind: 'searching' }; later()
-        try {
-          const got = await retrieve(p, question, { now: now(), scope, context: done.at(-1)?.question })
-          if (p.model.needsLoad?.()) { turn.step = { kind: 'loading' }; later() }
-          const llm = await p.model.llm(signal)
-          // the names of every meeting found, spelled right
-          const words = got.items.map((i) => p.store.meeting(i.meetingId)).filter((m) => !!m).map((m) => meetingWords(m))
-          // the person's jargon too, found meetings or none
-          const { jargon } = meetingWords({ title: '', titleSource: 'generic', attendees: [] })
-          const spelling = spellingLine({ title: '', names: words.flatMap((w) => w.names), companies: words.flatMap((w) => w.companies), ...(jargon ? { jargon } : {}) })
-          const fitted = await fit(llm, got.items, question, history, spelling)
-          const items = byMeeting(fitted.items), recent = fitted.history
-          turn.sources = items.map((i, k): LibrarySource => {
-            const source: LibrarySource = { n: k + 1, meetingId: i.meetingId, title: i.title, startedAt: i.startedAt, atMs: i.atMs, excerpt: i.text }
-            const range = i.transcriptRange, meeting = p.store.meeting(i.meetingId)
-            if (range && meeting) source.transcript = {
-              speakers: p.store.speakerOrder(i.meetingId),
-              lines: p.store.segments(i.meetingId).filter(s => s.startMs >= range.startMs && s.startMs < range.endMs)
-                .map(({ text, track, speaker, startMs }) => ({ text: respell(text, meetingWords(meeting)), track, speaker, startMs })),
-            }
-            return source
-          })
-          const found = [...new Set(items.map((i) => i.meetingId))]
-          turn.step = { kind: 'reading', meetings: found.length, ...(found.length === 1 ? { title: items[0].title } : {}) }
-          // the sources go out at once, so citations become links as they are written
-          if (!over) flush()
-          if (signal.aborted) return
-          const answer = await llm.chat(libraryPrompt({ items, question, history: recent, now: now(), spelling }), (t) => {
-            if (signal.aborted) return
-            written += t; turn.answer = written; later()
-          }, { maxTokens: ANSWER_TOKENS })
-          if (!signal.aborted) completed = answer
-        } finally {
-          // stopped by the queue alone (a recording needs the room): it starts over later, so what was written goes
-          if (stop.aborted && !ac.signal.aborted) { written = ''; completed = undefined; turn.answer = ''; turn.sources = []; turn.status = 'waiting'; turn.step = undefined; later() }
-        }
-      }, 'chat')
-      // a stop ends it at once, even while it still waits in the queue (the job then does nothing when its turn comes)
-      const stopped = new Promise<void>((r) => ac.signal.addEventListener('abort', () => r(), { once: true }))
-
-      const finished = (async () => {
-        try {
-          await Promise.race([job, stopped])
-          turn.answer = single ? (completed ?? written).trim() : tidyCitations((completed ?? written).trim(), turn.sources)
-          turn.status = ac.signal.aborted ? 'stopped' : 'done'
-          turn.step = undefined
-          const cited = new Set(citedIn(turn.answer))
-          p.library.setTurn(turn.id, turn.answer, turn.status === 'stopped', turn.sources.filter((s) => cited.has(s.n)))
-        } catch (e) {
-          console.error('answering a question across meetings failed', e)
-          turn.status = 'failed'
-          p.library.deleteTurn(turn.id)
-        } finally {
-          over = true
-          if (timer) clearTimeout(timer)
-          if (running.get(cid) === ac) running.delete(cid)
-          if (open.get(cid) === all) push(cid)
-        }
-      })()
-      return { id: cid, done: finished }
-    },
+    ask: (id: string | null, raw: string, o: { scope?: string[] } = {}) => ask(id, raw, o),
     context(id: string, chips: import('../../shared/askContext').ContextChip[]) {
       if (running.has(id)) throw new Error('Wait for the current answer before changing context')
       p.library.setContext(id, chips); push(id); p.sendList(list())
@@ -239,8 +247,10 @@ export function hookConversations(p: Deps) {
       p.library.deleteConversation(id)
       p.sendList(list())
     },
-    /** the windows hear again what open conversations wait for (the notes model arrived) */
-    refresh() { for (const id of open.keys()) push(id) },
+    /** Imports may bring waiting questions too; open conversations hear when the model arrives. */
+    refresh() { recover(); for (const id of open.keys()) push(id) },
   }
+  recover()
+  return api
 }
 export type Conversations = ReturnType<typeof hookConversations>

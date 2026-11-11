@@ -45,8 +45,9 @@ async function rig(o: { llm?: Partial<Llm>; queue?: ReturnType<typeof createQueu
   }
   const views: ConversationView[] = []
   const lists: unknown[] = []
-  const chats = hookConversations({ store, library, indexer, embedder, queue, model: { llm: async () => llm }, send: (v) => views.push(v), sendList: (l) => lists.push(l), waitsForMeeting: () => false, waitsForModel: o.waitsForModel ?? (() => false), warmAllowed: o.warmAllowed, now: () => now })
-  return { store, library, chats, prompts, read, views, lists, meeting: m }
+  const deps = { store, library, indexer, embedder, queue, model: { llm: async () => llm }, send: (v: ConversationView) => { views.push(v) }, sendList: (l: unknown) => { lists.push(l) }, waitsForMeeting: () => false, waitsForModel: o.waitsForModel ?? (() => false), warmAllowed: o.warmAllowed, now: () => now }
+  const chats = hookConversations(deps)
+  return { store, library, chats, prompts, read, views, lists, meeting: m, deps, file: join(d, 'yogurt.db') }
 }
 
 describe('conversations across meetings', () => {
@@ -273,5 +274,85 @@ describe('warm: one meeting read in when its conversation opens', () => {
     waiting.chats.warm(waiting.library.current([{ kind: 'meeting', id: waiting.meeting.id }]))
     await settle()
     expect([...off.read, ...waiting.read]).toEqual([])
+  })
+})
+
+
+describe('questions waiting for the first notes download', () => {
+  it.each(['meeting', 'library'])('answers a waiting %s question when the model arrives', async scope => {
+    let ready = true
+    const queue = createQueue({ smallMac: false, recording: () => false, modelReady: () => ready })
+    const t = await rig({ queue, waitsForModel: () => !ready })
+    ready = false
+    const cid = scope === 'meeting' ? t.library.current([{ kind: 'meeting', id: t.meeting.id }]) : null
+    const { id, done } = t.chats.ask(cid, 'What is the price?')
+    expect(t.chats.view(id)?.turns[0].status).toBe('waiting')
+    expect(t.library.turns(id)[0].waitingModel).toBe(true)
+    expect(t.prompts).toEqual([])
+    ready = true; queue.modelArrived()
+    await done
+    expect(t.chats.view(id)?.turns[0].status).toBe('done')
+    expect(t.library.waitingTurns()).toEqual([])
+    expect(t.prompts).toHaveLength(1)
+  })
+
+  it.each([
+    ['meeting', false], ['library', false], ['meeting', true], ['library', true],
+  ] as const)('resumes the same saved %s question after reopening the database (model already ready: %s)', async (scope, readyOnRestart) => {
+    let ready = true
+    const queue = createQueue({ smallMac: false, recording: () => false, modelReady: () => ready })
+    const t = await rig({ queue, waitsForModel: () => !ready })
+    ready = false
+    const cid = scope === 'meeting' ? t.library.current([{ kind: 'meeting', id: t.meeting.id }]) : null
+    const { id } = t.chats.ask(cid, 'What is the price?')
+    const saved = t.library.turns(id)[0]
+    t.store.close(); stores.splice(stores.indexOf(t.store), 1)
+    const store = openStore(t.file); stores.push(store)
+    const library = new Library(store.db)
+    ready = readyOnRestart
+    const resumedQueue = createQueue({ smallMac: false, recording: () => false, modelReady: () => ready })
+    const engine = new FakeEngine()
+    const embedder = createEmbedder({ engine, modelPath: () => '/m/e.gguf', id: 'fake', dims: 768 })
+    const indexer = createIndexer({ store, library, embedder, queue: resumedQueue })
+    const resumed = hookConversations({ ...t.deps, store, library, embedder, indexer, queue: resumedQueue })
+    if (!ready) expect(resumed.view(id)?.turns[0].status).toBe('waiting')
+    ready = true; resumedQueue.modelArrived()
+    await expect.poll(() => resumed.view(id)?.turns[0].status).toBe('done')
+    expect(library.turns(id)).toHaveLength(1)
+    expect(library.turns(id)[0]).toMatchObject({ id: saved.id, question: saved.question, waitingModel: false })
+    expect(t.prompts).toHaveLength(1)
+    if (scope === 'meeting') expect(resumed.view(id)?.chips).toMatchObject([{ kind: 'meeting', id: t.meeting.id }])
+  })
+
+  it('queues imported waiting questions on refresh, without duplicating running work', async () => {
+    let ready = true
+    const queue = createQueue({ smallMac: false, recording: () => false, modelReady: () => ready })
+    const t = await rig({ queue, waitsForModel: () => !ready })
+    ready = false
+    const id = t.library.current([], true)
+    const turn = t.library.addTurn(id, 'Imported waiting question', now, true)
+    t.chats.refresh(); t.chats.refresh()
+    expect(t.chats.view(id)?.turns).toMatchObject([{ id: turn, status: 'waiting' }])
+    ready = true; queue.modelArrived()
+    await expect.poll(() => t.chats.view(id)?.turns[0].status).toBe('done')
+    expect(t.library.turns(id)).toHaveLength(1)
+    expect(t.prompts).toHaveLength(1)
+  })
+
+  it('keeps cancelled questions stopped and never resumes an interrupted answer', async () => {
+    let ready = true
+    const queue = createQueue({ smallMac: false, recording: () => false, modelReady: () => ready })
+    const t = await rig({ queue, waitsForModel: () => !ready })
+    ready = false
+    const { id, done } = t.chats.ask(null, 'Cancel this question')
+    t.chats.stop(id); await done
+    expect(t.library.waitingTurns()).toEqual([])
+    const other = t.library.current([], true)
+    t.library.addTurn(other, 'Interrupted during inference')
+    const resumed = hookConversations(t.deps)
+    expect(resumed.view(id)?.turns[0].status).toBe('stopped')
+    expect(resumed.view(other)?.turns[0].status).toBe('stopped')
+    ready = true; queue.modelArrived()
+    expect(t.prompts).toEqual([])
   })
 })

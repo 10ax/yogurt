@@ -623,5 +623,10 @@
   "Disconnect": "Desconectar",
   "Yogurt stops using these calendars.": "O Yogurt deixa de usar esses calendários.",
   "Calendar access": "Acesso ao calendário",
-  "Remove Yogurt’s access in System Settings.": "Remova o acesso do Yogurt nos Ajustes do Sistema."
+  "Remove Yogurt’s access in System Settings.": "Remova o acesso do Yogurt nos Ajustes do Sistema.",
+  "Setting up notes": "Preparando as notas",
+  "Setting up notes · {percent}": "Preparando as notas · {percent}",
+  "Recording works now. Summaries and Ask start when Yogurt's AI finishes downloading.": "Você já pode gravar. Os resumos e as perguntas estarão disponíveis quando o download da IA do Yogurt terminar.",
+  "Waiting for Yogurt's AI to finish downloading ({percent}). Your answer comes as soon as it's ready.": "Aguardando o download da IA do Yogurt ({percent}). Você receberá a resposta assim que ela estiver pronta.",
+  "Yogurt's AI is ready. Summaries and Ask now work.": "A IA do Yogurt está pronta. Os resumos e as perguntas já funcionam."
 }

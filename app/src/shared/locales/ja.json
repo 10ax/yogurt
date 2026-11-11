@@ -571,5 +571,10 @@
   "Disconnect": "接続を解除",
   "Yogurt stops using these calendars.": "Yogurt はこれらのカレンダーを使わなくなります。",
   "Calendar access": "カレンダーへのアクセス",
-  "Remove Yogurt’s access in System Settings.": "Yogurt のアクセス権はシステム設定で外せます。"
+  "Remove Yogurt’s access in System Settings.": "Yogurt のアクセス権はシステム設定で外せます。",
+  "Setting up notes": "ノートを準備中",
+  "Setting up notes · {percent}": "ノートを準備中 · {percent}",
+  "Recording works now. Summaries and Ask start when Yogurt's AI finishes downloading.": "録音はすでに利用できます。YogurtのAIのダウンロードが完了すると、要約と質問が使えるようになります。",
+  "Waiting for Yogurt's AI to finish downloading ({percent}). Your answer comes as soon as it's ready.": "YogurtのAIのダウンロード完了を待っています（{percent}）。準備ができ次第、回答します。",
+  "Yogurt's AI is ready. Summaries and Ask now work.": "YogurtのAIの準備ができました。要約と質問が利用できます。"
 }

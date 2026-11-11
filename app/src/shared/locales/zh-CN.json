@@ -571,5 +571,10 @@
   "Disconnect": "断开",
   "Yogurt stops using these calendars.": "Yogurt 将停止使用这些日历。",
   "Calendar access": "日历访问权限",
-  "Remove Yogurt’s access in System Settings.": "在系统设置中移除 Yogurt 的访问权限。"
+  "Remove Yogurt’s access in System Settings.": "在系统设置中移除 Yogurt 的访问权限。",
+  "Setting up notes": "正在准备笔记",
+  "Setting up notes · {percent}": "正在准备笔记 · {percent}",
+  "Recording works now. Summaries and Ask start when Yogurt's AI finishes downloading.": "现在可以录音。Yogurt 的 AI 下载完成后，即可使用摘要和提问。",
+  "Waiting for Yogurt's AI to finish downloading ({percent}). Your answer comes as soon as it's ready.": "正在等待 Yogurt 的 AI 下载完成（{percent}）。准备就绪后会立即回答。",
+  "Yogurt's AI is ready. Summaries and Ask now work.": "Yogurt 的 AI 已就绪。现在可以使用摘要和提问。"
 }

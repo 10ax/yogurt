@@ -610,5 +610,10 @@
   "Disconnect": "Koble fra",
   "Yogurt stops using these calendars.": "Yogurt slutter å bruke disse kalenderne.",
   "Calendar access": "Kalendertilgang",
-  "Remove Yogurt’s access in System Settings.": "Fjern tilgangen til Yogurt i Systeminnstillinger."
+  "Remove Yogurt’s access in System Settings.": "Fjern tilgangen til Yogurt i Systeminnstillinger.",
+  "Setting up notes": "Klargjør notater",
+  "Setting up notes · {percent}": "Klargjør notater · {percent}",
+  "Recording works now. Summaries and Ask start when Yogurt's AI finishes downloading.": "Du kan ta opp nå. Sammendrag og spørsmål virker når Yogurts KI er lastet ned.",
+  "Waiting for Yogurt's AI to finish downloading ({percent}). Your answer comes as soon as it's ready.": "Venter på at Yogurts KI blir lastet ned ({percent}). Du får svar så snart den er klar.",
+  "Yogurt's AI is ready. Summaries and Ask now work.": "Yogurts KI er klar. Sammendrag og spørsmål virker nå."
 }

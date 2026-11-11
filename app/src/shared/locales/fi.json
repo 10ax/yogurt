@@ -613,5 +613,10 @@
   "Disconnect": "Irrota",
   "Yogurt stops using these calendars.": "Yogurt lakkaa käyttämästä näitä kalentereita.",
   "Calendar access": "Kalenterin käyttöoikeus",
-  "Remove Yogurt’s access in System Settings.": "Poista Yogurtin käyttöoikeus Järjestelmäasetuksista."
+  "Remove Yogurt’s access in System Settings.": "Poista Yogurtin käyttöoikeus Järjestelmäasetuksista.",
+  "Setting up notes": "Valmistellaan muistiinpanoja",
+  "Setting up notes · {percent}": "Valmistellaan muistiinpanoja · {percent}",
+  "Recording works now. Summaries and Ask start when Yogurt's AI finishes downloading.": "Voit jo tallentaa. Yhteenvedot ja kysymykset toimivat, kun Yogurtin tekoäly on ladattu.",
+  "Waiting for Yogurt's AI to finish downloading ({percent}). Your answer comes as soon as it's ready.": "Odotetaan Yogurtin tekoälyn latautumista ({percent}). Saat vastauksen heti, kun se on valmis.",
+  "Yogurt's AI is ready. Summaries and Ask now work.": "Yogurtin tekoäly on valmis. Yhteenvedot ja kysymykset toimivat nyt."
 }

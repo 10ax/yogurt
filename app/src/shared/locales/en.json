@@ -58,5 +58,10 @@
   "Still reading {count} meetings…": {
     "one": "Still reading 1 meeting…",
     "other": "Still reading {count} meetings…"
-  }
+  },
+  "Setting up notes": "Setting up notes",
+  "Setting up notes · {percent}": "Setting up notes · {percent}",
+  "Recording works now. Summaries and Ask start when Yogurt's AI finishes downloading.": "Recording works now. Summaries and Ask start when Yogurt's AI finishes downloading.",
+  "Waiting for Yogurt's AI to finish downloading ({percent}). Your answer comes as soon as it's ready.": "Waiting for Yogurt's AI to finish downloading ({percent}). Your answer comes as soon as it's ready.",
+  "Yogurt's AI is ready. Summaries and Ask now work.": "Yogurt's AI is ready. Summaries and Ask now work."
 }

@@ -571,5 +571,10 @@
   "Disconnect": "ยกเลิกการเชื่อมต่อ",
   "Yogurt stops using these calendars.": "Yogurt จะหยุดใช้ปฏิทินเหล่านี้",
   "Calendar access": "การเข้าถึงปฏิทิน",
-  "Remove Yogurt’s access in System Settings.": "เอาสิทธิ์เข้าถึงของ Yogurt ออกในการตั้งค่าระบบ"
+  "Remove Yogurt’s access in System Settings.": "เอาสิทธิ์เข้าถึงของ Yogurt ออกในการตั้งค่าระบบ",
+  "Setting up notes": "กำลังเตรียมบันทึก",
+  "Setting up notes · {percent}": "กำลังเตรียมบันทึก · {percent}",
+  "Recording works now. Summaries and Ask start when Yogurt's AI finishes downloading.": "บันทึกเสียงได้แล้ว สรุปและคำถามจะพร้อมใช้งานเมื่อดาวน์โหลด AI ของ Yogurt เสร็จ",
+  "Waiting for Yogurt's AI to finish downloading ({percent}). Your answer comes as soon as it's ready.": "กำลังรอให้ดาวน์โหลด AI ของ Yogurt เสร็จ ({percent}) คุณจะได้รับคำตอบทันทีที่พร้อม",
+  "Yogurt's AI is ready. Summaries and Ask now work.": "AI ของ Yogurt พร้อมแล้ว สรุปและคำถามใช้งานได้แล้ว"
 }

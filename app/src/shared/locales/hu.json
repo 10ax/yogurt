@@ -610,5 +610,10 @@
   "Disconnect": "Leválasztás",
   "Yogurt stops using these calendars.": "A Yogurt nem használja tovább ezeket a naptárakat.",
   "Calendar access": "Naptár-hozzáférés",
-  "Remove Yogurt’s access in System Settings.": "A Yogurt hozzáférését a Rendszerbeállításokban szüntetheted meg."
+  "Remove Yogurt’s access in System Settings.": "A Yogurt hozzáférését a Rendszerbeállításokban szüntetheted meg.",
+  "Setting up notes": "Jegyzetek előkészítése",
+  "Setting up notes · {percent}": "Jegyzetek előkészítése · {percent}",
+  "Recording works now. Summaries and Ask start when Yogurt's AI finishes downloading.": "A felvétel már működik. Az összefoglalók és a kérdések a Yogurt AI letöltése után lesznek elérhetők.",
+  "Waiting for Yogurt's AI to finish downloading ({percent}). Your answer comes as soon as it's ready.": "Várakozás a Yogurt AI letöltésére ({percent}). Amint készen áll, megkapod a választ.",
+  "Yogurt's AI is ready. Summaries and Ask now work.": "A Yogurt AI készen áll. Az összefoglalók és a kérdések már működnek."
 }

@@ -636,5 +636,10 @@
   "Disconnect": "Отключить",
   "Yogurt stops using these calendars.": "Yogurt перестанет использовать эти календари.",
   "Calendar access": "Доступ к календарю",
-  "Remove Yogurt’s access in System Settings.": "Уберите доступ Yogurt в Системных настройках."
+  "Remove Yogurt’s access in System Settings.": "Уберите доступ Yogurt в Системных настройках.",
+  "Setting up notes": "Подготовка заметок",
+  "Setting up notes · {percent}": "Подготовка заметок · {percent}",
+  "Recording works now. Summaries and Ask start when Yogurt's AI finishes downloading.": "Запись уже работает. Сводки и вопросы станут доступны после загрузки ИИ Yogurt.",
+  "Waiting for Yogurt's AI to finish downloading ({percent}). Your answer comes as soon as it's ready.": "Ожидание завершения загрузки ИИ Yogurt ({percent}). Вы получите ответ, как только он будет готов.",
+  "Yogurt's AI is ready. Summaries and Ask now work.": "ИИ Yogurt готов. Сводки и вопросы теперь доступны."
 }

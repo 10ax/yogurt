@@ -571,5 +571,10 @@
   "Disconnect": "Ngắt kết nối",
   "Yogurt stops using these calendars.": "Yogurt ngừng dùng các lịch này.",
   "Calendar access": "Quyền truy cập lịch",
-  "Remove Yogurt’s access in System Settings.": "Gỡ quyền truy cập của Yogurt trong Cài đặt hệ thống."
+  "Remove Yogurt’s access in System Settings.": "Gỡ quyền truy cập của Yogurt trong Cài đặt hệ thống.",
+  "Setting up notes": "Đang chuẩn bị ghi chú",
+  "Setting up notes · {percent}": "Đang chuẩn bị ghi chú · {percent}",
+  "Recording works now. Summaries and Ask start when Yogurt's AI finishes downloading.": "Bạn đã có thể ghi âm. Tóm tắt và câu hỏi sẽ hoạt động khi AI của Yogurt tải xong.",
+  "Waiting for Yogurt's AI to finish downloading ({percent}). Your answer comes as soon as it's ready.": "Đang chờ AI của Yogurt tải xong ({percent}). Bạn sẽ nhận được câu trả lời ngay khi sẵn sàng.",
+  "Yogurt's AI is ready. Summaries and Ask now work.": "AI của Yogurt đã sẵn sàng. Tóm tắt và câu hỏi đã hoạt động."
 }

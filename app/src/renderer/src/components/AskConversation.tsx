@@ -232,7 +232,7 @@ function Turn({ turn, chat, panel, onSource, onRetry }: { turn: ConversationTurn
   return <div data-testid={`${prefix}-turn`} data-status={turn.status} className="ask-turn">
     <p className="ask-question" data-testid={`${prefix}-question`}>{turn.question}</p>
     {(turn.status === 'waiting' || live && !answer) && (chat.waitsForModel && turn.status === 'waiting'
-      ? <NotesModelWait><p>{t('Getting ready to answer. Yogurt is still setting up.')}</p></NotesModelWait>
+      ? <NotesModelWait downloading={percent => <p role="status" className="text-sm text-muted">{t("Waiting for Yogurt's AI to finish downloading ({percent}). Your answer comes as soon as it's ready.", { percent })}</p>}><p role="status" className="text-sm text-muted">{t('Getting ready to answer. Yogurt is still setting up.')}</p></NotesModelWait>
       : <p className="chat-progress" role="status">{chat.waitsForMeeting && turn.status === 'waiting' ? t('Yogurt will answer once the meeting ends.') : <><ThinkingDots /><StepText step={turn.status === 'waiting' ? undefined : turn.step} /></>}</p>)}
     {answer && <div data-testid={`${prefix}-answer`} dir="auto" data-streaming={live || undefined} className={`note-prose chat-answer${live ? ' stream-caret' : ''}`}><AnswerText md={answer} live={live} sources={turn.sources} onSource={onSource} /></div>}
     {answer && !live && <div className="chat-answer-actions"><button className="chat-copy-action" data-testid="chat-copy-answer" aria-label={copied ? t('Copied') : t('Copy answer')} onClick={() => {

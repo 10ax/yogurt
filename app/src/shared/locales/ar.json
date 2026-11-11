@@ -666,5 +666,10 @@
   "Disconnect": "فصل",
   "Yogurt stops using these calendars.": "يتوقف Yogurt عن استخدام هذه التقويمات.",
   "Calendar access": "الوصول إلى التقويم",
-  "Remove Yogurt’s access in System Settings.": "أزِل وصول Yogurt من إعدادات النظام."
+  "Remove Yogurt’s access in System Settings.": "أزِل وصول Yogurt من إعدادات النظام.",
+  "Setting up notes": "جارٍ إعداد الملاحظات",
+  "Setting up notes · {percent}": "جارٍ إعداد الملاحظات · {percent}",
+  "Recording works now. Summaries and Ask start when Yogurt's AI finishes downloading.": "يمكنك التسجيل الآن. ستعمل الملخصات وميزة السؤال عند اكتمال تنزيل ذكاء Yogurt الاصطناعي.",
+  "Waiting for Yogurt's AI to finish downloading ({percent}). Your answer comes as soon as it's ready.": "بانتظار اكتمال تنزيل ذكاء Yogurt الاصطناعي ({percent}). ستصلك الإجابة بمجرد أن يصبح جاهزًا.",
+  "Yogurt's AI is ready. Summaries and Ask now work.": "ذكاء Yogurt الاصطناعي جاهز. يمكنك الآن استخدام الملخصات وميزة السؤال."
 }

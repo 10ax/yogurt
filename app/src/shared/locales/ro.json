@@ -623,5 +623,10 @@
   "Disconnect": "Deconectează",
   "Yogurt stops using these calendars.": "Yogurt nu mai folosește aceste calendare.",
   "Calendar access": "Acces la calendar",
-  "Remove Yogurt’s access in System Settings.": "Elimină accesul Yogurt din Setările de sistem."
+  "Remove Yogurt’s access in System Settings.": "Elimină accesul Yogurt din Setările de sistem.",
+  "Setting up notes": "Se pregătesc notițele",
+  "Setting up notes · {percent}": "Se pregătesc notițele · {percent}",
+  "Recording works now. Summaries and Ask start when Yogurt's AI finishes downloading.": "Poți înregistra deja. Rezumatele și întrebările vor funcționa după descărcarea AI-ului Yogurt.",
+  "Waiting for Yogurt's AI to finish downloading ({percent}). Your answer comes as soon as it's ready.": "Se așteaptă descărcarea AI-ului Yogurt ({percent}). Vei primi răspunsul imediat ce este gata.",
+  "Yogurt's AI is ready. Summaries and Ask now work.": "AI-ul Yogurt este gata. Rezumatele și întrebările funcționează acum."
 }

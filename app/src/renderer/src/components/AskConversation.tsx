@@ -100,7 +100,6 @@ export function AskConversation({ id, initial, home = false, panel = false, reco
   }, [!!chat])
   const turns = chat?.turns ?? [], last = turns.at(-1)
   const answering = last?.status === 'waiting' || last?.status === 'answering'
-  const thinking = answering ? !last.answer : sending
   const busy = !chat || sending || changing || answering
   const unsent = (chat ? chat.firstChips === null : home || panel) && !turns.length
   const landing = home || (!panel && unsent)
@@ -185,7 +184,7 @@ export function AskConversation({ id, initial, home = false, panel = false, reco
     </div>
     <div className={`ask-composer${panel ? ' chat-composer' : ''}`}>
       {error && <p data-testid={panel ? "chat-send-error" : "chat-page-error"} role="alert" className="chat-error">{t("Couldn't save your changes")}</p>}
-      <LoadingContent pending={!chat && !error} onReady={() => { if (chat) input.current?.focus({ preventScroll: true }) }} testId={landing ? "chat-loading" : undefined}><form className="ask-box" data-thinking={thinking || undefined} data-testid={`${prefix}-box`} onSubmit={e => { e.preventDefault(); send(text) }} onBlur={e => { if (!e.currentTarget.contains(e.relatedTarget)) setMention(undefined) }}>
+      <LoadingContent pending={!chat && !error} onReady={() => { if (chat) input.current?.focus({ preventScroll: true }) }} testId={landing ? "chat-loading" : undefined}><form className="ask-box" data-busy={busy || undefined} data-testid={`${prefix}-box`} onSubmit={e => { e.preventDefault(); send(text) }} onBlur={e => { if (!e.currentTarget.contains(e.relatedTarget)) setMention(undefined) }}>
         <span className="ask-border" aria-hidden="true" />
         <AskContext chips={chips} disabled={busy} onRemove={remove} />
         <div className="ask-field">

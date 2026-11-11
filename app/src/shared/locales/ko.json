@@ -590,5 +590,6 @@
   "Checking for updates…": "업데이트 확인 중…",
   "Downloading version {version}…": "버전 {version} 다운로드 중…",
   "Couldn't check for updates.": "업데이트를 확인할 수 없습니다.",
-  "You can restart once the recording stops.": "녹음이 끝나면 다시 시작할 수 있습니다."
+  "You can restart once the recording stops.": "녹음이 끝나면 다시 시작할 수 있습니다.",
+  "Check now": "지금 확인"
 }

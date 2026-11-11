@@ -629,5 +629,6 @@
   "Checking for updates…": "Έλεγχος για ενημερώσεις…",
   "Downloading version {version}…": "Λήψη έκδοσης {version}…",
   "Couldn't check for updates.": "Δεν ήταν δυνατός ο έλεγχος για ενημερώσεις.",
-  "You can restart once the recording stops.": "Μπορείς να κάνεις επανεκκίνηση όταν σταματήσει η εγγραφή."
+  "You can restart once the recording stops.": "Μπορείς να κάνεις επανεκκίνηση όταν σταματήσει η εγγραφή.",
+  "Check now": "Έλεγχος τώρα"
 }

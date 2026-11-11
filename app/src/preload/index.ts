@@ -201,6 +201,7 @@ const api: YogurtApi = {
   updates: {
     status: () => ipcRenderer.invoke('updates:status'),
     set: (on) => ipcRenderer.invoke('updates:set', on),
+    check: () => ipcRenderer.invoke('updates:check'),
     restart: () => ipcRenderer.invoke('updates:restart'),
     onStatus: (fn) => { const f = (_e: unknown, s: UpdateStatus) => fn(s); ipcRenderer.on('updates:status', f); return () => { ipcRenderer.off('updates:status', f) } },
   },

@@ -590,5 +590,6 @@
   "Checking for updates…": "Đang kiểm tra bản cập nhật…",
   "Downloading version {version}…": "Đang tải phiên bản {version}…",
   "Couldn't check for updates.": "Không thể kiểm tra bản cập nhật.",
-  "You can restart once the recording stops.": "Bạn có thể khởi động lại khi bản ghi dừng."
+  "You can restart once the recording stops.": "Bạn có thể khởi động lại khi bản ghi dừng.",
+  "Check now": "Kiểm tra ngay"
 }

@@ -629,5 +629,6 @@
   "Checking for updates…": "Frissítések keresése…",
   "Downloading version {version}…": "A(z) {version} verzió letöltése…",
   "Couldn't check for updates.": "Nem sikerült frissítéseket keresni.",
-  "You can restart once the recording stops.": "A felvétel leállása után indíthatod újra."
+  "You can restart once the recording stops.": "A felvétel leállása után indíthatod újra.",
+  "Check now": "Keresés most"
 }

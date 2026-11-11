@@ -629,5 +629,6 @@
   "Checking for updates…": "Güncellemeler aranıyor…",
   "Downloading version {version}…": "Sürüm {version} indiriliyor…",
   "Couldn't check for updates.": "Güncellemeler aranamadı.",
-  "You can restart once the recording stops.": "Kayıt durduğunda yeniden başlatabilirsiniz."
+  "You can restart once the recording stops.": "Kayıt durduğunda yeniden başlatabilirsiniz.",
+  "Check now": "Şimdi denetle"
 }

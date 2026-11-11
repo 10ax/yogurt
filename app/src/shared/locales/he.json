@@ -642,5 +642,6 @@
   "Checking for updates…": "מחפש עדכונים…",
   "Downloading version {version}…": "מוריד את גרסה {version}…",
   "Couldn't check for updates.": "לא ניתן לחפש עדכונים.",
-  "You can restart once the recording stops.": "אפשר להפעיל מחדש אחרי שההקלטה תיפסק."
+  "You can restart once the recording stops.": "אפשר להפעיל מחדש אחרי שההקלטה תיפסק.",
+  "Check now": "בדיקה עכשיו"
 }

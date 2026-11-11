@@ -655,5 +655,6 @@
   "Checking for updates…": "Szukanie aktualizacji…",
   "Downloading version {version}…": "Pobieranie wersji {version}…",
   "Couldn't check for updates.": "Nie udało się sprawdzić aktualizacji.",
-  "You can restart once the recording stops.": "Możesz uruchomić ponownie po zatrzymaniu nagrywania."
+  "You can restart once the recording stops.": "Możesz uruchomić ponownie po zatrzymaniu nagrywania.",
+  "Check now": "Sprawdź teraz"
 }

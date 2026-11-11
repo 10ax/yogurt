@@ -326,7 +326,7 @@ function AiApps() {
   )
 }
 
-/** the version, and in a build that updates itself: the switch, what it's doing, and Restart Yogurt once a new version is ready */
+/** the version, and in a build that updates itself: the switch, what it's doing, Check now, and Restart Yogurt once a new version is ready */
 function Updates() {
   const [status, setStatus] = useState<UpdateStatus>()
   const [blocked, setBlocked] = useState(false)
@@ -362,6 +362,8 @@ function Updates() {
           </div>
           {status?.state === 'ready' &&
             <button data-testid="updates-restart" onClick={restart} className="workspace-button settings-action primary">{t('Restart Yogurt')}</button>}
+          {status?.available && status.on && (status.state === 'idle' || status.state === 'latest' || status.state === 'error') &&
+            <button data-testid="updates-check" onClick={() => void window.yogurt.updates.check()} className="workspace-button settings-action">{status.state === 'error' ? t('Try again') : t('Check now')}</button>}
         </div>
       </div></LoadingContent>
     </>

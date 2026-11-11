@@ -629,5 +629,6 @@
   "Checking for updates…": "Söker efter uppdateringar…",
   "Downloading version {version}…": "Hämtar version {version}…",
   "Couldn't check for updates.": "Kunde inte söka efter uppdateringar.",
-  "You can restart once the recording stops.": "Du kan starta om när inspelningen har stoppat."
+  "You can restart once the recording stops.": "Du kan starta om när inspelningen har stoppat.",
+  "Check now": "Sök nu"
 }

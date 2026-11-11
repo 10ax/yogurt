@@ -655,5 +655,6 @@
   "Checking for updates…": "Поиск обновлений…",
   "Downloading version {version}…": "Загрузка версии {version}…",
   "Couldn't check for updates.": "Не удалось проверить обновления.",
-  "You can restart once the recording stops.": "Перезапустить можно после остановки записи."
+  "You can restart once the recording stops.": "Перезапустить можно после остановки записи.",
+  "Check now": "Проверить"
 }

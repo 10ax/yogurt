@@ -655,5 +655,6 @@
   "Checking for updates…": "Hledání aktualizací…",
   "Downloading version {version}…": "Stahování verze {version}…",
   "Couldn't check for updates.": "Aktualizace se nepodařilo zkontrolovat.",
-  "You can restart once the recording stops.": "Restartovat můžete, až nahrávání skončí."
+  "You can restart once the recording stops.": "Restartovat můžete, až nahrávání skončí.",
+  "Check now": "Zkontrolovat"
 }

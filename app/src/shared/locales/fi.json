@@ -632,5 +632,6 @@
   "Checking for updates…": "Etsitään päivityksiä…",
   "Downloading version {version}…": "Ladataan versiota {version}…",
   "Couldn't check for updates.": "Päivityksiä ei voitu tarkistaa.",
-  "You can restart once the recording stops.": "Voit käynnistää uudelleen, kun tallennus päättyy."
+  "You can restart once the recording stops.": "Voit käynnistää uudelleen, kun tallennus päättyy.",
+  "Check now": "Tarkista nyt"
 }

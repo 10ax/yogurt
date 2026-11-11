@@ -590,5 +590,6 @@
   "Checking for updates…": "正在检查更新…",
   "Downloading version {version}…": "正在下载版本 {version}…",
   "Couldn't check for updates.": "无法检查更新。",
-  "You can restart once the recording stops.": "录音停止后即可重新启动。"
+  "You can restart once the recording stops.": "录音停止后即可重新启动。",
+  "Check now": "立即检查"
 }

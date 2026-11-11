@@ -52,6 +52,7 @@ export async function hookUpdates(d: { file: string; available: boolean; recordi
     if (on) check()
     return status()
   })
+  ipcMain.handle('updates:check', () => { check() })
   ipcMain.handle('updates:restart', () => {
     if (state !== 'ready' || d.recording()) return false
     installOnQuit = true

@@ -685,5 +685,6 @@
   "Checking for updates…": "جارٍ البحث عن تحديثات…",
   "Downloading version {version}…": "جارٍ تنزيل الإصدار {version}…",
   "Couldn't check for updates.": "تعذّر البحث عن تحديثات.",
-  "You can restart once the recording stops.": "يمكنك إعادة التشغيل بعد توقف التسجيل."
+  "You can restart once the recording stops.": "يمكنك إعادة التشغيل بعد توقف التسجيل.",
+  "Check now": "تحقّق الآن"
 }

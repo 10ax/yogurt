@@ -655,5 +655,6 @@
   "Checking for updates…": "Пошук оновлень…",
   "Downloading version {version}…": "Завантаження версії {version}…",
   "Couldn't check for updates.": "Не вдалося перевірити оновлення.",
-  "You can restart once the recording stops.": "Перезапустити можна після зупинки запису."
+  "You can restart once the recording stops.": "Перезапустити можна після зупинки запису.",
+  "Check now": "Перевірити"
 }

@@ -147,6 +147,8 @@ export type YogurtApi = {
   updates: {
     status(): Promise<UpdateStatus>
     set(on: boolean): Promise<UpdateStatus>
+    /** the result arrives through onStatus */
+    check(): Promise<void>
     /** quits, installs the downloaded version and reopens; false while recording or with nothing downloaded */
     restart(): Promise<boolean>
     onStatus(fn: (s: UpdateStatus) => void): () => void

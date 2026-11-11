@@ -15,7 +15,7 @@ export const MotionPopup = forwardRef<HTMLDivElement, ComponentPropsWithoutRef<t
       if (!el || !shell || !body) return
       const running = animations.current.some(animation => animation.playState === 'running')
       const shape = getComputedStyle(shell), text = getComputedStyle(body)
-      const transform = shape.transform, opacity = shape.opacity, textOpacity = text.opacity
+      const transform = shape.transform, opacity = shape.opacity, textOpacity = text.opacity, clip = text.clipPath
       const popupOpacity = getComputedStyle(el).opacity
       animations.current.forEach(animation => animation.cancel())
       animations.current = []
@@ -33,8 +33,23 @@ export const MotionPopup = forwardRef<HTMLDivElement, ComponentPropsWithoutRef<t
         { transform: running ? transform : 'none', opacity: running ? opacity : 1 },
         { transform: 'translateY(6px) scale(.98, .96)', opacity: 0 },
       ]
+      // The content stays at its final size, cropped to the stretching surface so it never shows past the surface's edge.
+      const box = body.getBoundingClientRect(), round = getComputedStyle(el).borderRadius
+      const cropped = (y: number, sx: number, sy: number) => {
+        const side = (1 - sx) / 2 * box.width, edge = (1 - sy) / 2 * box.height
+        return `inset(${edge + y}px ${side}px ${edge - y}px ${side}px round ${round})`
+      }
+      const crops: Keyframe[] = open ? [
+        { clipPath: running && clip !== 'none' ? clip : cropped(12, .94, .86), easing: surfaceMotion.settleEase },
+        { clipPath: cropped(-1, 1.008, 1.018), offset: surfaceMotion.settleAt, easing: 'ease-out' },
+        { clipPath: cropped(0, 1, 1) },
+      ] : [
+        { clipPath: running && clip !== 'none' ? clip : cropped(0, 1, 1) },
+        { clipPath: cropped(6, .98, .96) },
+      ]
       animations.current = [
         shell.animate(frames, { duration, easing: open ? 'linear' : 'ease-out', fill: 'both' }),
+        body.animate(crops, { duration, easing: open ? 'linear' : 'ease-out', fill: open ? 'backwards' : 'forwards' }),
         body.animate([{ opacity: running ? textOpacity : open ? 0 : 1 }, { opacity: open ? 1 : 0 }], {
           duration: open ? 150 : 90, delay: open ? 35 : 0, easing: 'ease-out', fill: 'both',
         }),

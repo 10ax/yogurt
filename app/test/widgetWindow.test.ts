@@ -180,6 +180,22 @@ describe('floating recorder placement', () => {
     vi.advanceTimersByTime(16)
     expect(win.setIgnoreMouseEvents).toHaveBeenLastCalledWith(false, { forward: true })
   })
+  it('checks the pointer at frame rate only over the window, slowly elsewhere, and not at all while hidden', () => {
+    const b = win.getBounds(), surface = { x: 20, y: 20, width: 118, height: 42, radius: 10 }
+    state.cursor = { x: b.x - 400, y: b.y - 400 }
+    send('widget:surface', surface)
+    state.cursor = { x: b.x + 30, y: b.y + 35 }
+    vi.advanceTimersByTime(16)
+    expect(win.setIgnoreMouseEvents).toHaveBeenLastCalledWith(true, { forward: true })
+    vi.advanceTimersByTime(250)
+    expect(win.setIgnoreMouseEvents).toHaveBeenLastCalledWith(false, { forward: true })
+    state.recording!({ t: 'paused', meetingId: 'meeting', paused: true, at: 100 })
+    expect(win.setIgnoreMouseEvents).toHaveBeenLastCalledWith(true, { forward: true })
+    const calls = win.setIgnoreMouseEvents.mock.calls.length, sent = win.webContents.send.mock.calls.length
+    vi.advanceTimersByTime(5000)
+    expect(win.setIgnoreMouseEvents.mock.calls.length).toBe(calls)
+    expect(win.webContents.send.mock.calls.length).toBe(sent)
+  })
   it('keeps the window and anchor through warnings, pause and resume, and forwards live words there', () => {
     const chosen = widget.snapshot().bounds
     state.recording!({ t: 'warn', code: 'no-mic' })

@@ -26,8 +26,28 @@ function useElapsed(v: WidgetView | null): string {
   return text
 }
 
+/** The live transcript opens once the pointer settles on the recorder, never on the way to grabbing it, and not
+ * straight after a drag: it waits for the pointer to rest there a moment longer. */
+const SETTLE_MS = 220, AFTER_DRAG_MS = 650
+function useHoverPreview() {
+  const over = useRef(false), timer = useRef<ReturnType<typeof setTimeout>>(undefined), quietUntil = useRef(0)
+  const wait = () => {
+    clearTimeout(timer.current)
+    timer.current = setTimeout(() => { if (over.current) window.yogurt.widget.preview(true) }, Math.max(SETTLE_MS, quietUntil.current - performance.now()))
+  }
+  useEffect(() => () => clearTimeout(timer.current), [])
+  return {
+    enter: () => { over.current = true; wait() },
+    // still moving across it, or about to press: keep waiting
+    move: (pressed: boolean) => { if (over.current && !pressed) wait() },
+    press: () => clearTimeout(timer.current),
+    leave: () => { over.current = false; clearTimeout(timer.current); window.yogurt.widget.preview(false) },
+    dropped: () => { quietUntil.current = performance.now() + AFTER_DRAG_MS; wait() },
+  }
+}
+
 /** A click opens the note; a drag moves the recorder without opening it on release. */
-function useDragOrClick(onClick: () => void) {
+function useDragOrClick(onClick: () => void, hover: ReturnType<typeof useHoverPreview>) {
   const s = useRef<WidgetPress | null>(null)
   const cancel = () => {
     if (s.current?.moved) window.yogurt.widget.endDrag()
@@ -38,11 +58,13 @@ function useDragOrClick(onClick: () => void) {
     onPointerDown: (e: React.PointerEvent) => {
       if (e.button !== 0 || s.current || (e.target as HTMLElement).closest('button')) return
       e.preventDefault()
+      hover.press()
       e.currentTarget.setPointerCapture(e.pointerId)
       s.current = { x: e.screenX, y: e.screenY, pointerId: e.pointerId, at: e.timeStamp, moved: false }
     },
     onPointerMove: (e: React.PointerEvent) => {
       const d = s.current
+      hover.move(!!d)
       if (!d || e.pointerId !== d.pointerId) return
       const delta = widgetDragDelta(d, e.screenX, e.screenY)
       if (delta) window.yogurt.widget.drag(delta.dx, delta.dy)
@@ -54,10 +76,7 @@ function useDragOrClick(onClick: () => void) {
       cancel()
       e.currentTarget.releasePointerCapture(e.pointerId)
       if (click) onClick()
-      else if (d.moved) {
-        const r = e.currentTarget.getBoundingClientRect()
-        window.yogurt.widget.preview(e.clientX >= r.left && e.clientX < r.right && e.clientY >= r.top && e.clientY < r.bottom)
-      }
+      else if (d.moved) hover.dropped()
     },
     onPointerCancel: cancel,
     onLostPointerCapture: cancel,
@@ -109,11 +128,12 @@ export function Widget() {
 
 function Recording({ view, cardRef }: { view: WidgetView; cardRef: React.RefObject<HTMLDivElement | null> }) {
   const time = useElapsed(view)
-  const press = useDragOrClick(() => window.yogurt.widget.open())
+  const hover = useHoverPreview()
+  const press = useDragOrClick(() => window.yogurt.widget.open(), hover)
   const note = view.note
   return (
       <div ref={cardRef} data-testid="widget" data-kind="recording" role="button" tabIndex={0} className="widget-pill widget-strip grid h-[42px] w-max min-w-[127px] shrink-0 cursor-pointer select-none items-center gap-3 rounded-[10px] px-3 text-[var(--pill-ink)]"
-        {...press} onPointerEnter={() => window.yogurt.widget.preview(true)} onPointerLeave={() => window.yogurt.widget.preview(false)}
+        {...press} onPointerEnter={hover.enter} onPointerLeave={hover.leave}
         aria-label={t('Open {title}', { title: view.title })} title={note?.text ?? t('Recording {title}', { title: view.title })}>
         {note ? <TriangleAlert data-testid="widget-warning" size={18} className="shrink-0 text-[var(--pill-accent)]" aria-label={note.text} /> : <Logo size={18} className="shrink-0 text-[var(--pill-accent)]" />}
         <LevelBars testId="widget-wave" height={16} className="justify-self-center text-[var(--pill-accent)]" />

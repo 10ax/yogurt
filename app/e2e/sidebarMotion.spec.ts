@@ -99,7 +99,7 @@ test('native titlebar drag regions leave the sidebar and toolbar controls clicka
             }, time)
             expect(blocked, `${width}px ${direction} at ${time}ms`).toEqual([])
           }
-          await page.locator('.workspace').evaluate((el) => { for (const animation of el.getAnimations({ subtree: true })) animation.finish() })
+          await page.locator('.workspace').evaluate((el) => { for (const animation of el.getAnimations({ subtree: true })) if (animation.effect?.getComputedTiming().endTime !== Infinity) animation.finish() })
         }
       }
     }
@@ -220,7 +220,7 @@ test('a note keeps its title, transcript and controls in place at the start of b
         }
         expect(await page.locator('.workspace-sidebar-toggle svg').innerHTML()).toBe(icon)
         expect(await page.locator('.workspace-sidebar-toggle .sidebar-toggle-pane').evaluate((el) => getComputedStyle(el).opacity)).toBe('1')
-        await page.locator('.workspace').evaluate((el) => { for (const animation of el.getAnimations({ subtree: true })) animation.finish() })
+        await page.locator('.workspace').evaluate((el) => { for (const animation of el.getAnimations({ subtree: true })) if (animation.effect?.getComputedTiming().endTime !== Infinity) animation.finish() })
         expect(await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth)).toBe(true)
       }
     }

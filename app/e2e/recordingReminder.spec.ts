@@ -37,7 +37,7 @@ for (const theme of ['light', 'dark'] as const) test(`standard recording reminde
       return !!a && !!b && a.x + a.width + 10 <= b.x
     }).toBe(true)
     await toast.hover()
-    await page.getByTestId('chat-panel').evaluate(el => Promise.allSettled(el.getAnimations().map(a => a.finished)))
+    await page.locator('.chat-morph-surface').evaluate(el => Promise.allSettled(el.getAnimations().map(a => a.finished)))
     await page.screenshot({ path: info.outputPath(`reminder-${theme}-ask.png`) })
     await page.keyboard.press('F6')
     await toast.getByRole('button', { name: 'Close', exact: true }).focus()

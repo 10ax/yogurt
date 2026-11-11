@@ -48,9 +48,11 @@ test('the widget is a compact horizontal recorder with one live wave and no exte
     await expect(w.getByTestId('widget')).toHaveAttribute('data-kind', 'recording')
     const s = await snap(app)
     expect(s.visible).toBe(true)
-    expect(s.bounds).toMatchObject({ width: 127, height: 42 })
     const style = await w.getByTestId('widget').evaluate((el) => ({ shadow: getComputedStyle(el).boxShadow, width: el.getBoundingClientRect().width, height: el.getBoundingClientRect().height }))
-    expect(style).toMatchObject({ width: 127, height: 42 })
+    // the pill hugs its content; the window fits the pill exactly
+    expect(style.height).toBe(42)
+    expect(style.width).toBeLessThan(127)
+    expect(s.bounds).toMatchObject({ width: Math.ceil(style.width), height: 42 })
     expect(style.shadow).toBe('none')
     // one meter, moved by the microphone of the fake call
     await expect(w.getByTestId('widget-wave')).toHaveCount(1)

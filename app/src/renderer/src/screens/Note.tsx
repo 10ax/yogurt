@@ -35,6 +35,7 @@ import { RecordingHint } from '../components/RecordingHint'
 import { FolderChip, FolderPicker, type FolderSuggestion } from '../components/FolderPicker'
 import { FolderName } from '../components/FolderDialogs'
 import { InlineError } from '../components/InlineError'
+import { Swap, SwapText } from '../components/Swap'
 
 /** A revision is dirty until main acknowledges it; failed text also remains there across navigation/reload. */
 function useAutosave(id: string, side: NoteSide, text: string, saved?: NoteSaveResult) {
@@ -325,7 +326,7 @@ export function Note({ id, onTitleChange, at, folderSuggestion, onSource }: {
                   </span>
                   <button data-testid="note-pause" disabled={pausing} onClick={() => { void togglePause() }}
                     aria-label={m.paused ? t('Resume recording') : t('Pause recording')} title={m.paused ? t('Resume recording') : t('Pause recording')} className="note-record-action note-pause-action">
-                    {m.paused ? <Play size={14} fill="currentColor" strokeWidth={0} aria-hidden="true" /> : <Pause size={14} fill="currentColor" strokeWidth={0} aria-hidden="true" />}
+                    <Swap show={m.paused ? 'play' : 'pause'} options={{ pause: <Pause size={14} fill="currentColor" strokeWidth={0} />, play: <Play size={14} fill="currentColor" strokeWidth={0} /> }} />
                   </button>
                   <button data-testid="note-stop" onClick={(e) => { requestFinish(true); picked.current = true; setView('mine'); setFinishing(true); setTabPointer(e.detail > 0); window.yogurt.meetings.stop(id) }} aria-label={t('Finish recording')} title={t('Finish recording')} className="note-record-action note-finish-action primary">
                     {t('Finish')}
@@ -334,8 +335,8 @@ export function Note({ id, onTitleChange, at, folderSuggestion, onSource }: {
                 {finishing && <span data-testid="note-finishing" role="status" className="note-finishing">{t('Finishing…')}</span>}
                 {!finishing && (m.state === 'stopped' || m.state === 'done') && !m.stopSavePending && !trashed && <button data-testid="note-resume" disabled={starting || summarizing} aria-busy={summarizing} data-processing={summarizing} onClick={() => void resumeRecording()}
                   className="note-record-action note-resume-action" title={summarizing ? t('Summarizing…') : t('Resume recording in this note')}>
-                  {summarizing ? <Loader size={14} aria-hidden="true" /> : <Mic size={14} aria-hidden="true" />}
-                  <span>{summarizing ? t('Summarizing…') : starting ? t('Preparing…') : t('Resume recording')}</span>
+                  <Swap show={summarizing ? 'busy' : 'mic'} options={{ mic: <Mic size={14} />, busy: <Loader size={14} /> }} />
+                  <SwapText text={summarizing ? t('Summarizing…') : starting ? t('Preparing…') : t('Resume recording')} widest={t('Resume recording')} />
                 </button>}
                 {m.state === 'prepared' && !trashed && <button data-testid="note-start" disabled={starting} onClick={() => { void startPrepared() }} className="note-record-action primary">
                   <Mic size={14} strokeWidth={1.75} aria-hidden="true" />{starting ? t('Starting…') : t('Start recording')}

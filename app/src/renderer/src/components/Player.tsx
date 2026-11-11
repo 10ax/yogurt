@@ -2,6 +2,7 @@ import { useEffect, useImperativeHandle, useRef, useState, type Ref } from 'reac
 import { Pause, Play } from 'lucide-react'
 import { language, t } from '../../../shared/i18n'
 import { clock } from '../../../shared/transcript'
+import { Swap } from './Swap'
 
 type Track = 'me' | 'them'
 export type PlayerHandle = { playFrom: (ms: number) => void }
@@ -119,7 +120,7 @@ function MeetingPlayer({ id, tracks, ref, onTime, onPlaying }: PlayerProps) {
         <div className="flex items-center gap-2.5">
           <button data-testid="player-toggle" aria-label={playing ? t('Pause') : t('Play')} onClick={() => (playing ? pause() : play())}
             className="player-btn flex size-7 shrink-0 items-center justify-center rounded-md bg-accent text-accent-ink">
-            {playing ? <Pause size={13} fill="currentColor" strokeWidth={0} aria-hidden="true" /> : <Play size={13} fill="currentColor" strokeWidth={0} aria-hidden="true" className="ms-0.5" />}
+            <Swap show={playing ? 'pause' : 'play'} options={{ play: <Play size={13} fill="currentColor" strokeWidth={0} className="ms-0.5" />, pause: <Pause size={13} fill="currentColor" strokeWidth={0} /> }} />
           </button>
           <span className="w-9 shrink-0 text-end tabular-nums">{clock(time * 1000)}</span>
           <input data-testid="player-scrubber" type="range" min={0} max={duration || 0} step={0.1} value={Math.min(time, duration || 0)} aria-label={t('Position')}

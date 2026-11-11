@@ -12,6 +12,7 @@ import { LevelBars } from '../components/LevelBars'
 import { LiveWords } from '../components/Transcript'
 import { glide } from '../motion'
 import { afterFinal, joinWords } from '../../../shared/liveWords'
+import { Swap } from '../components/Swap'
 
 function useElapsed(v: WidgetView | null): string {
   const [text, setText] = useState('0:00')
@@ -135,7 +136,7 @@ function Recording({ view, cardRef }: { view: WidgetView; cardRef: React.RefObje
       <div ref={cardRef} data-testid="widget" data-kind="recording" role="button" tabIndex={0} className="widget-pill widget-strip grid h-[42px] w-max min-w-[127px] shrink-0 cursor-pointer select-none items-center gap-3 rounded-[10px] px-3 text-[var(--pill-ink)]"
         {...press} onPointerEnter={hover.enter} onPointerLeave={hover.leave}
         aria-label={t('Open {title}', { title: view.title })} title={note?.text ?? t('Recording {title}', { title: view.title })}>
-        {note ? <TriangleAlert data-testid="widget-warning" size={18} className="shrink-0 text-[var(--pill-accent)]" aria-label={note.text} /> : <Logo size={18} className="shrink-0 text-[var(--pill-accent)]" />}
+        <Swap show={note ? 'warning' : 'logo'} className="text-[var(--pill-accent)]" options={{ logo: <Logo size={18} />, warning: <TriangleAlert data-testid="widget-warning" size={18} /> }} />
         <LevelBars testId="widget-wave" height={16} className="justify-self-center text-[var(--pill-accent)]" />
         <span data-testid="widget-time" className="min-w-[32px] shrink-0 whitespace-nowrap text-end text-[10px] font-medium tabular-nums opacity-80">
           {time}

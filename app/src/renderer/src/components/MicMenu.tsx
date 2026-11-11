@@ -4,6 +4,7 @@ import { Pause } from './Icons'
 import type { MicsView } from '../../../shared/types'
 import { t } from '../../../shared/i18n'
 import { osWords } from '../keys'
+import { Swap } from './Swap'
 
 const autoInfo = () => osWords({ mac: t('Uses the microphone your Mac is set to'), other: t('Uses the microphone your computer is set to') })
 
@@ -83,7 +84,7 @@ export function MicMenu({ recording, paused }: { recording: boolean; paused?: bo
       <button ref={button} data-testid="rec-mic-chip" aria-haspopup="menu" aria-expanded={!!open} title={t('Microphone')}
         onClick={(e) => setOpen((o) => o ? false : e.detail > 0 ? 'pointer' : 'keyboard')}
         className="bar-btn flex max-w-[220px] items-center gap-1.5 rounded-md px-1.5 py-0.5 hover:text-ink aria-expanded:text-ink">
-        {paused ? <Pause size={11} fill="currentColor" strokeWidth={0} aria-hidden="true" className="shrink-0" /> : <Mic size={11} aria-hidden="true" className="shrink-0" />}
+        <Swap show={paused ? 'paused' : 'mic'} options={{ mic: <Mic size={11} />, paused: <Pause size={11} fill="currentColor" strokeWidth={0} /> }} />
         <span data-testid="rec-mic" className="truncate">{paused ? t('Recording paused') : name}</span>
         <ChevronDown size={11} aria-hidden="true" className="shrink-0" />
       </button>

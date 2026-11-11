@@ -5,7 +5,7 @@ import { Loading } from './Loading'
 import { useLoadingState } from '../useLoadingState'
 import { Fragment, memo, useCallback, useEffect, useLayoutEffect, useMemo, useRef, useState, type CSSProperties, type KeyboardEvent, type MouseEvent } from 'react'
 import { createPortal } from 'react-dom'
-import { AudioLines, ArrowDown, ArrowUp, ChevronDown, Search as SearchIcon } from 'lucide-react'
+import { AudioLines, ArrowDown, ChevronDown, Search as SearchIcon } from 'lucide-react'
 import type { Segment, TranscriptPartial } from '../../../shared/types'
 import { t } from '../../../shared/i18n'
 import { useLanguage } from '../i18n'
@@ -424,7 +424,7 @@ export function Transcript({ id, recording, inline = false, active = true, onClo
         )}
         {!recording && audioOn && away && playingShown && (
           <button data-testid="transcript-follow" onClick={backToPlaying} className="absolute bottom-3 start-1/2 flex -translate-x-1/2 items-center gap-1 rounded-md border border-line bg-float px-3 py-1 text-xs shadow-[var(--shadow)] rtl:translate-x-1/2">
-            {away === 'up' ? <ArrowUp size={12} aria-hidden="true" /> : <ArrowDown size={12} aria-hidden="true" />}{t('Back to playing')}
+            <ArrowDown size={12} aria-hidden="true" className="follow-arrow" data-up={away === 'up'} />{t('Back to playing')}
           </button>
         )}
       </div>

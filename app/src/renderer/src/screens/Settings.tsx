@@ -13,6 +13,7 @@ import { useScrollMemory } from '../useScrollMemory'
 import { appShortcuts } from '../components/Shortcuts'
 import { CalendarSettings } from '../components/CalendarSettings'
 import { supportedKinds } from '../../../shared/platform'
+import { Swap, SwapText } from '../components/Swap'
 
 const THEMES = () => [['system', osWords({ mac: t('Match my Mac'), windows: t('Match Windows'), linux: t('Match my system') })], ['light', t('Light')], ['dark', t('Dark')]] as const
 // each computer's own words for starting at login and its icon's place: the menu bar, the notification area, the tray
@@ -309,7 +310,7 @@ function AiApps() {
               <div className="mt-3 flex min-w-0 items-center gap-2 rounded-md border border-line bg-bg p-1.5">
                 <input data-testid="ai-apps-command" aria-label={t('MCP command')} dir="ltr" readOnly value={status.command} className="min-w-0 flex-1 bg-transparent px-2 font-mono text-[12px] text-muted" />
                 <button data-testid="ai-apps-copy" onClick={copy} className="workspace-button shrink-0">
-                  {copied ? <Check size={14} aria-hidden="true" className="text-muted" /> : <Copy size={14} aria-hidden="true" className="text-muted" />}{copied ? t('Copied') : t('Copy')}
+                  <Swap show={copied ? 'done' : 'copy'} options={{ copy: <Copy size={14} className="text-muted" />, done: <Check size={14} className="text-muted" /> }} /><SwapText text={copied ? t('Copied') : t('Copy')} widest={t('Copied')} />
                 </button>
               </div>
               {status.clients.length > 0 && <p data-testid="ai-apps-clients" aria-live="polite" className="mt-3 text-[12px] leading-[18px] text-muted">

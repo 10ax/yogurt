@@ -106,7 +106,7 @@ export function enhancePrompt(i: PromptInput): string {
     ...(i.oneMic ? ['Nothing came from a call: everyone in the room was heard on one microphone, so every line says "You" whoever spoke. If several people talked, credit something to "You" only when the line itself makes clear who said it, and otherwise leave out who said it.'] : []),
     ...(mins != null ? [`Length: about ${mins} minute${mins === 1 ? '' : 's'}.`] : []),
     '',
-    ...(mine ? ['Notes they typed during the meeting. These matter most:', '<notes>', mine, '</notes>', ''] : []),
+    ...(mine ? ['Notes they typed, before or during the meeting. They show what they care about and flagged, and facts they know that may not have been said. They are hints for writing the notes, not text to copy:', '<notes>', mine, '</notes>', ''] : []),
     'How to write them, so they read at a glance:',
     `- Write in ${lang}, headings too.`,
     peopleRule,
@@ -118,7 +118,11 @@ export function enhancePrompt(i: PromptInput): string {
     '- A decision or an open question goes in its topic, said plainly ("Decided: no paid placements for now").',
     '- Cover the whole meeting, the end as well. A short meeting gets fewer sections, not thinner ones.',
     '- **Bold** rarely: a deadline, a big number or a key term, a few times in all.',
-    ...(mine ? ['- Keep every typed point, in its topic, wrapped in <mine> and </mine>, like "- <mine>launch moves to Tuesday</mine>, after the pricing review". Wrap nothing else.'] : []),
+    ...(mine ? [
+      '- Their notes steer these: what they flagged gets a "## " topic or a bullet of its own, and facts they typed that the transcript lacks go in, in the topic they belong to.',
+      '- Write it all in your own words and in the shape below, blended into the topics: never copy their lines, labels (like "GOAL", "WHO" or "CLOSE"), headings or numbering, and never give their notes a section of their own.',
+      '- Their notes can be a plan or a script made before the meeting: a question or step in it goes in only if the transcript shows it was asked or done, with what came of it.',
+    ] : []),
     '- Use only what was said or typed. Never make anything up.',
     `- Last, "## Next steps" (in ${lang}) only if someone said they would do something after the meeting: one bullet each, as "- **Name:** what they will do, by when" (when only if it was said), "**You:**" for the person these notes are for, plain words for someone without a name, like "**The designer:**". Leave out jokes and personal errands. Otherwise leave the section out.`,
     '',
@@ -219,18 +223,21 @@ export function tidyNotes(md: string): string {
 const words = (s: string) => new Set(s.toLowerCase().match(/[\p{L}\p{N}]+/gu) ?? [])
 const overlap = (a: Set<string>, b: Set<string>) => { let n = 0; for (const w of a) if (b.has(w)) n++; return n }
 
+/** a typed line's words alone: no heading or list marker, also one the editor escaped ("2\. " typed as plain text) */
+const bare = (l: string) => l.replace(/^\s*#{1,6}\s+/, '').replace(/^\s*(\\?[-*+]|\d+\\?[.)])\s+/, '').replace(/\\(.)/g, '$1')
+
 /**
- * Small models forget the <mine> tags now and then. A bullet that says what one of the person's own lines says
- * (most of its words, and those make up a good part of the bullet) is marked as theirs.
+ * A bullet that says what one of the person's own lines says (most of its words, and those make up a good part of
+ * the bullet) is shown as theirs; one only loosely like it is not.
  */
 export function markMine(md: string, mine: string): string {
   // and the other way: words the model marked as theirs that they typed nothing like are just notes
-  const typed = mine.split('\n').map((l) => words(l.replace(LIST, ''))).filter((w) => w.size)
+  const typed = mine.split('\n').map((l) => words(bare(l))).filter((w) => w.size)
   md = md.replace(/<mine>([\s\S]*?)<\/mine>/g, (m, x: string) => {
     const w = words(x)
     return typed.some((o) => overlap(o, w) / Math.max(1, Math.min(o.size, w.size)) >= 0.5) ? m : x
   })
-  const own = mine.split('\n').map((l) => words(l.replace(LIST, ''))).filter((w) => w.size >= 2)
+  const own = typed.filter((w) => w.size >= 2)
   if (!own.length) return md
   const marked = [...md.matchAll(/<mine>([\s\S]*?)<\/mine>/g)].map((m) => words(m[1]))
   const open = own.filter((o) => !marked.some((m) => overlap(o, m) / o.size >= 0.6))
@@ -246,29 +253,27 @@ export function markMine(md: string, mine: string): string {
   }).join('\n')
 }
 
+/** a typed line that names what follows: a heading, "Goal:", or one in capitals ("CALL SCRIPT (first call)") */
+const isLabel = (l: string) => {
+  if (/^\s*#{1,6}\s/.test(l)) return true
+  if (/^\s*(\\?[-*+]|\d+\\?[.)])\s/.test(l)) return false
+  const outside = l.replace(/\([^)]*\)/g, '')
+  return /:\s*$/.test(l) || (/\p{Lu}/u.test(outside) && !/\p{Ll}/u.test(outside))
+}
+
 /**
- * Their typed lines are never lost: one the notes say nowhere (not even in other words) goes, marked as theirs, at the
- * end of the topic that shares most words with it (the first topic when none does). Next steps are no topic.
+ * Their notes steer the summary and are never pasted into it, but a small model still copies some: a bullet that kept
+ * their own marker ("- 2. …", "- - …") keeps one, and a bullet that is only one of their labels ("- CLOSE") goes.
  */
-export function keepMine(md: string, mine: string): string {
-  const lines = md.split('\n')
-  const said = lines.map((l) => words(l))
-  const sections: Array<{ end: number; words: Set<string>; owners: boolean }> = []
-  for (const [i, l] of lines.entries()) {
-    if (/^#{1,3}\s/.test(l)) sections.push({ end: i, words: new Set(said[i]), owners: false })
-    else if (sections.length) { const s = sections.at(-1)!; s.end = i; s.owners ||= OWNER.test(l); for (const w of said[i]) s.words.add(w) }
-  }
-  const topics = sections.filter((s) => !s.owners)
-  const adds = new Map<number, string[]>()
-  for (const raw of mine.split('\n')) {
-    const text = raw.replace(LIST, '').trim()
-    const own = words(text)
-    if (!own.size || said.some((w) => overlap(own, w) / own.size >= 0.6)) continue
-    const best = topics.reduce<{ end: number; n: number } | undefined>((b, s) => { const n = overlap(own, s.words); return n > (b?.n ?? 0) ? { end: s.end, n } : b }, undefined)
-    const at = best?.end ?? topics[0]?.end ?? lines.length - 1
-    adds.set(at, [...(adds.get(at) ?? []), `- <mine>${text}</mine>`])
-  }
-  return lines.flatMap((l, i) => [l, ...(adds.get(i) ?? [])]).join('\n')
+export function withoutCopies(md: string, mine: string): string {
+  const fold = (s: string) => bare(s).replace(/<\/?mine>|\*\*|__/g, '').replace(/[:\s]+$/, '').trim().toLowerCase()
+  const labels = new Set(mine.split('\n').filter((l) => l.trim() && isLabel(l)).map(fold))
+  return md.split('\n').flatMap((line) => {
+    const lead = LIST.exec(line)
+    if (!lead) return [line]
+    const body = line.slice(lead[0].length).replace(/^(<mine>)?(?:\\?[-*+]|\d+\\?[.)])\s+/, '$1')
+    return labels.has(fold(body)) ? [] : [lead[0] + body]
+  }).join('\n')
 }
 
 /** a "- **Name:** task" bullet */
@@ -396,9 +401,8 @@ export async function enhance(input: EnhanceInput, llm: Llm, onToken: (text: str
     // only a real next-steps list is kept; anything else it said is dropped
     if (OWNER.test(more)) md = `${md}\n${more}`
   }
-  // their own lines marked, then any typed line still missing
   // a title is nice to have: one that fails or comes out empty leaves the meeting's as it is
   if (written) input.titleLater?.((model) => model.chat(titlePrompt(language), () => {}, { maxTokens: 40, before: [prompt, written], temperature: 0.3 })
     .then((raw) => cleanTitle(raw), (e) => { console.error('a title from the notes failed', e); return '' }))
-  return keepMine(markMine(md, input.mine), input.mine)
+  return markMine(withoutCopies(md, input.mine), input.mine)
 }

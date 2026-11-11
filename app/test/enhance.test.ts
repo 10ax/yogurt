@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest'
-import { cleanTitle, enhance, enhancePrompt, guessLanguage, keepMine, languageName, peopleRule, summaryPrompt, titlePrompt, transcriptHead, type Llm, markMine, splitForContext, tidyNotes, transcriptText } from '../src/main/notes/enhance'
+import { cleanTitle, enhance, enhancePrompt, guessLanguage, languageName, peopleRule, summaryPrompt, titlePrompt, transcriptHead, type Llm, markMine, splitForContext, tidyNotes, transcriptText } from '../src/main/notes/enhance'
 import type { Segment } from '../src/main/store'
 
 const seg = (track: 'me' | 'them', startMs: number, text: string, speaker: string | null = track === 'me' ? 'me' : null): Segment =>
@@ -15,7 +15,6 @@ describe('enhancePrompt', () => {
     expect(p).toContain('You: Hi.\nMaya Chen: Hello.')
     expect(p).toContain('Spanish')
     expect(p).toContain('Maya Chen')
-    expect(p).toContain('<mine>')
     expect(p).toContain('## ')
     expect(p).toContain('**')
   })
@@ -278,8 +277,8 @@ describe('enhance', () => {
     expect(last).toContain('topic0')
     expect(last).toContain('topic399')
     expect(last).toContain('- my point')
-    // their line, missing from the notes, is kept
-    expect(md).toBe('## Done\n- **You:** x\n- <mine>my point</mine>')
+    // their notes steer the summary; nothing of theirs is pasted in after it
+    expect(md).toBe('## Done\n- **You:** x')
   })
   it('a long meeting reuses the part summaries written while it was recorded, and summarises only the rest', async () => {
     const lines = transcriptText(segs).split('\n')
@@ -321,25 +320,46 @@ describe('fix round 1', () => {
     contextSize: 100_000, count: async (xs) => xs.map(words),
     chat: async (prompt, onToken) => { prompts.push(prompt); onToken(reply); return reply },
   })
-  it('a typed line the notes left out goes under the topic closest to it, marked as theirs', () => {
-    const md = '## Pricing\n- Plans stay at three tiers\n## Launch\n- Site goes live Tuesday\n## Next steps\n- **You:** Send it'
-    expect(keepMine(md, '- check launch email copy\n- Site goes live Tuesday')).toBe('## Pricing\n- Plans stay at three tiers\n## Launch\n- Site goes live Tuesday\n- <mine>check launch email copy</mine>\n## Next steps\n- **You:** Send it')
+  // made up: a call script typed (or pasted) as plain lines, which the editor saves with their markers escaped
+  const script = [
+    'CALL SCRIPT (first call, 20 min)',
+    'GOAL',
+    'Find out if the demo is worth a second call',
+    'WHO',
+    '\\- Inbound, first touch from the pricing page',
+    'QUESTIONS',
+    '1\\. "Have y\'all looked at moving rosters off spreadsheets?"',
+    '2\\. "Which product do you use for ordering today?"',
+    'NO SCREEN SHARE until they answer #2.',
+    'CLOSE',
+    '\\- Book the follow-up before hanging up',
+  ].join('\n')
+  it('their notes are hints for the summary: focus and facts, in its own words, never pasted, never a script read as said', () => {
+    const p = enhancePrompt({ title: 'Intro call', attendees: [], mine: script, transcript: 'You: Hi.', language: 'English' })
+    expect(p).toContain(script)
+    expect(p).toMatch(/own words/)
+    expect(p).toMatch(/never copy their lines/i)
+    expect(p).toMatch(/labels/)
+    expect(p).toMatch(/numbering/)
+    expect(p).toMatch(/only if the transcript shows/)
+    expect(p).toMatch(/flagged/)
+    expect(p).not.toMatch(/every typed point/)
+    expect(p).not.toContain('<mine>')
   })
-  it('a typed line close to no topic goes under the first one', () => {
-    expect(keepMine('## Pricing\n- Three tiers\n## Launch\n- Tuesday', '- call the bank')).toBe('## Pricing\n- Three tiers\n- <mine>call the bank</mine>\n## Launch\n- Tuesday')
+  it('nothing they typed is added to the summary after it, whatever the model left out', async () => {
+    const reply = '## Bakery rosters\n- Rosters live in spreadsheets, rebuilt every Monday\n## Next steps\n- **You:** Send the pricing sheet'
+    const md = await enhance({ meeting: { title: 'Intro call', attendees: [] }, mine: script, segments: [seg('me', 0, 'Hi')], language: 'en' }, llmWith(reply), () => {})
+    expect(md).toBe(reply)
   })
-  it('keeps lines already in the notes (marked, or said in other words) where they are', () => {
-    const md = '## Launch\n- <mine>ship Tuesday</mine>'
-    expect(keepMine(md, '- ship Tuesday')).toBe(md)
+  it('a bullet that copied a typed marker or label comes out with one marker and no label', async () => {
+    const reply = '## Questions\n- 2. "Which product do you use for ordering today?" Shopify, for now\n- - Inbound from the pricing page\n- CLOSE\n- **GOAL**\n  - 1\\. Rosters still on spreadsheets\n## Next steps\n- **You:** Send the pricing sheet'
+    const md = await enhance({ meeting: { title: 'Intro call', attendees: [] }, mine: script, segments: [seg('me', 0, 'Hi')], language: 'en' }, llmWith(reply), () => {})
+    // what says their point is still shown as theirs
+    expect(md).toBe('## Questions\n- <mine>"Which product do you use for ordering today?" Shopify, for now</mine>\n- <mine>Inbound from the pricing page</mine>\n  - Rosters still on spreadsheets\n## Next steps\n- **You:** Send the pricing sheet')
+    expect(md).not.toMatch(/^\s*[-*+]\s+(\\?[-*+]|\d+\\?[.)])\s/m)
   })
-  it('enhance never loses a typed line', async () => {
-    const md = await enhance({ meeting: { title: 'Sync', attendees: [] }, mine: '- ask about the budget', segments: [seg('me', 0, 'Hi')], language: 'en' }, llmWith('## Launch\n- Goes live Tuesday\n## Next steps\n- **You:** Ship'), () => {})
-    expect(md).toContain('<mine>ask about the budget</mine>')
-  })
-  it('the bullet count gives way to their typed points', () => {
-    const p = enhancePrompt({ title: '', attendees: [], mine: '- a', transcript: '', language: 'English', minutes: 3 })
-    expect(p).toMatch(/every typed point/)
-    expect(p).not.toMatch(/a handful of bullets in all/)
+  it('markMine reads a typed line the same with its marker escaped', () => {
+    expect(markMine('## Q\n- Which product do you use for ordering today', '2\\. "Which product do you use for ordering today?"')).toBe('## Q\n- <mine>Which product do you use for ordering today</mine>')
   })
   it('guessLanguage: the script, or the commonest little words', () => {
     expect(guessLanguage('来週の予定はどうなっていますか', 'English')).toBe('Japanese')

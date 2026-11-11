@@ -454,7 +454,8 @@ body:has(.chat-panel[open]) .app-toast-viewport { inset-inline-end:460px; }
 .ask-turn:last-child { margin-bottom:0; }
 .ask-question { width:fit-content;max-width:80%;margin:0;margin-inline-start:auto;white-space:pre-wrap;overflow-wrap:anywhere;border-radius:12px;background:var(--control);padding:8px 12px;font-size:14px;line-height:20px; }
 .ask-composer { flex:none;min-width:0;container-type:inline-size; }
-.ask-box { position:relative;min-width:0;border:1px solid var(--line);border-radius:12px;background:var(--float);box-shadow:var(--shadow-soft);--ask-ring-opacity:0;--ask-ring-play:paused;--ask-ring-color:color-mix(in srgb,var(--accent) 72%,var(--float));--ask-ring-highlight:color-mix(in srgb,var(--focus) 32%,var(--float)); }
+.ask-box { position:relative;min-width:0;border:1px solid var(--line);border-radius:12px;background:var(--float);box-shadow:var(--shadow-soft); }
+.ask-box,.note-reading-frame { --ask-ring-opacity:0;--ask-ring-play:paused;--ask-ring-color:color-mix(in srgb,var(--accent) 72%,var(--float));--ask-ring-highlight:color-mix(in srgb,var(--focus) 32%,var(--float)); }
 /* A stationary 2px mask clips one rotating highlight; sending pauses it and fades the ring away. */
 .ask-border { position:absolute;inset:-1px;border-radius:inherit;padding:2px;overflow:hidden;pointer-events:none;opacity:var(--ask-ring-opacity);background:var(--ask-ring-color);mask:linear-gradient(#fff 0 0) content-box,linear-gradient(#fff 0 0);mask-composite:exclude;transition:opacity 200ms ease-out; }
 .ask-border::before { content:"";position:absolute;left:50%;top:50%;width:200%;aspect-ratio:1;background:conic-gradient(transparent 0 54%,var(--ask-ring-highlight) 76%,var(--ask-ring-highlight) 81%,transparent 100%);animation:ask-border-drift 12s linear infinite;animation-play-state:var(--ask-ring-play); }
@@ -464,11 +465,11 @@ body:has(.chat-panel[open]) .app-toast-viewport { inset-inline-end:460px; }
 .ask-box:not([data-busy=true]):has(textarea:focus) { --ask-ring-opacity:1;--ask-ring-play:running; }
 @media (prefers-color-scheme:dark) {
   /* deep enough for a white arrow on the matching send button, light enough to read on the dark surface */
-  .ask-box { --ask-ring-color:color-mix(in srgb,var(--primary) 35%,var(--accent));--ask-ring-highlight:color-mix(in srgb,var(--focus) 18%,var(--ink)); }
-  .ask-box::before { content:"";position:absolute;inset:-2px;border-radius:inherit;pointer-events:none;opacity:var(--ask-ring-opacity);box-shadow:0 0 0 2px color-mix(in srgb,var(--accent) 9%,transparent),0 0 12px 2px color-mix(in srgb,var(--accent) 16%,transparent);transition:opacity 200ms ease-out; }
+  .ask-box,.note-reading-frame { --ask-ring-color:color-mix(in srgb,var(--primary) 35%,var(--accent));--ask-ring-highlight:color-mix(in srgb,var(--focus) 18%,var(--ink)); }
+  .ask-box::before,.note-reading-frame::before { content:"";position:absolute;inset:-2px;border-radius:inherit;pointer-events:none;opacity:var(--ask-ring-opacity);box-shadow:0 0 0 2px color-mix(in srgb,var(--accent) 9%,transparent),0 0 12px 2px color-mix(in srgb,var(--accent) 16%,transparent);transition:opacity 200ms ease-out; }
 }
 @keyframes ask-border-drift { from { transform:translate(-50%,-50%) rotate(0deg); } to { transform:translate(-50%,-50%) rotate(360deg); } }
-@media (prefers-reduced-motion:reduce) { .ask-border::before { animation:none;display:none; } .ask-box::before { display:none; } .orb-material::before,.orb-material::after { animation:none; } .ask-send { transition:none;transform:none!important; } }
+@media (prefers-reduced-motion:reduce) { .ask-border::before { animation:none;display:none; } .ask-box::before,.note-reading-frame::before { display:none; } .orb-material::before,.orb-material::after { animation:none; } .ask-send { transition:none;transform:none!important; } }
 .ask-field { padding:16px 10px 12px; }
 .ask-box textarea { display:block;width:100%;field-sizing:content;min-height:38px;max-height:160px;resize:none;background:transparent;outline:none;color:var(--ink);font-size:14px;line-height:22px; }
 .ask-box textarea:focus-visible { outline:none; }
@@ -570,3 +571,19 @@ body:has(.chat-panel[open]) .app-toast-viewport { inset-inline-end:460px; }
 :root[data-chrome=overlay] .home-toolbar-action { right:calc(17px + var(--controls-end)); }
 :root[data-chrome=overlay] .note-topbar { right:calc(16px + var(--controls-end)); }
 :root[data-chrome=overlay] .sidebar-collapsed .workspace-toolbar { padding-inline-start:24px; }
+
+/* The frame preserves the note's existing text inset and 22px heading offset in every state. */
+.note-reading-frame { position:relative;min-width:0;margin:8px calc(max(0px,(100% - 860px)/2) + clamp(20px,calc(10cqw - 42px),48px) - 14px) 8px;padding:2px;border-radius:12px; }
+.note-reading-frame[hidden] { display:none; }
+.note-reading-frame[data-generating=true] { --ask-ring-opacity:1; }
+.note-reading-frame[data-active=true] { --ask-ring-play:running; }
+.note-reading-clip { height:100%;overflow:hidden;border-radius:10px; }
+.main-window .note-reading-clip>.note-notes-pane { height:100%;scrollbar-width:auto;scrollbar-gutter:stable; }
+/* The reserved 4px thumb completes the end padding without narrowing or shifting the text column. */
+.note-reading-frame .note-notes-body { max-width:none;padding-block:12px 30px;padding-inline:12px 8px; }
+.note-reading-clip>.note-notes-pane::-webkit-scrollbar { width:4px; }
+.note-reading-clip>.note-notes-pane::-webkit-scrollbar-track,.note-reading-clip>.note-notes-pane::-webkit-scrollbar-thumb { background:transparent; }
+.note-reading-clip>.note-notes-pane[data-scrolling]::-webkit-scrollbar-thumb { background:color-mix(in srgb,var(--muted) 45%,transparent);border-radius:3px; }
+.note-summary-rim { inset:0;z-index:2; }
+.note-summary-status { position:absolute;inset-inline-start:14px;bottom:10px;z-index:1;background:var(--bg);color:var(--muted);font-size:11px;line-height:16px;pointer-events:none; }
+.note-latest { position:absolute;bottom:10px;left:50%;transform:translateX(-50%);z-index:3;display:flex;align-items:center;gap:4px;border:1px solid var(--line);border-radius:6px;padding:4px 12px;background:var(--float);color:var(--ink);font-size:12px;line-height:16px;box-shadow:var(--shadow); }

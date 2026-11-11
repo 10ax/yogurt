@@ -1,0 +1,49 @@
+import { followGlide } from './motion'
+
+/** Shared by growing answers and summaries; an idle or hidden pane schedules no work. */
+export function attachFollowLatest(el: HTMLElement, body: HTMLElement, stuck: { current: boolean }, behind: (value: boolean) => void) {
+  let glide: ReturnType<typeof followGlide> | undefined
+  const stop = () => { glide?.stop(); glide = undefined }
+  const report = () => behind(el.scrollHeight - el.scrollTop - el.clientHeight >= 24)
+  const follow = () => {
+    if (document.hidden || !el.clientHeight) return
+    if (stuck.current) {
+      if (glide?.active) glide.to(Math.max(0, el.scrollHeight - el.clientHeight))
+      else el.scrollTop = el.scrollHeight
+    }
+    report()
+  }
+  const scroll = () => {
+    if (glide?.active) return
+    stuck.current = el.scrollHeight - el.scrollTop - el.clientHeight < 24
+    report()
+  }
+  const touch = () => { stop() }
+  const key = (event: KeyboardEvent) => {
+    if (['ArrowUp', 'ArrowDown', 'PageUp', 'PageDown', 'Home', 'End', ' '].includes(event.key)) stop()
+  }
+  const visibility = () => { if (document.hidden) stop(); else follow() }
+  const observer = new ResizeObserver(follow)
+  observer.observe(body); observer.observe(el)
+  el.addEventListener('scroll', scroll, { passive: true })
+  for (const event of ['wheel', 'touchstart', 'pointerdown']) el.addEventListener(event, touch, { passive: true })
+  el.addEventListener('keydown', key)
+  document.addEventListener('visibilitychange', visibility)
+  follow()
+  return {
+    latest() {
+      stuck.current = true; behind(false)
+      if (document.hidden || !el.clientHeight) return
+      stop()
+      glide = followGlide(el, () => {})
+      glide.to(Math.max(0, el.scrollHeight - el.clientHeight))
+    },
+    dispose() {
+      stop(); observer.disconnect()
+      el.removeEventListener('scroll', scroll)
+      for (const event of ['wheel', 'touchstart', 'pointerdown']) el.removeEventListener(event, touch)
+      el.removeEventListener('keydown', key)
+      document.removeEventListener('visibilitychange', visibility)
+    },
+  }
+}

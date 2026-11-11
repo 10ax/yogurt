@@ -16,6 +16,7 @@ import { ConversationActions } from './ConversationActions'
 import { ScrollFade } from './ScrollFade'
 import { rememberedScroll, useScrollMemory } from '../useScrollMemory'
 import { AskContext, chipTitle } from './AskContext'
+import { useFollowLatest } from '../useFollowLatest'
 import { Swap, SwapText } from './Swap'
 
 const drafts = new Map<string, string>()
@@ -34,7 +35,6 @@ export function AskConversation({ id, initial, home = false, panel = false, reco
   const [error, setError] = useState(false)
   const [sending, setSending] = useState(false)
   const [changing, setChanging] = useState(false)
-  const [behind, setBehind] = useState(false)
   const [mention, setMention] = useState<{ start: number; end: number; query: string }>()
   const [targetResults, setTargetResults] = useState<{ query: string; items: ContextTarget[] }>()
   const targets = targetResults?.items ?? []
@@ -44,7 +44,7 @@ export function AskConversation({ id, initial, home = false, panel = false, reco
   const scrollKey = `conversation/${id}`
   const scroll = useScrollMemory<HTMLDivElement>(scrollKey, !!chat)
   const content = useRef<HTMLDivElement>(null)
-  const stuck = useRef(rememberedScroll(scrollKey) === undefined)
+  const follow = useFollowLatest(scroll, content, !!chat, rememberedScroll(scrollKey) === undefined)
   const prefix = panel ? 'chat' : 'chat-page'
   useEffect(() => {
     if (!id) return
@@ -86,18 +86,6 @@ export function AskConversation({ id, initial, home = false, panel = false, reco
   useLayoutEffect(() => {
     if (!changing && focusAfterRemove.current) { focusAfterRemove.current = false; input.current?.focus() }
   }, [changing, chat])
-  useLayoutEffect(() => {
-    const el = scroll.current, body = content.current
-    if (!chat || !el || !body) return
-    const follow = () => {
-      if (stuck.current) el.scrollTop = el.scrollHeight
-      setBehind(el.scrollHeight - el.scrollTop - el.clientHeight >= 24)
-    }
-    follow()
-    const observer = new ResizeObserver(follow)
-    observer.observe(body); observer.observe(el)
-    return () => observer.disconnect()
-  }, [!!chat])
   const turns = chat?.turns ?? [], last = turns.at(-1)
   const answering = last?.status === 'waiting' || last?.status === 'answering'
   const busy = !chat || sending || changing || answering
@@ -139,7 +127,7 @@ export function AskConversation({ id, initial, home = false, panel = false, reco
   const send = (q: string) => {
     if (!q.trim() || busy) return
     keepTyping()
-    stuck.current = true; setBehind(false); setSending(true); setError(false); setMention(undefined)
+    follow.resume(); setSending(true); setError(false); setMention(undefined)
     void window.yogurt.conversations.ask(id, q).then(made => {
       if (!made) throw new Error('Question was not saved')
       setText(''); drafts.delete(id)
@@ -173,14 +161,14 @@ export function AskConversation({ id, initial, home = false, panel = false, reco
       </div>
     </header>}
     <div className="ask-thread-wrap">
-      <ScrollFade><div className={`ask-thread${panel ? " chat-history" : ""}${unsent ? ' ask-thread-empty' : ''}`} ref={scroll} onScroll={e => { const el = e.currentTarget; stuck.current = el.scrollHeight - el.scrollTop - el.clientHeight < 24; setBehind(!stuck.current) }}>
+      <ScrollFade><div className={`ask-thread${panel ? " chat-history" : ""}${unsent ? ' ask-thread-empty' : ''}`} ref={scroll}>
         <div ref={content} className="ask-thread-content">
         <LoadingContent pending={!chat && !error} skeleton={<Loading layout="chat" testId="chat-thread-loading" />}>
         {!landing && turns.map(turn => <Turn key={turn.id} turn={turn} chat={chat!} panel={panel} onSource={onSource} onRetry={() => send(turn.question)} />)}
         {panel && suggestions}</LoadingContent>
         </div>
       </div></ScrollFade>
-      {behind && <button className="chat-latest" data-testid="chat-latest" aria-label={t('Back to latest')} onClick={() => { stuck.current = true; setBehind(false); scroll.current?.scrollTo({ top: scroll.current.scrollHeight, behavior: 'instant' }) }}><ArrowDown size={15} /></button>}
+      {follow.behind && <button className="chat-latest" data-testid="chat-latest" aria-label={t('Back to latest')} onClick={follow.latest}><ArrowDown size={15} /></button>}
     </div>
     <div className={`ask-composer${panel ? ' chat-composer' : ''}`}>
       {error && <p data-testid={panel ? "chat-send-error" : "chat-page-error"} role="alert" className="chat-error">{t("Couldn't save your changes")}</p>}

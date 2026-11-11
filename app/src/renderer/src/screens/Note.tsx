@@ -1,5 +1,5 @@
 import { citationTargetIndex } from '../../../shared/citations'
-import { ScrollFade } from '../components/ScrollFade'
+import { NoteReadingPane } from '../components/NoteReadingPane'
 import type { LibrarySource } from '../../../shared/types'
 import { flushSync } from 'react-dom'
 import { Loading } from '../components/Loading'
@@ -378,17 +378,13 @@ export function Note({ id, onTitleChange, at, folderSuggestion, onSource }: {
         </header>
         <div ref={setChatAnchor} className="note-reading-area">
           <div ref={panels} className="note-panels">
-          <ScrollFade enabled={primary === 'notes'}><section ref={readingScroll} id="note-notes-panel" role="tabpanel" aria-labelledby={shown === 'enhanced' ? 'note-summary-tab' : 'note-notes-tab'} hidden={primary !== 'notes'} className="note-content note-notes-pane">
-            <div className="note-page-width note-notes-body">
-              <div>
+          <NoteReadingPane active={primary === 'notes'} summary={shown === 'enhanced'} generating={shown === 'enhanced' && (notes.status === 'waiting' || notes.status === 'writing')} scroll={readingScroll}>
                 {shown === 'mine' ? <Editor
                   focus={primary === 'notes' && at?.ms === null ? at : undefined} testId="note-mine" label={t('My notes')} className="min-h-[40vh]" markdown={notes.mine} placeholder={t('Write notes here. Yogurt fills in the rest after the meeting.')}
                   onChange={(md) => { typing.current = true; const next = { ...current.current!, mine: md }; current.current = next; setNotes(next); mineSave.change(md) }}
                   onBlur={() => { typing.current = false; mineSave.flush() }}
                 /> : <Enhanced focus={primary === 'notes' && at?.ms === null ? at : undefined} notes={notes} disabled={starting} onChange={(md) => { setEditedHere(true); const next = { ...current.current!, enhanced: md }; current.current = next; setNotes(next); enhancedSave.change(md) }} onBlur={enhancedSave.flush} onRetry={writeAgain} />}
-              </div>
-            </div>
-          </section></ScrollFade>
+          </NoteReadingPane>
           {(primary === 'transcript' || transcriptVisited) && <section hidden={primary !== 'transcript'} id="note-transcript-panel" role="tabpanel" aria-labelledby="note-transcript-tab" className="note-content note-transcript-pane">
             <Transcript id={id} recording={recording} active={primary === 'transcript'} inline toolbar={transcriptToolbar} focus={at?.ms != null ? { ...at, ms: at.ms } : undefined} />
           </section>}

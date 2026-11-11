@@ -482,6 +482,10 @@ body:has(.chat-panel[open]) .app-toast-viewport { inset-inline-end:460px; }
 .ask-send:hover:not(:disabled) { background:var(--primary-hover);color:#FFFFFF; }
 .ask-send:active:not(:disabled) { background:var(--primary-hover);box-shadow:inset 0 1px 2px #0003; }
 .ask-send:disabled { background:transparent;border-color:var(--line); }
+/* while answering, Send becomes a quiet grey Stop: purple stays the colour of sending, so typing ahead never looks ready to send */
+.ask-stop { background:var(--control);color:var(--ink); }
+.ask-stop:hover:not(:disabled) { background:var(--control-hover);color:var(--ink); }
+.ask-stop:active:not(:disabled) { background:var(--control-pressed); }
 .ask-context-strip { display:grid;gap:6px;padding:10px 10px 0;max-height:184px;overflow-y:auto; }
 .ask-context-strip+.ask-field { padding-top:10px; }
 .ask-context-row { display:flex;align-items:center;gap:8px;min-width:0;height:32px;padding-inline:8px 4px;border-radius:8px;background:color-mix(in srgb,var(--control) 55%,var(--float));color:var(--ink);font-size:13px;line-height:20px; }

@@ -631,5 +631,10 @@
   "Yogurt runs entirely on your computer, and this one can't write down a meeting as fast as people talk. Installing the driver for your graphics card may help. Otherwise it needs a faster processor, or graphics it can use.": "Yogurt działa w całości na Twoim komputerze, a ten nie nadąża z zapisywaniem spotkania tak szybko, jak ludzie mówią. Może pomóc instalacja sterownika karty graficznej. W przeciwnym razie potrzebny jest szybszy procesor albo grafika, z której może korzystać.",
   "Generating notes…": "Tworzenie notatek…",
   "Yogurt is still downloading its AI model. Your notes will be ready in a few minutes.": "Yogurt wciąż pobiera swój model AI. Notatki będą gotowe za kilka minut.",
-  "Yogurt is still downloading its AI model. Your notes will be ready in a few minutes. ({percent})": "Yogurt wciąż pobiera swój model AI. Notatki będą gotowe za kilka minut. ({percent})"
+  "Yogurt is still downloading its AI model. Your notes will be ready in a few minutes. ({percent})": "Yogurt wciąż pobiera swój model AI. Notatki będą gotowe za kilka minut. ({percent})",
+  "Disconnect calendars": "Odłącz kalendarze",
+  "Disconnect": "Odłącz",
+  "Yogurt stops using these calendars.": "Yogurt przestanie używać tych kalendarzy.",
+  "Calendar access": "Dostęp do kalendarza",
+  "Remove Yogurt’s access in System Settings.": "Odbierz Yogurtowi dostęp w Ustawieniach systemowych."
 }

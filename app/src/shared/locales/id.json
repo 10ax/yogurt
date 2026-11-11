@@ -566,5 +566,10 @@
   "Yogurt runs entirely on your computer, and this one can't write down a meeting as fast as people talk. Installing the driver for your graphics card may help. Otherwise it needs a faster processor, or graphics it can use.": "Yogurt berjalan sepenuhnya di komputer Anda, dan komputer ini tidak bisa mencatat rapat secepat orang berbicara. Memasang driver untuk kartu grafis Anda mungkin membantu. Jika tidak, perlu prosesor yang lebih cepat, atau grafis yang bisa dipakai.",
   "Generating notes…": "Membuat catatan…",
   "Yogurt is still downloading its AI model. Your notes will be ready in a few minutes.": "Yogurt masih mengunduh model AI-nya. Catatan Anda akan siap dalam beberapa menit.",
-  "Yogurt is still downloading its AI model. Your notes will be ready in a few minutes. ({percent})": "Yogurt masih mengunduh model AI-nya. Catatan Anda akan siap dalam beberapa menit. ({percent})"
+  "Yogurt is still downloading its AI model. Your notes will be ready in a few minutes. ({percent})": "Yogurt masih mengunduh model AI-nya. Catatan Anda akan siap dalam beberapa menit. ({percent})",
+  "Disconnect calendars": "Putuskan kalender",
+  "Disconnect": "Putuskan",
+  "Yogurt stops using these calendars.": "Yogurt berhenti menggunakan kalender ini.",
+  "Calendar access": "Akses kalender",
+  "Remove Yogurt’s access in System Settings.": "Hapus akses Yogurt di Pengaturan Sistem."
 }

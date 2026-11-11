@@ -566,5 +566,10 @@
   "Yogurt runs entirely on your computer, and this one can't write down a meeting as fast as people talk. Installing the driver for your graphics card may help. Otherwise it needs a faster processor, or graphics it can use.": "Yogurt 完全在你的電腦上執行，而這台電腦記錄會議的速度跟不上大家說話的速度。安裝顯示卡的驅動程式可能會有幫助。否則，它需要更快的處理器，或可用的顯示卡。",
   "Generating notes…": "正在產生筆記…",
   "Yogurt is still downloading its AI model. Your notes will be ready in a few minutes.": "Yogurt 仍在下載 AI 模型。你的筆記幾分鐘後就好。",
-  "Yogurt is still downloading its AI model. Your notes will be ready in a few minutes. ({percent})": "Yogurt 仍在下載 AI 模型。你的筆記幾分鐘後就好。（{percent}）"
+  "Yogurt is still downloading its AI model. Your notes will be ready in a few minutes. ({percent})": "Yogurt 仍在下載 AI 模型。你的筆記幾分鐘後就好。（{percent}）",
+  "Disconnect calendars": "中斷日曆連結",
+  "Disconnect": "中斷連結",
+  "Yogurt stops using these calendars.": "Yogurt 會停止使用這些日曆。",
+  "Calendar access": "日曆存取權限",
+  "Remove Yogurt’s access in System Settings.": "在系統設定中移除 Yogurt 的存取權限。"
 }

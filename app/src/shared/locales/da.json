@@ -605,5 +605,10 @@
   "Yogurt runs entirely on your computer, and this one can't write down a meeting as fast as people talk. Installing the driver for your graphics card may help. Otherwise it needs a faster processor, or graphics it can use.": "Yogurt kører helt på din computer, og denne kan ikke skrive et møde ned så hurtigt, som folk taler. Det kan hjælpe at installere driveren til dit grafikkort. Ellers skal den have en hurtigere processor eller grafik, den kan bruge.",
   "Generating notes…": "Laver noter…",
   "Yogurt is still downloading its AI model. Your notes will be ready in a few minutes.": "Yogurt er stadig ved at downloade sin AI-model. Dine noter er klar om et par minutter.",
-  "Yogurt is still downloading its AI model. Your notes will be ready in a few minutes. ({percent})": "Yogurt er stadig ved at downloade sin AI-model. Dine noter er klar om et par minutter. ({percent})"
+  "Yogurt is still downloading its AI model. Your notes will be ready in a few minutes. ({percent})": "Yogurt er stadig ved at downloade sin AI-model. Dine noter er klar om et par minutter. ({percent})",
+  "Disconnect calendars": "Frakobl kalendere",
+  "Disconnect": "Frakobl",
+  "Yogurt stops using these calendars.": "Yogurt holder op med at bruge disse kalendere.",
+  "Calendar access": "Kalenderadgang",
+  "Remove Yogurt’s access in System Settings.": "Fjern Yogurts adgang i Systemindstillinger."
 }

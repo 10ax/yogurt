@@ -661,5 +661,10 @@
   "Yogurt runs entirely on your computer, and this one can't write down a meeting as fast as people talk. Installing the driver for your graphics card may help. Otherwise it needs a faster processor, or graphics it can use.": "يعمل Yogurt بالكامل على جهاز الكمبيوتر، وهذا الجهاز لا يستطيع كتابة الاجتماع بسرعة كلام الناس. قد يساعد تثبيت برنامج تشغيل بطاقة الرسوميات. وإلا فهو يحتاج إلى معالج أسرع، أو رسوميات يمكنه استخدامها.",
   "Generating notes…": "جارٍ إنشاء الملاحظات…",
   "Yogurt is still downloading its AI model. Your notes will be ready in a few minutes.": "لا يزال Yogurt يُنزّل نموذج الذكاء الاصطناعي. ستكون ملاحظاتك جاهزة خلال بضع دقائق.",
-  "Yogurt is still downloading its AI model. Your notes will be ready in a few minutes. ({percent})": "لا يزال Yogurt يُنزّل نموذج الذكاء الاصطناعي. ستكون ملاحظاتك جاهزة خلال بضع دقائق. ({percent})"
+  "Yogurt is still downloading its AI model. Your notes will be ready in a few minutes. ({percent})": "لا يزال Yogurt يُنزّل نموذج الذكاء الاصطناعي. ستكون ملاحظاتك جاهزة خلال بضع دقائق. ({percent})",
+  "Disconnect calendars": "فصل التقويمات",
+  "Disconnect": "فصل",
+  "Yogurt stops using these calendars.": "يتوقف Yogurt عن استخدام هذه التقويمات.",
+  "Calendar access": "الوصول إلى التقويم",
+  "Remove Yogurt’s access in System Settings.": "أزِل وصول Yogurt من إعدادات النظام."
 }

@@ -605,5 +605,10 @@
   "Yogurt runs entirely on your computer, and this one can't write down a meeting as fast as people talk. Installing the driver for your graphics card may help. Otherwise it needs a faster processor, or graphics it can use.": "Yogurt पूरी तरह आपके कंप्यूटर पर चलता है, और यह कंप्यूटर मीटिंग को उतनी तेज़ी से नहीं लिख पा रहा जितनी तेज़ी से लोग बोलते हैं। अपने ग्राफ़िक्स कार्ड का ड्राइवर इंस्टॉल करने से मदद मिल सकती है। नहीं तो इसे तेज़ प्रोसेसर, या ऐसे ग्राफ़िक्स चाहिए जिन्हें यह इस्तेमाल कर सके।",
   "Generating notes…": "नोट्स बन रहे हैं…",
   "Yogurt is still downloading its AI model. Your notes will be ready in a few minutes.": "Yogurt अभी अपना AI मॉडल डाउनलोड कर रहा है। आपके नोट्स कुछ मिनटों में तैयार हो जाएंगे।",
-  "Yogurt is still downloading its AI model. Your notes will be ready in a few minutes. ({percent})": "Yogurt अभी अपना AI मॉडल डाउनलोड कर रहा है। आपके नोट्स कुछ मिनटों में तैयार हो जाएंगे। ({percent})"
+  "Yogurt is still downloading its AI model. Your notes will be ready in a few minutes. ({percent})": "Yogurt अभी अपना AI मॉडल डाउनलोड कर रहा है। आपके नोट्स कुछ मिनटों में तैयार हो जाएंगे। ({percent})",
+  "Disconnect calendars": "कैलेंडर डिस्कनेक्ट करें",
+  "Disconnect": "डिस्कनेक्ट करें",
+  "Yogurt stops using these calendars.": "Yogurt इन कैलेंडर का इस्तेमाल बंद कर देता है।",
+  "Calendar access": "कैलेंडर की पहुँच",
+  "Remove Yogurt’s access in System Settings.": "सिस्टम सेटिंग्स में Yogurt की पहुँच हटाएँ।"
 }

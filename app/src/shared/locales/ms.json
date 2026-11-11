@@ -566,5 +566,10 @@
   "Yogurt runs entirely on your computer, and this one can't write down a meeting as fast as people talk. Installing the driver for your graphics card may help. Otherwise it needs a faster processor, or graphics it can use.": "Yogurt berjalan sepenuhnya pada komputer anda, dan komputer ini tidak dapat mencatat mesyuarat sepantas orang bercakap. Memasang pemacu untuk kad grafik anda mungkin membantu. Jika tidak, ia memerlukan pemproses yang lebih pantas, atau grafik yang boleh digunakan.",
   "Generating notes…": "Menjana nota…",
   "Yogurt is still downloading its AI model. Your notes will be ready in a few minutes.": "Yogurt masih memuat turun model AI nya. Nota anda akan siap dalam beberapa minit.",
-  "Yogurt is still downloading its AI model. Your notes will be ready in a few minutes. ({percent})": "Yogurt masih memuat turun model AI nya. Nota anda akan siap dalam beberapa minit. ({percent})"
+  "Yogurt is still downloading its AI model. Your notes will be ready in a few minutes. ({percent})": "Yogurt masih memuat turun model AI nya. Nota anda akan siap dalam beberapa minit. ({percent})",
+  "Disconnect calendars": "Putuskan sambungan kalendar",
+  "Disconnect": "Putuskan sambungan",
+  "Yogurt stops using these calendars.": "Yogurt berhenti menggunakan kalendar ini.",
+  "Calendar access": "Akses kalendar",
+  "Remove Yogurt’s access in System Settings.": "Buang akses Yogurt dalam Tetapan Sistem."
 }

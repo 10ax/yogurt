@@ -566,5 +566,10 @@
   "Yogurt runs entirely on your computer, and this one can't write down a meeting as fast as people talk. Installing the driver for your graphics card may help. Otherwise it needs a faster processor, or graphics it can use.": "Yogurt chạy hoàn toàn trên máy tính của bạn, và máy này không ghi lại cuộc họp kịp với tốc độ mọi người nói. Cài trình điều khiển cho card đồ họa của bạn có thể giúp ích. Nếu không, cần bộ xử lý nhanh hơn, hoặc card đồ họa có thể dùng được.",
   "Generating notes…": "Đang tạo ghi chú…",
   "Yogurt is still downloading its AI model. Your notes will be ready in a few minutes.": "Yogurt vẫn đang tải mô hình AI. Ghi chú của bạn sẽ sẵn sàng sau vài phút.",
-  "Yogurt is still downloading its AI model. Your notes will be ready in a few minutes. ({percent})": "Yogurt vẫn đang tải mô hình AI. Ghi chú của bạn sẽ sẵn sàng sau vài phút. ({percent})"
+  "Yogurt is still downloading its AI model. Your notes will be ready in a few minutes. ({percent})": "Yogurt vẫn đang tải mô hình AI. Ghi chú của bạn sẽ sẵn sàng sau vài phút. ({percent})",
+  "Disconnect calendars": "Ngắt kết nối lịch",
+  "Disconnect": "Ngắt kết nối",
+  "Yogurt stops using these calendars.": "Yogurt ngừng dùng các lịch này.",
+  "Calendar access": "Quyền truy cập lịch",
+  "Remove Yogurt’s access in System Settings.": "Gỡ quyền truy cập của Yogurt trong Cài đặt hệ thống."
 }

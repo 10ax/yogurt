@@ -605,5 +605,10 @@
   "Yogurt runs entirely on your computer, and this one can't write down a meeting as fast as people talk. Installing the driver for your graphics card may help. Otherwise it needs a faster processor, or graphics it can use.": "Yogurt tamamen bilgisayarınızda çalışır ve bu bilgisayar bir toplantıyı insanların konuştuğu hızda yazıya dökemiyor. Ekran kartınızın sürücüsünü yüklemek işe yarayabilir. Aksi halde daha hızlı bir işlemci veya kullanabileceği bir grafik birimi gerekiyor.",
   "Generating notes…": "Notlar oluşturuluyor…",
   "Yogurt is still downloading its AI model. Your notes will be ready in a few minutes.": "Yogurt hâlâ yapay zekâ modelini indiriyor. Notlarınız birkaç dakika içinde hazır olacak.",
-  "Yogurt is still downloading its AI model. Your notes will be ready in a few minutes. ({percent})": "Yogurt hâlâ yapay zekâ modelini indiriyor. Notlarınız birkaç dakika içinde hazır olacak. ({percent})"
+  "Yogurt is still downloading its AI model. Your notes will be ready in a few minutes. ({percent})": "Yogurt hâlâ yapay zekâ modelini indiriyor. Notlarınız birkaç dakika içinde hazır olacak. ({percent})",
+  "Disconnect calendars": "Takvimlerin bağlantısını kes",
+  "Disconnect": "Bağlantıyı kes",
+  "Yogurt stops using these calendars.": "Yogurt bu takvimleri kullanmayı bırakır.",
+  "Calendar access": "Takvim erişimi",
+  "Remove Yogurt’s access in System Settings.": "Yogurt’un erişimini Sistem Ayarları’ndan kaldır."
 }

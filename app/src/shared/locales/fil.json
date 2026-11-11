@@ -605,5 +605,10 @@
   "Yogurt runs entirely on your computer, and this one can't write down a meeting as fast as people talk. Installing the driver for your graphics card may help. Otherwise it needs a faster processor, or graphics it can use.": "Tumatakbo ang Yogurt nang buo sa computer mo, at hindi kayang isulat ng isang ito ang meeting nang kasimbilis ng pagsasalita ng mga tao. Baka makatulong ang pag-install ng driver ng graphics card mo. Kung hindi, kailangan nito ng mas mabilis na processor, o graphics na magagamit nito.",
   "Generating notes…": "Ginagawa ang mga note…",
   "Yogurt is still downloading its AI model. Your notes will be ready in a few minutes.": "Dina-download pa ng Yogurt ang AI model nito. Handa na ang mga note mo sa loob ng ilang minuto.",
-  "Yogurt is still downloading its AI model. Your notes will be ready in a few minutes. ({percent})": "Dina-download pa ng Yogurt ang AI model nito. Handa na ang mga note mo sa loob ng ilang minuto. ({percent})"
+  "Yogurt is still downloading its AI model. Your notes will be ready in a few minutes. ({percent})": "Dina-download pa ng Yogurt ang AI model nito. Handa na ang mga note mo sa loob ng ilang minuto. ({percent})",
+  "Disconnect calendars": "Idiskonekta ang mga kalendaryo",
+  "Disconnect": "Idiskonekta",
+  "Yogurt stops using these calendars.": "Hihinto ang Yogurt sa paggamit ng mga kalendaryong ito.",
+  "Calendar access": "Access sa kalendaryo",
+  "Remove Yogurt’s access in System Settings.": "Alisin ang access ng Yogurt sa System Settings."
 }

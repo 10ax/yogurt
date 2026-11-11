@@ -605,5 +605,10 @@
   "Yogurt runs entirely on your computer, and this one can't write down a meeting as fast as people talk. Installing the driver for your graphics card may help. Otherwise it needs a faster processor, or graphics it can use.": "Yogurt draait helemaal op je computer, en deze kan een vergadering niet zo snel uitschrijven als er gepraat wordt. De driver voor je grafische kaart installeren kan helpen. Anders is er een snellere processor nodig, of graphics die Yogurt kan gebruiken.",
   "Generating notes…": "Notities worden gemaakt…",
   "Yogurt is still downloading its AI model. Your notes will be ready in a few minutes.": "Yogurt is het AI-model nog aan het downloaden. Je notities zijn over een paar minuten klaar.",
-  "Yogurt is still downloading its AI model. Your notes will be ready in a few minutes. ({percent})": "Yogurt is het AI-model nog aan het downloaden. Je notities zijn over een paar minuten klaar. ({percent})"
+  "Yogurt is still downloading its AI model. Your notes will be ready in a few minutes. ({percent})": "Yogurt is het AI-model nog aan het downloaden. Je notities zijn over een paar minuten klaar. ({percent})",
+  "Disconnect calendars": "Agenda’s ontkoppelen",
+  "Disconnect": "Ontkoppelen",
+  "Yogurt stops using these calendars.": "Yogurt gebruikt deze agenda’s niet meer.",
+  "Calendar access": "Agendatoegang",
+  "Remove Yogurt’s access in System Settings.": "Trek de toegang van Yogurt in via Systeeminstellingen."
 }

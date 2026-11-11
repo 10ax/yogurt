@@ -566,5 +566,10 @@
   "Yogurt runs entirely on your computer, and this one can't write down a meeting as fast as people talk. Installing the driver for your graphics card may help. Otherwise it needs a faster processor, or graphics it can use.": "Yogurt ทำงานบนคอมพิวเตอร์ของคุณทั้งหมด และเครื่องนี้จดการประชุมได้ไม่ทันความเร็วที่คนพูด การติดตั้งไดรเวอร์ของการ์ดกราฟิกอาจช่วยได้ ไม่เช่นนั้นต้องมีโปรเซสเซอร์ที่เร็วกว่านี้ หรือกราฟิกที่ใช้งานได้",
   "Generating notes…": "กำลังสร้างโน้ต…",
   "Yogurt is still downloading its AI model. Your notes will be ready in a few minutes.": "Yogurt ยังดาวน์โหลดโมเดล AI อยู่ โน้ตของคุณจะพร้อมในอีกไม่กี่นาที",
-  "Yogurt is still downloading its AI model. Your notes will be ready in a few minutes. ({percent})": "Yogurt ยังดาวน์โหลดโมเดล AI อยู่ โน้ตของคุณจะพร้อมในอีกไม่กี่นาที ({percent})"
+  "Yogurt is still downloading its AI model. Your notes will be ready in a few minutes. ({percent})": "Yogurt ยังดาวน์โหลดโมเดล AI อยู่ โน้ตของคุณจะพร้อมในอีกไม่กี่นาที ({percent})",
+  "Disconnect calendars": "ยกเลิกการเชื่อมต่อปฏิทิน",
+  "Disconnect": "ยกเลิกการเชื่อมต่อ",
+  "Yogurt stops using these calendars.": "Yogurt จะหยุดใช้ปฏิทินเหล่านี้",
+  "Calendar access": "การเข้าถึงปฏิทิน",
+  "Remove Yogurt’s access in System Settings.": "เอาสิทธิ์เข้าถึงของ Yogurt ออกในการตั้งค่าระบบ"
 }

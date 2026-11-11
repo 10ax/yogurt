@@ -618,5 +618,10 @@
   "Yogurt runs entirely on your computer, and this one can't write down a meeting as fast as people talk. Installing the driver for your graphics card may help. Otherwise it needs a faster processor, or graphics it can use.": "Yogurt פועל כולו במחשב שלך, והמחשב הזה לא מצליח לכתוב פגישה מהר כמו שאנשים מדברים. התקנת מנהל ההתקן של הכרטיס הגרפי עשויה לעזור. אחרת צריך מעבד מהיר יותר, או כרטיס גרפי שאפשר להשתמש בו.",
   "Generating notes…": "יוצר הערות…",
   "Yogurt is still downloading its AI model. Your notes will be ready in a few minutes.": "Yogurt עדיין מוריד את מודל ה-AI שלו. ההערות שלך יהיו מוכנות בעוד כמה דקות.",
-  "Yogurt is still downloading its AI model. Your notes will be ready in a few minutes. ({percent})": "Yogurt עדיין מוריד את מודל ה-AI שלו. ההערות שלך יהיו מוכנות בעוד כמה דקות. ({percent})"
+  "Yogurt is still downloading its AI model. Your notes will be ready in a few minutes. ({percent})": "Yogurt עדיין מוריד את מודל ה-AI שלו. ההערות שלך יהיו מוכנות בעוד כמה דקות. ({percent})",
+  "Disconnect calendars": "ניתוק לוחות השנה",
+  "Disconnect": "ניתוק",
+  "Yogurt stops using these calendars.": "Yogurt יפסיק להשתמש בלוחות השנה האלה.",
+  "Calendar access": "גישה ללוח השנה",
+  "Remove Yogurt’s access in System Settings.": "הסירו את הגישה של Yogurt בהגדרות המערכת."
 }

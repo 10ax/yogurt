@@ -608,5 +608,10 @@
   "Yogurt runs entirely on your computer, and this one can't write down a meeting as fast as people talk. Installing the driver for your graphics card may help. Otherwise it needs a faster processor, or graphics it can use.": "Yogurt toimii kokonaan tietokoneellasi, eikä tämä ehdi kirjoittaa kokousta ylös niin nopeasti kuin ihmiset puhuvat. Näytönohjaimesi ajurin asentaminen voi auttaa. Muuten se tarvitsee nopeamman suorittimen tai näytönohjaimen, jota se voi käyttää.",
   "Generating notes…": "Luodaan muistiinpanoja…",
   "Yogurt is still downloading its AI model. Your notes will be ready in a few minutes.": "Yogurt lataa vielä tekoälymalliaan. Muistiinpanosi ovat valmiina muutaman minuutin päästä.",
-  "Yogurt is still downloading its AI model. Your notes will be ready in a few minutes. ({percent})": "Yogurt lataa vielä tekoälymalliaan. Muistiinpanosi ovat valmiina muutaman minuutin päästä. ({percent})"
+  "Yogurt is still downloading its AI model. Your notes will be ready in a few minutes. ({percent})": "Yogurt lataa vielä tekoälymalliaan. Muistiinpanosi ovat valmiina muutaman minuutin päästä. ({percent})",
+  "Disconnect calendars": "Irrota kalenterit",
+  "Disconnect": "Irrota",
+  "Yogurt stops using these calendars.": "Yogurt lakkaa käyttämästä näitä kalentereita.",
+  "Calendar access": "Kalenterin käyttöoikeus",
+  "Remove Yogurt’s access in System Settings.": "Poista Yogurtin käyttöoikeus Järjestelmäasetuksista."
 }

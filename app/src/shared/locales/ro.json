@@ -618,5 +618,10 @@
   "Yogurt runs entirely on your computer, and this one can't write down a meeting as fast as people talk. Installing the driver for your graphics card may help. Otherwise it needs a faster processor, or graphics it can use.": "Yogurt rulează în întregime pe computerul dvs., iar acesta nu poate scrie o întâlnire la fel de repede cum vorbesc oamenii. Instalarea driverului pentru placa grafică poate ajuta. Altfel, are nevoie de un procesor mai rapid sau de o placă grafică pe care o poate folosi.",
   "Generating notes…": "Se generează notițele…",
   "Yogurt is still downloading its AI model. Your notes will be ready in a few minutes.": "Yogurt încă descarcă modelul AI. Notițele tale vor fi gata în câteva minute.",
-  "Yogurt is still downloading its AI model. Your notes will be ready in a few minutes. ({percent})": "Yogurt încă descarcă modelul AI. Notițele tale vor fi gata în câteva minute. ({percent})"
+  "Yogurt is still downloading its AI model. Your notes will be ready in a few minutes. ({percent})": "Yogurt încă descarcă modelul AI. Notițele tale vor fi gata în câteva minute. ({percent})",
+  "Disconnect calendars": "Deconectează calendarele",
+  "Disconnect": "Deconectează",
+  "Yogurt stops using these calendars.": "Yogurt nu mai folosește aceste calendare.",
+  "Calendar access": "Acces la calendar",
+  "Remove Yogurt’s access in System Settings.": "Elimină accesul Yogurt din Setările de sistem."
 }

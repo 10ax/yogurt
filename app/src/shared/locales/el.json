@@ -605,5 +605,10 @@
   "Yogurt runs entirely on your computer, and this one can't write down a meeting as fast as people talk. Installing the driver for your graphics card may help. Otherwise it needs a faster processor, or graphics it can use.": "Το Yogurt λειτουργεί εξ ολοκλήρου στον υπολογιστή σας, και αυτός δεν μπορεί να καταγράφει μια σύσκεψη τόσο γρήγορα όσο μιλούν οι άνθρωποι. Μπορεί να βοηθήσει η εγκατάσταση του προγράμματος οδήγησης της κάρτας γραφικών σας. Αλλιώς χρειάζεται ταχύτερο επεξεργαστή ή γραφικά που μπορεί να χρησιμοποιήσει.",
   "Generating notes…": "Δημιουργούνται οι σημειώσεις…",
   "Yogurt is still downloading its AI model. Your notes will be ready in a few minutes.": "Το Yogurt κατεβάζει ακόμα το μοντέλο AI του. Οι σημειώσεις σας θα είναι έτοιμες σε λίγα λεπτά.",
-  "Yogurt is still downloading its AI model. Your notes will be ready in a few minutes. ({percent})": "Το Yogurt κατεβάζει ακόμα το μοντέλο AI του. Οι σημειώσεις σας θα είναι έτοιμες σε λίγα λεπτά. ({percent})"
+  "Yogurt is still downloading its AI model. Your notes will be ready in a few minutes. ({percent})": "Το Yogurt κατεβάζει ακόμα το μοντέλο AI του. Οι σημειώσεις σας θα είναι έτοιμες σε λίγα λεπτά. ({percent})",
+  "Disconnect calendars": "Αποσύνδεση ημερολογίων",
+  "Disconnect": "Αποσύνδεση",
+  "Yogurt stops using these calendars.": "Το Yogurt σταματά να χρησιμοποιεί αυτά τα ημερολόγια.",
+  "Calendar access": "Πρόσβαση στο ημερολόγιο",
+  "Remove Yogurt’s access in System Settings.": "Αφαίρεσε την πρόσβαση του Yogurt στις Ρυθμίσεις συστήματος."
 }

@@ -605,5 +605,10 @@
   "Yogurt runs entirely on your computer, and this one can't write down a meeting as fast as people talk. Installing the driver for your graphics card may help. Otherwise it needs a faster processor, or graphics it can use.": "A Yogurt teljes egészében a számítógépeden fut, és ez a gép nem tudja olyan gyorsan leírni a megbeszélést, ahogy az emberek beszélnek. Segíthet a grafikus kártya illesztőprogramjának telepítése. Különben gyorsabb processzor kell, vagy használható grafikus kártya.",
   "Generating notes…": "Készülnek a jegyzetek…",
   "Yogurt is still downloading its AI model. Your notes will be ready in a few minutes.": "A Yogurt még tölti le az MI-modelljét. A jegyzeteid néhány perc múlva elkészülnek.",
-  "Yogurt is still downloading its AI model. Your notes will be ready in a few minutes. ({percent})": "A Yogurt még tölti le az MI-modelljét. A jegyzeteid néhány perc múlva elkészülnek. ({percent})"
+  "Yogurt is still downloading its AI model. Your notes will be ready in a few minutes. ({percent})": "A Yogurt még tölti le az MI-modelljét. A jegyzeteid néhány perc múlva elkészülnek. ({percent})",
+  "Disconnect calendars": "Naptárak leválasztása",
+  "Disconnect": "Leválasztás",
+  "Yogurt stops using these calendars.": "A Yogurt nem használja tovább ezeket a naptárakat.",
+  "Calendar access": "Naptár-hozzáférés",
+  "Remove Yogurt’s access in System Settings.": "A Yogurt hozzáférését a Rendszerbeállításokban szüntetheted meg."
 }

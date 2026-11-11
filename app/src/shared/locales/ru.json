@@ -631,5 +631,10 @@
   "Yogurt runs entirely on your computer, and this one can't write down a meeting as fast as people talk. Installing the driver for your graphics card may help. Otherwise it needs a faster processor, or graphics it can use.": "Yogurt работает целиком на вашем компьютере, а этот не успевает записывать встречу так же быстро, как говорят люди. Может помочь установка драйвера для вашей видеокарты. Иначе нужен более быстрый процессор или видеокарта, которую можно использовать.",
   "Generating notes…": "Создаём заметки…",
   "Yogurt is still downloading its AI model. Your notes will be ready in a few minutes.": "Yogurt ещё скачивает модель ИИ. Заметки будут готовы через несколько минут.",
-  "Yogurt is still downloading its AI model. Your notes will be ready in a few minutes. ({percent})": "Yogurt ещё скачивает модель ИИ. Заметки будут готовы через несколько минут. ({percent})"
+  "Yogurt is still downloading its AI model. Your notes will be ready in a few minutes. ({percent})": "Yogurt ещё скачивает модель ИИ. Заметки будут готовы через несколько минут. ({percent})",
+  "Disconnect calendars": "Отключить календари",
+  "Disconnect": "Отключить",
+  "Yogurt stops using these calendars.": "Yogurt перестанет использовать эти календари.",
+  "Calendar access": "Доступ к календарю",
+  "Remove Yogurt’s access in System Settings.": "Уберите доступ Yogurt в Системных настройках."
 }

@@ -631,5 +631,10 @@
   "Yogurt runs entirely on your computer, and this one can't write down a meeting as fast as people talk. Installing the driver for your graphics card may help. Otherwise it needs a faster processor, or graphics it can use.": "Yogurt běží celý na vašem počítači a tento nestíhá zapisovat schůzku tak rychle, jak lidé mluví. Může pomoct instalace ovladače grafické karty. Jinak potřebuje rychlejší procesor, nebo grafiku, kterou může použít.",
   "Generating notes…": "Vytváření poznámek…",
   "Yogurt is still downloading its AI model. Your notes will be ready in a few minutes.": "Yogurt ještě stahuje svůj model AI. Poznámky budou hotové za pár minut.",
-  "Yogurt is still downloading its AI model. Your notes will be ready in a few minutes. ({percent})": "Yogurt ještě stahuje svůj model AI. Poznámky budou hotové za pár minut. ({percent})"
+  "Yogurt is still downloading its AI model. Your notes will be ready in a few minutes. ({percent})": "Yogurt ještě stahuje svůj model AI. Poznámky budou hotové za pár minut. ({percent})",
+  "Disconnect calendars": "Odpojit kalendáře",
+  "Disconnect": "Odpojit",
+  "Yogurt stops using these calendars.": "Yogurt přestane tyto kalendáře používat.",
+  "Calendar access": "Přístup ke kalendáři",
+  "Remove Yogurt’s access in System Settings.": "Přístup Yogurtu odeberete v Nastavení systému."
 }

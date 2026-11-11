@@ -23,6 +23,15 @@ export function CalendarSettings() {
     } catch { setError(true); reload() } finally { setBusy(false) }
   }
   const selected = view?.calendars.filter(c => c.enabled) ?? []
+  // Yogurt holds no calendar accounts: disconnecting unticks every calendar; the Mac's own access stays in System Settings
+  const disconnect = async () => {
+    const ids = selected.map(c => c.id)
+    setBusy(true); setError(false)
+    setView((v) => v && { ...v, calendars: v.calendars.map((c) => ({ ...c, enabled: false })) })
+    try {
+      for (const id of ids) if (!await window.yogurt.calendar.setEnabled(id, false)) throw new Error('Calendar unavailable')
+    } catch { setError(true); reload() } finally { setBusy(false) }
+  }
   const summary = !view ? t('Loading calendars…')
     : view.status === 'error' ? t("Yogurt couldn't read your calendars.")
     : view.status !== 'granted' ? t('Allow calendar access to choose your calendars.')
@@ -51,6 +60,16 @@ export function CalendarSettings() {
             <span className="settings-row-copy"><span className="settings-label">{c.name}</span><span className="settings-description block">{c.source}</span></span>
             <input type="checkbox" checked={c.enabled} disabled={busy} onChange={(e) => void choose(c.id, e.target.checked)} />
           </label>))}</LoadingContent>
+        {view?.status === 'granted' && view.calendars.length > 0 && <div data-testid="calendar-disconnect" className="settings-calendar-actions">
+          <div className="settings-row">
+            <span className="settings-row-copy"><span className="settings-label">{t('Disconnect calendars')}</span><span className="settings-description block">{t('Yogurt stops using these calendars.')}</span></span>
+            <button type="button" data-testid="calendar-disconnect-all" className="workspace-button shrink-0" disabled={busy || !selected.length} onClick={() => void disconnect()}>{t('Disconnect')}</button>
+          </div>
+          <div className="settings-row">
+            <span className="settings-row-copy"><span className="settings-label">{t('Calendar access')}</span><span className="settings-description block">{t('Remove Yogurt’s access in System Settings.')}</span></span>
+            <button type="button" className="workspace-button shrink-0" onClick={() => void window.yogurt.permissions.open('calendar')}>{t('Open System Settings')}</button>
+          </div>
+        </div>}
         {error && <p role="alert" className="settings-row text-danger">{t("Couldn't update your calendars. Try again.")}</p>}
       </div>
     </div>

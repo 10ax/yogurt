@@ -78,7 +78,7 @@ export function createWidget(d: { open(meetingId: string): void; stop(meetingId:
   let shown = false
 
   const hitTest = () => {
-    if (!win || win.isDestroyed()) return
+    if (!win || win.isDestroyed()) return false
     const cursor = screen.getCursorScreenPoint(), bounds = win.getBounds()
     const x = cursor.x - bounds.x, y = cursor.y - bounds.y
     const ignore = !shown || (!pressed && (!surface || !widgetContains(surface, x, y)))
@@ -86,6 +86,14 @@ export function createWidget(d: { open(meetingId: string): void; stop(meetingId:
     // Only a pointer over the window matters; a still or distant pointer sends nothing.
     const over = x >= 0 && y >= 0 && x < bounds.width && y < bounds.height, key = over ? `${x},${y}` : ''
     if (!BACKGROUND && key !== sentPointer) { sentPointer = key; win.webContents.send('widget:pointer', over ? { x, y } : { x: -1, y: -1 }) }
+    return over
+  }
+  // Frame-rate checks only while the pointer is over the window; elsewhere a slow check, and none while hidden.
+  // The renderer's own mouse events (forwarded through the click-through area) speed it up at once.
+  const poll = () => {
+    clearTimeout(pointerTimer)
+    if (!shown || BACKGROUND || !win || win.isDestroyed()) return
+    pointerTimer = setTimeout(poll, hitTest() || pressed ? 16 : 250)
   }
   const place = () => {
     if (!win || win.isDestroyed()) return
@@ -98,10 +106,8 @@ export function createWidget(d: { open(meetingId: string): void; stop(meetingId:
   const visibilityChanged = () => {
     const view = model.view(Date.now())
     shown = view?.kind === 'recording' && !view.paused && !d.foreground()
-    clearInterval(pointerTimer)
-    if (shown && !BACKGROUND) pointerTimer = setInterval(hitTest, 16)
-    if (!shown) { pressed = false; win?.webContents.send('widget:reset') }
-    hitTest()
+    if (!shown) { clearTimeout(pointerTimer); pressed = false; win?.webContents.send('widget:reset') }
+    hitTest(); poll()
     if (!win || win.isDestroyed() || BACKGROUND) return
     if (!shown) win.hide()
     else if (sized && !win.isVisible()) win.showInactive()
@@ -113,7 +119,7 @@ export function createWidget(d: { open(meetingId: string): void; stop(meetingId:
   const close = () => {
     clearTimeout(noteTimer)
     shown = false; sized = false; dragPosition = null; dragFrame = null
-    clearInterval(pointerTimer); surface = null; pressed = false
+    clearTimeout(pointerTimer); surface = null; pressed = false
     screen.removeListener('display-added', displayChanged)
     screen.removeListener('display-removed', displayChanged)
     screen.removeListener('display-metrics-changed', displayChanged)
@@ -128,7 +134,7 @@ export function createWidget(d: { open(meetingId: string): void; stop(meetingId:
     win = createWindow(d.windowOs); sized = false; ignoring = true; sentPointer = null
     pill = { ...lastPosition!, width: lastWidth, height: FIRST_H }
     layout = widgetLayout(pill, screen.getDisplayMatching(pill).workArea)
-    win.on('closed', () => { clearInterval(pointerTimer); win = undefined })
+    win.on('closed', () => { clearTimeout(pointerTimer); win = undefined })
   }
 
   onMeetingStart((m) => {
@@ -186,7 +192,7 @@ export function createWidget(d: { open(meetingId: string): void; stop(meetingId:
     const id = model.meetingId
     if (!id) return
     shown = false
-    clearInterval(pointerTimer); pressed = false
+    clearTimeout(pointerTimer); pressed = false
     if (win && !win.isDestroyed()) { win.webContents.send('widget:reset'); hitTest(); win.hide() }
     d.open(id)
   })
@@ -196,13 +202,13 @@ export function createWidget(d: { open(meetingId: string): void; stop(meetingId:
     if (!win || win.isDestroyed() || e.sender !== win.webContents || !value || typeof value !== 'object') return
     const r = value as WidgetSurface
     if (![r.x, r.y, r.width, r.height, r.radius].every(n => typeof n === 'number' && Number.isFinite(n)) || r.width <= 0 || r.height <= 0 || r.width > 600 || r.height > 600 || r.radius < 0 || r.radius > 100 || Math.abs(r.x) > 600 || Math.abs(r.y) > 600) return
-    surface = r; hitTest()
+    surface = r; poll()
     // The renderer has painted its first surface before the native window appears.
     if (!sized) { sized = true; visibilityChanged() }
   })
   ipcMain.on('widget:pressed', (e, value: unknown) => {
     if (!win || win.isDestroyed() || e.sender !== win.webContents || typeof value !== 'boolean') return
-    pressed = value; hitTest()
+    pressed = value; poll()
   })
   ipcMain.on('widget:drag', (e, dx: unknown, dy: unknown) => {
     if (!win || win.isDestroyed() || e.sender !== win.webContents || typeof dx !== 'number' || typeof dy !== 'number' || !Number.isFinite(dx) || !Number.isFinite(dy)) return

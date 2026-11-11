@@ -6,11 +6,11 @@ import './workspace.css'
 import './setup.css'
 import { App } from './App'
 import { Prompt } from './windows/Prompt'
-import { Widget, WidgetPreview } from './windows/Widget'
+import { Widget } from './windows/Widget'
 import { applyLanguage, useLanguage } from './i18n'
 
 // The small prompt card and the recording widget are the same page with #prompt and #widget
-const Which = location.hash === '#prompt' ? Prompt : location.hash === '#widget' ? Widget : location.hash === '#widget-preview' ? WidgetPreview : App
+const Which = location.hash === '#prompt' ? Prompt : location.hash === '#widget' ? Widget : App
 document.documentElement.classList.toggle('main-window', Which === App)
 // Windows and Linux: the system's window buttons over the top right, no traffic lights (workspace.css)
 if (window.yogurt.platform !== 'darwin') document.documentElement.dataset.chrome = 'overlay'

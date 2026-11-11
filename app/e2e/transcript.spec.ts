@@ -153,8 +153,8 @@ test('transcription trouble shows in the widget in plain words', async () => {
     await page.getByRole('tab', { name: 'Transcript', exact: true }).click()
     await expect(page.getByTestId('note-state')).toHaveAttribute('data-state', 'recording')
     await fake(app, 'warn', 'falling-behind')
-    // the recorder shows a warning sign; the words are on the card beside it
-    const w = await windowOf(app, '#widget-preview')
+    // the recorder shows a warning sign; the words are inside the expanded recorder
+    const w = await windowOf(app, '#widget')
     await expect(w.getByTestId('widget-note')).toHaveText('Yogurt is falling behind. Some lines may be missing.')
     await fake(app, 'warn', 'transcribe-failed')
     await expect(w.getByTestId('widget-note')).toHaveText("Some of this meeting couldn't be transcribed.")

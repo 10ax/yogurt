@@ -33,9 +33,11 @@ for (const theme of ['light', 'dark'] as const) test(`speaker colours agree acro
     for (let i = 0; i < names.length; i++) await expect(noteNames.filter({ hasText: names[i] }).last()).toHaveAttribute('data-color', String(i))
     await expect(noteNames.filter({ hasText: 'You' }).first()).not.toHaveAttribute('data-color')
     await page.getByTestId('transcript').evaluate(el => { el.scrollTop = el.scrollHeight })
-    await page.evaluate(() => window.yogurt.widget.preview(true))
-    await expect.poll(() => app.windows().some(p => p.url().includes('#widget-preview'))).toBe(true)
-    const preview = app.windows().find(p => p.url().includes('#widget-preview'))!
+    await expect.poll(() => app.windows().some(p => p.url().includes('#widget'))).toBe(true)
+    const preview = app.windows().find(p => p.url().includes('#widget'))!
+    await preview.reload()
+    await preview.getByTestId('widget').hover()
+    await expect(preview.getByTestId('widget')).toHaveAttribute('data-open', 'true')
     await preview.emulateMedia({ colorScheme: theme, reducedMotion: 'reduce' })
     await expect(preview.getByTestId('widget-preview-loading')).toHaveCount(0)
     const previewNames = preview.locator('.widget-preview-speaker')
@@ -48,6 +50,7 @@ for (const theme of ['light', 'dark'] as const) test(`speaker colours agree acro
     expect(noteColour).toBe(theme === 'dark' ? 'rgb(185, 149, 255)' : 'rgb(116, 52, 202)')
     expect(previewColour).toBe('rgb(185, 149, 255)')
     await preview.reload()
+    await preview.getByTestId('widget').hover()
     await expect(preview.locator('.widget-preview-speaker').filter({ hasText: names[0] })).toHaveAttribute('data-color', '0')
     // An earlier unidentified line gaining a name must not shift existing colours.
     insert.run(id, 'them', 90000, 91000, 'A late attribution.', 'Hal Moss')
@@ -72,6 +75,7 @@ for (const theme of ['light', 'dark'] as const) test(`speaker colours agree acro
     await page.reload()
     await page.getByTestId('note-transcript-toggle').click()
     await preview.reload()
+    await preview.getByTestId('widget').hover()
     await expect(preview.getByText(exchange[0][1], { exact: true })).toBeVisible()
     for (const [surface, target, scroll, turn] of [
       ['note', page, '[data-testid="transcript"]', '[data-testid="transcript-turn"]'],

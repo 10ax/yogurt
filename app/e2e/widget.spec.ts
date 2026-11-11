@@ -304,7 +304,9 @@ test('hover stays stationary and pointer-down movement drags immediately without
   try {
     const w = await record(app, page)
     const widget = w.getByTestId('widget')
-    await expect(widget).toHaveCSS('width', '127px')
+    // the pill hugs its content: the same space at both ends
+    const ends = await widget.evaluate(el => { const r = el.getBoundingClientRect(), a = el.firstElementChild!.getBoundingClientRect(), z = el.lastElementChild!.getBoundingClientRect(); return [Math.round(a.left - r.left), Math.round(r.right - z.right)] })
+    expect(ends[0]).toBe(ends[1])
     const before = (await snap(app)).bounds!
     const presented = (await fake<{ presented: number }>(app, 'main')).presented
     await w.mouse.move(50, 20)

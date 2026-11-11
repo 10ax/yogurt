@@ -174,7 +174,8 @@ html.widget { --pill:#232326;--pill-ink:#F7F7FA;--accent:#B780FF;--pill-accent:v
   box-shadow:none;
   touch-action: none;
 }
-.widget-strip { grid-template-columns:18px minmax(27px,1fr) auto; }
+/* the pill hugs its content: 12px at each end and between items; tabular figures keep it still as seconds tick, and it grows only when the timer gains a digit */
+.widget-strip { grid-template-columns:18px 27px max-content; }
 .widget-pill:focus-visible { outline: 2px solid var(--pill-accent); outline-offset: -3px; }
 .widget-btn { color:#fff;background:#6F00FF;transition: transform 120ms ease, background-color 120ms ease; }
 .widget-btn-secondary { color:var(--pill-ink);background:#39393E; }

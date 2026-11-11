@@ -86,7 +86,7 @@ export function TrashToast({ go }: { go: (route: string) => void }) {
     }
     return () => { show = undefined }
   }, [go])
-  return <Toast.Provider toastManager={toasts} timeout={6000} limit={3}>
+  return <Toast.Provider toastManager={toasts} timeout={6000} limit={3} progressBar={false}>
     <Toast.Portal container={host}><Toast.Viewport className="app-toast-viewport"><ToastList /></Toast.Viewport></Toast.Portal>
   </Toast.Provider>
 }

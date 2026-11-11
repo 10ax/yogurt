@@ -127,8 +127,8 @@ test('Ask has soft thread edges, compact bubbles, and expands the same reading p
     await expect(panel).toHaveCSS('width', '420px')
     await expect(panel.locator('.ask-conversation-head')).toHaveCSS('border-bottom-width', '0px')
     await expect(panel.locator('.ask-composer')).toHaveCSS('border-top-width', '0px')
+    await expect(page.getByTestId('chat-suggestion')).toHaveCount(3)
     const suggestions = await page.getByTestId('chat-suggestion').all()
-    expect(suggestions).toHaveLength(3)
     const boxes = await Promise.all(suggestions.map(s => s.boundingBox()))
     for (let i = 1; i < boxes.length; i++) {
       expect(boxes[i]!.y).toBeGreaterThan(boxes[i - 1]!.y + boxes[i - 1]!.height)
@@ -148,7 +148,8 @@ test('Ask has soft thread edges, compact bubbles, and expands the same reading p
         id: i + 1, question: `Question ${i + 1}`, answer: 'A saved paragraph about the meeting. '.repeat(20), status: 'done', sources: [],
       })) }))
     }, view)
-    await input.press('Escape'); await page.keyboard.press('Meta+j')
+    // Escape folds Ask back into its button; reopening after that loads the saved draft
+    await input.press('Escape'); await expect(panel).toHaveCount(0); await page.keyboard.press('Meta+j')
     await expect(input).toHaveValue('Keep my draft')
     const thread = panel.locator('.ask-thread')
     for (const colorScheme of ['light', 'dark'] as const) {

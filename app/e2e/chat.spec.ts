@@ -323,7 +323,7 @@ test('an unacknowledged question cannot be sent twice, and a rejected request ke
 })
 
 
-test('Ask fades without stretching, preserves its draft, and respects reduced motion', async () => {
+test('Ask grows out of its button without stretching its content, preserves its draft, and respects reduced motion', async () => {
   const { app, page } = await launch()
   try {
     const id = await fake<string>(app, 'bigMeeting', 10)
@@ -331,10 +331,10 @@ test('Ask fades without stretching, preserves its draft, and respects reduced mo
     await page.emulateMedia({ reducedMotion: 'no-preference' })
     const trigger = page.getByTestId('chat-open')
     await trigger.click()
-    const surface = page.getByTestId('chat-panel')
-    const frames = await surface.evaluate((el) => (el.getAnimations()[0]?.effect as KeyframeEffect)?.getKeyframes())
-    expect(frames.map(f => Number(f.opacity))).toEqual([0, 1])
-    expect(frames.every(f => !f.transform)).toBe(true)
+    // only the surface stretches out of the button; the chat inside keeps its size
+    const shell = page.locator('.chat-morph-surface')
+    const frames = await shell.evaluate((el) => el.getAnimations().map(a => (a.effect as KeyframeEffect).getKeyframes()).find(k => k.some(f => f.transform)))
+    expect(frames?.at(-1)?.transform).toBe('none')
     await expect(page.locator('.chat-panel-contents')).toHaveCSS('transform', 'none')
     await expect(page.locator('.chat-panel-contents')).toHaveCSS('filter', 'none')
     await page.getByTestId('chat-input').fill('Keep this thought')
@@ -343,13 +343,14 @@ test('Ask fades without stretching, preserves its draft, and respects reduced mo
     await expect(trigger).toBeFocused()
     await page.keyboard.press('Meta+j')
     await expect(page.getByTestId('chat-input')).toBeFocused()
-    expect(await surface.evaluate(el => el.getAnimations().length)).toBe(0)
+    // ⌘J grows it out of the button too
+    expect(await shell.evaluate(el => el.getAnimations().length)).toBeGreaterThan(0)
     await page.keyboard.press('Escape')
     await expect(trigger).toBeFocused()
     await page.emulateMedia({ reducedMotion: 'reduce' })
     await page.keyboard.press('Meta+j')
     await expect(page.getByTestId('chat-input')).toHaveValue('Keep this thought')
-    expect(await surface.evaluate((el) => el.getAnimations().length)).toBe(0)
+    expect(await shell.evaluate((el) => el.getAnimations().length)).toBe(0)
     await page.keyboard.press('Escape')
     await expect(trigger).toBeFocused()
   } finally { await app.close() }

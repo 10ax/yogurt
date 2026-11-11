@@ -3,7 +3,7 @@ import { widgetDragDelta, isWidgetClick, type WidgetPress } from '../../../share
 import { Loading } from '../components/Loading'
 import { bubbles, turns, withLive } from '../../../shared/transcript'
 import { Fragment, useEffect, useLayoutEffect, useMemo, useRef, useState } from 'react'
-import { ArrowDown, MicOff, RotateCw, TriangleAlert } from 'lucide-react'
+import { ArrowDown, TriangleAlert } from 'lucide-react'
 import type { Segment, TranscriptPartial, WidgetView } from '../../../shared/types'
 import { formatElapsed } from '../../../shared/wave'
 import { t } from '../../../shared/i18n'
@@ -12,7 +12,9 @@ import { LevelBars } from '../components/LevelBars'
 import { LiveWords } from '../components/Transcript'
 import { glide } from '../motion'
 import { afterFinal, joinWords } from '../../../shared/liveWords'
-import { Swap } from '../components/Swap'
+import { ScrollFade } from '../components/ScrollFade'
+import { useWidgetMorph } from './widgetMorph'
+import { widgetSettings } from '../../../shared/widgetMorph'
 
 function useElapsed(v: WidgetView | null): string {
   const [text, setText] = useState('0:00')
@@ -27,45 +29,35 @@ function useElapsed(v: WidgetView | null): string {
   return text
 }
 
-/** The live transcript opens once the pointer settles on the recorder, never on the way to grabbing it, and not
- * straight after a drag: it waits for the pointer to rest there a moment longer. */
-const SETTLE_MS = 220, AFTER_DRAG_MS = 650
-function useHoverPreview() {
-  const over = useRef(false), timer = useRef<ReturnType<typeof setTimeout>>(undefined), quietUntil = useRef(0)
-  const wait = () => {
-    clearTimeout(timer.current)
-    timer.current = setTimeout(() => { if (over.current) window.yogurt.widget.preview(true) }, Math.max(SETTLE_MS, quietUntil.current - performance.now()))
-  }
-  useEffect(() => () => clearTimeout(timer.current), [])
-  return {
-    enter: () => { over.current = true; wait() },
-    // still moving across it, or about to press: keep waiting
-    move: (pressed: boolean) => { if (over.current && !pressed) wait() },
-    press: () => clearTimeout(timer.current),
-    leave: () => { over.current = false; clearTimeout(timer.current); window.yogurt.widget.preview(false) },
-    dropped: () => { quietUntil.current = performance.now() + AFTER_DRAG_MS; wait() },
-  }
-}
-
 /** A click opens the note; a drag moves the recorder without opening it on release. */
-function useDragOrClick(onClick: () => void, hover: ReturnType<typeof useHoverPreview>) {
+function useDragOrClick(onClick: () => void, hover: ReturnType<typeof useWidgetMorph>) {
   const s = useRef<WidgetPress | null>(null)
   const cancel = () => {
-    if (s.current?.moved) window.yogurt.widget.endDrag()
+    if (!s.current) return
+    window.yogurt.widget.endDrag()
+    hover.release(s.current.moved)
     s.current = null
   }
-  useEffect(() => () => { if (s.current?.moved) window.yogurt.widget.endDrag() }, [])
+  useEffect(() => {
+    const release = () => hover.release(false)
+    window.addEventListener('pointerup', release)
+    window.addEventListener('pointercancel', release)
+    return () => { window.removeEventListener('pointerup', release); window.removeEventListener('pointercancel', release); window.yogurt.widget.endDrag(); window.yogurt.widget.pressed(false) }
+  }, [])
   return {
     onPointerDown: (e: React.PointerEvent) => {
-      if (e.button !== 0 || s.current || (e.target as HTMLElement).closest('button')) return
-      e.preventDefault()
+      if (e.button !== 0 || s.current) return
       hover.press()
+      if ((e.target as HTMLElement).closest('button')) return
+      const scroll = (e.target as HTMLElement).closest<HTMLElement>('.widget-preview-conversation')
+      if (scroll && e.clientX >= scroll.getBoundingClientRect().left + scroll.clientWidth) return
+      e.preventDefault()
       e.currentTarget.setPointerCapture(e.pointerId)
       s.current = { x: e.screenX, y: e.screenY, pointerId: e.pointerId, at: e.timeStamp, moved: false }
     },
     onPointerMove: (e: React.PointerEvent) => {
       const d = s.current
-      hover.move(!!d)
+      hover.pointer(e.clientX, e.clientY)
       if (!d || e.pointerId !== d.pointerId) return
       const delta = widgetDragDelta(d, e.screenX, e.screenY)
       if (delta) window.yogurt.widget.drag(delta.dx, delta.dy)
@@ -77,7 +69,6 @@ function useDragOrClick(onClick: () => void, hover: ReturnType<typeof useHoverPr
       cancel()
       e.currentTarget.releasePointerCapture(e.pointerId)
       if (click) onClick()
-      else if (d.moved) hover.dropped()
     },
     onPointerCancel: cancel,
     onLostPointerCapture: cancel,
@@ -99,64 +90,34 @@ function useWidgetView() {
   return view
 }
 
-function useSize(card: React.RefObject<HTMLDivElement | null>, shape: string) {
-  useEffect(() => {
-    const el = card.current
-    if (!el) return
-    const ro = new ResizeObserver(() => { const r = el.getBoundingClientRect(); window.yogurt.widget.size(Math.ceil(r.width), Math.ceil(r.height)) })
-    ro.observe(el)
-    return () => ro.disconnect()
-  }, [shape])
-}
-
-/**
- * The recording-only strip: mark, one wave and time. A click opens the note's controls.
- * A separate card shows warnings and hovered live words without moving the recorder.
- */
+/** One recording surface, with the transcript kept mounted between hovers. */
 export function Widget() {
   const view = useWidgetView()
-  const card = useRef<HTMLDivElement>(null)
-  const recording = view?.kind === 'recording' && !view.paused
-  useSize(card, recording ? 'recording' : 'none')
-
-  if (!recording) return null
-  return (
-    <div className="flex h-full items-start">
-      <Recording view={view} cardRef={card} />
-    </div>
-  )
+  return view?.kind === 'recording' && !view.paused ? <Recording key={view.meetingId} view={view} /> : null
 }
 
-function Recording({ view, cardRef }: { view: WidgetView; cardRef: React.RefObject<HTMLDivElement | null> }) {
+function Recording({ view }: { view: WidgetView }) {
   const time = useElapsed(view)
-  const hover = useHoverPreview()
-  const press = useDragOrClick(() => window.yogurt.widget.open(), hover)
-  const note = view.note
-  return (
-      <div ref={cardRef} data-testid="widget" data-kind="recording" role="button" tabIndex={0} className="widget-pill widget-strip grid h-[42px] w-max shrink-0 cursor-pointer select-none items-center gap-3 rounded-[10px] px-3 text-[var(--pill-ink)]"
-        {...press} onPointerEnter={hover.enter} onPointerLeave={hover.leave}
-        aria-label={t('Open {title}', { title: view.title })} title={note?.text ?? t('Recording {title}', { title: view.title })}>
-        <Swap show={note ? 'warning' : 'logo'} className="text-[var(--pill-accent)]" options={{ logo: <Logo size={18} />, warning: <TriangleAlert data-testid="widget-warning" size={18} /> }} />
-        <LevelBars testId="widget-wave" height={16} className="justify-self-center text-[var(--pill-accent)]" />
-        <span data-testid="widget-time" className="shrink-0 whitespace-nowrap text-[10px] font-medium tabular-nums opacity-80">
-          {time}
-        </span>
-      </div>
-    )
-}
-
-/** Separate, tightly fitted native window: showing words never moves the recorder itself. */
-export function WidgetPreview() {
-  const view = useWidgetView()
   const card = useRef<HTMLDivElement>(null)
-  const recording = view?.kind === 'recording' && !view.paused
-  useSize(card, recording ? 'recording' : 'none')
-  return recording ? <Preview key={view.meetingId} view={view} cardRef={card} /> : null
+  const hover = useWidgetMorph(card, !!view.note, time)
+  const press = useDragOrClick(() => window.yogurt.widget.open(), hover)
+  return <div ref={card} data-testid="widget" data-kind="recording" data-open={hover.open} role="group" tabIndex={0}
+    className="widget-pill widget-morph" {...press}
+    onMouseMove={e => hover.pointer(e.clientX, e.clientY)}
+    onMouseLeave={() => hover.pointer(-1, -1)}
+    aria-label={t('Open {title}', { title: view.title })} title={view.note?.text ?? t('Recording {title}', { title: view.title })}>
+    <div className="widget-details" aria-hidden="true">
+      <span className="text-[var(--pill-accent)]">{view.note ? <TriangleAlert data-testid="widget-warning" size={18} /> : <Logo size={18} />}</span>
+      <LevelBars testId="widget-wave" height={16} className="text-[var(--pill-accent)]" />
+      <span data-testid="widget-time" className="widget-time">{time}</span>
+    </div>
+    <Preview view={view} open={hover.open} />
+  </div>
 }
 
 const RECENT_LINES = 80
 
-function Preview({ view, cardRef }: { view: WidgetView; cardRef: React.RefObject<HTMLDivElement | null> }) {
+function Preview({ view, open }: { view: WidgetView; open: boolean }) {
   const [lines, setLines] = useState<Array<Omit<Segment, 'id'>>>([])
   const [parts, setParts] = useState<Record<string, TranscriptPartial>>({})
   const [loaded, setLoaded] = useState(false)
@@ -213,19 +174,13 @@ function Preview({ view, cardRef }: { view: WidgetView; cardRef: React.RefObject
     if (content.current) observer.observe(content.current)
     return () => observer.disconnect()
   }, [])
-  useEffect(() => {
-    const card = cardRef.current
-    if (!card) return
-    // screen.availHeight is independent of this window's measured height, so it can grow again after shrinking.
-    const fit = () => card.style.setProperty('--preview-max-height', `${Math.min(520, window.screen.availHeight)}px`)
-    const appear = () => {
-      if (!document.hidden && !window.matchMedia('(prefers-reduced-motion: reduce)').matches) card.animate([{opacity:0},{opacity:1}],{duration:120,easing:'ease-out'})
-    }
-    fit(); appear()
-    window.addEventListener('resize', fit)
-    document.addEventListener('visibilitychange', appear)
-    return () => { window.removeEventListener('resize', fit); document.removeEventListener('visibilitychange', appear); gliding.current?.() }
-  }, [cardRef])
+  useLayoutEffect(() => {
+    if (!open) return
+    gliding.current?.(); gliding.current = null
+    stick.current = true; setBehind(false)
+    if (scroll.current) scroll.current.scrollTop = scroll.current.scrollHeight
+  }, [open])
+  useEffect(() => () => gliding.current?.(), [])
   const manual = () => { gliding.current?.(); gliding.current = null; stick.current = false }
   const latest = () => {
     const el = scroll.current
@@ -240,12 +195,13 @@ function Preview({ view, cardRef }: { view: WidgetView; cardRef: React.RefObject
     })
   }
   const note = view.note
-  return <div ref={cardRef} data-testid="widget-preview" className="widget-preview" role="region" aria-label={t('Live transcript')}
-    onPointerEnter={() => window.yogurt.widget.preview(true)} onPointerLeave={() => window.yogurt.widget.preview(false)}>
-    {note && <p data-testid="widget-note" data-tone={note.tone} className="widget-preview-warning" role="status">
-      {note.tone === 'hiccup' ? <RotateCw size={13} aria-hidden="true" /> : note.code === 'no-mic' ? <MicOff size={13} aria-hidden="true" /> : <TriangleAlert size={13} aria-hidden="true" />}
-      <span>{note.text}</span>
-    </p>}
+  const permission = widgetSettings(note)
+  return <div data-testid="widget-preview" className="widget-preview" role="region" aria-label={t('Live transcript')} inert={!open} aria-hidden={!open}>
+    {note && <div className="widget-preview-warning" role="status">
+      <p data-testid="widget-note" data-tone={note.tone}>{note.text}</p>
+      {permission && <button className="widget-settings" onClick={() => { void window.yogurt.permissions.open(permission) }}>{t('Open Settings')}</button>}
+    </div>}
+    <ScrollFade>
     <div ref={scroll} data-testid="widget-preview-text" className="widget-preview-conversation" role="log" aria-live="off" aria-label={t('Transcript')}
       onWheel={manual} onTouchStart={manual} onPointerDown={manual} onKeyDown={manual} onScroll={e => {
       if (gliding.current) return
@@ -268,6 +224,7 @@ function Preview({ view, cardRef }: { view: WidgetView; cardRef: React.RefObject
       })}
       </div>
     </div>
+    </ScrollFade>
     {behind && <button data-testid="widget-preview-latest" className="widget-preview-latest" onClick={latest}><ArrowDown size={12} aria-hidden="true" />{t('Latest')}</button>}
   </div>
 }

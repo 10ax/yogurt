@@ -1,3 +1,4 @@
+import type { WidgetLayout, WidgetSurface } from './widgetMorph'
 import type { ContextChip, ContextTarget } from './askContext'
 import type { FolderAppearance } from './folderAppearance'
 import type { LiveWord } from './liveWords'
@@ -45,13 +46,17 @@ export type YogurtApi = {
     onLevel(cb: (lv: { me: number; them: number }) => void): () => void
     open(): void
     stop(): void
-    /** hover over the recorder or its adjacent live transcript */
-    preview(on: boolean): void
+    layout(): Promise<WidgetLayout | null>
+    onLayout(cb: (layout: WidgetLayout) => void): () => void
+    onPointer(cb: (point: { x: number; y: number }) => void): () => void
+    onReset(cb: () => void): () => void
+    surface(rect: WidgetSurface): void
+    pressed(value: boolean): void
     /** moves the widget by screen-space deltas during a pointer drag */
     drag(dx: number, dy: number): void
     /** commits the clamped position after the pointer is released or cancelled */
     endDrag(): void
-    /** the recorder or card size, keeping its chosen screen position */
+    /** the resting pill size, keeping its right edge fixed */
     size(w: number, h: number): void
   }
   meetings: {

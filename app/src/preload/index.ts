@@ -1,3 +1,4 @@
+import type { WidgetLayout } from '../shared/widgetMorph'
 import { contextBridge, ipcRenderer } from 'electron'
 import { capabilities, platformOf } from '../shared/platform'
 import type { ChatView, ConversationSummary, ConversationView, NoteView, PromptAction, SetupState, WidgetView, YogurtApi } from '../shared/types'
@@ -34,7 +35,23 @@ const api: YogurtApi = {
     },
     open: () => { ipcRenderer.send('widget:open') },
     stop: () => { ipcRenderer.send('widget:stop') },
-    preview: (on) => { ipcRenderer.send('widget:preview', on) },
+    layout: () => ipcRenderer.invoke('widget:layout'),
+    onLayout: (cb) => {
+      const on = (_e: unknown, layout: WidgetLayout) => cb(layout)
+      ipcRenderer.on('widget:layout', on)
+      return () => { ipcRenderer.removeListener('widget:layout', on) }
+    },
+    onPointer: (cb) => {
+      const on = (_e: unknown, point: { x: number; y: number }) => cb(point)
+      ipcRenderer.on('widget:pointer', on)
+      return () => { ipcRenderer.removeListener('widget:pointer', on) }
+    },
+    onReset: (cb) => {
+      ipcRenderer.on('widget:reset', cb)
+      return () => { ipcRenderer.removeListener('widget:reset', cb) }
+    },
+    surface: (rect) => { ipcRenderer.send('widget:surface', rect) },
+    pressed: (value) => { ipcRenderer.send('widget:pressed', value) },
     drag: (dx, dy) => { ipcRenderer.send('widget:drag', dx, dy) },
     endDrag: () => { ipcRenderer.send('widget:drag-end') },
     size: (w, h) => { ipcRenderer.send('widget:size', w, h) },

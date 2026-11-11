@@ -165,7 +165,7 @@ body {
 .drag { -webkit-app-region: drag; }
 .no-drag { -webkit-app-region: no-drag; }
 
-/* The recorder fills its transparent native window; no outside shadow or halo. */
+/* The recorder floats inside a transparent native window. */
 html.widget, html.widget body, html.widget #root { background: transparent; }
 html.widget { --pill:#232326;--pill-ink:#F7F7FA;--accent:#B780FF;--pill-accent:var(--accent);--widget-line:#48484D; }
 .widget-pill {
@@ -174,8 +174,6 @@ html.widget { --pill:#232326;--pill-ink:#F7F7FA;--accent:#B780FF;--pill-accent:v
   box-shadow:none;
   touch-action: none;
 }
-/* the pill hugs its content: 12px at each end and between items; tabular figures keep it still as seconds tick, and it grows only when the timer gains a digit */
-.widget-strip { grid-template-columns:18px 27px max-content; }
 .widget-pill:focus-visible { outline: 2px solid var(--pill-accent); outline-offset: -3px; }
 .widget-btn { color:#fff;background:#6F00FF;transition: transform 120ms ease, background-color 120ms ease; }
 .widget-btn-secondary { color:var(--pill-ink);background:#39393E; }
@@ -187,8 +185,14 @@ html.widget { --pill:#232326;--pill-ink:#F7F7FA;--accent:#B780FF;--pill-accent:v
   .widget-btn:not(:disabled):hover { background:#8120FF; }
   .widget-btn-secondary:not(:disabled):hover { background:#48484F; }
 }
-.widget-preview { position:relative;display:flex;flex-direction:column;width:340px;min-height:min(220px,var(--preview-max-height,520px));max-height:var(--preview-max-height,520px);padding:12px 4px 12px 12px;border:1px solid var(--widget-line);border-radius:16px;background:rgb(35 35 38 / .96);color:var(--pill-ink);font-size:14px;line-height:21px; }
-.widget-preview-conversation { flex:1 1 auto;min-height:0;overflow-x:hidden;overflow-y:scroll;overscroll-behavior:contain;padding:8px 4px 4px 0;scrollbar-gutter:stable;scrollbar-width:auto;scrollbar-color:auto;mask-image:linear-gradient(to bottom,transparent,#000 8px,#000); }
+.widget-morph { position:absolute;visibility:hidden;overflow:hidden;isolation:isolate;user-select:none;color:var(--pill-ink);cursor:default; }
+.widget-morph[data-open=true] { cursor:grab; }
+.widget-details { position:absolute;left:0;top:0;z-index:2; }
+.widget-details>* { position:absolute;left:0;top:0;margin:0; }
+.widget-time { white-space:nowrap;font-size:10px;font-weight:500;font-variant-numeric:tabular-nums;line-height:15px;opacity:.8; }
+.widget-preview { position:absolute;left:0;top:52px;display:flex;flex-direction:column;padding:0 4px 12px 12px;color:var(--pill-ink);font-size:14px;line-height:21px;transform-origin:50% 0;cursor:default; }
+.widget-preview[aria-hidden=true] { pointer-events:none; }
+.widget-preview-conversation { flex:1 1 auto;min-height:0;overflow-x:hidden;overflow-y:scroll;overscroll-behavior:contain;padding:8px 4px 4px 0;scrollbar-gutter:stable;scrollbar-width:auto;scrollbar-color:auto; }
 /* Custom scrollbars stay visible even when macOS uses automatic overlay scrollbars. */
 .widget-preview-conversation::-webkit-scrollbar { width:4px; }
 .widget-preview-conversation::-webkit-scrollbar-thumb { border-radius:3px;background:#FFFFFF50; }
@@ -202,8 +206,9 @@ html.widget { --pill:#232326;--pill-ink:#F7F7FA;--accent:#B780FF;--pill-accent:v
 .widget-preview-empty { padding:12px 6px;color:#B8B8C0;font-size:13px; }
 .widget-preview-latest { position:absolute;bottom:12px;inset-inline-start:50%;translate:-50% 0;display:flex;align-items:center;gap:4px;padding:4px 9px;border:1px solid var(--widget-line);border-radius:8px;background:var(--pill);font-size:11px;box-shadow:0 3px 10px #0003; }
 [dir=rtl] .widget-preview-latest { translate:50% 0; }
-.widget-preview-warning { flex:none;display:flex;align-items:flex-start;gap:7px;padding:4px 4px 10px;margin-bottom:4px;border-bottom:1px solid var(--widget-line);font-size:12px;line-height:18px; }
-.widget-preview-warning>svg { flex:none;margin-top:2px;color:var(--pill-accent); }
+.widget-preview-warning { flex:none;margin:0 8px 12px 0;padding:10px 12px;border-radius:10px;background:#FFFFFF06;font-size:12px;line-height:18px; }
+.widget-settings { display:block;margin-top:10px;padding:4px 9px;min-height:28px;border:1px solid #FFFFFF20;border-radius:6px;background:#FFFFFF08;font-size:11px;font-weight:500;cursor:pointer; }
+.widget-settings:hover { background:#FFFFFF14; }
 .widget-preview button:focus-visible { outline:2px solid var(--pill-accent);outline-offset:1px; }
 .widget-preview .page-loading { --control:#FFFFFF14; }
 @media (prefers-reduced-motion: reduce) { .widget-btn { transition: none; } }

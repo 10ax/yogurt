@@ -8,12 +8,13 @@ import type { WidgetView } from '../shared/types'
 import { floatingType, floatOverFullScreen } from './float'
 import { isFake } from './paths'
 import { t, onLanguage } from '../shared/i18n'
+import { widgetLayout, widgetContains, type WidgetSurface, type WidgetLayout } from '../shared/widgetMorph'
 
 const BACKGROUND = process.env.YOGURT_BACKGROUND === '1'
 const FIRST_W = 127, FIRST_H = 42
-const PREVIEW_W = 340, PREVIEW_H = 220, PREVIEW_MAX_H = 520, PREVIEW_GAP = 8
 
 /** Remembered while Yogurt runs, including the next meeting and temporary warning cards. */
+let lastWidth = FIRST_W
 let lastPosition: { x: number; y: number } | null = null
 
 function fit(bounds: Electron.Rectangle): Electron.Rectangle {
@@ -25,23 +26,23 @@ function fit(bounds: Electron.Rectangle): Electron.Rectangle {
   }
 }
 
-function createWindow(preview = false, os = 'darwin'): BrowserWindow {
+function createWindow(os = 'darwin'): BrowserWindow {
   // the display the person is working on (the mouse is there), not always the main one
   const { workArea } = screen.getDisplayNearestPoint(screen.getCursorScreenPoint())
-  const bounds = fit({ width: FIRST_W, height: FIRST_H, ...(lastPosition ?? { x: workArea.x + workArea.width - FIRST_W - 12, y: Math.round(workArea.y + workArea.height * 0.38) }) })
-  if (!preview) lastPosition = { x: bounds.x, y: bounds.y }
+  const bounds = fit({ width: lastWidth, height: FIRST_H, ...(lastPosition ?? { x: workArea.x + workArea.width - FIRST_W - 12, y: Math.round(workArea.y + workArea.height * 0.38) }) })
+  lastPosition = { x: bounds.x, y: bounds.y }
   const w = new BrowserWindow({
-    ...bounds,
-    // Neither surface may activate Yogurt on mouse-down; only an explicit pill click opens the note.
+    ...widgetLayout(bounds, screen.getDisplayMatching(bounds).workArea).bounds,
+    // One open-sized window avoids native resizing during the morph; transparent space passes clicks through.
     type: floatingType(os, 'panel'),
-    ...(preview ? { width: PREVIEW_W, height: PREVIEW_H } : {}),
     // CSS owns the outline; macOS corner clipping cuts through its border.
     frame: false, transparent: true, roundedCorners: false, hasShadow: false, resizable: false, movable: false, minimizable: false, maximizable: false, fullscreenable: false,
     skipTaskbar: true, focusable: false, acceptFirstMouse: true, show: false,
     webPreferences: { preload: join(__dirname, '../preload/index.cjs'), sandbox: false, backgroundThrottling: false },
   })
   floatOverFullScreen(w)
-  const hash = preview ? 'widget-preview' : 'widget'
+  w.setIgnoreMouseEvents(true, { forward: true })
+  const hash = 'widget'
   if (process.env.ELECTRON_RENDERER_URL) void w.loadURL(`${process.env.ELECTRON_RENDERER_URL}#${hash}`)
   else void w.loadFile(join(__dirname, '../renderer/index.html'), { hash })
   return w
@@ -51,7 +52,7 @@ function createWindow(preview = false, os = 'darwin'): BrowserWindow {
 const broadcast = (channel: string, v: unknown) => { for (const w of BrowserWindow.getAllWindows()) if (!w.isDestroyed()) w.webContents.send(channel, v) }
 
 /**
- * The recording-only pill and its separate hovered transcript/warning. Finished
+ * The recording-only pill grows into its transcript and warning. Finished
  * meetings use a native notification; paused meetings keep no floating surface.
  */
 export function createWidget(d: { open(meetingId: string): void; stop(meetingId: string): void; foreground(): boolean; os?: string
@@ -59,9 +60,12 @@ export function createWidget(d: { open(meetingId: string): void; stop(meetingId:
   windowOs?: string }) {
   const model = new WidgetModel(d.os)
   let win: BrowserWindow | undefined
-  let preview: BrowserWindow | undefined
-  let previewSized = false, hovered = false
-  let previewTimer: NodeJS.Timeout | undefined
+  let pill = { x: 0, y: 0, width: FIRST_W, height: FIRST_H }
+  let layout: WidgetLayout | null = null
+  let dragFrame: { layout: WidgetLayout; pill: typeof pill } | null = null
+  let surface: WidgetSurface | null = null
+  let pressed = false, ignoring = true, sentPointer: string | null = null
+  let pointerTimer: NodeJS.Timeout | undefined
   let sized = false
   let dragPosition: { x: number; y: number } | null = null
   let noteTimer: NodeJS.Timeout | undefined
@@ -73,44 +77,31 @@ export function createWidget(d: { open(meetingId: string): void; stop(meetingId:
   /** what a test can see: the window itself is hidden in tests */
   let shown = false
 
-  const closePreview = () => {
-    clearTimeout(previewTimer)
-    if (preview && !preview.isDestroyed()) preview.destroy()
-    preview = undefined; previewSized = false
+  const hitTest = () => {
+    if (!win || win.isDestroyed()) return
+    const cursor = screen.getCursorScreenPoint(), bounds = win.getBounds()
+    const x = cursor.x - bounds.x, y = cursor.y - bounds.y
+    const ignore = !shown || (!pressed && (!surface || !widgetContains(surface, x, y)))
+    if (ignore !== ignoring) { ignoring = ignore; win.setIgnoreMouseEvents(ignore, { forward: true }) }
+    // Only a pointer over the window matters; a still or distant pointer sends nothing.
+    const over = x >= 0 && y >= 0 && x < bounds.width && y < bounds.height, key = over ? `${x},${y}` : ''
+    if (!BACKGROUND && key !== sentPointer) { sentPointer = key; win.webContents.send('widget:pointer', over ? { x, y } : { x: -1, y: -1 }) }
   }
-  const positionPreview = (width = PREVIEW_W, height = PREVIEW_H) => {
-    if (!win || win.isDestroyed() || !preview || preview.isDestroyed()) return
-    const pill = win.getBounds()
-    const { workArea } = screen.getDisplayMatching(pill)
-    width = Math.min(width, workArea.width); height = Math.min(height, workArea.height)
-    const below = pill.y + pill.height + PREVIEW_GAP
-    const above = pill.y - height - PREVIEW_GAP
-    const left = pill.x - width - PREVIEW_GAP
-    const right = pill.x + pill.width + PREVIEW_GAP
-    const beside = left >= workArea.x ? left : right + width <= workArea.x + workArea.width ? right : null
-    // Reserve room for speech to grow without moving the reading edge of a side-by-side preview.
-    const besideY = Math.min(workArea.y + workArea.height - Math.min(PREVIEW_MAX_H, workArea.height), Math.round(pill.y + pill.height / 2 - PREVIEW_H * .65))
-    const y = beside === null ? (above >= workArea.y ? above : below) : besideY
-    preview.setBounds({ width, height,
-      x: Math.max(workArea.x, Math.min(workArea.x + workArea.width - width, beside ?? Math.round(pill.x + (pill.width - width) / 2))),
-      y: Math.max(workArea.y, Math.min(workArea.y + workArea.height - height, y)),
-    })
-  }
-  const syncPreview = () => {
-    const v = model.view(Date.now())
-    // A recording warning stays visible even when nobody hovers over the recorder.
-    if (!shown || v?.kind !== 'recording' || dragPosition) { closePreview(); return }
-    // Keep the reading position and settled text when the pointer briefly leaves the conversation.
-    if (!hovered && !v.note) { if (preview && !preview.isDestroyed()) preview.hide(); return }
-    if (!preview || preview.isDestroyed()) { preview = createWindow(true, d.windowOs); previewSized = false; positionPreview() }
-    if (previewSized && !BACKGROUND && !preview.isVisible()) preview.showInactive()
+  const place = () => {
+    if (!win || win.isDestroyed()) return
+    layout = widgetLayout(pill, screen.getDisplayMatching(pill).workArea)
+    win.setBounds(layout.bounds)
+    win.webContents.send('widget:layout', layout)
+    hitTest()
   }
 
   const visibilityChanged = () => {
     const view = model.view(Date.now())
     shown = view?.kind === 'recording' && !view.paused && !d.foreground()
-    if (!shown) hovered = false
-    syncPreview()
+    clearInterval(pointerTimer)
+    if (shown && !BACKGROUND) pointerTimer = setInterval(hitTest, 16)
+    if (!shown) { pressed = false; win?.webContents.send('widget:reset') }
+    hitTest()
     if (!win || win.isDestroyed() || BACKGROUND) return
     if (!shown) win.hide()
     else if (sized && !win.isVisible()) win.showInactive()
@@ -121,15 +112,23 @@ export function createWidget(d: { open(meetingId: string): void; stop(meetingId:
   onLanguage(() => { if (win && !win.isDestroyed()) push() })
   const close = () => {
     clearTimeout(noteTimer)
-    shown = false; sized = false; dragPosition = null
-    hovered = false; closePreview()
+    shown = false; sized = false; dragPosition = null; dragFrame = null
+    clearInterval(pointerTimer); surface = null; pressed = false
+    screen.removeListener('display-added', displayChanged)
+    screen.removeListener('display-removed', displayChanged)
+    screen.removeListener('display-metrics-changed', displayChanged)
     if (win && !win.isDestroyed()) win.destroy()
     win = undefined
   }
   const open = () => {
     if (win && !win.isDestroyed()) return
-    win = createWindow(false, d.windowOs); sized = false
-    win.on('closed', () => { win = undefined })
+    screen.on('display-added', displayChanged)
+    screen.on('display-removed', displayChanged)
+    screen.on('display-metrics-changed', displayChanged)
+    win = createWindow(d.windowOs); sized = false; ignoring = true; sentPointer = null
+    pill = { ...lastPosition!, width: lastWidth, height: FIRST_H }
+    layout = widgetLayout(pill, screen.getDisplayMatching(pill).workArea)
+    win.on('closed', () => { clearInterval(pointerTimer); win = undefined })
   }
 
   onMeetingStart((m) => {
@@ -187,63 +186,79 @@ export function createWidget(d: { open(meetingId: string): void; stop(meetingId:
     const id = model.meetingId
     if (!id) return
     shown = false
-    hovered = false; closePreview()
-    if (win && !win.isDestroyed()) win.hide()
+    clearInterval(pointerTimer); pressed = false
+    if (win && !win.isDestroyed()) { win.webContents.send('widget:reset'); hitTest(); win.hide() }
     d.open(id)
   })
   ipcMain.on('widget:stop', () => { const id = model.meetingId; if (id && model.view(Date.now())?.kind === 'recording') { stopPressed = true; d.stop(id) } })
-  ipcMain.on('widget:preview', (_e, on: unknown) => {
-    if (typeof on !== 'boolean') return
-    clearTimeout(previewTimer)
-    if (on) { hovered = true; syncPreview() }
-    // The small gap between windows must not close the preview while the pointer crosses it.
-    else previewTimer = setTimeout(() => { hovered = false; syncPreview() }, 180)
+  ipcMain.handle('widget:layout', () => win && !win.isDestroyed() ? layout : null)
+  ipcMain.on('widget:surface', (e, value: unknown) => {
+    if (!win || win.isDestroyed() || e.sender !== win.webContents || !value || typeof value !== 'object') return
+    const r = value as WidgetSurface
+    if (![r.x, r.y, r.width, r.height, r.radius].every(n => typeof n === 'number' && Number.isFinite(n)) || r.width <= 0 || r.height <= 0 || r.width > 600 || r.height > 600 || r.radius < 0 || r.radius > 100 || Math.abs(r.x) > 600 || Math.abs(r.y) > 600) return
+    surface = r; hitTest()
+    // The renderer has painted its first surface before the native window appears.
+    if (!sized) { sized = true; visibilityChanged() }
   })
-  ipcMain.on('widget:drag', (_e, dx: unknown, dy: unknown) => {
-    if (!win || win.isDestroyed() || typeof dx !== 'number' || typeof dy !== 'number' || !Number.isFinite(dx) || !Number.isFinite(dy)) return
-    const b = win.getBounds(), from = dragPosition ?? b
+  ipcMain.on('widget:pressed', (e, value: unknown) => {
+    if (!win || win.isDestroyed() || e.sender !== win.webContents || typeof value !== 'boolean') return
+    pressed = value; hitTest()
+  })
+  ipcMain.on('widget:drag', (e, dx: unknown, dy: unknown) => {
+    if (!win || win.isDestroyed() || e.sender !== win.webContents || typeof dx !== 'number' || typeof dy !== 'number' || !Number.isFinite(dx) || !Number.isFinite(dy)) return
+    const from = dragPosition ?? pill
     const x = from.x + dx, y = from.y + dy
     if (!Number.isFinite(x) || !Number.isFinite(y)) return
     // Keep the unclamped gesture position so small deltas can cross a display boundary.
     dragPosition = { x, y }
-    closePreview()
-    win.setBounds(fit({ ...b, x, y }))
-  })
-  ipcMain.on('widget:drag-end', () => {
-    if (dragPosition && win && !win.isDestroyed()) {
-      const { x, y } = win.getBounds()
-      lastPosition = { x, y }
+    if (!layout) return
+    dragFrame ??= { layout, pill: { ...pill } }
+    pill = fit({ ...pill, x, y })
+    const frame = dragFrame.layout
+    if (surface && surface.height > FIRST_H + 1) {
+      const area = screen.getDisplayMatching(pill).workArea
+      if (frame.open.width > area.width || frame.open.height > area.height) {
+        place(); dragFrame = null; return
+      }
+      // Keep the frozen surface and its remaining travel on the destination display.
+      const left = Math.min(surface.x, frame.open.x) - frame.pill.x
+      const top = Math.min(surface.y, frame.open.y) - frame.pill.y
+      const right = Math.max(surface.x + surface.width, frame.open.x + frame.open.width) - frame.pill.x
+      const bottom = Math.max(surface.y + surface.height, frame.open.y + frame.open.height) - frame.pill.y
+      pill.x = Math.max(area.x - left, Math.min(area.x + area.width - right, pill.x))
+      pill.y = Math.max(area.y - top, Math.min(area.y + area.height - bottom, pill.y))
     }
-    dragPosition = null; hovered = false
-    syncPreview()
+    layout = { ...frame, bounds: { ...frame.bounds, x: frame.bounds.x + pill.x - dragFrame.pill.x, y: frame.bounds.y + pill.y - dragFrame.pill.y } }
+    win.setBounds(layout.bounds); hitTest()
   })
-  ipcMain.on('widget:size', (_e, w: unknown, h: unknown) => {
-    if (!win || win.isDestroyed() || typeof w !== 'number' || typeof h !== 'number' || !Number.isFinite(w) || !Number.isFinite(h) || w < 0 || h < 0 || w > 600 || h > PREVIEW_MAX_H) return
-    if (preview && !preview.isDestroyed() && _e.sender === preview.webContents) {
-      // A paused meeting with no words or warning needs no empty hover window.
-      if (w === 0 && h === 0) { previewSized = false; preview.hide(); return }
-      if (!w || !h) return
-      positionPreview(Math.ceil(w), Math.ceil(h)); previewSized = true; syncPreview(); return
-    }
-    // A final ResizeObserver message from a closed preview must never resize the recorder.
-    if (_e.sender !== win.webContents || h > 400) return
-    if (w === 0 && h === 0) { sized = false; win.hide(); return }
-    if (!w || !h) return
-    const b = win.getBounds()
-    win.setBounds(fit({ ...(dragPosition ?? lastPosition ?? b), width: Math.ceil(w), height: Math.ceil(h) }))
-    // Show after the first fit so the recorder never flashes at the wrong size.
-    if (!sized) { sized = true; visibilityChanged() }
+  ipcMain.on('widget:drag-end', (e) => {
+    if (!win || win.isDestroyed() || e.sender !== win.webContents) return
+    if (dragPosition) lastPosition = { x: pill.x, y: pill.y }
+    dragPosition = null; dragFrame = null
+    if (!surface || surface.height <= FIRST_H + 1) place()
   })
+  ipcMain.on('widget:size', (e, w: unknown, h: unknown) => {
+    if (!win || win.isDestroyed() || e.sender !== win.webContents || typeof w !== 'number' || !Number.isFinite(w) || w < 60 || w > 340 || h !== FIRST_H || pressed) return
+    const width = Math.ceil(w)
+    if (width === pill.width) return
+    lastWidth = width
+    pill = fit({ ...pill, x: pill.x + pill.width - width, width })
+    lastPosition = { x: pill.x, y: pill.y }; place()
+  })
+  const displayChanged = () => {
+    if (!win || win.isDestroyed()) return
+    pill = fit(pill); lastPosition = { x: pill.x, y: pill.y }; place()
+  }
 
   return {
     visibilityChanged,
     elapsed: () => model.view(Date.now())?.elapsedMs ?? 0,
     /** the recording is about to stop because its call ended: the finished card says so */
     callEnded: (meetingId: string) => { if (model.meetingId === meetingId) model.callEnded() },
-    /** The same actual transcript events used by the main note, delivered only to the small preview. */
-    transcript: (channel: string, value: unknown) => { if (preview && !preview.isDestroyed()) preview.webContents.send(channel, value) },
+    /** The same actual transcript events used by the main note, delivered to the recorder. */
+    transcript: (channel: string, value: unknown) => { if (win && !win.isDestroyed()) win.webContents.send(channel, value) },
     /** for tests: what the widget would show, and where it sits */
     snapshot: (): { visible: boolean; view: WidgetView | null; notice: typeof notice; bounds: Electron.Rectangle | null; workArea: Electron.Rectangle } =>
-      ({ visible: shown, view: model.view(Date.now()), notice, bounds: win && !win.isDestroyed() ? win.getBounds() : null, workArea: (win && !win.isDestroyed() ? screen.getDisplayMatching(win.getBounds()) : screen.getDisplayNearestPoint(screen.getCursorScreenPoint())).workArea }),
+      ({ visible: shown, view: model.view(Date.now()), notice, bounds: win && !win.isDestroyed() ? { ...pill } : null, workArea: (win && !win.isDestroyed() ? screen.getDisplayMatching(pill) : screen.getDisplayNearestPoint(screen.getCursorScreenPoint())).workArea }),
   }
 }

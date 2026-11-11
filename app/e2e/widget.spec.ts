@@ -49,7 +49,7 @@ test('the widget is a compact horizontal recorder with one live wave and no exte
     const s = await snap(app)
     expect(s.visible).toBe(true)
     const style = await w.getByTestId('widget').evaluate((el) => ({ shadow: getComputedStyle(el).boxShadow, width: el.getBoundingClientRect().width, height: el.getBoundingClientRect().height }))
-    // the pill hugs its content; the window fits the pill exactly
+    // The snapshot keeps the resting pill bounds.
     expect(style.height).toBe(42)
     expect(style.width).toBeLessThan(127)
     expect(s.bounds).toMatchObject({ width: Math.ceil(style.width), height: 42 })
@@ -66,18 +66,17 @@ test('the widget is a compact horizontal recorder with one live wave and no exte
   } finally { await app.close() }
 })
 
-test('Finish closes both floating windows and prepares a completion notification', async () => {
+test('Finish closes the floating recorder and prepares a completion notification', async () => {
   const { app, page } = await launch()
   try {
     const w = await record(app, page)
     await fake(app, 'warn', 'no-system-audio')
-    const preview = await windowOf(app, '#widget-preview')
+    const preview = await windowOf(app, '#widget')
     await expect(preview.getByTestId('widget-note')).toBeVisible()
     const before = await fake<{ presented: number }>(app, 'main')
     await page.getByTestId('note-stop').click()
     expect((await fake<{ presented: number }>(app, 'main')).presented).toBe(before.presented)
     await expect.poll(() => w.isClosed()).toBe(true)
-    await expect.poll(() => preview.isClosed()).toBe(true)
     await expect(page.getByTestId('note-state')).toHaveAttribute('data-state', /^(stopped|done)$/)
     expect((await snap(app)).visible).toBe(false)
     expect((await snap(app)).bounds).toBeNull()
@@ -90,13 +89,15 @@ test('Pause hides the recorder and preview; Resume in the meeting restores its p
   try {
     const w = await record(app, page)
     const bounds = (await snap(app)).bounds!
-    await w.mouse.move(50, 20)
-    const preview = await windowOf(app, '#widget-preview')
+    const box = (await w.getByTestId('widget').boundingBox())!
+    await w.mouse.move(box.x + 50, box.y + 20)
+    const preview = await windowOf(app, '#widget')
+    await expect(w.getByTestId('widget')).toHaveAttribute('data-open', 'true')
     await expect(preview.getByTestId('widget-preview')).toBeVisible()
     await page.getByTestId('note-pause').click()
     await expect(page.getByTestId('note-state')).toHaveAttribute('data-paused', 'true')
     await expect(w.getByTestId('widget')).toHaveCount(0)
-    await expect.poll(() => preview.isClosed()).toBe(true)
+    await expect(preview.getByTestId('widget')).toHaveCount(0)
     expect((await snap(app)).visible).toBe(false)
     expect((await snap(app)).notice).toBeNull()
     await page.getByTestId('note-pause').click()
@@ -216,7 +217,7 @@ test('a helper that dies once is restarted with a hiccup note; dying again stops
   try {
     const w = await record(app, page)
     await fake(app, 'crashCapture')
-    const preview = await windowOf(app, '#widget-preview')
+    const preview = await windowOf(app, '#widget')
     await expect(preview.getByTestId('widget-note')).toHaveText('Recording hiccup. Still going.')
     await expect(page.getByTestId('note-state')).toHaveAttribute('data-state', 'recording')
     // The warning leaves after 4 s; the hidden conversation stays mounted for the next hover.
@@ -238,18 +239,18 @@ test('hints retain both unavailable recording inputs', async () => {
     const w = await record(app, page)
     const before = (await snap(app)).bounds!
     await fake(app, 'warn', 'no-system-audio')
-    const preview = await windowOf(app, '#widget-preview')
+    const preview = await windowOf(app, '#widget')
     await expect(preview.getByTestId('widget-note')).toHaveText("Yogurt can't hear the call audio. Allow it in System Settings.")
     await fake(app, 'warn', 'no-mic')
     await expect(preview.getByTestId('widget-note')).toContainText("Yogurt can't hear your microphone or the call.")
-    // Full warnings stay beside the fixed pill even without hover, and remain in the main note too.
+    // Warnings expand the recorder without changing its saved pill bounds.
     expect((await snap(app)).bounds).toEqual(before)
-    await w.evaluate(() => window.yogurt.widget.preview(false))
+    await w.mouse.move(0, 0)
     await w.waitForTimeout(220)
     await expect(preview.getByTestId('widget-note')).toBeVisible()
     await page.getByTestId('note-pause').click()
     await expect(w.getByTestId('widget')).toHaveCount(0)
-    await expect.poll(() => preview.isClosed()).toBe(true)
+    await expect(preview.getByTestId('widget')).toHaveCount(0)
     expect((await snap(app)).visible).toBe(false)
     expect((await snap(app)).bounds).toEqual(before)
     await expect(page.getByTestId('rec-hint')).toContainText("Yogurt can't hear your microphone or the call.")
@@ -307,22 +308,24 @@ test('hover stays stationary and pointer-down movement drags immediately without
     const w = await record(app, page)
     const widget = w.getByTestId('widget')
     // the pill hugs its content: the same space at both ends
-    const ends = await widget.evaluate(el => { const r = el.getBoundingClientRect(), a = el.firstElementChild!.getBoundingClientRect(), z = el.lastElementChild!.getBoundingClientRect(); return [Math.round(a.left - r.left), Math.round(r.right - z.right)] })
+    const ends = await widget.evaluate(el => { const r = el.getBoundingClientRect(), a = el.querySelector('.widget-details > :first-child')!.getBoundingClientRect(), z = el.querySelector('[data-testid=widget-time]')!.getBoundingClientRect(); return [Math.round(a.left - r.left), Math.round(r.right - z.right)] })
     expect(ends[0]).toBe(ends[1])
     const before = (await snap(app)).bounds!
+    const box = (await w.getByTestId('widget').boundingBox())!
     const presented = (await fake<{ presented: number }>(app, 'main')).presented
-    await w.mouse.move(50, 20)
-    const preview = await windowOf(app, '#widget-preview')
+    await w.mouse.move(box.x + 50, box.y + 20)
+    const preview = await windowOf(app, '#widget')
+    await expect(w.getByTestId('widget')).toHaveAttribute('data-open', 'true')
     await expect(preview.getByTestId('widget-preview')).toBeVisible()
     expect((await snap(app)).bounds).toEqual(before)
     await expect(preview.getByTestId('widget-preview-text')).not.toHaveText('Listening for speech…', { timeout: 30_000 })
     // Hover movement alone is never a drag.
-    await w.mouse.move(20, 35)
+    await w.mouse.move(box.x + 20, box.y + 35)
     expect((await snap(app)).bounds).toEqual(before)
     expect((await fake<{ presented: number }>(app, 'main')).presented).toBe(presented)
-    await w.mouse.move(50, 20)
+    await w.mouse.move(box.x + 50, box.y + 20)
     await w.mouse.down()
-    await w.mouse.move(20, 35)
+    await w.mouse.move(box.x + 20, box.y + 35)
     await w.mouse.up()
     await expect.poll(async () => (await snap(app)).bounds!.x).toBe(before.x - 30)
     expect((await snap(app)).bounds!.y).toBe(before.y + 15)
@@ -335,10 +338,11 @@ test('pointer movement below the drag threshold still opens the note without mov
   try {
     const w = await record(app, page)
     const before = (await snap(app)).bounds!
+    const box = (await w.getByTestId('widget').boundingBox())!
     const presented = (await fake<{ presented: number }>(app, 'main')).presented
-    await w.mouse.move(50, 20)
+    await w.mouse.move(box.x + 50, box.y + 20)
     await w.mouse.down()
-    await w.mouse.move(52, 22)
+    await w.mouse.move(box.x + 52, box.y + 22)
     await w.mouse.up()
     expect((await snap(app)).bounds).toEqual(before)
     await expect.poll(async () => (await fake<{ presented: number }>(app, 'main')).presented).toBe(presented + 1)
@@ -350,8 +354,9 @@ test('holding the pill does not open the note and a held press can still drag', 
   try {
     const w = await record(app, page)
     const before = (await snap(app)).bounds!
+    const box = (await w.getByTestId('widget').boundingBox())!
     const presented = (await fake<{ presented: number }>(app, 'main')).presented
-    await w.mouse.move(50, 20)
+    await w.mouse.move(box.x + 50, box.y + 20)
     await w.mouse.down()
     await w.waitForTimeout(600)
     expect((await fake<{ presented: number }>(app, 'main')).presented).toBe(presented)
@@ -360,7 +365,7 @@ test('holding the pill does not open the note and a held press can still drag', 
     expect((await snap(app)).bounds).toEqual(before)
     await w.mouse.down()
     await w.waitForTimeout(600)
-    await w.mouse.move(20, 30)
+    await w.mouse.move(box.x + 20, box.y + 30)
     await w.mouse.up()
     await expect.poll(async () => (await snap(app)).bounds!.x).toBe(before.x - 30)
     expect((await fake<{ presented: number }>(app, 'main')).presented).toBe(presented)
@@ -371,13 +376,14 @@ test('hover transcript shows a readable conversation and keeps your place when n
   const { app, page } = await launch()
   try {
     const w = await record(app, page)
-    await w.evaluate(() => window.yogurt.widget.preview(true))
-    const preview = await windowOf(app, '#widget-preview')
-    await expect(preview.getByTestId('widget-preview')).toHaveCSS('width', '340px')
+    await w.getByTestId('widget').hover()
+    await expect(w.getByTestId('widget')).toHaveAttribute('data-open', 'true')
+    const preview = await windowOf(app, '#widget')
+    await expect(w.getByTestId('widget')).toHaveCSS('width', '340px')
     await expect(preview.getByTestId('widget-preview-loading')).toHaveCount(0)
     const id = await page.getByTestId('note').getAttribute('data-meeting-id') || await page.evaluate(() => window.yogurt.widget.state().then(v => v!.meetingId))
     const send = async (start: number, count: number) => app.evaluate(({ BrowserWindow }, { id, start, count }) => {
-      const target = BrowserWindow.getAllWindows().find(w => w.webContents.getURL().includes('#widget-preview'))!
+      const target = BrowserWindow.getAllWindows().find(w => w.webContents.getURL().includes('#widget'))!
       for (let i = start; i < start + count; i++) target.webContents.send('transcript:segment', {
         meetingId: id, track: i % 2 ? 'me' : 'them', startMs: 100000 + i * 3000, endMs: 102000 + i * 3000,
         speaker: i % 2 ? 'me' : 'Alex', text: `Conversation line ${i + 1}. We should keep the next step clear.`,
@@ -386,7 +392,7 @@ test('hover transcript shows a readable conversation and keeps your place when n
     await send(0, 24)
     const log = preview.getByTestId('widget-preview-text')
     await expect(preview.getByTestId('widget-preview-bubble')).toHaveCount(24)
-    await expect.poll(() => preview.evaluate(() => innerHeight)).toBe(520)
+    await expect(w.getByTestId('widget')).toHaveCSS('height', '390px')
     if (process.env.YOGURT_UI_REVIEW !== 'before') {
       await expect(log).toHaveCSS('overflow-y', 'scroll')
       const scrollbar = () => log.evaluate(el => ({ width: getComputedStyle(el, '::-webkit-scrollbar').width, color: getComputedStyle(el, '::-webkit-scrollbar-thumb').backgroundColor, gutter: el.getBoundingClientRect().width - el.clientWidth }))
@@ -402,7 +408,7 @@ test('hover transcript shows a readable conversation and keeps your place when n
           overflow: el.scrollWidth - el.clientWidth,
         }
       })
-      expect(spacing.edge).toBe(5) // 4px inset plus the border
+      expect(spacing.edge).toBe(4) // the body has a 4px inset
       expect(spacing.bubbleGap).toBeLessThanOrEqual(8) // 4px scrollbar and 4px breathing room
       expect(spacing.overflow).toBe(0)
       await log.hover()
@@ -416,7 +422,7 @@ test('hover transcript shows a readable conversation and keeps your place when n
     await expect(preview.getByTestId('widget-preview-latest')).toBeVisible()
     for (const colorScheme of ['light', 'dark'] as const) {
       await preview.emulateMedia({ colorScheme, reducedMotion: 'reduce' })
-      await preview.mouse.move(0, 0)
+      await preview.getByTestId('widget-time').hover()
       await preview.screenshot({ path: testInfo.outputPath(`preview-${colorScheme}-before-latest.png`) })
     }
     const mainState = () => app.evaluate(({ BrowserWindow }) => {
@@ -448,13 +454,14 @@ test('hover groups speaker runs and keeps live words stable through updates and 
   const { app, page } = await launch()
   try {
     const w = await record(app, page)
-    await w.evaluate(() => window.yogurt.widget.preview(true))
-    const preview = await windowOf(app, '#widget-preview')
+    await w.getByTestId('widget').hover()
+    await expect(w.getByTestId('widget')).toHaveAttribute('data-open', 'true')
+    const preview = await windowOf(app, '#widget')
     await expect(preview.getByTestId('widget-preview')).toBeVisible()
     await expect(preview.getByTestId('widget-preview-loading')).toHaveCount(0)
     const id = await page.evaluate(() => window.yogurt.widget.state().then(v => v!.meetingId))
     const send = (channel: string, value: object) => app.evaluate(({ BrowserWindow }, { channel, value, id }) => {
-      BrowserWindow.getAllWindows().find(w => w.webContents.getURL().includes('#widget-preview'))!.webContents.send(channel, { meetingId: id, ...value })
+      BrowserWindow.getAllWindows().find(w => w.webContents.getURL().includes('#widget'))!.webContents.send(channel, { meetingId: id, ...value })
     }, { channel, value, id })
     await send('transcript:segment', { track: 'them', speaker: 'Alex', startMs: 100000, endMs: 102000, text: 'The launch checklist is ready.' })
     await send('transcript:segment', { track: 'them', speaker: 'Alex', startMs: 102200, endMs: 104000, text: 'We can share it after this call.' })
@@ -482,14 +489,14 @@ test('hover groups speaker runs and keeps live words stable through updates and 
       track: i % 2 ? 'me' : 'them', speaker: i % 2 ? 'me' : 'Jamie', startMs: 120000 + i * 4000, endMs: 123000 + i * 4000,
       text: i % 2 ? 'I can send the draft this afternoon, then we can review it together.' : 'That works. Let us keep the scope clear and check in tomorrow.',
     })
-    await expect(preview.getByTestId('widget-preview')).toHaveCSS('height', '520px')
+    await expect(w.getByTestId('widget')).toHaveCSS('height', '390px')
     const log = preview.getByTestId('widget-preview-text')
     await expect.poll(() => log.evaluate(el => el.scrollHeight - el.scrollTop - el.clientHeight)).toBeLessThan(2)
     await preview.screenshot({ path: testInfo.outputPath('conversation-tall.png') })
     await log.evaluate(el => { el.scrollTop = 0; el.dispatchEvent(new Event('scroll')) })
-    await w.evaluate(() => window.yogurt.widget.preview(false))
+    await w.mouse.move(0, 0)
     await preview.waitForTimeout(220)
-    await w.evaluate(() => window.yogurt.widget.preview(true))
+    await w.getByTestId('widget-time').hover()
     expect(preview.isClosed()).toBe(false)
     expect(await log.evaluate(el => el.scrollTop)).toBe(0)
     await preview.getByTestId('widget-preview-latest').click()

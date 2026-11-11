@@ -5,7 +5,6 @@ import { t } from '../../../shared/i18n'
 import { command, onMac } from '../keys'
 import { shareTarget } from '../../../shared/exportNotes'
 import type { NoteStatus } from '../../../shared/types'
-import { Swap } from './Swap'
 
 type Feedback = { text: string; kind: 'copied' | 'saved' | 'notice' | 'error' }
 
@@ -88,7 +87,8 @@ export function ShareMenu({ id, shown, status, hasEnhanced, beforeUse }: { id: s
       </span>
       <button ref={button} data-testid="share-button" data-state={copied ? 'copied' : 'idle'} aria-haspopup="menu" aria-expanded={!!open} title={t('Copy and export')}
         onClick={(e) => setOpen((o) => o ? false : e.detail > 0 ? 'pointer' : 'keyboard')} className="note-record-action share-btn">
-        <Swap show={copied ? 'done' : 'copy'} options={{ copy: <Copy size={13} strokeWidth={1.75} />, done: <Check size={13} strokeWidth={1.75} /> }} />{t('Copy')}
+        {/* the status under the button confirms a copy; the button itself stays put */}
+        <Copy size={13} strokeWidth={1.75} aria-hidden="true" />{t('Copy')}
         <ChevronDown size={12} strokeWidth={1.75} aria-hidden="true" />
       </button>
       {open && (

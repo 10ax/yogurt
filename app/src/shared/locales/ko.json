@@ -581,5 +581,7 @@
   "Downloading Yogurt's AI: {progress}": "Yogurt AI 다운로드 중: {progress}",
   "{done} of {total} GB": "{total} GB 중 {done} GB",
   "{progress} · about {minutes} min left": "{progress} · 약 {minutes}분 남음",
-  "You can record now. Yogurt writes your notes and answers questions once this finishes.": "지금 바로 녹음할 수 있어요. 이 작업이 끝나면 Yogurt가 노트를 작성하고 질문에 답해요."
+  "You can record now. Yogurt writes your notes and answers questions once this finishes.": "지금 바로 녹음할 수 있어요. 이 작업이 끝나면 Yogurt가 노트를 작성하고 질문에 답해요.",
+  "Eject the Yogurt installer?": "Yogurt 설치 프로그램을 추출할까요?",
+  "Eject": "추출"
 }

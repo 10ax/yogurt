@@ -646,5 +646,7 @@
   "Downloading Yogurt's AI: {progress}": "Загрузка ИИ Yogurt: {progress}",
   "{done} of {total} GB": "{done} из {total} ГБ",
   "{progress} · about {minutes} min left": "{progress} · осталось около {minutes} мин",
-  "You can record now. Yogurt writes your notes and answers questions once this finishes.": "Записывать можно уже сейчас. Когда загрузка закончится, Yogurt напишет заметки и будет отвечать на вопросы."
+  "You can record now. Yogurt writes your notes and answers questions once this finishes.": "Записывать можно уже сейчас. Когда загрузка закончится, Yogurt напишет заметки и будет отвечать на вопросы.",
+  "Eject the Yogurt installer?": "Извлечь установщик Yogurt?",
+  "Eject": "Извлечь"
 }

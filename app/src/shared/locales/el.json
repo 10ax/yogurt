@@ -620,5 +620,7 @@
   "Downloading Yogurt's AI: {progress}": "Γίνεται λήψη της AI του Yogurt: {progress}",
   "{done} of {total} GB": "{done} από {total} GB",
   "{progress} · about {minutes} min left": "{progress} · απομένουν περίπου {minutes} λεπ.",
-  "You can record now. Yogurt writes your notes and answers questions once this finishes.": "Μπορείτε να ηχογραφήσετε τώρα. Το Yogurt γράφει τις σημειώσεις σας και απαντά σε ερωτήσεις μόλις ολοκληρωθεί αυτό."
+  "You can record now. Yogurt writes your notes and answers questions once this finishes.": "Μπορείτε να ηχογραφήσετε τώρα. Το Yogurt γράφει τις σημειώσεις σας και απαντά σε ερωτήσεις μόλις ολοκληρωθεί αυτό.",
+  "Eject the Yogurt installer?": "Εξαγωγή του προγράμματος εγκατάστασης του Yogurt;",
+  "Eject": "Εξαγωγή"
 }

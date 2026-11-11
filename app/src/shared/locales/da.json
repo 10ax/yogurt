@@ -620,5 +620,7 @@
   "Downloading Yogurt's AI: {progress}": "Henter Yogurts AI: {progress}",
   "{done} of {total} GB": "{done} af {total} GB",
   "{progress} · about {minutes} min left": "{progress} · cirka {minutes} min tilbage",
-  "You can record now. Yogurt writes your notes and answers questions once this finishes.": "Du kan optage nu. Yogurt skriver dine noter og svarer på spørgsmål, når dette er færdigt."
+  "You can record now. Yogurt writes your notes and answers questions once this finishes.": "Du kan optage nu. Yogurt skriver dine noter og svarer på spørgsmål, når dette er færdigt.",
+  "Eject the Yogurt installer?": "Skub Yogurt-installationsprogrammet ud?",
+  "Eject": "Skub ud"
 }

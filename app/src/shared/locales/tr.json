@@ -620,5 +620,7 @@
   "Downloading Yogurt's AI: {progress}": "Yogurt’un yapay zekası indiriliyor: {progress}",
   "{done} of {total} GB": "{done} / {total} GB",
   "{progress} · about {minutes} min left": "{progress} · yaklaşık {minutes} dk kaldı",
-  "You can record now. Yogurt writes your notes and answers questions once this finishes.": "Şimdi kayıt yapabilirsiniz. Bu bittiğinde Yogurt notlarınızı yazar ve soruları yanıtlar."
+  "You can record now. Yogurt writes your notes and answers questions once this finishes.": "Şimdi kayıt yapabilirsiniz. Bu bittiğinde Yogurt notlarınızı yazar ve soruları yanıtlar.",
+  "Eject the Yogurt installer?": "Yogurt yükleyicisi çıkarılsın mı?",
+  "Eject": "Çıkar"
 }

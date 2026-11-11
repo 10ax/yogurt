@@ -620,5 +620,7 @@
   "Downloading Yogurt's AI: {progress}": "A Yogurt AI letöltése: {progress}",
   "{done} of {total} GB": "{done} / {total} GB",
   "{progress} · about {minutes} min left": "{progress} · még kb. {minutes} perc",
-  "You can record now. Yogurt writes your notes and answers questions once this finishes.": "Már most rögzíthetsz. Amint ez befejeződik, a Yogurt megírja a jegyzeteidet és válaszol a kérdésekre."
+  "You can record now. Yogurt writes your notes and answers questions once this finishes.": "Már most rögzíthetsz. Amint ez befejeződik, a Yogurt megírja a jegyzeteidet és válaszol a kérdésekre.",
+  "Eject the Yogurt installer?": "Kiadja a Yogurt telepítőjét?",
+  "Eject": "Kiadás"
 }

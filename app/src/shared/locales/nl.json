@@ -620,5 +620,7 @@
   "Downloading Yogurt's AI: {progress}": "AI van Yogurt downloaden: {progress}",
   "{done} of {total} GB": "{done} van {total} GB",
   "{progress} · about {minutes} min left": "{progress} · nog ongeveer {minutes} min",
-  "You can record now. Yogurt writes your notes and answers questions once this finishes.": "Je kunt nu al opnemen. Zodra dit klaar is, schrijft Yogurt je notities en beantwoordt het vragen."
+  "You can record now. Yogurt writes your notes and answers questions once this finishes.": "Je kunt nu al opnemen. Zodra dit klaar is, schrijft Yogurt je notities en beantwoordt het vragen.",
+  "Eject the Yogurt installer?": "Yogurt-installatieprogramma verwijderen?",
+  "Eject": "Verwijder"
 }

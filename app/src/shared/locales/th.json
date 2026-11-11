@@ -581,5 +581,7 @@
   "Downloading Yogurt's AI: {progress}": "กำลังดาวน์โหลด AI ของ Yogurt: {progress}",
   "{done} of {total} GB": "{done} จาก {total} GB",
   "{progress} · about {minutes} min left": "{progress} · เหลือประมาณ {minutes} นาที",
-  "You can record now. Yogurt writes your notes and answers questions once this finishes.": "คุณบันทึกได้เลยตอนนี้ Yogurt จะเขียนโน้ตและตอบคำถามให้เมื่อเสร็จแล้ว"
+  "You can record now. Yogurt writes your notes and answers questions once this finishes.": "คุณบันทึกได้เลยตอนนี้ Yogurt จะเขียนโน้ตและตอบคำถามให้เมื่อเสร็จแล้ว",
+  "Eject the Yogurt installer?": "นำตัวติดตั้ง Yogurt ออกไหม",
+  "Eject": "นำออก"
 }

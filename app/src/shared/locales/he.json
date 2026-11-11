@@ -633,5 +633,7 @@
   "Downloading Yogurt's AI: {progress}": "מורידים את הבינה המלאכותית של Yogurt: {progress}",
   "{done} of {total} GB": "{done} מתוך {total} GB",
   "{progress} · about {minutes} min left": "{progress} · נותרו כ־{minutes} דק׳",
-  "You can record now. Yogurt writes your notes and answers questions once this finishes.": "אפשר כבר להקליט. Yogurt יכתוב את ההערות שלך ויענה על שאלות כשזה יסתיים."
+  "You can record now. Yogurt writes your notes and answers questions once this finishes.": "אפשר כבר להקליט. Yogurt יכתוב את ההערות שלך ויענה על שאלות כשזה יסתיים.",
+  "Eject the Yogurt installer?": "להוציא את תוכנית ההתקנה של Yogurt?",
+  "Eject": "הוצא"
 }

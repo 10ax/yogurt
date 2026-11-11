@@ -308,8 +308,8 @@ test('hover stays stationary and pointer-down movement drags immediately without
     const w = await record(app, page)
     const widget = w.getByTestId('widget')
     // the pill hugs its content: the same space at both ends
-    const ends = await widget.evaluate(el => { const r = el.getBoundingClientRect(), a = el.querySelector('.widget-details > :first-child')!.getBoundingClientRect(), z = el.querySelector('[data-testid=widget-time]')!.getBoundingClientRect(); return [Math.round(a.left - r.left), Math.round(r.right - z.right)] })
-    expect(ends[0]).toBe(ends[1])
+    // measured once it settles: the pill resizes to its timer and animates there; 13 is 12 inside the 1px border
+    await expect.poll(() => widget.evaluate(el => { const r = el.getBoundingClientRect(), a = el.querySelector('.widget-details > :first-child')!.getBoundingClientRect(), z = el.querySelector('[data-testid=widget-time]')!.getBoundingClientRect(); return [Math.round(a.left - r.left), Math.round(r.right - z.right)] })).toEqual([13, 13])
     const before = (await snap(app)).bounds!
     const box = (await w.getByTestId('widget').boundingBox())!
     const presented = (await fake<{ presented: number }>(app, 'main')).presented

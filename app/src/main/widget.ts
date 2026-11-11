@@ -245,7 +245,8 @@ export function createWidget(d: { open(meetingId: string): void; stop(meetingId:
   })
   ipcMain.on('widget:size', (e, w: unknown, h: unknown) => {
     if (!win || win.isDestroyed() || e.sender !== win.webContents || typeof w !== 'number' || !Number.isFinite(w) || w < 60 || w > 340 || h !== FIRST_H || pressed) return
-    const width = Math.ceil(w)
+    // rounded, not up: the timer is a fractional width, and rounding up left the right end a pixel wider than the left
+    const width = Math.round(w)
     if (width === pill.width) return
     lastWidth = width
     pill = fit({ ...pill, x: pill.x + pill.width - width, width })

@@ -552,7 +552,8 @@ body:has(.chat-panel[open]) .app-toast-viewport { inset-inline-end:460px; }
 /* Folder suggestion: quiet and static in the note meta row. */
 .note-folder-proposal { border-style: dashed; background: color-mix(in srgb, var(--line) 25%, transparent); }
 
-.ask-conversation ::selection { background:var(--accent-soft); }
+/* a color here too: the shimmering Thinking… line paints its text through a transparent fill */
+.ask-conversation ::selection { background:var(--accent-soft);color:var(--ink); }
 @media (prefers-color-scheme:dark) { .ask-conversation ::selection { background:#8055B8;color:#FFFFFF; } }
 
 .native-library { scrollbar-gutter:stable; }

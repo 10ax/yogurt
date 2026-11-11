@@ -581,5 +581,5 @@
   "Downloading Yogurt's AI: {progress}": "正在下载 Yogurt 的 AI：{progress}",
   "{done} of {total} GB": "{done} / {total} GB",
   "{progress} · about {minutes} min left": "{progress} · 还需约 {minutes} 分钟",
-  "Summaries and Ask start when it's done.": "完成后即可使用摘要和提问。"
+  "You can record now. Yogurt writes your notes and answers questions once this finishes.": "现在就可以录音。完成后，Yogurt 会写好你的笔记并回答问题。"
 }

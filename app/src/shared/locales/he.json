@@ -633,5 +633,5 @@
   "Downloading Yogurt's AI: {progress}": "מורידים את הבינה המלאכותית של Yogurt: {progress}",
   "{done} of {total} GB": "{done} מתוך {total} GB",
   "{progress} · about {minutes} min left": "{progress} · נותרו כ־{minutes} דק׳",
-  "Summaries and Ask start when it's done.": "סיכומים ושאלות יהיו זמינים בסיום."
+  "You can record now. Yogurt writes your notes and answers questions once this finishes.": "אפשר כבר להקליט. Yogurt יכתוב את ההערות שלך ויענה על שאלות כשזה יסתיים."
 }

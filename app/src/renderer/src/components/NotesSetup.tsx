@@ -48,7 +48,7 @@ export function NotesSetup() {
               <button data-testid="notes-setup-retry" className="inline-error-action notes-download-retry" disabled={retrying} onClick={() => void retry()}>{retrying ? t('Retrying…') : t('Try again')}</button>
             </> : <>
               <p>{text.detail}</p>
-              <p className="text-muted">{t("Summaries and Ask start when it's done.")}</p>
+              <p className="text-muted">{t('You can record now. Yogurt writes your notes and answers questions once this finishes.')}</p>
             </>}
           </Popover.Popup>
         </Popover.Positioner>

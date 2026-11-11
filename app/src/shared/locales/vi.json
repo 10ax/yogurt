@@ -581,5 +581,5 @@
   "Downloading Yogurt's AI: {progress}": "Đang tải AI của Yogurt: {progress}",
   "{done} of {total} GB": "{done} trên {total} GB",
   "{progress} · about {minutes} min left": "{progress} · còn khoảng {minutes} phút",
-  "Summaries and Ask start when it's done.": "Tóm tắt và câu hỏi sẽ hoạt động khi hoàn tất."
+  "You can record now. Yogurt writes your notes and answers questions once this finishes.": "Bạn có thể ghi âm ngay bây giờ. Yogurt sẽ viết ghi chú và trả lời câu hỏi khi việc này hoàn tất."
 }

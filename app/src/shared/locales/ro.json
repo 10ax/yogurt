@@ -633,5 +633,5 @@
   "Downloading Yogurt's AI: {progress}": "Se descarcă AI-ul Yogurt: {progress}",
   "{done} of {total} GB": "{done} din {total} GB",
   "{progress} · about {minutes} min left": "{progress} · mai sunt aproximativ {minutes} min",
-  "Summaries and Ask start when it's done.": "Rezumatele și întrebările vor funcționa după finalizare."
+  "You can record now. Yogurt writes your notes and answers questions once this finishes.": "Poți înregistra de acum. Yogurt îți scrie notițele și răspunde la întrebări după ce se termină."
 }

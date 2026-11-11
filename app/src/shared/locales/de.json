@@ -620,5 +620,5 @@
   "Downloading Yogurt's AI: {progress}": "Yogurts KI wird heruntergeladen: {progress}",
   "{done} of {total} GB": "{done} von {total} GB",
   "{progress} · about {minutes} min left": "{progress} · noch etwa {minutes} Min.",
-  "Summaries and Ask start when it's done.": "Danach funktionieren Zusammenfassungen und Fragen."
+  "You can record now. Yogurt writes your notes and answers questions once this finishes.": "Du kannst jetzt schon aufnehmen. Sobald das fertig ist, schreibt Yogurt deine Notizen und beantwortet Fragen."
 }

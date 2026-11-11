@@ -620,5 +620,5 @@
   "Downloading Yogurt's AI: {progress}": "A Yogurt AI letöltése: {progress}",
   "{done} of {total} GB": "{done} / {total} GB",
   "{progress} · about {minutes} min left": "{progress} · még kb. {minutes} perc",
-  "Summaries and Ask start when it's done.": "Utána az összefoglalók és a kérdések is működnek."
+  "You can record now. Yogurt writes your notes and answers questions once this finishes.": "Már most rögzíthetsz. Amint ez befejeződik, a Yogurt megírja a jegyzeteidet és válaszol a kérdésekre."
 }

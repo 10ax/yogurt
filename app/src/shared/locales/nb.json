@@ -620,5 +620,5 @@
   "Downloading Yogurt's AI: {progress}": "Laster ned Yogurts KI: {progress}",
   "{done} of {total} GB": "{done} av {total} GB",
   "{progress} · about {minutes} min left": "{progress} · omtrent {minutes} min igjen",
-  "Summaries and Ask start when it's done.": "Sammendrag og spørsmål virker når den er ferdig."
+  "You can record now. Yogurt writes your notes and answers questions once this finishes.": "Du kan ta opp nå. Yogurt skriver notatene dine og svarer på spørsmål når dette er ferdig."
 }

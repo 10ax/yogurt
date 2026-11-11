@@ -581,5 +581,5 @@
   "Downloading Yogurt's AI: {progress}": "Yogurt AI 다운로드 중: {progress}",
   "{done} of {total} GB": "{total} GB 중 {done} GB",
   "{progress} · about {minutes} min left": "{progress} · 약 {minutes}분 남음",
-  "Summaries and Ask start when it's done.": "완료되면 요약과 질문을 사용할 수 있어요."
+  "You can record now. Yogurt writes your notes and answers questions once this finishes.": "지금 바로 녹음할 수 있어요. 이 작업이 끝나면 Yogurt가 노트를 작성하고 질문에 답해요."
 }

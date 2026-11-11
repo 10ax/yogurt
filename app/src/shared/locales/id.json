@@ -581,5 +581,5 @@
   "Downloading Yogurt's AI: {progress}": "Mengunduh AI Yogurt: {progress}",
   "{done} of {total} GB": "{done} dari {total} GB",
   "{progress} · about {minutes} min left": "{progress} · sekitar {minutes} mnt lagi",
-  "Summaries and Ask start when it's done.": "Ringkasan dan pertanyaan akan tersedia setelah selesai."
+  "You can record now. Yogurt writes your notes and answers questions once this finishes.": "Anda sudah bisa merekam. Yogurt akan menulis catatan Anda dan menjawab pertanyaan setelah ini selesai."
 }

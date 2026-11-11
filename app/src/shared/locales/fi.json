@@ -623,5 +623,5 @@
   "Downloading Yogurt's AI: {progress}": "Ladataan Yogurtin tekoälyä: {progress}",
   "{done} of {total} GB": "{done} / {total} Gt",
   "{progress} · about {minutes} min left": "{progress} · noin {minutes} min jäljellä",
-  "Summaries and Ask start when it's done.": "Yhteenvedot ja kysymykset toimivat latauksen valmistuttua."
+  "You can record now. Yogurt writes your notes and answers questions once this finishes.": "Voit nauhoittaa jo nyt. Kun tämä valmistuu, Yogurt kirjoittaa muistiinpanosi ja vastaa kysymyksiin."
 }

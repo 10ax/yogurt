@@ -620,5 +620,5 @@
   "Downloading Yogurt's AI: {progress}": "Dina-download ang AI ng Yogurt: {progress}",
   "{done} of {total} GB": "{done} sa {total} GB",
   "{progress} · about {minutes} min left": "{progress} · mga {minutes} min na lang",
-  "Summaries and Ask start when it's done.": "Gagana ang mga buod at tanong kapag tapos na."
+  "You can record now. Yogurt writes your notes and answers questions once this finishes.": "Puwede ka nang mag-record ngayon. Isusulat ng Yogurt ang mga notes mo at sasagot sa mga tanong kapag natapos ito."
 }

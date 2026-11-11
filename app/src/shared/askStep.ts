@@ -14,7 +14,7 @@ export function stepText(step: AskStep | undefined, tick: number): string {
 }
 
 function wordings(step: AskStep | undefined): string[] {
-  if (!step || step.kind === 'loading') return [t('Getting ready…'), t('Still getting ready…')]
+  if (!step || step.kind === 'loading') return [t('Thinking…'), t('Still thinking…')]
   if (step.kind === 'searching') return [t('Searching your meetings…'), t('Still searching your meetings…')]
   const next = t('Still reading. Your answer comes next.')
   if (step.title !== undefined || !step.meetings) {

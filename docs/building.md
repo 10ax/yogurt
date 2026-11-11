@@ -43,13 +43,3 @@ Installers land in `app/dist/`. They're unsigned unless signing is set up; see `
 ## Release
 
 `sh app/scripts/release.sh X.Y.Z` sets the version, tags it and pushes. GitHub Actions builds Mac (signed and notarized), Windows and Linux, and publishes one release once all three pass. Installed copies update from it.
-
-## Website
-
-The site at yogurt.so is its own Next.js project:
-
-```sh
-cd site
-pnpm install --ignore-workspace --frozen-lockfile
-pnpm dev
-```

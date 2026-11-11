@@ -66,6 +66,8 @@ export function createWidget(d: { open(meetingId: string): void; stop(meetingId:
   let dragPosition: { x: number; y: number } | null = null
   let noteTimer: NodeJS.Timeout | undefined
   let notifyOnChange = false
+  /** the person just ended it (the app was in front, or they pressed the pill), so a success banner would only repeat it */
+  let stoppedHere = false, stopPressed = false
   let notice: { title: string; body: string; meetingId: string } | null = null
   let notification: Notification | undefined
   /** what a test can see: the window itself is hidden in tests */
@@ -131,7 +133,7 @@ export function createWidget(d: { open(meetingId: string): void; stop(meetingId:
   }
 
   onMeetingStart((m) => {
-    notifyOnChange = false; notice = null
+    notifyOnChange = false; notice = null; stopPressed = false
     model.start({ id: m.id, title: m.title, startedAt: m.resume ? m.resume.startedAt - m.resume.capturedMs : m.startedAt })
     open(); push()
   })
@@ -140,6 +142,7 @@ export function createWidget(d: { open(meetingId: string): void; stop(meetingId:
     // The following change event reports whether the stopped metadata was saved.
     model.stop(Date.now())
     notifyOnChange = true
+    stoppedHere = stopPressed || d.foreground(); stopPressed = false
     close(); push()
   })
   // renamed in the note while it records
@@ -151,11 +154,12 @@ export function createWidget(d: { open(meetingId: string): void; stop(meetingId:
     if (notifyOnChange && view?.kind === 'captured') {
       notifyOnChange = false
       const completed = { title: view.note?.text ?? (view.crashed ? t('Recording stopped. Your notes are safe.') : t('Meeting captured')), body: m.title, meetingId: m.id }
+      const quiet = stoppedHere && !view.note && !view.crashed
       void recordingFinished(m.id).then(() => {
         // The call-ended prompt already owns its native notification.
         if (view.callEnded) return
         notice = completed
-        if (BACKGROUND || isFake() || !Notification.isSupported()) return
+        if (quiet || BACKGROUND || isFake() || !Notification.isSupported()) return
         notification?.close()
         notification = new Notification({ title: completed.title, body: completed.body, silent: true })
         notification.on('click', () => d.open(completed.meetingId))
@@ -187,7 +191,7 @@ export function createWidget(d: { open(meetingId: string): void; stop(meetingId:
     if (win && !win.isDestroyed()) win.hide()
     d.open(id)
   })
-  ipcMain.on('widget:stop', () => { const id = model.meetingId; if (id && model.view(Date.now())?.kind === 'recording') d.stop(id) })
+  ipcMain.on('widget:stop', () => { const id = model.meetingId; if (id && model.view(Date.now())?.kind === 'recording') { stopPressed = true; d.stop(id) } })
   ipcMain.on('widget:preview', (_e, on: unknown) => {
     if (typeof on !== 'boolean') return
     clearTimeout(previewTimer)

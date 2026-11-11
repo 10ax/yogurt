@@ -254,6 +254,25 @@ describe('finished meeting notifications', () => {
     await Promise.resolve()
     expect(state.notifications).toHaveLength(1)
   })
+  it('skips the success banner when the person ended it from the pill, but keeps the in-app notice', async () => {
+    send('widget:stop')
+    finish(); await Promise.resolve()
+    expect(widget.snapshot().notice).toMatchObject({ title: 'Meeting captured', body: 'Review' })
+    expect(state.notifications).toHaveLength(0)
+  })
+  it('skips the success banner when Yogurt was in front, but still warns', async () => {
+    vi.resetModules()
+    const { createWidget } = await import('../src/main/widget')
+    widget = createWidget({ open, stop: vi.fn(), foreground: () => true })
+    state.start!({ id: 'meeting', title: 'Review', startedAt: 0 })
+    finish(); await Promise.resolve()
+    expect(widget.snapshot().notice).toMatchObject({ title: 'Meeting captured' })
+    expect(state.notifications).toHaveLength(0)
+    state.start!({ id: 'meeting', title: 'Review', startedAt: 0 })
+    state.recording!({ t: 'gave-up' })
+    finish(); await Promise.resolve()
+    expect(state.notifications).toHaveLength(1)
+  })
   it('uses the existing save warning and does not notify again when Retry succeeds', async () => {
     state.stopPending = true
     finish(); await Promise.resolve()

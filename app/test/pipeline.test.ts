@@ -272,6 +272,17 @@ describe('partials, held back when they would get in the way', () => {
     expect(parts.length).toBe(before)
     expect(asked).toBeGreaterThan(0)
   })
+  it('reads a long sentence quickly at most once per 1.6 s of its audio, the pace a loaded server allowed anyway', async () => {
+    const ends: number[] = []
+    const p = createPipeline({
+      meetingId: 'm1', holdMs: 20,
+      transcribe: async (c, o) => { if (o?.partial) ends.push(c.startMs + c.samples.length / 16); return [{ track: c.track, startMs: c.startMs, endMs: c.startMs + 500, text: o?.partial ? 'quick' : 'final' }] },
+      save: () => {}, emit: () => {}, emitPartial: () => {},
+    })
+    const all = tone(4)
+    for (let i = 0; i < all.length; i += 1600) { p.push('them', i / 16, all.subarray(i, i + 1600)); await wait(1) }
+    expect(ends).toEqual([800, 2400, 4000])
+  })
   it('one live reading per track: a sentence waiting for its final and the next one show as one, in order, and each final takes only its own words', async () => {
     const seen: string[] = []
     const p = createPipeline({

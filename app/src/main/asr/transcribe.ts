@@ -86,6 +86,8 @@ export function createTranscriber(o: Opts): Transcribe {
       form.set('no_timestamps', 'false')
       // a partial is read once, greedily: a few times faster than the server's beam search, good enough for a first look
       if (partial) { form.set('beam_size', '1'); form.set('best_of', '1') }
+      // its language is never read: no second pass of the encoder to guess it (about a third of each request)
+      if (partial) form.set('no_language_probabilities', 'true')
       if (prompt) form.set('prompt', prompt)
       used = await o.url()
       return fetchFn(`${used}/inference`, { method: 'POST', body: form, signal: AbortSignal.timeout(o.timeoutMs ?? requestTimeoutMs(c.samples.length)) })

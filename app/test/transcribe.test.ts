@@ -208,9 +208,12 @@ describe('partials', () => {
     expect(quick.map((l) => l.text)).toEqual(['we should move the'])
     expect(s.seen[0].fields.beam_size).toBe('1')
     expect(s.seen[0].fields.language).toBe('auto')
+    // its language is never read, so whisper skips the second encoder pass that guesses it
+    expect(s.seen[0].fields.no_language_probabilities).toBe('true')
     const final = await tr(chunk('them', 1000))
     expect(final.map((l) => l.text)).toEqual(['we should move the launch to friday'])
     expect(s.seen[1].fields.beam_size).toBeUndefined()
+    expect(s.seen[1].fields.no_language_probabilities).toBeUndefined()
     // the partial did not lock the language: the final asked with it open
     expect(s.seen[1].fields.language).toBe('auto')
   })

@@ -172,6 +172,9 @@ export function createPipeline(p: {
   /** a quick reading slower than this means the server is loaded: the next one is skipped */
   const SLOW_PARTIAL_MS = 800
   let lastPartialMs = 0
+  /** at most one quick reading per this much of a track's audio: the pace the slow-reading skip ended up at anyway */
+  const PARTIAL_GAP_MS = 1600
+  const lastPartialEnd: Record<Track, number> = { me: -Infinity, them: -Infinity }
   /**
    * A chunk still being spoken: read it quickly, but never in the way of a final on either track (finals always come
    * first), and not right after a slow reading. Its words replace those of the same stretch read before.
@@ -179,6 +182,9 @@ export function createPipeline(p: {
   const partial = (c: Chunk) => {
     const t = c.track
     if (!quickReads[t] || !p.emitPartial || closed || running.me || running.them || waiting.me.length || waiting.them.length || lastPartialMs > SLOW_PARTIAL_MS) { if (lastPartialMs > SLOW_PARTIAL_MS) lastPartialMs = 0; return }
+    const end = c.startMs + c.samples.length / 16
+    if (end > lastPartialEnd[t] && end - lastPartialEnd[t] < PARTIAL_GAP_MS) return
+    lastPartialEnd[t] = end
     running[t] = true
     const t0 = Date.now()
     p.transcribe(c, { partial: true })

@@ -1,9 +1,5 @@
 <p align="center">
-  <a href="https://yogurt.so?utm_source=github&utm_medium=readme&utm_campaign=yogurt"><picture>
-    <source media="(prefers-color-scheme: dark)" srcset="docs/assets/readme-header-dark.svg">
-    <source media="(prefers-color-scheme: light)" srcset="docs/assets/readme-header-light.svg">
-    <img src="docs/assets/readme-header-light.svg" width="212" height="86" alt="Yogurt. Take note.">
-  </picture></a>
+  <a href="https://yogurt.so?utm_source=github&utm_medium=readme&utm_campaign=yogurt"><img src="docs/assets/readme-header-light.svg#gh-light-mode-only" width="212" height="86" alt="Yogurt. Take note."><img src="docs/assets/readme-header-dark.svg#gh-dark-mode-only" width="212" height="86" alt="Yogurt. Take note."></a>
 </p>
 
 <p align="center">
@@ -11,13 +7,13 @@
 </p>
 
 <p align="center">
-  <b>Download for <a href="https://github.com/FrigadeHQ/yogurt/releases/latest/download/Yogurt-mac-arm64.dmg">Mac</a> · <a href="https://github.com/FrigadeHQ/yogurt/releases/latest/download/Yogurt-windows-x64.exe">Windows</a> · <a href="https://github.com/FrigadeHQ/yogurt/releases/latest/download/Yogurt-linux-x86_64.AppImage">Linux</a></b>
+  Download for <a href="https://github.com/FrigadeHQ/yogurt/releases/latest/download/Yogurt-mac-arm64.dmg">Mac</a> · <a href="https://github.com/FrigadeHQ/yogurt/releases/latest/download/Yogurt-windows-x64.exe">Windows</a> · <a href="https://github.com/FrigadeHQ/yogurt/releases/latest/download/Yogurt-linux-x86_64.AppImage">Linux</a>
 </p>
 
 <br>
 
 <p align="center">
-  <img src="docs/assets/yogurt-screenshot.webp" width="980" alt="Yogurt showing the Summary of a launch planning meeting: the plan, next steps by person, and your own reminders">
+  <img src="docs/assets/yogurt-screenshot.webp" width="1074" alt="Yogurt showing the Summary of a launch planning meeting: the plan, next steps by person, and your own reminders">
 </p>
 
 <br>

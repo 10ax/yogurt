@@ -1,6 +1,6 @@
 {
-  "appCommit": "18dc4a124dc6b388931593eaf5f65dcada21af98",
-  "generatedAt": "2026-11-11T02:08:30.399Z",
+  "appCommit": "437a8cdb4956c05839ff02d2a593cf1c4da417d3",
+  "generatedAt": "2026-11-11T16:37:16.071Z",
   "source": "app/src/renderer",
   "fixture": "site/renderer/bridge.mjs",
   "nativeCode": false,
@@ -36,7 +36,9 @@
     "app/src/renderer/src/components/MotionPopup.tsx",
     "app/src/renderer/src/components/NoteDate.tsx",
     "app/src/renderer/src/components/NoteMenu.tsx",
+    "app/src/renderer/src/components/NoteReadingPane.tsx",
     "app/src/renderer/src/components/NotesModelWait.tsx",
+    "app/src/renderer/src/components/NotesSetup.tsx",
     "app/src/renderer/src/components/People.tsx",
     "app/src/renderer/src/components/Player.tsx",
     "app/src/renderer/src/components/RecordingHint.tsx",
@@ -53,14 +55,17 @@
     "app/src/renderer/src/components/Workspace.tsx",
     "app/src/renderer/src/dates.ts",
     "app/src/renderer/src/folders.ts",
+    "app/src/renderer/src/followLatest.ts",
     "app/src/renderer/src/i18n.tsx",
     "app/src/renderer/src/keys.ts",
     "app/src/renderer/src/motion.ts",
     "app/src/renderer/src/noteAutosave.ts",
     "app/src/renderer/src/noteMerge.ts",
+    "app/src/renderer/src/notesSetup.ts",
     "app/src/renderer/src/screens/Note.tsx",
     "app/src/renderer/src/streamingInk.ts",
     "app/src/renderer/src/styles.css",
+    "app/src/renderer/src/useFollowLatest.ts",
     "app/src/renderer/src/useLoadingState.ts",
     "app/src/renderer/src/useNotePopover.ts",
     "app/src/renderer/src/useScrollMemory.ts",
@@ -103,15 +108,15 @@
       "sha256": "45e4eb19dcb4fc8ce3825d6cfeeb1d8f8d7a16e09ee4583a005518c880f028e4"
     },
     "renderer.css": {
-      "bytes": 239245,
-      "gzipBytes": 82058,
-      "sha256": "bb6027cc1c32b4d16425c9450af71b8a15e62a1e30dd1c6d23e81cbc5958cdc7"
+      "bytes": 244912,
+      "gzipBytes": 83196,
+      "sha256": "e80196f0be1d7bd56942603629c93c16ce37540487c25d87f1d622423e42cc82"
     },
     "renderer.js": {
-      "bytes": 1237342,
-      "gzipBytes": 392024,
-      "sha256": "42a6a914961c5e059af69a1855dcf4e4e524db432b51e8bf0ba40079f3af3a15"
+      "bytes": 1243585,
+      "gzipBytes": 394052,
+      "sha256": "594890e88130d5df5ab6a47ace5b6984fc5350dbe3c285c2d3d1464c77c1f13b"
     }
   },
-  "totalGzipBytes": 474446
+  "totalGzipBytes": 477612
 }

@@ -1,19 +1,19 @@
 {
-  "appCommit": "18dc4a124dc6b388931593eaf5f65dcada21af98",
-  "bundleSha256": "42a6a914961c5e059af69a1855dcf4e4e524db432b51e8bf0ba40079f3af3a15",
-  "generatedAt": "2026-11-11T02:08:45.201Z",
+  "appCommit": "437a8cdb4956c05839ff02d2a593cf1c4da417d3",
+  "bundleSha256": "594890e88130d5df5ab6a47ace5b6984fc5350dbe3c285c2d3d1464c77c1f13b",
+  "generatedAt": "2026-11-11T16:38:52.245Z",
   "images": {
     "hero-desktop.webp": {
-      "bytes": 44938,
-      "sha256": "9b6dc2d65e6e097e85d2533ee51215e1bb6b3830a1b2f1672e6b26662f9d7307"
+      "bytes": 45094,
+      "sha256": "1f1acb34917a60ba9abe713b572fe811b4146f06c2b790f34ac12f1a0d9cfa0c"
     },
     "hero-finished-desktop.webp": {
-      "bytes": 79662,
-      "sha256": "bc4bfb79448480ae7b6fc1a948450378a4474874f27eaa3fba60cf05deb55daa"
+      "bytes": 80442,
+      "sha256": "5490f276fa6ef0d60e9ca5646d8de81fce6c2b36940e11f16fea3f156e2a5156"
     },
     "hero-phone.webp": {
-      "bytes": 62064,
-      "sha256": "e1326b4484c0b5aa523ad7fafe34cd0a46c5fd867eb857e6fb94d7bb56680d8d"
+      "bytes": 63048,
+      "sha256": "4623d26a3cff52136bae83d2ad06ee4173a3ccb3c498ec179b2124896289cf0e"
     },
     "fragment-transcript-desktop.webp": {
       "bytes": 13458,

@@ -7,7 +7,7 @@ import { closeAction, keepMainWindow } from './mainWindow'
 import { titleBarOverlay, windowChrome } from './windowChrome'
 import { x11Relaunch } from './display'
 import { isAppRoute } from '../shared/routes'
-import { relaunchOptions } from './relaunch'
+import { relaunchOptions, stripAppImageEnv } from './relaunch'
 import { capabilities, micListHelper, platformOf, supportedKinds } from '../shared/platform'
 import { app, BrowserWindow, dialog, ipcMain, nativeTheme, Notification, protocol, shell } from 'electron'
 import { existsSync, mkdirSync, readFileSync, writeFileSync } from 'node:fs'
@@ -90,7 +90,7 @@ process.on('uncaughtException', (err) => console.error('uncaught exception', err
 
 // Linux on Wayland: once more through XWayland, so the widget and the card can float (display.ts)
 const x11 = x11Relaunch(process.platform, process.argv, process.env, process.execPath)
-if (x11) { app.relaunch(x11); app.exit(0) }
+if (x11) { stripAppImageEnv(); app.relaunch(x11); app.exit(0) }
 // One Yogurt at a time: a second launch focuses the existing window
 else if (!app.requestSingleInstanceLock()) app.quit()
 let win: BrowserWindow | undefined
@@ -456,6 +456,7 @@ app.whenReady().then(() => {
     relaunch: () => {
       if (activeMeeting()) return false
       if (isFake()) { relaunched++; return true }
+      stripAppImageEnv()
       app.relaunch(relaunchOptions(process.platform, app.isPackaged, process.execPath, process.env.APPIMAGE)); app.quit()
       return true
     },

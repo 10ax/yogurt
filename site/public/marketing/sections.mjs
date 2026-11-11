@@ -1,4 +1,5 @@
 import {onVoiceFrame} from './clock.mjs';
+import {syncFrameTheme} from './theme.mjs';
 import {speakerEnvelopes,stepCircleFrame} from './timing.mjs';
 
 const reduce=matchMedia('(prefers-reduced-motion: reduce)'),phone=matchMedia('(max-width:760px)');
@@ -25,6 +26,7 @@ let active=0;
 const send=(card,time)=>card.frame?.contentWindow?.postMessage({type:'yogurt-fragment-time',seconds:time},location.origin);
 function finish(card){
   drawCircle(card,null);
+  card.element.dataset.state='done';
   delete card.element.dataset.phase;delete card.element.dataset.live;card.element.dataset.complete='true';card.element.closest('.step').dataset.active='false';send(card,99);
 }
 function finishAll(){cards.forEach(card=>{finish(card);card.frame?.remove();card.frame=null;card.ready=false;delete card.element.dataset.live;card.elapsed=0;});active=0;}
@@ -38,7 +40,7 @@ function load(card){
 window.addEventListener('message',event=>{
   if(event.origin!==location.origin||event.data?.type!=='yogurt-fragment-ready')return;
   const card=cards.find(card=>card.frame?.contentWindow===event.source);
-  if(!card||card.ready)return;card.ready=true;send(card,0);
+  if(!card||card.ready)return;syncFrameTheme(card.frame);card.ready=true;send(card,0);
 });
 const warm=new IntersectionObserver(entries=>{for(const entry of entries)if(entry.isIntersecting)load(cards.find(card=>card.element===entry.target));},{rootMargin:'400px'});
 cards.forEach(card=>warm.observe(card.element));
@@ -47,6 +49,7 @@ const visible=new IntersectionObserver(entries=>{
 },{threshold:[0,.35]});
 cards.forEach(card=>visible.observe(card.element));
 cards.forEach(finish);
+cards.forEach(card=>card.element.dataset.state='resting');
 if(reduce.matches||phone.matches)finishAll();
 const modeChanged=()=>{finishAll();if(!phone.matches&&!reduce.matches)cards.filter(card=>card.visible).forEach(load);};
 reduce.addEventListener('change',modeChanged);phone.addEventListener('change',modeChanged);
@@ -78,6 +81,7 @@ onVoiceFrame(({phase,level,bands})=>{
   const card=cards[active];
   if(!phone.matches&&cards.some(card=>card.visible)&&card?.ready){
     card.element.closest('.step').dataset.active='true';drawCircle(card,card.elapsed);card.elapsed+=delta;
+    card.element.dataset.state=card.elapsed>=card.duration?'done':'active';
     card.element.dataset.complete=String(card.elapsed>=card.duration);
     render(card,card.elapsed>=card.duration?99:card.elapsed);
     // Reveal only after the first content has arrived underneath the finished still.

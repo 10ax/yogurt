@@ -32,9 +32,10 @@ async function keepsFocus(page: Page, prefix: string) {
   await expect(page.getByTestId('chat-copy-answer').last()).toBeFocused()
 }
 
+// pieces slow enough that a slow machine still sees an answer while it is being written
 async function launch(name: string) {
   const app = await electron.launch({ args: [main], env: {
-    ...process.env, YOGURT_FAKE: '1', YOGURT_FAKE_LLM_MS: '60', YOGURT_USER_DATA: mkdtempSync(join(tmpdir(), `yogurt-${name}-`)),
+    ...process.env, YOGURT_FAKE: '1', YOGURT_FAKE_LLM_MS: '300', YOGURT_USER_DATA: mkdtempSync(join(tmpdir(), `yogurt-${name}-`)),
   } })
   const page = await app.firstWindow()
   await expect(page.getByTestId('home')).toBeVisible()

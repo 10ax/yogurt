@@ -2,6 +2,8 @@ import { useEffect, useLayoutEffect, useRef, useState } from 'react'
 import { Toast } from '@animate-ui/react/primitives/base-ui/toast'
 import { X } from 'lucide-react'
 import { t } from '../../../shared/i18n'
+import type { SetupState } from '../../../shared/types'
+import { notesReadyNotice } from '../notesSetup'
 
 let toastHost: HTMLDivElement | undefined
 // Keep Undo reachable when Ask uses the native modal top layer on smaller windows.
@@ -30,6 +32,22 @@ export async function moveToTrash(id: string, from?: string): Promise<boolean> {
 /** "Moved to the Trash" with Undo, for a few seconds; one at a time, the newest wins */
 export function TrashToast({ go }: { go: (route: string) => void }) {
   const [host] = useState(() => document.createElement('div'))
+  const notice = useRef<ReturnType<typeof notesReadyNotice>>(undefined)
+  notice.current ??= notesReadyNotice()
+  useEffect(() => {
+    let current: SetupState | undefined, active = true
+    const update = (state: SetupState) => {
+      current = state
+      if (notice.current!(state, document.visibilityState === 'visible', Date.now())) {
+        toasts.add({ title: t("Yogurt's AI is ready. Summaries and Ask now work."), data: { testId: 'notes-ready-toast' } })
+      }
+    }
+    const off = window.yogurt.setup.onState(update)
+    void window.yogurt.setup.state().then(state => { if (active && !current) update(state) })
+    const visibility = () => { if (current) update(current) }
+    document.addEventListener('visibilitychange', visibility)
+    return () => { active = false; off(); document.removeEventListener('visibilitychange', visibility) }
+  }, [])
   useLayoutEffect(() => {
     toastHost = host
     document.body.append(host)

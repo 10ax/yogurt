@@ -786,3 +786,15 @@ html:not(.widget) button:focus-visible, html:not(.widget) input:focus-visible { 
 .loading-mask .ask-field textarea { color:transparent; }
 .loading-mask .ask-field textarea::placeholder { color:transparent; }
 .loading-mask .ask-toolbar { visibility:hidden; }
+
+/* Match the footer's menus; keep the background download quieter than its controls. */
+.notes-download-dot { width:5px;height:5px;flex:none;border-radius:50%;background:var(--accent); }
+.notes-download-dot[data-failed=true] { background:var(--danger); }
+.notes-download-positioner { z-index:60; }
+.notes-download-menu { width:max-content;max-width:min(360px,calc(100vw - 24px));border:1px solid var(--line);border-radius:9px;padding:9px 12px;background:var(--float);color:var(--ink);box-shadow:var(--shadow);font-size:12px;line-height:18px;outline:none; }
+.notes-download-menu p+p { margin-top:3px; }
+.notes-download-menu[data-failed=true] { display:flex;align-items:center;gap:12px;padding-block:10px;padding-inline-end:10px; }
+.notes-download-retry { padding:3px 8px;border:1px solid var(--line);background:var(--control);color:var(--ink);text-decoration:none; }
+.notes-download-retry:disabled { opacity:.5; }
+@media (prefers-reduced-motion:no-preference) { .notes-download-dot[data-failed=false] { animation:notes-download-pulse 2s ease-in-out infinite; } }
+@keyframes notes-download-pulse { 0%,100% { opacity:.45; } 50% { opacity:1; } }

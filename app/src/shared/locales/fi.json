@@ -614,9 +614,14 @@
   "Yogurt stops using these calendars.": "Yogurt lakkaa käyttämästä näitä kalentereita.",
   "Calendar access": "Kalenterin käyttöoikeus",
   "Remove Yogurt’s access in System Settings.": "Poista Yogurtin käyttöoikeus Järjestelmäasetuksista.",
-  "Setting up notes": "Valmistellaan muistiinpanoja",
-  "Setting up notes · {percent}": "Valmistellaan muistiinpanoja · {percent}",
-  "Recording works now. Summaries and Ask start when Yogurt's AI finishes downloading.": "Voit jo tallentaa. Yhteenvedot ja kysymykset toimivat, kun Yogurtin tekoäly on ladattu.",
+  "Downloading AI": "Ladataan tekoälyä",
+  "Downloading AI · {percent}": "Ladataan tekoälyä · {percent}",
   "Waiting for Yogurt's AI to finish downloading ({percent}). Your answer comes as soon as it's ready.": "Odotetaan Yogurtin tekoälyn latautumista ({percent}). Saat vastauksen heti, kun se on valmis.",
-  "Yogurt's AI is ready. Summaries and Ask now work.": "Yogurtin tekoäly on valmis. Yhteenvedot ja kysymykset toimivat nyt."
+  "Yogurt's AI is ready. Summaries and Ask now work.": "Yogurtin tekoäly on valmis. Yhteenvedot ja kysymykset toimivat nyt.",
+  "AI download stopped": "Tekoälyn lataus pysähtyi",
+  "Downloading Yogurt's AI": "Ladataan Yogurtin tekoälyä",
+  "Downloading Yogurt's AI: {progress}": "Ladataan Yogurtin tekoälyä: {progress}",
+  "{done} of {total} GB": "{done} / {total} Gt",
+  "{progress} · about {minutes} min left": "{progress} · noin {minutes} min jäljellä",
+  "Summaries and Ask start when it's done.": "Yhteenvedot ja kysymykset toimivat latauksen valmistuttua."
 }

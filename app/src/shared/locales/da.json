@@ -611,9 +611,14 @@
   "Yogurt stops using these calendars.": "Yogurt holder op med at bruge disse kalendere.",
   "Calendar access": "Kalenderadgang",
   "Remove Yogurt’s access in System Settings.": "Fjern Yogurts adgang i Systemindstillinger.",
-  "Setting up notes": "Klargør noter",
-  "Setting up notes · {percent}": "Klargør noter · {percent}",
-  "Recording works now. Summaries and Ask start when Yogurt's AI finishes downloading.": "Du kan optage nu. Resuméer og spørgsmål virker, når Yogurts AI er hentet.",
+  "Downloading AI": "Henter AI",
+  "Downloading AI · {percent}": "Henter AI · {percent}",
   "Waiting for Yogurt's AI to finish downloading ({percent}). Your answer comes as soon as it's ready.": "Venter på, at Yogurts AI bliver hentet ({percent}). Du får svar, så snart den er klar.",
-  "Yogurt's AI is ready. Summaries and Ask now work.": "Yogurts AI er klar. Resuméer og spørgsmål virker nu."
+  "Yogurt's AI is ready. Summaries and Ask now work.": "Yogurts AI er klar. Resuméer og spørgsmål virker nu.",
+  "AI download stopped": "Download af AI stoppet",
+  "Downloading Yogurt's AI": "Henter Yogurts AI",
+  "Downloading Yogurt's AI: {progress}": "Henter Yogurts AI: {progress}",
+  "{done} of {total} GB": "{done} af {total} GB",
+  "{progress} · about {minutes} min left": "{progress} · cirka {minutes} min tilbage",
+  "Summaries and Ask start when it's done.": "Resuméer og spørgsmål virker, når den er hentet."
 }

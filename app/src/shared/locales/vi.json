@@ -572,9 +572,14 @@
   "Yogurt stops using these calendars.": "Yogurt ngừng dùng các lịch này.",
   "Calendar access": "Quyền truy cập lịch",
   "Remove Yogurt’s access in System Settings.": "Gỡ quyền truy cập của Yogurt trong Cài đặt hệ thống.",
-  "Setting up notes": "Đang chuẩn bị ghi chú",
-  "Setting up notes · {percent}": "Đang chuẩn bị ghi chú · {percent}",
-  "Recording works now. Summaries and Ask start when Yogurt's AI finishes downloading.": "Bạn đã có thể ghi âm. Tóm tắt và câu hỏi sẽ hoạt động khi AI của Yogurt tải xong.",
+  "Downloading AI": "Đang tải AI",
+  "Downloading AI · {percent}": "Đang tải AI · {percent}",
   "Waiting for Yogurt's AI to finish downloading ({percent}). Your answer comes as soon as it's ready.": "Đang chờ AI của Yogurt tải xong ({percent}). Bạn sẽ nhận được câu trả lời ngay khi sẵn sàng.",
-  "Yogurt's AI is ready. Summaries and Ask now work.": "AI của Yogurt đã sẵn sàng. Tóm tắt và câu hỏi đã hoạt động."
+  "Yogurt's AI is ready. Summaries and Ask now work.": "AI của Yogurt đã sẵn sàng. Tóm tắt và câu hỏi đã hoạt động.",
+  "AI download stopped": "Quá trình tải AI đã dừng",
+  "Downloading Yogurt's AI": "Đang tải AI của Yogurt",
+  "Downloading Yogurt's AI: {progress}": "Đang tải AI của Yogurt: {progress}",
+  "{done} of {total} GB": "{done} trên {total} GB",
+  "{progress} · about {minutes} min left": "{progress} · còn khoảng {minutes} phút",
+  "Summaries and Ask start when it's done.": "Tóm tắt và câu hỏi sẽ hoạt động khi hoàn tất."
 }

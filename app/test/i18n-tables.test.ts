@@ -18,6 +18,17 @@ it('uses Ask and conversations throughout the interface', () => {
   expect(keys).toContain('Conversations')
 })
 
+it('names the AI download directly in every locale', () => {
+  for (const { id } of LOCALES) {
+    const table = load(id)
+    for (const key of ['Downloading AI', 'Downloading AI · {percent}', 'AI download stopped']) {
+      expect(keys).toContain(key)
+      expect(table[key]).toBeTypeOf('string')
+    }
+    expect(Object.keys(table).filter(key => key.startsWith('Setting up notes') || key === "Couldn't download notes")).toEqual([])
+  }
+})
+
 it('keeps checklist Close separate from Hide checklist in every locale', () => {
   for (const { id } of LOCALES.filter(l => l.id !== 'en')) {
     const table = load(id)

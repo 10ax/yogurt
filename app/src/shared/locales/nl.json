@@ -611,9 +611,14 @@
   "Yogurt stops using these calendars.": "Yogurt gebruikt deze agenda’s niet meer.",
   "Calendar access": "Agendatoegang",
   "Remove Yogurt’s access in System Settings.": "Trek de toegang van Yogurt in via Systeeminstellingen.",
-  "Setting up notes": "Notities voorbereiden",
-  "Setting up notes · {percent}": "Notities voorbereiden · {percent}",
-  "Recording works now. Summaries and Ask start when Yogurt's AI finishes downloading.": "Je kunt nu al opnemen. Samenvattingen en vragen werken zodra de AI van Yogurt is gedownload.",
+  "Downloading AI": "AI downloaden",
+  "Downloading AI · {percent}": "AI downloaden · {percent}",
   "Waiting for Yogurt's AI to finish downloading ({percent}). Your answer comes as soon as it's ready.": "Wachten tot de AI van Yogurt is gedownload ({percent}). Je krijgt antwoord zodra deze klaar is.",
-  "Yogurt's AI is ready. Summaries and Ask now work.": "De AI van Yogurt is klaar. Samenvattingen en vragen werken nu."
+  "Yogurt's AI is ready. Summaries and Ask now work.": "De AI van Yogurt is klaar. Samenvattingen en vragen werken nu.",
+  "AI download stopped": "AI-download gestopt",
+  "Downloading Yogurt's AI": "AI van Yogurt downloaden",
+  "Downloading Yogurt's AI: {progress}": "AI van Yogurt downloaden: {progress}",
+  "{done} of {total} GB": "{done} van {total} GB",
+  "{progress} · about {minutes} min left": "{progress} · nog ongeveer {minutes} min",
+  "Summaries and Ask start when it's done.": "Samenvattingen en vragen werken zodra dit klaar is."
 }

@@ -164,10 +164,11 @@ describe('SetupController', () => {
     const download: DownloadDeps = {
       freeDiskGB: async () => 500,
       hashFile: async () => 'FAKE',
-      download: async (url, dir, file) => {
+      download: async (url, dir, file, onProgress) => {
         if (url === starterUrl) { attempts++; active++; peak = Math.max(peak, active) }
         try {
           if (url === starterUrl) {
+            onProgress({ fraction: 0.42, etaSec: 240 })
             if (blocked) throw new DiskSpaceError(4)
             await held
           }
@@ -182,6 +183,8 @@ describe('SetupController', () => {
       await c.start()
       await vi.advanceTimersByTimeAsync(0)
       expect(c.state).toMatchObject({ phase: 'ready', notesError: 'Not enough disk space. Free up 4 GB and try again.' })
+      expect(c.state.notesTotalBytes).toBeUndefined()
+      expect(c.state.notesEtaSec).toBeUndefined()
       expect(c.installed()?.asr).toBeTruthy()
       expect(c.installed()?.llm).toBeUndefined()
       expect(attempts).toBe(1)
@@ -190,6 +193,9 @@ describe('SetupController', () => {
       await vi.advanceTimersByTimeAsync(0)
       expect(attempts).toBe(2)
       expect(c.state).not.toHaveProperty('notesError', expect.any(String))
+      expect(c.state.notesTotalBytes).toBeGreaterThan(0)
+      // A resumed download can report the same percentage as before the failure.
+      expect(c.state).toMatchObject({ notesFraction: 0.42, notesEtaSec: 240 })
       await Promise.all(Array.from({ length: 10 }, () => c.retry()))
       // The old automatic retry must not start another download while this one is active.
       await vi.advanceTimersByTimeAsync(60_000)
@@ -354,6 +360,23 @@ describe('the speed check (Windows and Linux): speech models timed on this compu
       expect(c.state.notesFraction).toBeUndefined()
       expect(c.state.notesDownloading).toBeUndefined()
     }
+  })
+
+  it.each([m1max, cpuPc, gpuPc])('passes the model size and downloader ETA through on $os, and clears both on completion', async hw => {
+    const inner = fakeDownloadDeps({ stepMs: 0 }), requested: string[] = []
+    const { c, states } = setup({ getHardware: async () => hw, download: {
+      ...inner,
+      download: (url, dir, file, onProgress, signal) => {
+        requested.push(url)
+        return inner.download(url, dir, file, p => onProgress({ ...p, etaSec: 240 }), signal)
+      },
+    } })
+    await c.start(); await c.idle()
+    const first = catalog.models.flatMap(m => m.builds).find(b => b.url === requested[1])!
+    expect(states.find(s => s.notesFraction === 0)).toMatchObject({ notesTotalBytes: first.sizeGB * 1e9, notesEtaSec: undefined })
+    expect(states.find(s => s.notesFraction === .5)).toMatchObject({ notesTotalBytes: first.sizeGB * 1e9, notesEtaSec: 240 })
+    expect(c.state.notesTotalBytes).toBeUndefined()
+    expect(c.state.notesEtaSec).toBeUndefined()
   })
 
   it('a Mac never runs it, even when it is offered: turbo as always, nothing timed or stored', async () => {

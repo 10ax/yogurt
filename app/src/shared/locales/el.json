@@ -611,9 +611,14 @@
   "Yogurt stops using these calendars.": "Το Yogurt σταματά να χρησιμοποιεί αυτά τα ημερολόγια.",
   "Calendar access": "Πρόσβαση στο ημερολόγιο",
   "Remove Yogurt’s access in System Settings.": "Αφαίρεσε την πρόσβαση του Yogurt στις Ρυθμίσεις συστήματος.",
-  "Setting up notes": "Προετοιμασία σημειώσεων",
-  "Setting up notes · {percent}": "Προετοιμασία σημειώσεων · {percent}",
-  "Recording works now. Summaries and Ask start when Yogurt's AI finishes downloading.": "Η εγγραφή λειτουργεί ήδη. Οι περιλήψεις και οι ερωτήσεις θα είναι διαθέσιμες μόλις ολοκληρωθεί η λήψη της AI του Yogurt.",
+  "Downloading AI": "Γίνεται λήψη AI",
+  "Downloading AI · {percent}": "Γίνεται λήψη AI · {percent}",
   "Waiting for Yogurt's AI to finish downloading ({percent}). Your answer comes as soon as it's ready.": "Αναμονή για την ολοκλήρωση λήψης της AI του Yogurt ({percent}). Η απάντησή σας θα έρθει μόλις είναι έτοιμη.",
-  "Yogurt's AI is ready. Summaries and Ask now work.": "Η AI του Yogurt είναι έτοιμη. Οι περιλήψεις και οι ερωτήσεις λειτουργούν πλέον."
+  "Yogurt's AI is ready. Summaries and Ask now work.": "Η AI του Yogurt είναι έτοιμη. Οι περιλήψεις και οι ερωτήσεις λειτουργούν πλέον.",
+  "AI download stopped": "Η λήψη AI σταμάτησε",
+  "Downloading Yogurt's AI": "Γίνεται λήψη της AI του Yogurt",
+  "Downloading Yogurt's AI: {progress}": "Γίνεται λήψη της AI του Yogurt: {progress}",
+  "{done} of {total} GB": "{done} από {total} GB",
+  "{progress} · about {minutes} min left": "{progress} · απομένουν περίπου {minutes} λεπ.",
+  "Summaries and Ask start when it's done.": "Οι περιλήψεις και οι ερωτήσεις θα λειτουργούν μόλις ολοκληρωθεί."
 }

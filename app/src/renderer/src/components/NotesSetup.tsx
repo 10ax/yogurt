@@ -1,65 +1,58 @@
-import { useCallback, useEffect, useLayoutEffect, useRef, useState } from 'react'
-import { createPortal } from 'react-dom'
-import { X } from 'lucide-react'
+import { useEffect, useState } from 'react'
+import { Popover } from '@base-ui/react/popover'
+import { ChevronDown } from 'lucide-react'
 import type { SetupState } from '../../../shared/types'
 import { t } from '../../../shared/i18n'
-import { notesPercent, notesReadyNotice } from '../notesSetup'
-import { NotesModelWait } from './NotesModelWait'
-import { toasts } from './TrashToast'
+import { notesDownloadText, notesPercent } from '../notesSetup'
 
-export function NotesSetup({ collapsed = false }: { collapsed?: boolean }) {
+/** The first model's download lives beside the note's mic, language and save status. */
+export function NotesSetup() {
   const [setup, setSetup] = useState<SetupState>()
   const [open, setOpen] = useState(false)
-  const trigger = useRef<HTMLButtonElement>(null)
-  const panel = useRef<HTMLDialogElement>(null)
-  const notice = useRef<ReturnType<typeof notesReadyNotice>>(undefined)
-  notice.current ??= notesReadyNotice()
-  const waiting = !!setup && (setup.notesDownloading || !!setup.notesError)
+  const [pointer, setPointer] = useState(false)
+  const [retrying, setRetrying] = useState(false)
+  const [retryFailed, setRetryFailed] = useState(false)
   useEffect(() => {
     let current: SetupState | undefined, active = true
     const update = (state: SetupState) => {
       current = state; setSetup(state)
-      if (notice.current!(state, document.visibilityState === 'visible', Date.now())) {
-        toasts.add({ title: t("Yogurt's AI is ready. Summaries and Ask now work."), data: { testId: 'notes-ready-toast' } })
-      }
+      if (!state.notesError) setRetryFailed(false)
       if (!state.notesDownloading && !state.notesError) setOpen(false)
     }
     const off = window.yogurt.setup.onState(update)
     void window.yogurt.setup.state().then(state => { if (active && !current) update(state) })
-    const visibility = () => { if (current) update(current) }
-    document.addEventListener('visibilitychange', visibility)
-    return () => { active = false; off(); document.removeEventListener('visibilitychange', visibility) }
+    return () => { active = false; off() }
   }, [])
-  const close = useCallback(() => { panel.current?.close(); setOpen(false); trigger.current?.focus({ preventScroll: true }) }, [])
-  useLayoutEffect(() => {
-    const el = panel.current
-    if (!open || !el || !waiting) return
-    el.show()
-    const position = () => {
-      const rect = trigger.current!.getBoundingClientRect()
-      const start = getComputedStyle(el).direction === 'rtl' ? innerWidth - rect.right : rect.x
-      el.style.insetInlineStart = `${Math.max(12, Math.min(start, innerWidth - el.getBoundingClientRect().width - 12))}px`
-      el.style.bottom = `${Math.max(64, innerHeight - rect.y + 8)}px`
-    }
-    position()
-    el.querySelector<HTMLButtonElement>('button')?.focus()
-    const away = (e: PointerEvent) => { if (!el.contains(e.target as Node) && !trigger.current?.contains(e.target as Node)) close() }
-    const key = (e: KeyboardEvent) => { if (e.key === 'Escape') { e.preventDefault(); close() } }
-    window.addEventListener('resize', position); document.addEventListener('pointerdown', away); document.addEventListener('keydown', key)
-    return () => { el.close(); window.removeEventListener('resize', position); document.removeEventListener('pointerdown', away); document.removeEventListener('keydown', key) }
-  }, [open, waiting, collapsed, close])
-  if (!waiting) return null
-  const percent = notesPercent(setup.notesFraction ?? 0)
-  const label = setup.notesError ? t('Setting up notes') : t('Setting up notes · {percent}', { percent })
-  return <>
-    <button ref={trigger} data-testid="notes-setup-open" data-sidebar="menu-button" className="setup-checklist-trigger workspace-nav" aria-label={label} title={collapsed ? label : undefined}
-      aria-haspopup="dialog" aria-expanded={open} onClick={() => setOpen(value => !value)}>
-      <svg className="setup-progress" viewBox="0 0 16 16" fill="none" aria-hidden="true"><circle cx="8" cy="8" r="5.5" stroke="currentColor" strokeWidth="2.5" className="setup-progress-track" /><circle cx="8" cy="8" r="5.5" pathLength="100" stroke="currentColor" strokeWidth="2.5" strokeDasharray="100" strokeDashoffset={100 - (setup.notesFraction ?? 0) * 100} strokeLinecap="round" /></svg>
-      <span>{label}</span>
-    </button>
-    {open && createPortal(<dialog ref={panel} data-testid="notes-setup" aria-label={t('Setting up notes')} className="finish-setup" onCancel={e => { e.preventDefault(); close() }}>
-      <div className="finish-setup-header"><h2>{t('Setting up notes')}</h2><button aria-label={t('Close')} className="finish-setup-close no-drag" onClick={close}><X size={14} aria-hidden="true" /></button></div>
-      <div className="p-3 text-sm text-muted"><NotesModelWait><p>{t("Recording works now. Summaries and Ask start when Yogurt's AI finishes downloading.")}</p></NotesModelWait></div>
-    </dialog>, document.body)}
-  </>
+  const retry = async () => {
+    setRetrying(true); setRetryFailed(false)
+    try { await window.yogurt.setup.retry() } catch { setRetryFailed(true) }
+    finally { setRetrying(false) }
+  }
+  if (!setup || (!setup.notesDownloading && !setup.notesError)) return null
+  const failed = !!setup.notesError
+  const label = failed ? t("AI download stopped") : t('Downloading AI · {percent}', { percent: notesPercent(setup.notesFraction ?? 0) })
+  const text = notesDownloadText(setup)
+  return <span className="notes-download-status flex min-w-0 items-center gap-1.5">
+    <span aria-hidden="true">·</span>
+    <Popover.Root open={open} onOpenChange={setOpen}>
+      <Popover.Trigger data-testid="notes-setup-open" title={failed ? setup.notesError : text.title} onClick={e => setPointer(e.detail > 0)}
+        className="bar-btn flex min-w-0 items-center gap-1.5 rounded-md px-1.5 py-0.5 hover:text-ink aria-expanded:text-ink">
+        <span aria-hidden="true" data-failed={failed} className="notes-download-dot" />
+        <span className="truncate">{label}</span><ChevronDown size={11} aria-hidden="true" className="shrink-0" />
+      </Popover.Trigger>
+      <Popover.Portal>
+        <Popover.Positioner side="top" align="start" sideOffset={8} collisionPadding={12} positionMethod="fixed" className="notes-download-positioner">
+          <Popover.Popup data-testid="notes-setup" data-failed={failed} data-pointer={pointer} data-anchor="bottom-start" aria-label={failed ? t('AI download stopped') : t('Downloading AI')} className="menu-entry notes-download-menu">
+            {failed ? <>
+              <p role="status">{retryFailed ? t("Couldn't restart the download. Try again.") : setup.notesError}</p>
+              <button data-testid="notes-setup-retry" className="inline-error-action notes-download-retry" disabled={retrying} onClick={() => void retry()}>{retrying ? t('Retrying…') : t('Try again')}</button>
+            </> : <>
+              <p>{text.detail}</p>
+              <p className="text-muted">{t("Summaries and Ask start when it's done.")}</p>
+            </>}
+          </Popover.Popup>
+        </Popover.Positioner>
+      </Popover.Portal>
+    </Popover.Root>
+  </span>
 }

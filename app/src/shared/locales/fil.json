@@ -611,9 +611,14 @@
   "Yogurt stops using these calendars.": "Hihinto ang Yogurt sa paggamit ng mga kalendaryong ito.",
   "Calendar access": "Access sa kalendaryo",
   "Remove Yogurt’s access in System Settings.": "Alisin ang access ng Yogurt sa System Settings.",
-  "Setting up notes": "Inihahanda ang mga tala",
-  "Setting up notes · {percent}": "Inihahanda ang mga tala · {percent}",
-  "Recording works now. Summaries and Ask start when Yogurt's AI finishes downloading.": "Puwede ka nang mag-record. Gagana ang mga buod at mga tanong kapag natapos ang pag-download ng AI ng Yogurt.",
+  "Downloading AI": "Dina-download ang AI",
+  "Downloading AI · {percent}": "Dina-download ang AI · {percent}",
   "Waiting for Yogurt's AI to finish downloading ({percent}). Your answer comes as soon as it's ready.": "Hinihintay matapos ang pag-download ng AI ng Yogurt ({percent}). Makukuha mo ang sagot kapag handa na ito.",
-  "Yogurt's AI is ready. Summaries and Ask now work.": "Handa na ang AI ng Yogurt. Gumagana na ang mga buod at mga tanong."
+  "Yogurt's AI is ready. Summaries and Ask now work.": "Handa na ang AI ng Yogurt. Gumagana na ang mga buod at mga tanong.",
+  "AI download stopped": "Huminto ang pag-download ng AI",
+  "Downloading Yogurt's AI": "Dina-download ang AI ng Yogurt",
+  "Downloading Yogurt's AI: {progress}": "Dina-download ang AI ng Yogurt: {progress}",
+  "{done} of {total} GB": "{done} sa {total} GB",
+  "{progress} · about {minutes} min left": "{progress} · mga {minutes} min na lang",
+  "Summaries and Ask start when it's done.": "Gagana ang mga buod at tanong kapag tapos na."
 }

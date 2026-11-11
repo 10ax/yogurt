@@ -624,9 +624,14 @@
   "Yogurt stops using these calendars.": "Yogurt deja de usar estos calendarios.",
   "Calendar access": "Acceso al calendario",
   "Remove Yogurt’s access in System Settings.": "Quita el acceso de Yogurt en Ajustes del Sistema.",
-  "Setting up notes": "Preparando las notas",
-  "Setting up notes · {percent}": "Preparando las notas · {percent}",
-  "Recording works now. Summaries and Ask start when Yogurt's AI finishes downloading.": "Ya puedes grabar. Los resúmenes y las preguntas estarán disponibles cuando termine la descarga de la IA de Yogurt.",
+  "Downloading AI": "Descargando IA",
+  "Downloading AI · {percent}": "Descargando IA · {percent}",
   "Waiting for Yogurt's AI to finish downloading ({percent}). Your answer comes as soon as it's ready.": "Esperando a que termine la descarga de la IA de Yogurt ({percent}). Recibirás tu respuesta en cuanto esté lista.",
-  "Yogurt's AI is ready. Summaries and Ask now work.": "La IA de Yogurt está lista. Ya puedes usar los resúmenes y las preguntas."
+  "Yogurt's AI is ready. Summaries and Ask now work.": "La IA de Yogurt está lista. Ya puedes usar los resúmenes y las preguntas.",
+  "AI download stopped": "La descarga de IA se detuvo",
+  "Downloading Yogurt's AI": "Descargando la IA de Yogurt",
+  "Downloading Yogurt's AI: {progress}": "Descargando la IA de Yogurt: {progress}",
+  "{done} of {total} GB": "{done} de {total} GB",
+  "{progress} · about {minutes} min left": "{progress} · quedan unos {minutes} min",
+  "Summaries and Ask start when it's done.": "Los resúmenes y las preguntas estarán disponibles al terminar."
 }

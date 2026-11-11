@@ -287,6 +287,9 @@ export type SetupState = {
   notesError?: string
   /** The first notes model is still downloading after ready, this far (0 to 1), on every system. */
   notesFraction?: number
+  /** Size of the first notes model; ETA is absent until the downloader has an estimate. */
+  notesTotalBytes?: number
+  notesEtaSec?: number
   /** The first notes model is still downloading after ready, on every system. */
   notesDownloading?: boolean
 }

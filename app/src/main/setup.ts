@@ -220,20 +220,21 @@ export class SetupController {
       const waits = this.deps.notesRetryMs ?? NOTES_RETRY_MS
       // Waiting notes show whole percents; every 10% goes in the log.
       let shown = -1, logged = -1
-      const progress = (p: { fraction: number }) => {
+      const progress = (p: { fraction: number; etaSec: number }) => {
         const pct = Math.floor(p.fraction * 100)
         if (Math.floor(pct / 10) > logged) { logged = Math.floor(pct / 10); console.info('NOTES', `notes model download ${pct}%`) }
-        if (pct !== shown) { shown = pct; this.set({ ...this._state, notesFraction: p.fraction }) }
+        if (pct !== shown) { shown = pct; this.set({ ...this._state, notesFraction: p.fraction, notesEtaSec: p.etaSec > 0 && Number.isFinite(p.etaSec) ? p.etaSec : undefined }) }
       }
       const already = isVerified(first.dir, first.fileName, this.sha(first))
       if (!already) console.info('NOTES', `downloading the notes model ${first.fileName}`)
       for (let i = 0; ; i++) {
-        this.set({ ...this._state, notesError: undefined, ...(already ? {} : { notesDownloading: true, notesFraction: 0 }) })
+        shown = -1
+        this.set({ ...this._state, notesError: undefined, ...(already ? {} : { notesDownloading: true, notesFraction: 0, notesTotalBytes: first.bytes, notesEtaSec: undefined }) })
         try {
           const path = await this.fetch(first, already ? undefined : progress)
           if (this.paths) this.paths = { ...this.paths, llm: path }
           if (!already) console.info('NOTES', 'the notes model is in')
-          if (this._state.notesFraction !== undefined || this._state.notesDownloading) this.set({ ...this._state, notesFraction: undefined, notesDownloading: undefined })
+          if (this._state.notesFraction !== undefined || this._state.notesDownloading) this.set({ ...this._state, notesFraction: undefined, notesDownloading: undefined, notesTotalBytes: undefined, notesEtaSec: undefined })
           break
         } catch (err) {
           console.warn('the notes model did not download yet, trying again', err)
@@ -241,7 +242,7 @@ export class SetupController {
             const wake = () => { clearTimeout(timer); this.retryNotes = undefined; resolve() }
             const timer = setTimeout(wake, waits[Math.min(i, waits.length - 1)])
             this.retryNotes = wake
-            this.set({ ...this._state, notesError: friendly(err), notesFraction: undefined, notesDownloading: undefined })
+            this.set({ ...this._state, notesError: friendly(err), notesFraction: undefined, notesDownloading: undefined, notesTotalBytes: undefined, notesEtaSec: undefined })
           })
         }
       }

@@ -611,9 +611,14 @@
   "Yogurt stops using these calendars.": "Yogurt bu takvimleri kullanmayı bırakır.",
   "Calendar access": "Takvim erişimi",
   "Remove Yogurt’s access in System Settings.": "Yogurt’un erişimini Sistem Ayarları’ndan kaldır.",
-  "Setting up notes": "Notlar hazırlanıyor",
-  "Setting up notes · {percent}": "Notlar hazırlanıyor · {percent}",
-  "Recording works now. Summaries and Ask start when Yogurt's AI finishes downloading.": "Şimdi kayıt yapabilirsiniz. Yogurt’un yapay zekası indirildiğinde özetler ve sorular çalışacak.",
+  "Downloading AI": "Yapay zeka indiriliyor",
+  "Downloading AI · {percent}": "Yapay zeka indiriliyor · {percent}",
   "Waiting for Yogurt's AI to finish downloading ({percent}). Your answer comes as soon as it's ready.": "Yogurt’un yapay zekasının indirilmesi bekleniyor ({percent}). Hazır olur olmaz yanıtınızı alacaksınız.",
-  "Yogurt's AI is ready. Summaries and Ask now work.": "Yogurt’un yapay zekası hazır. Özetler ve sorular artık çalışıyor."
+  "Yogurt's AI is ready. Summaries and Ask now work.": "Yogurt’un yapay zekası hazır. Özetler ve sorular artık çalışıyor.",
+  "AI download stopped": "Yapay zeka indirmesi durdu",
+  "Downloading Yogurt's AI": "Yogurt’un yapay zekası indiriliyor",
+  "Downloading Yogurt's AI: {progress}": "Yogurt’un yapay zekası indiriliyor: {progress}",
+  "{done} of {total} GB": "{done} / {total} GB",
+  "{progress} · about {minutes} min left": "{progress} · yaklaşık {minutes} dk kaldı",
+  "Summaries and Ask start when it's done.": "Tamamlandığında özetler ve sorular çalışacak."
 }

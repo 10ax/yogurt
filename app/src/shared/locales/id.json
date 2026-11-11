@@ -572,9 +572,14 @@
   "Yogurt stops using these calendars.": "Yogurt berhenti menggunakan kalender ini.",
   "Calendar access": "Akses kalender",
   "Remove Yogurt’s access in System Settings.": "Hapus akses Yogurt di Pengaturan Sistem.",
-  "Setting up notes": "Menyiapkan catatan",
-  "Setting up notes · {percent}": "Menyiapkan catatan · {percent}",
-  "Recording works now. Summaries and Ask start when Yogurt's AI finishes downloading.": "Perekaman sudah bisa digunakan. Ringkasan dan pertanyaan akan tersedia setelah AI Yogurt selesai diunduh.",
+  "Downloading AI": "Mengunduh AI",
+  "Downloading AI · {percent}": "Mengunduh AI · {percent}",
   "Waiting for Yogurt's AI to finish downloading ({percent}). Your answer comes as soon as it's ready.": "Menunggu AI Yogurt selesai diunduh ({percent}). Jawaban akan muncul begitu siap.",
-  "Yogurt's AI is ready. Summaries and Ask now work.": "AI Yogurt sudah siap. Ringkasan dan pertanyaan kini bisa digunakan."
+  "Yogurt's AI is ready. Summaries and Ask now work.": "AI Yogurt sudah siap. Ringkasan dan pertanyaan kini bisa digunakan.",
+  "AI download stopped": "Unduhan AI terhenti",
+  "Downloading Yogurt's AI": "Mengunduh AI Yogurt",
+  "Downloading Yogurt's AI: {progress}": "Mengunduh AI Yogurt: {progress}",
+  "{done} of {total} GB": "{done} dari {total} GB",
+  "{progress} · about {minutes} min left": "{progress} · sekitar {minutes} mnt lagi",
+  "Summaries and Ask start when it's done.": "Ringkasan dan pertanyaan akan tersedia setelah selesai."
 }

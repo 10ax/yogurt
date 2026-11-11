@@ -12,7 +12,6 @@ import { RecordingTime } from './RecordingTime'
 import { FileText, MessageCircle, Search, Settings, SidebarToggle } from './Icons'
 import { FoldersNav } from './FoldersNav'
 import { FinishSetup } from './FinishSetup'
-import { NotesSetup } from './NotesSetup'
 
 export function Workspace({ route, meeting, folders, go, back, forward, search, collapsed, sidebarMotion, toggleSidebar, children }: {
   meeting?: Pick<MeetingView, 'id' | 'title'>
@@ -89,7 +88,6 @@ export function Workspace({ route, meeting, folders, go, back, forward, search, 
       </div>
       <div className="workspace-sidebar-footer">
         <FinishSetup collapsed={collapsed} />
-        <NotesSetup collapsed={collapsed} />
         {nav(links[2])}
         {nav(links[3])}
         <div className="workspace-brand"><span className="workspace-wordmark"><Wordmark height={25} /></span></div>

@@ -637,9 +637,14 @@
   "Yogurt stops using these calendars.": "Yogurt přestane tyto kalendáře používat.",
   "Calendar access": "Přístup ke kalendáři",
   "Remove Yogurt’s access in System Settings.": "Přístup Yogurtu odeberete v Nastavení systému.",
-  "Setting up notes": "Příprava poznámek",
-  "Setting up notes · {percent}": "Příprava poznámek · {percent}",
-  "Recording works now. Summaries and Ask start when Yogurt's AI finishes downloading.": "Nahrávání už funguje. Souhrny a dotazy začnou fungovat po stažení AI Yogurtu.",
+  "Downloading AI": "Stahování AI",
+  "Downloading AI · {percent}": "Stahování AI · {percent}",
   "Waiting for Yogurt's AI to finish downloading ({percent}). Your answer comes as soon as it's ready.": "Čeká se na stažení AI Yogurtu ({percent}). Odpověď dostanete, jakmile bude připravena.",
-  "Yogurt's AI is ready. Summaries and Ask now work.": "AI Yogurtu je připravena. Souhrny a dotazy už fungují."
+  "Yogurt's AI is ready. Summaries and Ask now work.": "AI Yogurtu je připravena. Souhrny a dotazy už fungují.",
+  "AI download stopped": "Stahování AI se zastavilo",
+  "Downloading Yogurt's AI": "Stahuje se AI Yogurtu",
+  "Downloading Yogurt's AI: {progress}": "Stahuje se AI Yogurtu: {progress}",
+  "{done} of {total} GB": "{done} z {total} GB",
+  "{progress} · about {minutes} min left": "{progress} · zbývá asi {minutes} min",
+  "Summaries and Ask start when it's done.": "Po dokončení budou fungovat souhrny a dotazy."
 }

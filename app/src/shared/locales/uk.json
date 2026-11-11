@@ -637,9 +637,14 @@
   "Yogurt stops using these calendars.": "Yogurt перестане використовувати ці календарі.",
   "Calendar access": "Доступ до календаря",
   "Remove Yogurt’s access in System Settings.": "Приберіть доступ Yogurt у Системних параметрах.",
-  "Setting up notes": "Підготовка нотаток",
-  "Setting up notes · {percent}": "Підготовка нотаток · {percent}",
-  "Recording works now. Summaries and Ask start when Yogurt's AI finishes downloading.": "Запис уже працює. Підсумки та запитання стануть доступними після завантаження ШІ Yogurt.",
+  "Downloading AI": "Завантаження ШІ",
+  "Downloading AI · {percent}": "Завантаження ШІ · {percent}",
   "Waiting for Yogurt's AI to finish downloading ({percent}). Your answer comes as soon as it's ready.": "Очікування завершення завантаження ШІ Yogurt ({percent}). Ви отримаєте відповідь, щойно він буде готовий.",
-  "Yogurt's AI is ready. Summaries and Ask now work.": "ШІ Yogurt готовий. Підсумки та запитання тепер доступні."
+  "Yogurt's AI is ready. Summaries and Ask now work.": "ШІ Yogurt готовий. Підсумки та запитання тепер доступні.",
+  "AI download stopped": "Завантаження ШІ зупинилося",
+  "Downloading Yogurt's AI": "Завантаження ШІ Yogurt",
+  "Downloading Yogurt's AI: {progress}": "Завантаження ШІ Yogurt: {progress}",
+  "{done} of {total} GB": "{done} із {total} ГБ",
+  "{progress} · about {minutes} min left": "{progress} · залишилося близько {minutes} хв",
+  "Summaries and Ask start when it's done.": "Підсумки та запитання стануть доступні після завантаження."
 }

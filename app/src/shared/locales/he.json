@@ -624,9 +624,14 @@
   "Yogurt stops using these calendars.": "Yogurt יפסיק להשתמש בלוחות השנה האלה.",
   "Calendar access": "גישה ללוח השנה",
   "Remove Yogurt’s access in System Settings.": "הסירו את הגישה של Yogurt בהגדרות המערכת.",
-  "Setting up notes": "הגדרת סיכומים",
-  "Setting up notes · {percent}": "הגדרת סיכומים · {percent}",
-  "Recording works now. Summaries and Ask start when Yogurt's AI finishes downloading.": "אפשר להקליט כבר עכשיו. סיכומים ושאלות יהיו זמינים כשהורדת הבינה המלאכותית של Yogurt תסתיים.",
+  "Downloading AI": "מורידים בינה מלאכותית",
+  "Downloading AI · {percent}": "מורידים בינה מלאכותית · {percent}",
   "Waiting for Yogurt's AI to finish downloading ({percent}). Your answer comes as soon as it's ready.": "ממתינים לסיום הורדת הבינה המלאכותית של Yogurt ({percent}). התשובה תגיע ברגע שהיא תהיה מוכנה.",
-  "Yogurt's AI is ready. Summaries and Ask now work.": "הבינה המלאכותית של Yogurt מוכנה. סיכומים ושאלות זמינים עכשיו."
+  "Yogurt's AI is ready. Summaries and Ask now work.": "הבינה המלאכותית של Yogurt מוכנה. סיכומים ושאלות זמינים עכשיו.",
+  "AI download stopped": "הורדת הבינה המלאכותית נעצרה",
+  "Downloading Yogurt's AI": "מורידים את הבינה המלאכותית של Yogurt",
+  "Downloading Yogurt's AI: {progress}": "מורידים את הבינה המלאכותית של Yogurt: {progress}",
+  "{done} of {total} GB": "{done} מתוך {total} GB",
+  "{progress} · about {minutes} min left": "{progress} · נותרו כ־{minutes} דק׳",
+  "Summaries and Ask start when it's done.": "סיכומים ושאלות יהיו זמינים בסיום."
 }

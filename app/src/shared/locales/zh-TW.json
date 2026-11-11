@@ -572,9 +572,14 @@
   "Yogurt stops using these calendars.": "Yogurt 會停止使用這些日曆。",
   "Calendar access": "日曆存取權限",
   "Remove Yogurt’s access in System Settings.": "在系統設定中移除 Yogurt 的存取權限。",
-  "Setting up notes": "正在準備筆記",
-  "Setting up notes · {percent}": "正在準備筆記 · {percent}",
-  "Recording works now. Summaries and Ask start when Yogurt's AI finishes downloading.": "現在可以錄音。Yogurt 的 AI 下載完成後，即可使用摘要和提問。",
+  "Downloading AI": "正在下載 AI",
+  "Downloading AI · {percent}": "正在下載 AI · {percent}",
   "Waiting for Yogurt's AI to finish downloading ({percent}). Your answer comes as soon as it's ready.": "正在等待 Yogurt 的 AI 下載完成（{percent}）。準備就緒後會立即回答。",
-  "Yogurt's AI is ready. Summaries and Ask now work.": "Yogurt 的 AI 已就緒。現在可以使用摘要和提問。"
+  "Yogurt's AI is ready. Summaries and Ask now work.": "Yogurt 的 AI 已就緒。現在可以使用摘要和提問。",
+  "AI download stopped": "AI 下載已停止",
+  "Downloading Yogurt's AI": "正在下載 Yogurt 的 AI",
+  "Downloading Yogurt's AI: {progress}": "正在下載 Yogurt 的 AI：{progress}",
+  "{done} of {total} GB": "{done} / {total} GB",
+  "{progress} · about {minutes} min left": "{progress} · 還需約 {minutes} 分鐘",
+  "Summaries and Ask start when it's done.": "完成後即可使用摘要和提問。"
 }

@@ -611,9 +611,14 @@
   "Yogurt stops using these calendars.": "Yogurt এই ক্যালেন্ডারগুলো ব্যবহার করা বন্ধ করে।",
   "Calendar access": "ক্যালেন্ডার অ্যাক্সেস",
   "Remove Yogurt’s access in System Settings.": "সিস্টেম সেটিংসে Yogurt-এর অ্যাক্সেস সরান।",
-  "Setting up notes": "নোট প্রস্তুত হচ্ছে",
-  "Setting up notes · {percent}": "নোট প্রস্তুত হচ্ছে · {percent}",
-  "Recording works now. Summaries and Ask start when Yogurt's AI finishes downloading.": "এখনই রেকর্ড করা যায়। Yogurt-এর AI ডাউনলোড শেষ হলে সারাংশ ও প্রশ্ন করার সুবিধা চালু হবে।",
+  "Downloading AI": "AI ডাউনলোড হচ্ছে",
+  "Downloading AI · {percent}": "AI ডাউনলোড হচ্ছে · {percent}",
   "Waiting for Yogurt's AI to finish downloading ({percent}). Your answer comes as soon as it's ready.": "Yogurt-এর AI ডাউনলোড শেষ হওয়ার অপেক্ষায় ({percent})। প্রস্তুত হলেই আপনার উত্তর আসবে।",
-  "Yogurt's AI is ready. Summaries and Ask now work.": "Yogurt-এর AI প্রস্তুত। সারাংশ ও প্রশ্ন করার সুবিধা এখন কাজ করছে।"
+  "Yogurt's AI is ready. Summaries and Ask now work.": "Yogurt-এর AI প্রস্তুত। সারাংশ ও প্রশ্ন করার সুবিধা এখন কাজ করছে।",
+  "AI download stopped": "AI ডাউনলোড বন্ধ হয়েছে",
+  "Downloading Yogurt's AI": "Yogurt-এর AI ডাউনলোড হচ্ছে",
+  "Downloading Yogurt's AI: {progress}": "Yogurt-এর AI ডাউনলোড হচ্ছে: {progress}",
+  "{done} of {total} GB": "{total} GB-এর মধ্যে {done}",
+  "{progress} · about {minutes} min left": "{progress} · প্রায় {minutes} মিনিট বাকি",
+  "Summaries and Ask start when it's done.": "শেষ হলে সারাংশ ও প্রশ্ন করার সুবিধা চালু হবে।"
 }

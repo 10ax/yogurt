@@ -49,7 +49,7 @@ export function CalendarSettings() {
         </span>
         <ChevronDown size={16} aria-hidden="true" />
       </button>
-      <div id="settings-calendar-list" className="settings-calendar-list" hidden={!open}>
+      <div id="settings-calendar-list" className="accordion" data-open={open} inert={!open || undefined}><div className="settings-calendar-list">
         <LoadingContent pending={!view} skeleton={<Loading layout="calendars" />}>{view && (view.status !== 'granted' ? <div className="settings-row">
             <p className="settings-description settings-row-copy">{view.status === 'error' ? t("Yogurt couldn't read your calendars.") : t('Allow calendar access to choose your calendars.')}</p>
             <button className="workspace-button" onClick={() => { if (view.status === 'error') reload(); else void window.yogurt.calendar.connect().then(reload) }}>{view.status === 'error' ? t('Try again') : t('Connect calendar')}</button>
@@ -71,7 +71,7 @@ export function CalendarSettings() {
           </div>
         </div>}
         {error && <p role="alert" className="settings-row text-danger">{t("Couldn't update your calendars. Try again.")}</p>}
-      </div>
+      </div></div>
     </div>
   </section>
 }

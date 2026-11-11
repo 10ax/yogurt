@@ -123,7 +123,17 @@
 .ob-guide-waiting { width:100%;font-size:12px;line-height:18px;color:var(--muted);text-align:start; }
 .ob-guide-actions { display:flex;align-items:center;justify-content:space-between;gap:12px;width:100%; }
 .ob-guide-help { width:100%;padding:12px;border:1px solid var(--line);border-radius:8px;background:var(--card);font-size:12px;line-height:18px;color:var(--muted);text-align:start; }
-.ob-guide-help summary { cursor:pointer; }
+.ob-guide-help summary { display:flex;align-items:center;justify-content:space-between;gap:8px;cursor:pointer;list-style:none; }
+.ob-guide-help summary::-webkit-details-marker { display:none; }
+/* a small chevron that turns as it opens, like Settings' Calendars */
+.ob-guide-help summary::after { content:"";flex:none;width:6px;height:6px;margin-inline-end:3px;border-inline-end:1.5px solid currentColor;border-block-end:1.5px solid currentColor;transform:rotate(-45deg);transition:transform 200ms cubic-bezier(.16,.8,.25,1); }
+.ob-guide-help summary:dir(rtl)::after { transform:rotate(45deg); }
+.ob-guide-help[open] summary::after { transform:rotate(45deg); }
+/* it opens like the other expanding sections: the height grows while the content softens in */
+.ob-guide-help { interpolate-size:allow-keywords; }
+.ob-guide-help::details-content { height:0;overflow:hidden;opacity:0;filter:blur(2px);transition:height 220ms cubic-bezier(.22,1,.36,1),opacity 140ms ease-out,filter 140ms ease-out,content-visibility 220ms allow-discrete; }
+.ob-guide-help[open]::details-content { height:auto;opacity:1;filter:blur(0);transition:height 300ms cubic-bezier(.22,1,.36,1),opacity 220ms ease-out 40ms,filter 220ms ease-out 40ms,content-visibility 300ms allow-discrete; }
+@media (prefers-reduced-motion:reduce) { .ob-guide-help::details-content,.ob-guide-help summary::after { transition:none; } }
 .ob-guide-help summary:focus-visible { outline:2px solid var(--focus);outline-offset:3px;border-radius:2px; }
 .ob-guide-help-content { display:grid;justify-items:start;gap:12px;padding-top:12px; }
 .ob-note:has(>.ob-guide-help) { gap:12px; }

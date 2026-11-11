@@ -357,9 +357,11 @@ export class Store {
     } catch (e) { this.db.exec('ROLLBACK'); throw e }
   }
   /** the meeting's lines in order; hidden echo lines left out unless asked for */
-  segments(meetingId: string, o: { hidden?: boolean } = {}): Segment[] {
-    const sql = o.hidden ? 'SELECT * FROM segments WHERE meeting_id = ? ORDER BY start_ms, id' : 'SELECT * FROM segments WHERE meeting_id = ? AND hidden = 0 ORDER BY start_ms, id'
-    return (this.db.prepare(sql).all(meetingId) as Row[]).map(toSegment)
+  /** last: only the latest lines (the recorder's hover reads a recent tail, however long the meeting runs) */
+  segments(meetingId: string, o: { hidden?: boolean; last?: number } = {}): Segment[] {
+    const where = o.hidden ? 'meeting_id = ?' : 'meeting_id = ? AND hidden = 0'
+    if (o.last) return (this.db.prepare(`SELECT * FROM (SELECT * FROM segments WHERE ${where} ORDER BY start_ms DESC, id DESC LIMIT ?) ORDER BY start_ms, id`).all(meetingId, o.last) as Row[]).map(toSegment)
+    return (this.db.prepare(`SELECT * FROM segments WHERE ${where} ORDER BY start_ms, id`).all(meetingId) as Row[]).map(toSegment)
   }
   /** Full saved history establishes legacy colours; new names append even after late attribution. */
   speakerOrder(meetingId: string, arriving?: string | null): string[] {

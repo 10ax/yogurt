@@ -154,6 +154,8 @@ export function WidgetPreview() {
   return recording ? <Preview key={view.meetingId} view={view} cardRef={card} /> : null
 }
 
+const RECENT_LINES = 80
+
 function Preview({ view, cardRef }: { view: WidgetView; cardRef: React.RefObject<HTMLDivElement | null> }) {
   const [lines, setLines] = useState<Array<Omit<Segment, 'id'>>>([])
   const [parts, setParts] = useState<Record<string, TranscriptPartial>>({})
@@ -164,23 +166,23 @@ function Preview({ view, cardRef }: { view: WidgetView; cardRef: React.RefObject
   const stick = useRef(true)
   const gliding = useRef<(() => void) | null>(null)
   const [behind, setBehind] = useState(false)
+  // Older lines leave as new ones arrive, so a long meeting stays as light as a short one; not while scrolled up to read.
+  const recentOnly = (l: Array<Omit<Segment, 'id'>>) => stick.current && l.length > RECENT_LINES ? l.slice(-RECENT_LINES) : l
   useEffect(() => {
     let alive = true
-    const refresh = () => { void window.yogurt.transcript.get(view.meetingId, { hidden: true }).then((saved) => {
+    // A hover shows recent context, read as a tail; the full transcript stays in the meeting.
+    const refresh = () => { void window.yogurt.transcript.get(view.meetingId, { hidden: true, last: RECENT_LINES }).then((recent) => {
       if (!alive) return
-      // A hover shows recent context; the full transcript stays in the meeting.
-      const recent = saved.slice(-80)
-      const known = new Map(saved.map(s => [`${s.track}:${s.startMs}`, s]))
       setLines(current => {
-        const merged = new Map(current.map(s => [`${s.track}:${s.startMs}`, known.get(`${s.track}:${s.startMs}`) ?? s]))
+        const merged = new Map(current.map(s => [`${s.track}:${s.startMs}`, s]))
         for (const s of recent) merged.set(`${s.track}:${s.startMs}`, s)
-        return [...merged.values()].filter(s => !s.hidden).sort((a, b) => a.startMs - b.startMs)
+        return recentOnly([...merged.values()].filter(s => !s.hidden).sort((a, b) => a.startMs - b.startMs))
       })
       setLoaded(true); setFailed(false)
     }, () => { if (alive) { setLoaded(true); setFailed(true) } }) }
     const offSegment = window.yogurt.transcript.onSegment((s) => {
       if (s.meetingId !== view.meetingId) return
-      setLines(current => [...current.filter(l => l.track !== s.track || l.startMs !== s.startMs), s].filter(l => !l.hidden).sort((a, b) => a.startMs - b.startMs))
+      setLines(current => recentOnly([...current.filter(l => l.track !== s.track || l.startMs !== s.startMs), s].filter(l => !l.hidden).sort((a, b) => a.startMs - b.startMs)))
       setParts(current => {
         const had = current[s.track]
         if (!had) return current

@@ -96,8 +96,8 @@ export type YogurtApi = {
   }
   /** the words heard in a meeting, live */
   transcript: {
-    /** the meeting's lines; hidden: the echo lines hidden after the meeting too (each marked hidden) */
-    get(meetingId: string, o?: { hidden?: boolean }): Promise<Segment[]>
+    /** the meeting's lines; hidden: the echo lines hidden after the meeting too (each marked hidden); last: only the latest lines */
+    get(meetingId: string, o?: { hidden?: boolean; last?: number }): Promise<Segment[]>
     /** brings hidden lines back: the ones given, or all of the meeting's */
     restore(meetingId: string, ids?: number[]): Promise<void>
     /** each line as it is saved (a me line a couple of seconds after it was said); returns the way to stop listening */

@@ -47,6 +47,15 @@ describe('store', () => {
     expect(segs[0].id).toBeTypeOf('number')
   })
 
+  it('reads only the latest lines when asked for a tail, still in time order', () => {
+    const s = fresh()
+    const m = s.createMeeting({ ...base, startedAt: 1 })
+    s.addSegments(Array.from({ length: 200 }, (_, i) => ({ meetingId: m.id, track: i % 2 ? 'them' as const : 'me' as const, startMs: i * 1000, endMs: i * 1000 + 900, text: `line ${i}`, speaker: null, hidden: i === 198 })))
+    expect(s.segments(m.id, { last: 3 }).map(x => x.text)).toEqual(['line 196', 'line 197', 'line 199'])
+    expect(s.segments(m.id, { hidden: true, last: 3 }).map(x => x.text)).toEqual(['line 197', 'line 198', 'line 199'])
+    expect(s.segments(m.id)).toHaveLength(199)
+  })
+
   it('sets the speaker of given lines and leaves the others alone', () => {
     const s = fresh()
     const m = s.createMeeting({ ...base, startedAt: 1 })

@@ -513,7 +513,9 @@ app.whenReady().then(() => {
   ipcMain.handle('transcript:get', (_e, id: unknown, o: unknown) => {
     if (!isId(id)) return []
     const order = store.speakerOrder(id)
-    return store.segments(id, { hidden: !!(o && typeof o === 'object' && (o as { hidden?: unknown }).hidden === true) })
+    const opts = (o && typeof o === 'object' ? o : {}) as { hidden?: unknown; last?: unknown }
+    const last = Number.isInteger(opts.last) && (opts.last as number) > 0 ? Math.min(opts.last as number, 1000) : undefined
+    return store.segments(id, { hidden: opts.hidden === true, last })
       .map(s => ({ ...s, speakerColor: speakerColor(s.track, s.speaker, order) }))
   })
   // Replay through the live channel so a stale async reply cannot overtake newer words or finals.

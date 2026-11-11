@@ -561,7 +561,7 @@ input::selection, textarea::selection, .note-prose ::selection { background: var
 
 .chat-icon { display:grid;place-items:center;width:28px;height:28px;flex-shrink:0;border-radius:5px;color:var(--muted); }
 .chat-icon:hover,.chat-icon[aria-expanded=true] { background:var(--control);color:var(--ink); }
-.chat-latest { position:absolute;z-index:1;bottom:0;inset-inline-start:calc(50% - 15px);display:grid;place-items:center;width:30px;height:30px;border:1px solid var(--line);border-radius:50%;background:var(--float);color:var(--muted);box-shadow:var(--shadow-soft); }
+.chat-latest { position:absolute;z-index:1;bottom:8px;inset-inline-start:calc(50% - 15px);display:grid;place-items:center;width:30px;height:30px;border:1px solid var(--line);border-radius:50%;background:var(--float);color:var(--muted);box-shadow:var(--shadow-soft); }
 .chat-answer-actions { display:flex;align-items:center;gap:8px;margin-top:6px; }
 .chat-copy-action { display:inline-flex;align-items:center;gap:5px;padding:4px 5px;margin-inline-start:-5px;min-height:28px;border-radius:5px;font-size:11px;color:var(--muted); }
 .chat-copy-action:hover { background:var(--control);color:var(--ink); }

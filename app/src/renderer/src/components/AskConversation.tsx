@@ -134,8 +134,11 @@ export function AskConversation({ id, initial, home = false, panel = false, reco
     catch { focusAfterRemove.current = false; setError(true) }
     finally { setChanging(false) }
   }
+  // Sending from the box (Enter, the send button or a starter) keeps the person in it; the button turns into Stop and starters go. A disabled field would drop focus, so it is read-only while saving.
+  const keepTyping = () => { const from = document.activeElement; if (from === document.body || from?.closest('.ask-box, .ask-starters')) input.current?.focus({ preventScroll: true }) }
   const send = (q: string) => {
     if (!q.trim() || busy) return
+    keepTyping()
     stuck.current = true; setBehind(false); setSending(true); setError(false); setMention(undefined)
     void window.yogurt.conversations.ask(id, q).then(made => {
       if (!made) throw new Error('Question was not saved')
@@ -186,7 +189,7 @@ export function AskConversation({ id, initial, home = false, panel = false, reco
         <AskContext chips={chips} disabled={busy} onRemove={remove} />
         <div className="ask-field">
         <textarea ref={input} id={panel ? 'meeting-question' : 'library-question'} data-testid={`${prefix}-input`} rows={1} maxLength={4000}
-          placeholder={panel ? t('Ask anything') : t('Ask about your meetings')} aria-label={panel ? t('Ask anything') : t('Ask about your meetings')} value={text} disabled={!chat || sending || changing}
+          placeholder={panel ? t('Ask anything') : t('Ask about your meetings')} aria-label={panel ? t('Ask anything') : t('Ask about your meetings')} value={text} disabled={!chat} readOnly={sending || changing}
           role="combobox" aria-autocomplete="list" aria-expanded={!!mention} aria-controls={mention ? `${prefix}-contexts` : undefined}
           aria-activedescendant={mention && targets[selected] ? `${prefix}-context-${selected}` : undefined}
           onChange={e => { saveText(e.target.value); detectMention(e.target.value, e.target.selectionStart) }}
@@ -199,7 +202,7 @@ export function AskConversation({ id, initial, home = false, panel = false, reco
             saveText(value); detectMention(value, caret + token.length)
             input.current?.focus(); requestAnimationFrame(() => input.current?.setSelectionRange(caret + token.length, caret + token.length))
           }}><AtSign size={16} aria-hidden="true" /></button>
-          {answering ? <button type="button" data-testid={`${prefix}-stop`} className="ask-toolbar-button ask-send" aria-label={chat?.waitsForModel ? t('Cancel question') : t('Stop')} title={chat?.waitsForModel ? t('Cancel question') : t('Stop')} onClick={() => window.yogurt.conversations.stop(id)}><Square size={10} fill="currentColor" /></button>
+          {answering ? <button type="button" data-testid={`${prefix}-stop`} className="ask-toolbar-button ask-send" aria-label={chat?.waitsForModel ? t('Cancel question') : t('Stop')} title={chat?.waitsForModel ? t('Cancel question') : t('Stop')} onClick={() => { keepTyping(); window.yogurt.conversations.stop(id) }}><Square size={10} fill="currentColor" /></button>
             : <button type="submit" data-testid={`${prefix}-send`} className="ask-toolbar-button ask-send" disabled={busy || !text.trim()} aria-label={t('Ask')}><ArrowUp size={16} /></button>}
         </div>
         </div>

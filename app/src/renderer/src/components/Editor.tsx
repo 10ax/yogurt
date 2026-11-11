@@ -1,4 +1,4 @@
-import { useEffect, useLayoutEffect, useRef } from 'react'
+import { useEffect, useId, useLayoutEffect, useRef } from 'react'
 import { EditorContent, useEditor } from '@tiptap/react'
 import { Mark } from '@tiptap/core'
 import StarterKit from '@tiptap/starter-kit'
@@ -6,6 +6,8 @@ import Placeholder from '@tiptap/extension-placeholder'
 import { docToMd, mdToDoc } from '../../../shared/markdown'
 import { citationTargetIndex } from '../../../shared/citations'
 import { EditorToolbar } from './EditorToolbar'
+import { inkKey, StreamingInk } from '../streamingInk'
+import { useReducedMotion } from '../motion'
 
 /** The person's own words inside the enhanced notes: shown darker. Typing next to them is not theirs-marked. */
 const Mine = Mark.create({
@@ -32,6 +34,8 @@ export function Editor(p: {
   testId: string
   className?: string
 }) {
+  const inkId = useId()
+  const reduced = useReducedMotion()
   const onChange = useRef(p.onChange)
   const onBlur = useRef(p.onBlur)
   onChange.current = p.onChange
@@ -49,6 +53,7 @@ export function Editor(p: {
       }),
       Placeholder.configure({ placeholder: p.placeholder ?? '' }),
       Mine,
+      StreamingInk,
     ],
     content: mdToDoc(p.markdown, { streaming: p.streaming }),
     editable: p.editable ?? true,
@@ -71,9 +76,12 @@ export function Editor(p: {
   useLayoutEffect(() => {
     if (!editor || editor.isDestroyed) return
     last.current = p.markdown
-    if (docToMd(editor.getJSON() as Parameters<typeof docToMd>[0]) === p.markdown && !p.streaming) return
-    editor.commands.setContent(mdToDoc(p.markdown, { streaming: p.streaming }), { emitUpdate: false })
-  }, [editor, p.markdown, p.streaming])
+    const update = editor.chain().setMeta(inkKey, { live: !!p.streaming, reduced })
+    if (docToMd(editor.getJSON() as Parameters<typeof docToMd>[0]) !== p.markdown || p.streaming) {
+      update.setContent(mdToDoc(p.markdown, { streaming: p.streaming }), { emitUpdate: false })
+    }
+    update.run()
+  }, [editor, p.markdown, p.streaming, reduced])
 
   useEffect(() => {
     if (!editor || editor.isDestroyed || !p.focus?.match) return
@@ -95,7 +103,16 @@ export function Editor(p: {
 
   useEffect(() => { if (editor && !editor.isDestroyed) editor.setEditable(p.editable ?? true, false) }, [editor, p.editable])
 
-  return <><EditorContent editor={editor} />
+  return <><div className="summary-surface" data-streaming={!!p.streaming}>
+    <svg className="summary-ink-layer" aria-hidden="true">
+      <defs><filter id={inkId} x="-30%" y="-80%" width="160%" height="260%" colorInterpolationFilters="sRGB">
+        <feGaussianBlur stdDeviation=".9" /><feColorMatrix values="1 0 0 0 0 0 1 0 0 0 0 0 1 0 0 0 0 0 18 -8.5" />
+      </filter></defs>
+      <g className="summary-wash" />
+    </svg>
+    <EditorContent editor={editor} />
+    <i className="summary-heading-bar" aria-hidden="true" hidden />
+  </div>
     {editor && p.editable !== false && !p.streaming && <EditorToolbar editor={editor} />}
   </>
 }

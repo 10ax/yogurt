@@ -314,6 +314,26 @@ html.widget { --pill:#232326;--pill-ink:#F7F7FA;--accent:#B780FF;--pill-accent:v
 @media (prefers-reduced-motion:reduce) { .swap>*,.swap-in,.follow-arrow { transition:none;animation:none; } }
 /* before the first word the summary is one empty paragraph, whose placeholder line break would push the dot down a line */
 .streaming .note-prose > :last-child > br.ProseMirror-trailingBreak:only-child { display: none; }
+.summary-surface, .summary-waiting { position: relative; }
+.summary-surface[data-streaming=true] { isolation: isolate; }
+.summary-surface[data-streaming=true] .note-prose { position: relative; z-index: 1; }
+.summary-ink-layer { position: absolute; inset: 0; width: 100%; height: 100%; overflow: hidden; pointer-events: none; fill: var(--accent); }
+.summary-surface:not([data-streaming=true]) > .summary-ink-layer { display: none; }
+.summary-ink { color: color-mix(in srgb, var(--accent) var(--ink-fresh, 0%), var(--ink-target)); }
+.enhanced { --ink-target: var(--written); }
+.enhanced :is(h1,h2,h3) { --ink-target: var(--heading); }
+.enhanced :is(strong,.mine) { --ink-target: var(--ink); }
+.enhanced a { --ink-target: var(--accent); }
+.summary-waiting { min-height: 22px; }
+.summary-heading-bar { position: absolute; inset-inline-start: 0; top: 5px; width: 142px; max-width: 100%; height: 12px; border-radius: 4px; background: linear-gradient(90deg, var(--line) 0%, color-mix(in srgb, var(--line) 40%, var(--card)) 50%, var(--line) 100%); background-size: 200% 100%; pointer-events: none; transform-origin: left center; }
+/* the same soft shimmer as the app's other skeletons */
+.summary-waiting > .summary-heading-bar, .summary-surface[data-waiting=true] > .summary-heading-bar { animation: shimmer 1.6s ease-in-out infinite; }
+.summary-surface[data-waiting=true] .note-prose::after, .summary-surface[data-waiting=true] .note-prose *::after { content: none; }
+@media (prefers-reduced-motion: reduce) {
+  .summary-heading-bar { animation: none !important; }
+  .summary-ink { color: inherit; }
+  .summary-ink-layer { display: none; }
+}
 .chat-answer > * + * { margin-top: 0.45em; }
 @media (prefers-reduced-motion: reduce) { .chat-in, .fw { animation: none; transition: none; } .stream-caret::after, .stream-caret *::after, .streaming .note-prose::after, .streaming .note-prose *::after { animation: none; } }
 

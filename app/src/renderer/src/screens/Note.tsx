@@ -499,11 +499,10 @@ function Enhanced({ notes, disabled, onChange, onBlur, onRetry, focus }: { focus
       <NotesModelWait downloading={(percent) => (
         <p data-testid="note-enhanced-model-download" role="status" className="text-[15px] text-muted">{percent ? t('Yogurt is still downloading its AI model. Your notes will be ready in a few minutes. ({percent})', { percent }) : t('Yogurt is still downloading its AI model. Your notes will be ready in a few minutes.')}</p>
       )}>
-        <div data-testid="note-enhanced-waiting" aria-live="polite">
-          <p className="writing-label mb-5 text-[15px] text-muted">{status === 'writing' && notes.part ? t('Reading a long meeting, part {part} of {of}…', { part: notes.part.part, of: notes.part.of }) : t('Generating notes…')}</p>
-          <div className="flex flex-col gap-3" aria-hidden="true">
-            {[42, 88, 76, 64, 0, 36, 82, 70].map((w, i) => (w ? <span key={i} className="skeleton h-3 rounded-md" style={{ width: `${w}%`, animationDelay: `${i * 90}ms` }} /> : <span key={i} className="h-3" />))}
-          </div>
+        <div data-testid="note-enhanced-waiting" className="summary-waiting" aria-live="polite">
+          <i className="summary-heading-bar" aria-hidden="true" />
+          {/* the shimmering bar says it's working; words only for a wait worth explaining (a long meeting read in parts) */}
+          <p className={status === 'writing' && notes.part ? 'pt-9 text-[15px] text-muted' : 'sr-only'}>{status === 'writing' && notes.part ? t('Reading a long meeting, part {part} of {of}…', { part: notes.part.part, of: notes.part.of }) : t('Generating notes…')}</p>
         </div>
       </NotesModelWait>
     )

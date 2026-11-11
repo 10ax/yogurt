@@ -2,20 +2,25 @@ import { followGlide } from './motion'
 
 /** Shared by growing answers and summaries; an idle or hidden pane schedules no work. */
 export function attachFollowLatest(el: HTMLElement, body: HTMLElement, stuck: { current: boolean }, behind: (value: boolean) => void) {
-  let glide: ReturnType<typeof followGlide> | undefined
+  let glide: ReturnType<typeof followGlide> | undefined, last = el.scrollTop
   const stop = () => { glide?.stop(); glide = undefined }
   const report = () => behind(el.scrollHeight - el.scrollTop - el.clientHeight >= 24)
   const follow = () => {
     if (document.hidden || !el.clientHeight) return
     if (stuck.current) {
       if (glide?.active) glide.to(Math.max(0, el.scrollHeight - el.clientHeight))
-      else el.scrollTop = el.scrollHeight
+      else { el.scrollTop = el.scrollHeight; last = el.scrollTop }
     }
     report()
   }
+  // The scroll event lands a frame after we set scrollTop, by which time the body may have grown again,
+  // so only a move up can stop following and only reaching the bottom can resume it.
   const scroll = () => {
+    const up = el.scrollTop < last
+    last = el.scrollTop
     if (glide?.active) return
-    stuck.current = el.scrollHeight - el.scrollTop - el.clientHeight < 24
+    const near = el.scrollHeight - el.scrollTop - el.clientHeight < 24
+    if (up || near) stuck.current = near
     report()
   }
   const touch = () => { stop() }

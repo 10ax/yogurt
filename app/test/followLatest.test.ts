@@ -83,3 +83,10 @@ it('does not move a collapsed pane', () => {
   expect(pane.scrollTop).toBe(800)
   follow.dispose()
 })
+it('keeps following when the body grows again before the scroll from the last follow lands', () => {
+  const { pane, state, follow } = setup()
+  pane.scrollHeight = 1400; Resize.current.change(); pane.scrollHeight = 2000
+  pane.dispatchEvent(new Event('scroll')); expect(state.current).toBe(true)
+  Resize.current.change(); expect(pane.scrollTop).toBe(1600)
+  follow.dispose()
+})

@@ -1,6 +1,6 @@
 {
-  "appCommit": "7a0d989d3fc5a3ff958eed911a480afe2ca0671f",
-  "generatedAt": "2026-11-10T22:53:47.623Z",
+  "appCommit": "18dc4a124dc6b388931593eaf5f65dcada21af98",
+  "generatedAt": "2026-11-11T02:08:30.399Z",
   "source": "app/src/renderer",
   "fixture": "site/renderer/bridge.mjs",
   "nativeCode": false,
@@ -45,6 +45,7 @@
     "app/src/renderer/src/components/ShareMenu.tsx",
     "app/src/renderer/src/components/SourceCitation.tsx",
     "app/src/renderer/src/components/SpokenMenu.tsx",
+    "app/src/renderer/src/components/Swap.tsx",
     "app/src/renderer/src/components/ThinkingDots.tsx",
     "app/src/renderer/src/components/Transcript.tsx",
     "app/src/renderer/src/components/TrashToast.tsx",
@@ -58,6 +59,7 @@
     "app/src/renderer/src/noteAutosave.ts",
     "app/src/renderer/src/noteMerge.ts",
     "app/src/renderer/src/screens/Note.tsx",
+    "app/src/renderer/src/streamingInk.ts",
     "app/src/renderer/src/styles.css",
     "app/src/renderer/src/useLoadingState.ts",
     "app/src/renderer/src/useNotePopover.ts",
@@ -75,6 +77,7 @@
     "app/src/shared/follow.ts",
     "app/src/shared/highlight.ts",
     "app/src/shared/i18n.ts",
+    "app/src/shared/inkArrival.ts",
     "app/src/shared/liveWords.ts",
     "app/src/shared/locales/en.json",
     "app/src/shared/logo.ts",
@@ -100,15 +103,15 @@
       "sha256": "45e4eb19dcb4fc8ce3825d6cfeeb1d8f8d7a16e09ee4583a005518c880f028e4"
     },
     "renderer.css": {
-      "bytes": 235403,
-      "gzipBytes": 81256,
-      "sha256": "8aaabdeff51dc7e14d4b5c77ab71c19188d41a58148e7ba94d1797cde20be26f"
+      "bytes": 239245,
+      "gzipBytes": 82058,
+      "sha256": "bb6027cc1c32b4d16425c9450af71b8a15e62a1e30dd1c6d23e81cbc5958cdc7"
     },
     "renderer.js": {
-      "bytes": 1229939,
-      "gzipBytes": 389411,
-      "sha256": "dc9f4f81fa4228f89f5c32e634e185c2dd0daed3071846d6fe83816ddf78c487"
+      "bytes": 1237342,
+      "gzipBytes": 392024,
+      "sha256": "42a6a914961c5e059af69a1855dcf4e4e524db432b51e8bf0ba40079f3af3a15"
     }
   },
-  "totalGzipBytes": 471031
+  "totalGzipBytes": 474446
 }

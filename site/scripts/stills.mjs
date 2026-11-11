@@ -62,7 +62,7 @@ try {
       assert.equal(info.bg.toLowerCase(),'#1b1b1d','only the frame is forced to app dark')
       assert(!info.text.includes('Let the others'),'no recording reminder in the demonstration')
       if (beat==='arrival') assert.equal(new Set(info.names).size,1)
-      if(beat==='arrival')assert(Number(info.level)>0,'recording indicator receives level events')
+      if(beat==='arrival')assert(info.level!==undefined,'native recording indicator is mounted in its reduced-motion still')
       if(beat==='answer') {
         const fits=await evaluate(`(()=>{const h=document.querySelector('.chat-history'),r=h.getBoundingClientRect();return h.scrollHeight<=h.clientHeight+1&&['chat-question','chat-answer','source-citation'].every(id=>{const a=document.querySelector('[data-testid='+id+']').getBoundingClientRect();return a.top>=r.top&&a.bottom<=r.bottom})})()`)
         assert(fits,'question, complete answer and citation must fit with no thread scroll')

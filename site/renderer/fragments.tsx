@@ -7,10 +7,10 @@ import { Logo } from '@app/components/Logo'
 import { chat, fragment, fragmentChat, fragmentTranscript, meeting } from './bridge.mjs'
 import { question, answer } from './timeline.mjs'
 import { fragmentLines, fragmentTranscriptAt } from './fragment-transcript.mjs'
+import { finalPlan, fragmentSummaryAt, summarySettled } from './fragment-summary.mjs'
 
 const noop = () => {}
 const animated = new URLSearchParams(location.search).has('animate')
-const finalPlan = '## Tuesday launch\n- Publish the page Tuesday.\n- Announce it Wednesday morning.\n## Next steps\n- **Kara:** Release notes by Friday.\n- **You:** Send Ray the asset list by Friday.'
 // Summary and Ask keep their complete layout; Transcript reserves three native turn slots.
 if(fragment==='transcript')fragmentTranscript(fragmentLines,{track:'them',startMs:0,text:'',words:[]})
 // Keep the completed answer mounted for word reveals; the native waiting row overlays its reserved slot.
@@ -34,9 +34,6 @@ function reveals(root:HTMLElement) {
       node.replaceWith(replacement)
     }
   }
-  if(fragment==='summary')root.querySelectorAll<HTMLElement>('.note-prose h2,.note-prose li').forEach((block,i)=>{
-    const start=[.95,1.55,2.6,3.6,4,5.3][i];fade(block,start);words(block,start,i<3?.16:.14)
-  })
   if(fragment==='ask'){
     const prompt=root.querySelector<HTMLElement>('.ask-question')!;fade(prompt,1);words(prompt,1,.045)
     fade(root.querySelector('.fragment-byline'),2.05)
@@ -47,6 +44,7 @@ function reveals(root:HTMLElement) {
   return items
 }
 export function FragmentScene() {
+  const [summaryTime,setSummaryTime]=useState(animated?0:99)
   const [turn,setTurn]=useState<HTMLElement|null>(null)
   const [transcriptRevision,setTranscriptRevision]=useState(0)
   useEffect(()=>{
@@ -54,6 +52,7 @@ export function FragmentScene() {
     const listener=(event:MessageEvent)=>{
       if(event.source!==parent||event.origin!==location.origin||event.data?.type!=='yogurt-fragment-time'||!Number.isFinite(event.data.seconds))return
       const t=Math.max(0,Math.min(99,event.data.seconds))
+      if(fragment==='summary')setSummaryTime(t)
       if(fragment==='transcript'){
         const scene=fragmentTranscriptAt(t),signature=JSON.stringify(scene)
         if(signature!==transcriptSignature){transcriptSignature=signature;fragmentTranscript(scene.lines,scene.partial)}
@@ -99,7 +98,10 @@ export function FragmentScene() {
   },[])
   return <div className={`marketing-fragment fragment-${fragment}`}>
     {fragment==='transcript'&&<Transcript key={transcriptRevision} id={meeting.id} recording inline />}
-    {fragment==='summary'&&<div><Editor markdown={finalPlan} streaming={false} editable={false} label="Tuesday launch" testId="fragment-plan" className="enhanced" /></div>}
+    {fragment==='summary'&&<div className="fragment-plan">
+      <div className="fragment-plan-size" aria-hidden="true"><Editor markdown={finalPlan} editable={false} label="Tuesday launch" testId="fragment-plan-size" className="enhanced" /></div>
+      <div className="fragment-plan-live"><Editor markdown={fragmentSummaryAt(summaryTime)} streaming={animated&&summaryTime<summarySettled} editable={false} label="Tuesday launch" testId="fragment-plan" className="enhanced" /></div>
+    </div>}
     {fragment==='ask'&&<><AskConversation id={chat.id} initial={chat} panel onSelect={noop} onSource={noop} onDeleted={noop}/>
       {turn&&createPortal(<div className="fragment-byline"><Logo size={20}/><span>Yogurt</span></div>,turn)}</>}
   </div>

@@ -66,3 +66,8 @@ html[data-fragment-playing=false] *{animation-play-state:paused!important}
 
 /* Demo speakers are known up front; reveal their native labels with the live turn. */
 .marketing-window [data-testid=transcript-who],.fragment-transcript [data-testid=transcript-who]{visibility:visible;animation:none}
+
+/* Reserve the finished document while its real editor streams in the same slot. */
+.fragment-plan{position:relative}
+.fragment-plan-size{visibility:hidden;pointer-events:none}
+.fragment-plan-live{position:absolute;inset:0}

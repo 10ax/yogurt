@@ -64,3 +64,17 @@ for(const [time,index] of [[.8,0],[2.65,1],[4.05,2]]){
 }
 assert.deepEqual(fragmentTranscriptAt(99).lines,fragmentLines)
 console.log('Fragment live speaker metadata and final still passed.')
+
+const {finalPlan,fragmentSummaryAt,summarySettled}=await import('./fragment-summary.mjs')
+assert.equal(fragmentSummaryAt(0),'')
+assert.equal(fragmentSummaryAt(.95),'## Tuesday')
+assert.equal(fragmentSummaryAt(99),finalPlan)
+assert.equal(fragmentSummaryAt(summarySettled),finalPlan)
+let previous=''
+for(let t=0;t<7.2;t+=1/60){
+  const next=fragmentSummaryAt(t)
+  assert(next.startsWith(previous),'Summary only appends words, including on replay')
+  previous=next
+}
+assert(summarySettled<7.2,'ink settles before the cycle hands off')
+console.log('Native Summary stream cadence and completed still passed.')

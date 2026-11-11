@@ -159,7 +159,7 @@ export function setTime(seconds, bands = [.4, .65, .5]) {
   events.partial.emit({ meetingId: meeting.id, track: 'them', startMs: s.partialStart, text: s.partial, words: liveWords })
   Object.assign(notes, { status: s.status, enhanced: s.status === 'done' ? summary : null, draft: s.draft })
   if (JSON.stringify(notes) !== notesSignature) { notesSignature = JSON.stringify(notes); events.notes.emit(notes) }
-  chat.turns = time < timing.send || time >= timing.resume ? [] : [{id:1,question,answer:s.answer+(time>=timing.answered?'[1]':''),status:time < timing.answered ? 'answering' : 'done',step:{kind:'reading',title:meeting.title},sources}]
+  chat.turns = time < timing.send || time >= timing.resume ? [] : [{id:1,question,answer:s.answer+(time>=timing.answered?'[1]':''),status:time < timing.answered ? 'answering' : 'done',step:time<timing.answer?{kind:'loading'}:{kind:'reading',title:meeting.title},sources}]
   chat.firstChips = chat.turns.length ? context : null
   if (JSON.stringify(chat) !== chatSignature) { chatSignature = JSON.stringify(chat); events.chat.emit(chat) }
   if (time < 1.5 && still === null) bands = [.45 + .2*Math.sin(time*9), .55 + .18*Math.sin(time*13)]

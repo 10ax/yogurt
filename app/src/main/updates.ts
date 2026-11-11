@@ -49,6 +49,8 @@ export async function hookUpdates(d: { file: string; available: boolean; recordi
   ipcMain.handle('updates:set', (_e, on: unknown) => {
     if (typeof on !== 'boolean') return status()
     updateSettings(d.file, { autoUpdate: on ? undefined : false })
+    // off means off: a version that already downloaded doesn't install on quit either (Restart Yogurt still can)
+    if (updater) updater.autoInstallOnAppQuit = on
     if (on) check()
     return status()
   })
@@ -66,7 +68,7 @@ export async function hookUpdates(d: { file: string; available: boolean; recordi
   // loaded here: it reads Electron's app as it loads, which tests don't have
   updater = (await import('electron-updater')).default.autoUpdater
   updater.autoDownload = true
-  updater.autoInstallOnAppQuit = true
+  updater.autoInstallOnAppQuit = autoUpdateOn(loadSettings(d.file))
   updater.logger = null
   updater.on('checking-for-update', () => set('checking'))
   updater.on('update-not-available', () => set('latest'))

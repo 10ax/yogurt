@@ -72,7 +72,7 @@ for (const platform of platforms) {
   })
 }
 
-test('a Mac waiting for the notes model says it is still downloading, without how far', async () => {
+test('a Mac waiting for the notes model says it is still downloading, and how far', async () => {
   const app = await electron.launch({ args: [main], env: { ...process.env, YOGURT_FAKE: '1', YOGURT_USER_DATA: mkdtempSync(join(tmpdir(), 'yogurt-e2e-')), YOGURT_FAKE_NOTES_MODEL_MS: '16000' } })
   try {
     const page = await app.firstWindow()
@@ -80,7 +80,7 @@ test('a Mac waiting for the notes model says it is still downloading, without ho
     await record(page)
     await page.getByTestId('note-stop').click()
     const wait = page.getByTestId('note-enhanced-model-download')
-    await expect(wait).toHaveText('Yogurt is still downloading its AI model. Your notes will be ready in a few minutes.')
+    await expect(wait).toHaveText(/^Yogurt is still downloading its AI model\. Your notes will be ready in a few minutes\. \(\d+%\)$/)
     await expect(page.getByText('Generating notes')).toHaveCount(0)
   } finally { await app.close() }
 })

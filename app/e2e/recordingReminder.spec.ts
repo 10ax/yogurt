@@ -25,11 +25,9 @@ for (const theme of ['light', 'dark'] as const) test(`standard recording reminde
     await expect(toast).toHaveClass(/app-toast/)
     await expect(page.locator('p.recording-reminder')).toHaveCount(0)
     await expect(page.getByTestId('transcript-consent')).toHaveCount(0)
-    const bar = toast.locator('[data-animate-ui-toast-progress-bar]')
-    await expect(bar).toBeVisible()
-    expect(await bar.evaluate(el => el.getAnimations()[0].effect!.getTiming().duration)).toBe(4000)
+    // no countdown bar; hovering holds it
+    await expect(toast.locator('[data-animate-ui-toast-progress-bar]')).toHaveCount(0)
     await toast.hover()
-    await expect.poll(() => bar.evaluate(el => el.getAnimations()[0].playState)).toBe('paused')
     await page.screenshot({ path: info.outputPath(`reminder-${theme}-closed.png`) })
     await page.getByTestId('chat-open').click()
     await expect.poll(async () => {
@@ -42,13 +40,17 @@ for (const theme of ['light', 'dark'] as const) test(`standard recording reminde
     await page.keyboard.press('F6')
     await toast.getByRole('button', { name: 'Close', exact: true }).focus()
     await page.mouse.move(0, 0)
-    await expect.poll(() => bar.evaluate(el => el.getAnimations()[0].playState)).toBe('paused')
+    // the 4 s timer holds: past it, the reminder is still there
+    await page.waitForTimeout(4500)
+    await expect(toast).toBeVisible()
     await page.getByTestId('chat-close').click()
     await page.evaluate(() => {
       Object.defineProperty(document, 'hasFocus', { configurable: true, value: () => false })
       window.dispatchEvent(new Event('blur'))
     })
-    await expect.poll(() => bar.evaluate(el => el.getAnimations()[0].playState)).toBe('paused')
+    // the 4 s timer holds: past it, the reminder is still there
+    await page.waitForTimeout(4500)
+    await expect(toast).toBeVisible()
     await page.evaluate(() => {
       Object.defineProperty(document, 'hasFocus', { configurable: true, value: () => true })
       window.dispatchEvent(new Event('focus'))

@@ -21,7 +21,7 @@ test('glass is limited to chrome, with solid reading surfaces and a reduced-tran
         { name: 'prefers-contrast', value: 'no-preference' },
       ] })
       const chrome = await page.locator('.workspace').evaluate(el => ({ background: getComputedStyle(el).backgroundColor, opacity: getComputedStyle(el).opacity }))
-      expect(chrome.background).toContain('0.6')
+      expect(chrome.background).toContain('0.85')
       expect(chrome.opacity).toBe('1')
       for (const selector of ['html', 'body', '#root', '[data-testid=app-shell]']) {
         expect(await page.locator(selector).evaluate(el => getComputedStyle(el).backgroundColor)).toBe('rgba(0, 0, 0, 0)')

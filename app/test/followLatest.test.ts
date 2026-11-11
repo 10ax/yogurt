@@ -41,6 +41,13 @@ it('shares resize-driven following, the 24px threshold and reading-earlier prese
   expect(followGlide).not.toHaveBeenCalled()
   follow.dispose()
 })
+it('wheeling up stops following at once, so a resize before the scroll lands cannot pull the pane back down', () => {
+  const { pane, state, behind, follow } = setup()
+  pane.dispatchEvent(Object.assign(new Event('wheel'), { deltaY: -400 })); expect(state.current).toBe(false)
+  pane.scrollTop = 100; pane.scrollHeight = 1400; Resize.current.change(); expect(pane.scrollTop).toBe(100)
+  expect(behind).toHaveBeenLastCalledWith(true)
+  follow.dispose()
+})
 it('keeps a remembered reading position rather than jumping on attachment', () => {
   const { pane, follow } = setup(false)
   expect(pane.scrollTop).toBe(0)

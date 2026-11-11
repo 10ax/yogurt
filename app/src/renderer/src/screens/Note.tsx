@@ -378,7 +378,7 @@ export function Note({ id, onTitleChange, at, folderSuggestion, onSource }: {
         </header>
         <div ref={setChatAnchor} className="note-reading-area">
           <div ref={panels} className="note-panels">
-          <NoteReadingPane active={primary === 'notes'} summary={shown === 'enhanced'} generating={shown === 'enhanced' && (notes.status === 'waiting' || notes.status === 'writing')} scroll={readingScroll}>
+          <NoteReadingPane active={primary === 'notes'} summary={shown === 'enhanced'} generating={shown === 'enhanced' && (notes.status === 'waiting' || notes.status === 'writing')} writing={shown === 'enhanced' && notes.status === 'writing' && !!notes.draft} scroll={readingScroll}>
                 {shown === 'mine' ? <Editor
                   focus={primary === 'notes' && at?.ms === null ? at : undefined} testId="note-mine" label={t('My notes')} className="min-h-[40vh]" markdown={notes.mine} placeholder={t('Write notes here. Yogurt fills in the rest after the meeting.')}
                   onChange={(md) => { typing.current = true; const next = { ...current.current!, mine: md }; current.current = next; setNotes(next); mineSave.change(md) }}

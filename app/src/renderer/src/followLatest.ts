@@ -19,6 +19,8 @@ export function attachFollowLatest(el: HTMLElement, body: HTMLElement, stuck: { 
     report()
   }
   const touch = () => { stop() }
+  // Wheeling up is a decision to read: stop following before the next resize can pull the pane back down.
+  const wheel = (event: Event) => { stop(); if ((event as WheelEvent).deltaY < 0) { stuck.current = false; report() } }
   const key = (event: KeyboardEvent) => {
     if (['ArrowUp', 'ArrowDown', 'PageUp', 'PageDown', 'Home', 'End', ' '].includes(event.key)) stop()
   }
@@ -26,7 +28,8 @@ export function attachFollowLatest(el: HTMLElement, body: HTMLElement, stuck: { 
   const observer = new ResizeObserver(follow)
   observer.observe(body); observer.observe(el)
   el.addEventListener('scroll', scroll, { passive: true })
-  for (const event of ['wheel', 'touchstart', 'pointerdown']) el.addEventListener(event, touch, { passive: true })
+  el.addEventListener('wheel', wheel, { passive: true })
+  for (const event of ['touchstart', 'pointerdown']) el.addEventListener(event, touch, { passive: true })
   el.addEventListener('keydown', key)
   document.addEventListener('visibilitychange', visibility)
   follow()
@@ -41,7 +44,8 @@ export function attachFollowLatest(el: HTMLElement, body: HTMLElement, stuck: { 
     dispose() {
       stop(); observer.disconnect()
       el.removeEventListener('scroll', scroll)
-      for (const event of ['wheel', 'touchstart', 'pointerdown']) el.removeEventListener(event, touch)
+      el.removeEventListener('wheel', wheel)
+      for (const event of ['touchstart', 'pointerdown']) el.removeEventListener(event, touch)
       el.removeEventListener('keydown', key)
       document.removeEventListener('visibilitychange', visibility)
     },

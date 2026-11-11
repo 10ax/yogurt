@@ -18,7 +18,7 @@ const PAGE = 40
 const loadedCounts = new Map<string, number>()
 
 /** The workspace, backed by the existing meeting and calendar bridge. */
-export function Home({ open }: { open: (id: string) => void }) {
+export function Home({ open, openFolder }: { open: (id: string) => void; openFolder?: (id: string) => void }) {
   const past = usePastNotes()
   const day = useDay()
   const recording = past.cards?.find((c) => c.state === 'recording')
@@ -41,7 +41,7 @@ export function Home({ open }: { open: (id: string) => void }) {
       <LoadingContent pending={!past.cards} testId="meetings-loading" skeleton={<MeetingListLoading />} className="library-load">{noMeetings ? <section data-testid="past-empty" className="library-empty empty-state"><div className="empty-state-content">
         <div className="empty-tile"><FileText size={28} strokeWidth={1.5} aria-hidden="true" /></div><h2>{t('Your notes will show up here')}</h2>
         <p>{t('Start recording, add a few notes, and Yogurt writes the rest when you stop.')}</p>
-      </div></section> : <PastNotes cards={past.cards ?? []} day={day} more={past.more} sentinel={past.setSentinel} onOpen={open} />}</LoadingContent>
+      </div></section> : <PastNotes cards={past.cards ?? []} day={day} more={past.more} sentinel={past.setSentinel} onOpen={open} openFolder={openFolder} />}</LoadingContent>
     </div>
     {calendar && <Agenda revision={calendarRevision} recording={recording} onStart={start} onOpen={open} />}
   </div>
@@ -111,7 +111,7 @@ export function usePastNotes(folder?: string) {
 }
 
 /** Delete on a row moves the meeting to the Trash at once (Undo in the note at the bottom) */
-export function PastNotes({ cards, day, more, sentinel, onOpen, showFolders = true, loading = false }: { loading?: boolean; cards: MeetingCard[]; day: string; more: boolean; sentinel: (el: HTMLDivElement | null) => void; onOpen: (id: string) => void; showFolders?: boolean }) {
+export function PastNotes({ cards, day, more, sentinel, onOpen, openFolder, showFolders = true, loading = false }: { loading?: boolean; cards: MeetingCard[]; day: string; more: boolean; sentinel: (el: HTMLDivElement | null) => void; onOpen: (id: string) => void; openFolder?: (id: string) => void; showFolders?: boolean }) {
   const lang = useLanguage()
   const me = useMyName()
   const days = useMemo(() => {
@@ -127,7 +127,7 @@ export function PastNotes({ cards, day, more, sentinel, onOpen, showFolders = tr
     {days.map((group) => <div className="native-meeting-day" key={group.key}>
       <h2 data-testid={loading ? undefined : "past-day"}>{loading ? <span className="loading-bar" style={{ width: 48 }} /> : group.label}</h2>
       <ul>{group.cards.map((meeting) => loading ? <li className="native-meeting-row" key={meeting.id}><PastCard c={meeting} onOpen={onOpen} me="" showFolders={showFolders} loading /></li> : <MeetingRow key={meeting.id} id={meeting.id} recording={meeting.state === 'recording'}>
-        <PastCard c={meeting} onOpen={onOpen} me={me} showFolders={showFolders} />
+        <PastCard c={meeting} onOpen={onOpen} openFolder={openFolder} me={me} showFolders={showFolders} />
       </MeetingRow>)}</ul>
     </div>)}
     {more && <div data-testid="past-more" ref={sentinel} className="h-8" aria-hidden="true" />}
@@ -135,7 +135,7 @@ export function PastNotes({ cards, day, more, sentinel, onOpen, showFolders = tr
 }
 
 /** when: in place of the time (the Trash shows the day); fixed: not dragged onto folders */
-export function PastCard({ c, onOpen, when, fixed, me, showFolders = true, loading = false }: { loading?: boolean; c: MeetingCard; onOpen: (id: string) => void; when?: string; fixed?: boolean; me: string; showFolders?: boolean }) {
+export function PastCard({ c, onOpen, openFolder, when, fixed, me, showFolders = true, loading = false }: { loading?: boolean; c: MeetingCard; onOpen: (id: string) => void; openFolder?: (id: string) => void; when?: string; fixed?: boolean; me: string; showFolders?: boolean }) {
   const recording = c.state === 'recording'
   const minutes = (c.state === 'done' || c.state === 'stopped') && c.endedAt != null
     ? Math.max(1, Math.round((c.durationMs ?? (c.endedAt - c.startedAt)) / 60_000)) : null
@@ -159,7 +159,9 @@ export function PastCard({ c, onOpen, when, fixed, me, showFolders = true, loadi
     <span className="meeting-description"><strong>{loading ? <span className="loading-bar" style={{ width: c.title.length * 6, maxWidth: '85%' }} /> : c.title}</strong><span data-testid={loading ? undefined : "past-note-attendees"} title={c.attendees.map((p) => p.name).join(', ') || undefined}>{loading ? <span className="loading-bar" style={{ width: 110 }} /> : c.attendees.length ? peopleSummary(c.attendees, me) : t('Personal notes')}</span>
     </span>
     {showFolders && !!c.folders?.length && <span className="meeting-folders" data-testid={loading ? undefined : "past-note-folders"}>
-      {c.folders.map(folder => <span className="meeting-folder-pill" data-testid={loading ? undefined : "past-note-folder"} data-folder-color={folder.color} title={folder.name} key={folder.id}>
+      {c.folders.map(folder => <span className="meeting-folder-pill" data-testid={loading ? undefined : "past-note-folder"} data-folder-color={folder.color} data-opens={!!openFolder && !loading} title={folder.name} key={folder.id}
+        // a pill inside the row's button: mouse shortcut to the folder; keyboard reaches folders from the sidebar
+        onClick={openFolder && !loading ? (e) => { e.stopPropagation(); openFolder(folder.id) } : undefined}>
         <span className="meeting-folder-dot" aria-hidden="true" /><span className="meeting-folder-name">{loading ? <span className="loading-bar" style={{ width: 46 }} /> : folder.name}</span>
       </span>)}
     </span>}

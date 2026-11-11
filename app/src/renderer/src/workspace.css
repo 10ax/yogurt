@@ -401,6 +401,8 @@ body:has(.chat-panel[open]) .app-toast-viewport { inset-inline-end:460px; }
 .meeting-description { flex:1 1 220px; }
 .meeting-folders { display:flex;gap:6px;flex:0 3 auto;max-width:40%;min-width:0;overflow:hidden; }
 .meeting-folder-pill { display:inline-flex;align-items:center;gap:5px;height:22px;min-width:0;max-width:140px;flex:0 1 auto;padding:0 7px;border:1px solid var(--line);border-radius:11px;background:transparent;color:var(--written);font-size:11px;line-height:20px; }
+.meeting-folder-pill[data-opens=true] { transition:background-color 120ms ease,color 120ms ease,border-color 120ms ease; }
+.meeting-folder-pill[data-opens=true]:hover { border-color:var(--control-border);background:var(--control);color:var(--ink); }
 .meeting-folder-dot { width:7px;height:7px;flex:none;border-radius:50%;background:var(--folder-ink); }
 .meeting-folder-name { overflow:hidden;text-overflow:ellipsis;white-space:nowrap; }
 @container meeting-library (max-width:460px) {

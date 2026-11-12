@@ -50,11 +50,19 @@ const AUDIO = new Set(ZOOM.flatMap((l) => [low(l[0]), low(l[1])]))
 const ACTIVE = new Set(ZOOM.map((l) => low(l[2])))
 const TALKING = ZOOM.map((l) => l[3].normalize('NFKC').replace(/\s*[:：]$/, ''))
 const LISTS = new Set(ZOOM.map((l) => low(l[4])))
-const SELF = ZOOM.map((l) => l[5].normalize('NFKC'))
+const SELF = new Set(ZOOM.map((l) => low(l[5]).replace(/[()]/g, '')))
 /** other things Zoom appends to a tile, which say nothing about who it is */
 const OTHER_STATUS = /^(video (on|off)|no audio|telephone.*|screen sharing.*|pinned|spotlighted)$/i
-/** Zoom's own tags after a name: never part of it */
-const ZOOM_TAGS = /\s*[(（](me|host|co-host|guest|interpreter|participant id: [^)]*|ich|yo|moi|io|eu|ik|jag|自分|我)[)）]\s*$/i
+/** Zoom's own tags after a name, alone or together ("(Host, me)"): never part of it */
+const TAG = 'me|host|co-host|guest|interpreter|participant id: [^),]*|ich|yo|moi|io|eu|ik|jag|自分|我'
+const ZOOM_TAGS = new RegExp(`\\s*[(（]\\s*(?:${TAG})(?:\\s*[,，、]\\s*(?:${TAG}))*\\s*[)）]\\s*$`, 'i')
+/** "Ana Ruiz (Host, me)" → host, me */
+const tagsOf = (raw: string): string[] => {
+  const out: string[] = []
+  let name = raw.normalize('NFKC').trim(), m: RegExpMatchArray | null
+  while ((m = name.match(ZOOM_TAGS))) { out.push(...m[0].replace(/^\s*\(|\)\s*$/g, '').split(/[,、]/).map(low)); name = name.slice(0, m.index) }
+  return out
+}
 
 const cleanZoom = (raw: string): string | null => {
   let name = raw.normalize('NFKC').trim()
@@ -103,7 +111,7 @@ function readZoom(windows: AxWindow[]): CallReading {
         const name = cleanZoom(text)
         if (!name) return
         participants.push(name)
-        if (SELF.some((s) => text!.normalize('NFKC').includes(s))) me = name
+        if (tagsOf(text).some((tag) => SELF.has(tag))) me = name
       }
     })
   }

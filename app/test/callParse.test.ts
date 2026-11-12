@@ -33,6 +33,11 @@ describe('Zoom', () => {
     expect(r).toEqual({ speaking: ['Dana Smith'], participants: ['Alex Morgan', 'Dana Smith', 'Ann Lee'], me: 'Alex Morgan' })
   })
 
+  it('the host using Yogurt: "(Host, me)" is one tag group, so the name is clean and known to be "me"', () => {
+    const r = readCall('zoom', [zoomWindow(['Alex Morgan, Computer audio unmuted'], ['Alex Morgan (Host, me)', 'Ann Lee (Co-host)'])])
+    expect(r).toEqual({ speaking: [], participants: ['Alex Morgan', 'Ann Lee'], me: 'Alex Morgan' })
+  })
+
   it('with the list closed nobody is known to be "me"; with nobody marked nobody talks', () => {
     const r = readCall('zoom', [zoomWindow(['Alex Morgan, Computer audio unmuted', 'Dana Smith, Computer audio unmuted'])])
     expect(r).toEqual({ speaking: [], participants: ['Alex Morgan', 'Dana Smith'], me: null })

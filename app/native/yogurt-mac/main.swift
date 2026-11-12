@@ -255,8 +255,9 @@ func axCopy(_ e: AXUIElement, depth: Int, maxDepth: Int, budget: inout Int, zoom
     var sz = CGSize.zero
     if AXValueGetValue(size as! AXValue, .cgSize, &sz) { n["w"] = Int(sz.width); n["h"] = Int(sz.height) }
   }
-  // a Zoom tile's description says it all; its children are buttons
-  if zoom && role == "AXTabGroup" { return n }
+  // a Zoom tile's description ("Name, Computer audio muted, …") says it all; its children are buttons.
+  // The gallery around the tiles is also a tab group ("Gallery view"), so only a described list stops the walk.
+  if zoom && role == "AXTabGroup", let d = n["d"] as? String, d.contains(",") { return n }
   guard depth < maxDepth, let kids = at(7) as? [AXUIElement], !kids.isEmpty else { return n }
   var out: [[String: Any]] = []
   for k in kids {

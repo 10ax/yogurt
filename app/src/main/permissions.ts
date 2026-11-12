@@ -78,11 +78,12 @@ export type Permissions = ReturnType<typeof createPermissions>
 /**
  * Windows and Linux have no prompts to ask with: the mic, call audio and notifications are simply on. Windows can still
  * block desktop apps from the mic; the recorder finds that out when it starts (no-mic), and the mic reads as off until a
- * recording hears it again. Its Settings page opens from the hint. Calendar and Accessibility don't exist there.
+ * recording hears it again. Its Settings page opens from the hint. Calendar doesn't exist there; Linux reads call names
+ * through AT-SPI, which asks nothing, so Accessibility is granted there. On Windows it doesn't exist and stays unknown.
  */
 function offMac(platform: string, open: (url: string) => void, micBlocked?: () => boolean) {
   const status = async (): Promise<PermissionStatus> =>
-    ({ mic: platform === 'win32' && micBlocked?.() ? 'denied' : 'granted', systemAudio: 'granted', calendar: 'unknown', notifications: 'granted', accessibility: 'unknown' })
+    ({ mic: platform === 'win32' && micBlocked?.() ? 'denied' : 'granted', systemAudio: 'granted', calendar: 'unknown', notifications: 'granted', accessibility: platform === 'linux' ? 'granted' : 'unknown' })
   return {
     status,
     async request(kind: PermissionKind): Promise<Access> { return (await status())[kind] },

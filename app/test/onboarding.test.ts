@@ -99,7 +99,7 @@ describe('the launch screen', () => {
   })
 })
 
-describe('a computer without a calendar or names from calls (Windows, Linux)', () => {
+describe('a computer without a calendar or names from calls (Windows)', () => {
   const kinds = supportedKinds(capabilities('win32'))
   it('the first run never asks for them', () => {
     const plan = firstRunPlan({ ask: true, welcomed: false, introSeen: false, status: all('unknown'), kinds })
@@ -115,5 +115,15 @@ describe('a computer without a calendar or names from calls (Windows, Linux)', (
     const st: PermissionStatus = { ...all('granted'), accessibility: 'unknown' }
     expect(missing(st, supportedKinds(capabilities('darwin'))).map((m) => m.kind)).toEqual(['accessibility'])
     expect(finishSetupPercent(st, supportedKinds(capabilities('darwin')))).toBe(finishSetupPercent(st))
+  })
+})
+
+describe('a Linux computer with names from calls', () => {
+  const kinds = supportedKinds(capabilities('linux'))
+  it('asks for Accessibility too, and Finish setup completes once it is on', () => {
+    const plan = firstRunPlan({ ask: true, welcomed: false, introSeen: false, status: all('unknown'), kinds })
+    expect(screensOf(plan.steps).map((s) => s.id)).toEqual(['record', 'notifications', 'accessibility'])
+    // AT-SPI asks nothing, so the permission reads granted without a prompt
+    expect(finishSetupPercent({ ...all('granted'), calendar: 'unknown' }, kinds)).toBe(100)
   })
 })

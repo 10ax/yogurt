@@ -161,39 +161,56 @@ function readMeet(windows: AxWindow[], o: { talkingClasses?: string[] }): CallRe
 // ---- Microsoft Teams (new Teams, com.microsoft.teams2, and classic) ----
 // Measured on Teams for Linux 2.28.0 (AT-SPI, Plasma Wayland): the People panel's "Attendees" tree has rows
 // "Name, Role, Muted|Unmuted" ("Dana Smith, Organizer, Unmuted"), and the row's section repeats it. Teams marks the
-// active speaker only with a ring: no word and no class in the tree. What is read is words only: those roster rows,
-// an element labelled "Name, speaking" / "Name is speaking" / "Active speaker: Name" (other builds), and "(You)"
-// after the person's own name. When the roster is closed and nobody is marked, only a call of two can be named
-// (attribute.ts).
+// active speaker only with a ring: no word and no class in the tree. What is read is words only: those roster rows
+// (inside a tree or table named Participants/Attendees/People, so a chat or calendar line that happens to read like
+// one is never a person), an element labelled "Name, speaking" / "Name is speaking" / "Active speaker: Name" (other
+// builds), and "(You)" after the person's own name. When the roster is closed and nobody is marked, only a call of two
+// can be named (attribute.ts).
 
 const TEAMS_SPEAKING = [/^(.{2,60}?)(?:,\s*|\s+is\s+)(?:speaking|talking)\b/i, /\b(?:active speaker|now speaking|speaking now)[:,]?\s+(.{2,60})$/i]
 /** the state Teams puts after a person in the roster; the role ("Organizer", "Presenter", ...) may sit between */
 const TEAMS_STATUS = /^(?:muted|unmuted|mic(?:rophone)? (?:on|off)|video (?:is )?(?:on|off)|camera (?:is )?(?:on|off))$/i
+/** the roles Teams puts between the name and the state */
+const TEAMS_ROLE = /^(?:organizer|presenter|guest|external|co-?organizer|attendee|host|co-?host|interpreter)$/i
 const TEAMS_SAYS = /^(?:speaking|talking|active speaker|now speaking)$/i
 const TEAMS_ME = /^(.{2,60}?)\s*\((?:you|me)\)/i
 const cleanTeams = (s: string) => s.replace(/\s*\((?:organizer|presenter|guest|external|you|me)\)/gi, '').replace(/[,.:;]+$/, '').trim()
 
-/** "Dana Smith, Organizer, Unmuted" → Dana Smith; null when the label is not a person with a state */
+/** the roles a roster row has: the People panel's tree, or a table/list in another build */
+const TEAMS_ROW = new Set(['tree item', 'table row', 'list item', 'row', 'AXRow'])
+/** a list that can hold the roster; its name says whether it does */
+const TEAMS_LIST = new Set(['tree', 'tree table', 'table', 'list', 'list box', 'outline', 'AXOutline', 'AXTable'])
+const TEAMS_LIST_NAME = /^(?:meeting )?(?:participants|attendees|people|in (?:this|the) meeting)\b/i
+
+/** whether an element sits in the People panel: a row, inside a list named Participants/Attendees/People */
+function inTeamsRoster(n: AxNode, up: AxNode[]): boolean {
+  if (!TEAMS_ROW.has(n.r) && !up.some((a) => TEAMS_ROW.has(a.r))) return false
+  return up.some((a) => TEAMS_LIST.has(a.r) && TEAMS_LIST_NAME.test((a.d ?? a.t ?? '').trim()))
+}
+
+/** "Dana Smith, Organizer, Unmuted" → Dana Smith; "Smith, Dana, Organizer, Unmuted" → Smith, Dana */
 function teamsPersona(label: string): { name: string; speaking: boolean } | null {
   const fields = label.normalize('NFKC').split(/\s*,\s*/)
-  if (fields.length < 2) return null
-  const name = cleanTeams(fields[0])
+  const state = fields.findIndex((f) => TEAMS_STATUS.test(f))
+  if (state < 1) return null
+  const before = fields.slice(0, state)
+  while (before.length > 1 && TEAMS_ROLE.test(before.at(-1)!)) before.pop()
+  const name = cleanTeams(before.join(', '))
   if (name.length < 2 || name.length > 60) return null
-  const rest = fields.slice(1)
-  if (!rest.some((f) => TEAMS_STATUS.test(f))) return null
-  return { name, speaking: rest.some((f) => TEAMS_SAYS.test(f)) }
+  return { name, speaking: fields.some((f) => TEAMS_SAYS.test(f)) }
 }
 
 function readTeams(windows: AxWindow[]): CallReading {
   const speaking: string[] = [], participants: string[] = []
   let me: string | null = null
   for (const w of windows) {
-    walk(w.tree, (n) => {
+    walk(w.tree, (n, up) => {
+      const roster = inTeamsRoster(n, up)
       for (const label of texts(n)) {
         for (const re of TEAMS_SPEAKING) { const m = re.exec(label); if (m) { const name = cleanTeams(m[1]); if (name.length >= 2 && !/^(you|me)\b/i.test(name)) speaking.push(name) } }
-        const persona = teamsPersona(label)
+        const persona = roster ? teamsPersona(label) : null
         if (persona) { participants.push(persona.name); if (persona.speaking) speaking.push(persona.name) }
-        const mine = TEAMS_ME.exec(label)
+        const mine = roster ? TEAMS_ME.exec(label) : null
         if (mine) { me = cleanTeams(mine[1]); participants.push(me) }
       }
     })

@@ -76,21 +76,35 @@ pub fn watch(every_ms: u64, ids: &[String]) -> ! {
     }
 }
 
+/// one reading stops walking after this long: an app that stopped answering cannot hold the watch for minutes
+const READ_DEADLINE: Duration = Duration::from_millis(1500);
+/// the controls only a call window has: the calendar and chat views have none
+const CALL_CONTROLS: &[&str] = &["leave", "leave call", "hang up", "end call", "mute mic", "unmute mic", "close participants pane"];
+/// how much of a Teams window to read before trusting it is a call (the measured call has its Leave button within ~200)
+const CALL_PROBE: i32 = 1200;
+
 fn read_once(a11y: &A11y, ids: &[String]) -> Result<Value, String> {
     let t = now_ms();
+    let deadline = Instant::now() + READ_DEADLINE;
     let apps = a11y.apps()?;
     let mut seen = false;
+    let mut timed_out = false;
+    // the first matching app with a call window is reported: the watch is for the meeting's app, not a survey of all
     for app in &apps {
+        if Instant::now() >= deadline {
+            timed_out = true;
+            break;
+        }
         let Some(pid) = a11y.pid(&app.bus) else { continue };
         let Some(id) = matched_id(pid, ids) else { continue };
         seen = true;
         let kind = kind(&id);
-        let windows = windows(a11y, app, kind);
+        let windows = windows(a11y, app, kind, deadline);
         if !windows.is_empty() {
             return Ok(json!({ "t": t, "app": id, "windows": windows }));
         }
     }
-    Ok(if seen {
+    Ok(if seen || timed_out {
         json!({ "t": t, "error": "no-call-window" })
     } else {
         json!({ "t": t, "error": "not-running" })
@@ -98,12 +112,12 @@ fn read_once(a11y: &A11y, ids: &[String]) -> Result<Value, String> {
 }
 
 /// The call windows of one app, in the shape src/main/callNames/parse.ts reads
-fn windows(a11y: &A11y, app: &App, kind: Kind) -> Vec<Value> {
+fn windows(a11y: &A11y, app: &App, kind: Kind, deadline: Instant) -> Vec<Value> {
     let mut budget: i32 = if kind == Kind::Zoom { 1500 } else { 4000 };
     let max_depth = if kind == Kind::Zoom { 14 } else { 40 };
     let mut out = Vec::new();
     for (bus, path) in a11y.children(&app.bus, &app.path) {
-        if out.len() == 4 || budget <= 0 {
+        if out.len() == 4 || budget <= 0 || Instant::now() >= deadline {
             break;
         }
         let Some(role) = a11y.role(&bus, &path) else { continue };
@@ -114,13 +128,49 @@ fn windows(a11y: &A11y, app: &App, kind: Kind) -> Vec<Value> {
         if !call_window(kind, &title) {
             continue;
         }
-        let tree = a11y.node(&bus, &path, 0, max_depth, &mut budget);
+        // Teams keeps its calendar and chat in windows shaped like the call's: read a little of the tree first and
+        // only copy it out when the call controls are there, so that text never reaches the JSON or the log
+        let tree = if kind == Kind::Teams {
+            let mut probe = CALL_PROBE;
+            let probe_tree = a11y.node(&bus, &path, 0, max_depth, &mut probe, deadline);
+            if !is_call_tree(&probe_tree) {
+                continue;
+            }
+            if probe > 0 {
+                probe_tree
+            } else {
+                let mut budget = 4000;
+                a11y.node(&bus, &path, 0, max_depth, &mut budget, deadline)
+            }
+        } else {
+            a11y.node(&bus, &path, 0, max_depth, &mut budget, deadline)
+        };
         out.push(json!({ "title": title, "tree": tree }));
     }
     out
 }
 
-/// Whether a window holds the call: a browser only when its front tab is a Meet call, Zoom only a meeting
+/// Whether a tree has a call control: the calendar and chat views have no Leave or Mute, the call window always does
+fn is_call_tree(tree: &Value) -> bool {
+    fn walk(n: &Value) -> bool {
+        let Some(o) = n.as_object() else { return false };
+        let role = o.get("r").and_then(Value::as_str).unwrap_or("");
+        if matches!(role, "button" | "push button" | "toggle button" | "menu item") {
+            for key in ["t", "d"] {
+                if let Some(s) = o.get(key).and_then(Value::as_str) {
+                    if CALL_CONTROLS.contains(&s.trim().to_ascii_lowercase().as_str()) {
+                        return true;
+                    }
+                }
+            }
+        }
+        o.get("k").and_then(Value::as_array).is_some_and(|kids| kids.iter().any(walk))
+    }
+    walk(tree)
+}
+
+/// Whether a window may hold the call: a browser only when its front tab is a Meet call, Zoom only a meeting, Teams
+/// any window (its calendar and chat views look like the call's; is_call_tree tells them apart)
 fn call_window(kind: Kind, title: &str) -> bool {
     match kind {
         Kind::Teams => true,
@@ -136,6 +186,15 @@ fn has_word(title: &str, word: &str) -> bool {
 
 /// The id asked about that this process is: its Flatpak app id, else its program name
 fn matched_id(pid: u32, ids: &[String]) -> Option<String> {
+    if let Some(id) = matched_id_here(pid, ids) {
+        return Some(id);
+    }
+    // A sandboxed app's accessibility tree can be exported by its xdg-dbus-proxy, whose program name is not the
+    // app's. Its cgroup normally names the Flatpak app; if that is gone, one level up is the app's own process.
+    matched_id_here(parent_pid(pid)?, ids)
+}
+
+fn matched_id_here(pid: u32, ids: &[String]) -> Option<String> {
     if let Some(flatpak) = flatpak_id(pid) {
         if let Some(id) = ids.iter().find(|id| **id == flatpak) {
             return Some(id.clone());
@@ -145,7 +204,16 @@ fn matched_id(pid: u32, ids: &[String]) -> Option<String> {
     ids.iter().find(|id| **id == program).cloned()
 }
 
+fn parent_pid(pid: u32) -> Option<u32> {
+    parent_pid_from_status(&fs::read_to_string(format!("/proc/{pid}/status")).ok()?)
+}
+
+fn parent_pid_from_status(status: &str) -> Option<u32> {
+    status.lines().find_map(|line| line.strip_prefix("PPid:").and_then(|rest| rest.trim().parse().ok()))
+}
+
 /// A Flatpak app runs in its own cgroup: app-flatpak-com.example.App-<instance>.scope
+/// (a real scope always has the instance; without one the whole id is kept)
 fn flatpak_id(pid: u32) -> Option<String> {
     let cgroup = fs::read_to_string(format!("/proc/{pid}/cgroup")).ok()?;
     flatpak_id_from_cgroup(&cgroup)
@@ -203,14 +271,40 @@ mod tests {
         assert!(call_window(Kind::Zoom, "Zoom Meeting"));
         assert!(call_window(Kind::Zoom, "Zoom Webinar - 123"));
         assert!(!call_window(Kind::Zoom, "Zoom Workplace"));
-        assert!(call_window(Kind::Teams, "Chat | Microsoft Teams"));
+    }
+
+    #[test]
+    fn only_a_tree_with_call_controls_is_a_call() {
+        let call = json!({ "r": "frame", "k": [
+            { "r": "static", "t": "Calendar | Meeting with Dana Smith | Microsoft Teams" },
+            { "r": "button", "t": "Mute mic" },
+            { "r": "button", "t": "Leave" }
+        ] });
+        assert!(is_call_tree(&call));
+        let calendar = json!({ "r": "frame", "k": [
+            { "r": "static", "t": "Calendar | Meeting with Dana Smith | Microsoft Teams" },
+            { "r": "button", "t": "Go to today November 12, 2026" }
+        ] });
+        assert!(!is_call_tree(&calendar));
+        assert!(!is_call_tree(&json!({})));
     }
 
     #[test]
     fn a_flatpak_id_comes_from_the_cgroup() {
         let line = "0::/user.slice/user-1000.slice/user@1000.service/app.slice/app-flatpak-com.github.IsmaelMartinez.teams_for_linux-1512112203.scope";
         assert_eq!(flatpak_id_from_cgroup(line).as_deref(), Some("com.github.IsmaelMartinez.teams_for_linux"));
+        assert_eq!(
+            flatpak_id_from_cgroup("0::/user.slice/user-1000.slice/app-flatpak-com.spotify.Client-42.scope").as_deref(),
+            Some("com.spotify.Client")
+        );
         assert_eq!(flatpak_id_from_cgroup("0::/user.slice/user-1000.slice/session-3.scope"), None);
+    }
+
+    #[test]
+    fn a_parent_pid_comes_from_status() {
+        assert_eq!(parent_pid_from_status("Name:\tbash\nPPid:\t1234\n"), Some(1234));
+        assert_eq!(parent_pid_from_status("Name:\tbash\n"), None);
+        assert_eq!(parent_pid_from_status("PPid:\tabc\n"), None);
     }
 
     #[test]

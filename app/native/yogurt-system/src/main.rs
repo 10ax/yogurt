@@ -29,6 +29,11 @@ use win as os;
 use serde_json::{json, Value};
 use std::io::Write;
 
+#[cfg(target_os = "linux")]
+const USAGE: &str = "yogurt-system mic-apps | running-apps APP_ID... | browser-title APP_ID | call-watch MS APP_ID...";
+#[cfg(not(target_os = "linux"))]
+const USAGE: &str = "yogurt-system mic-apps | running-apps APP_ID... | browser-title APP_ID";
+
 fn out(v: Value) {
     let mut stdout = std::io::stdout().lock();
     let _ = writeln!(stdout, "{v}");
@@ -59,6 +64,6 @@ fn main() {
             let every = args[1].parse::<u64>().unwrap_or(400);
             calls::watch(every, &args[2..])
         }
-        _ => fail("yogurt-system mic-apps | running-apps APP_ID... | browser-title APP_ID | call-watch MS APP_ID..."),
+        _ => fail(USAGE),
     }
 }

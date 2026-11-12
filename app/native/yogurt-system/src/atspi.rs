@@ -2,7 +2,7 @@
 //! Read-only: nothing is clicked or changed in the app. The tree is cut at a depth and a node budget, like the Mac's.
 
 use std::collections::HashMap;
-use std::time::Duration;
+use std::time::{Duration, Instant};
 
 use serde_json::{json, Map, Value};
 use zbus::blocking::{connection::Builder, Connection};
@@ -29,7 +29,6 @@ pub struct A11y {
 }
 
 /// One application on the accessibility bus: its bus name and root object
-#[derive(Clone)]
 pub struct App {
     pub bus: String,
     pub path: OwnedObjectPath,
@@ -38,7 +37,11 @@ pub struct App {
 impl A11y {
     /// The accessibility bus: the session bus says where it is (org.a11y.Bus)
     pub fn connect() -> Result<Self, String> {
-        let session = Connection::session().map_err(|e| format!("no session bus: {e}"))?;
+        let session = Builder::session()
+            .map_err(|e| format!("no session bus: {e}"))?
+            .method_timeout(TIMEOUT)
+            .build()
+            .map_err(|e| format!("no session bus: {e}"))?;
         let addr: String = session
             .call_method(Some("org.a11y.Bus"), "/org/a11y/bus", Some("org.a11y.Bus"), "GetAddress", &())
             .map_err(|e| format!("no accessibility bus: {e}"))?
@@ -82,8 +85,12 @@ impl A11y {
         self.call(bus, path.as_str(), ACCESSIBLE, "GetChildren", &()).unwrap_or_default()
     }
 
-    /// One element and what is under it, in the shape src/main/callNames/parse.ts reads (AxNode)
-    pub fn node(&self, bus: &str, path: &OwnedObjectPath, depth: usize, max_depth: usize, budget: &mut i32) -> Value {
+    /// One element and what is under it, in the shape src/main/callNames/parse.ts reads (AxNode). Stops at `deadline`,
+    /// so an app that stopped answering cannot hold the watch for minutes.
+    pub fn node(&self, bus: &str, path: &OwnedObjectPath, depth: usize, max_depth: usize, budget: &mut i32, deadline: Instant) -> Value {
+        if Instant::now() >= deadline {
+            return Value::Object(Map::new());
+        }
         *budget -= 1;
         let role = self.role(bus, path).unwrap_or_default();
         let props = self.props(bus, path);
@@ -112,13 +119,13 @@ impl A11y {
                 n.insert("c".into(), json!(classes));
             }
         }
-        if depth < max_depth && *budget > 0 {
+        if depth < max_depth && *budget > 0 && Instant::now() < deadline {
             let mut kids = Vec::new();
             for (b, p) in self.children(bus, path) {
-                if *budget <= 0 {
+                if *budget <= 0 || Instant::now() >= deadline {
                     break;
                 }
-                kids.push(self.node(&b, &p, depth + 1, max_depth, budget));
+                kids.push(self.node(&b, &p, depth + 1, max_depth, budget, deadline));
             }
             if !kids.is_empty() {
                 n.insert("k".into(), json!(kids));

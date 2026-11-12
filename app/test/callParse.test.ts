@@ -87,14 +87,15 @@ describe('Google Meet', () => {
   })
 })
 
-// ---- Teams: words only (no measured tree yet) ----
+// ---- Teams: the People panel roster (measured on Linux), and the words other builds show ----
 describe('Microsoft Teams', () => {
-  it('reads "Name, speaking", tiles with a mic or video state, and "(You)"', () => {
+  it('reads "Name, speaking", roster rows with a mic or video state, and "(You)"', () => {
     const tree = node('AXWindow', {},
-      node('AXGroup', { d: 'Dana Smith, unmuted, video on' }, node('AXStaticText', { v: 'Dana Smith' })),
       node('AXGroup', { d: 'Dana Smith, speaking' }),
-      node('AXGroup', { d: 'Ann Lee, muted' }),
-      node('AXRow', { d: 'Alex Morgan (You)' }),
+      node('AXOutline', { d: 'Participants' },
+        node('AXRow', { d: 'Dana Smith, unmuted, video on' }, node('AXStaticText', { v: 'Dana Smith' })),
+        node('AXRow', { d: 'Ann Lee, muted' }),
+        node('AXRow', { d: 'Alex Morgan (You)' })),
       node('AXButton', { d: 'Leave' }))
     expect(readCall('teams', [win(tree, 'Weekly sync | Microsoft Teams')])).toEqual({ speaking: ['Dana Smith'], participants: ['Dana Smith', 'Ann Lee', 'Alex Morgan'], me: 'Alex Morgan' })
   })
@@ -107,8 +108,16 @@ describe('Microsoft Teams', () => {
   it('reads AT-SPI names as well as descriptions (Linux)', () => {
     const tree = node('frame', {},
       node('section', { t: 'Dana Smith, speaking' }),
-      node('section', { t: 'Ann Lee, muted' }))
+      node('tree', { t: 'Participants' },
+        node('tree item', {}, node('section', { t: 'Ann Lee, muted' }))))
     expect(readCall('teams', [win(tree)])).toEqual({ speaking: ['Dana Smith'], participants: ['Ann Lee'], me: null })
+  })
+
+  it('never takes a chat or calendar line for a person, even when it reads like a roster row', () => {
+    const tree = node('frame', {},
+      node('list', { t: 'Chat' }, node('list item', { t: 'Dana Smith, muted' }), node('list item', { t: 'Dana Smith (you)' })),
+      node('section', { t: 'Ann Lee, Organizer, Unmuted' }))
+    expect(readCall('teams', [win(tree)])).toEqual({ speaking: [], participants: [], me: null })
   })
 
   it('reads the People panel roster (Teams for Linux): "Name, Role, Muted|Unmuted"', () => {
@@ -132,6 +141,13 @@ describe('Microsoft Teams', () => {
         node('tree item', { t: 'Sam Lee, Guest, Unmuted' }),
         node('tree item', { t: 'In this meeting, 3 total' })))
     expect(readCall('teams', [win(tree)])).toEqual({ speaking: [], participants: ['Dana Smith', 'Alex Morgan', 'Sam Lee'], me: null })
+  })
+
+  it('keeps a comma in a roster name', () => {
+    const tree = node('frame', {},
+      node('tree', { t: 'Attendees' },
+        node('tree item', { t: 'Smith, Dana, Organizer, Unmuted' })))
+    expect(readCall('teams', [win(tree)])).toEqual({ speaking: [], participants: ['Smith, Dana'], me: null })
   })
 
   it('a roster row marked (You) is the person using Yogurt', () => {

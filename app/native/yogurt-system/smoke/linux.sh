@@ -49,7 +49,7 @@ check "no X server (pure Wayland): null" "v == {'title': None}" "$(env -u DISPLA
 
 # names in calls: no accessibility bus on the runner, so the watch says why and ends when its stdin closes
 CALLS=$(sleep 1 | timeout 10 "$BIN" call-watch 100 zoom | head -n 1)
-check "call-watch says it cannot read, and stops with stdin" "v.get('error') in ('no-accessibility', 'not-running')" "$CALLS"
+check "call-watch says it cannot read, and stops with stdin" "v.get('error') in ('no-accessibility', 'not-running', 'no-call-window')" "$CALLS"
 
 # wrong use fails like the Mac helper
 if "$BIN" browser-title 2>/dev/null; then echo "browser-title with no id should fail"; exit 1; fi

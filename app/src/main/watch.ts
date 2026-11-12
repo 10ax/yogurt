@@ -37,6 +37,8 @@ export class Watcher {
   /** call apps on the mic at the last look before recording: a recording started from the card belongs to that call */
   private idleMic = new Set<string>()
   private idleCall: { app: string; at: number } | null = null
+  /** a recording was going at the last look */
+  private wasRecording = false
 
   constructor(private d: WatchDeps) {}
 
@@ -56,12 +58,16 @@ export class Watcher {
       const rec = this.d.active()
       const s: Signals = { ...reading, recording: !!rec }
       if (rec) this.recording(rec, s, now)
-      else this.idle(s, now)
+      else this.idle(s, now, this.wasRecording)
+      this.wasRecording = !!rec
     } finally { this.busy = false }
   }
 
-  private idle(s: Signals, now: number) {
+  private idle(s: Signals, now: number, justStopped = false) {
     this.rec = null
+    // the recording just ended while its call app still holds the mic (Finish in Yogurt, then Zoom closes a few seconds
+    // later): that call is done, as if its card were closed. It is forgiven once the app lets go of the mic, as below.
+    if (justStopped) for (let p = decide(s, now, this.dismissed); p; p = decide(s, now, this.dismissed)) this.dismissed.add(p.key)
     this.idleMic = new Set(s.micApps.flatMap((m) => callAppName(m.bundleId, s.runningApps) ?? []))
     const call = decide(s, now, new Set())
     this.idleCall = call?.app ? { app: call.app, at: now } : null

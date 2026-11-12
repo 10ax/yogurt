@@ -68,6 +68,30 @@ describe('start cards', () => {
     await w.tick()
     expect(w.dismissed.has('app:us.zoom.xos')).toBe(true)
   })
+  it('finishing in Yogurt while the call app still holds the mic: no card for that call, and the next call still gets one', async () => {
+    reading = { micApps: [zoom], events: [] }
+    active = meeting()
+    await w.tick(); await w.tick()
+    // Finish in Yogurt; Zoom keeps the mic a few seconds longer
+    active = null; w.cleared()
+    await w.tick(); clock += 5000; await w.tick()
+    expect(log.filter((l) => l.startsWith('offer'))).toEqual([])
+    // the call ends, and a new one starts later
+    reading = { micApps: [], events: [] }
+    await w.tick()
+    reading = { micApps: [zoom], events: [] }
+    await w.tick()
+    expect(log.filter((l) => l.startsWith('offer'))).toEqual(['offer:app:us.zoom.xos'])
+  })
+  it('finishing during a calendar meeting: no card for that event either', async () => {
+    const e = ev()
+    reading = { micApps: [zoom], events: [e] }
+    active = meeting({ eventId: e.id })
+    await w.tick()
+    active = null; w.cleared()
+    await w.tick(); clock += 5000; await w.tick()
+    expect(log.filter((l) => l.startsWith('offer'))).toEqual([])
+  })
   it('a closed event card stays quiet for good', async () => {
     const e = ev()
     reading = { micApps: [zoom], events: [e] }

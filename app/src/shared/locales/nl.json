@@ -632,5 +632,20 @@
   "You can restart once the recording stops.": "Je kunt opnieuw starten zodra de opname stopt.",
   "Check now": "Nu zoeken",
   "Eject the Yogurt installer?": "Yogurt-installatieprogramma verwijderen?",
-  "Eject": "Verwijder"
+  "Eject": "Verwijder",
+  "{count} selected": "{count} geselecteerd",
+  "Click meetings to add more": "Klik op meetings om meer toe te voegen",
+  "Clear selection": "Selectie wissen",
+  "Add {count} meetings to folder": {
+    "one": "{count} meeting aan map toevoegen",
+    "other": "{count} meetings aan map toevoegen"
+  },
+  "Move {count} meetings to Trash": {
+    "one": "{count} meeting naar prullenmand verplaatsen",
+    "other": "{count} meetings naar prullenmand verplaatsen"
+  },
+  "{count} meetings moved to Trash": {
+    "one": "{count} meeting naar prullenmand verplaatst",
+    "other": "{count} meetings naar prullenmand verplaatst"
+  }
 }

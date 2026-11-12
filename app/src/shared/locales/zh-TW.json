@@ -593,5 +593,11 @@
   "You can restart once the recording stops.": "錄音停止後即可重新啟動。",
   "Check now": "立即檢查",
   "Eject the Yogurt installer?": "要退出 Yogurt 安裝程式嗎？",
-  "Eject": "退出"
+  "Eject": "退出",
+  "{count} selected": "已選取 {count} 場",
+  "Click meetings to add more": "點擊會議以加入更多",
+  "Clear selection": "清除選取",
+  "Add {count} meetings to folder": "將 {count} 場會議加入資料夾",
+  "Move {count} meetings to Trash": "將 {count} 場會議移到垃圾桶",
+  "{count} meetings moved to Trash": "已將 {count} 場會議移到垃圾桶"
 }

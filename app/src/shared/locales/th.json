@@ -593,5 +593,11 @@
   "You can restart once the recording stops.": "คุณรีสตาร์ทได้เมื่อการบันทึกหยุดแล้ว",
   "Check now": "ตรวจสอบเลย",
   "Eject the Yogurt installer?": "นำตัวติดตั้ง Yogurt ออกไหม",
-  "Eject": "นำออก"
+  "Eject": "นำออก",
+  "{count} selected": "เลือกแล้ว {count} รายการ",
+  "Click meetings to add more": "คลิกการประชุมเพื่อเพิ่มอีก",
+  "Clear selection": "ล้างการเลือก",
+  "Add {count} meetings to folder": "เพิ่มการประชุม {count} รายการไปยังโฟลเดอร์",
+  "Move {count} meetings to Trash": "ย้ายการประชุม {count} รายการไปถังขยะ",
+  "{count} meetings moved to Trash": "ย้ายการประชุม {count} รายการไปถังขยะแล้ว"
 }

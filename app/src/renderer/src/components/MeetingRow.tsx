@@ -1,15 +1,21 @@
-import { useEffect, useId, useLayoutEffect, useRef, useState, type KeyboardEvent, type ReactNode } from 'react'
+import { useEffect, useId, useLayoutEffect, useRef, useState, type KeyboardEvent, type MouseEvent, type ReactNode } from 'react'
 import { createPortal } from 'react-dom'
 import { autoUpdate, computePosition, flip, offset, shift } from '@floating-ui/dom'
-import { ChevronRight, Ellipsis, FolderIcon, Trash2 } from 'lucide-react'
+import { ChevronRight, Ellipsis, FolderIcon, ListChecks, Trash2 } from 'lucide-react'
 import { t } from '../../../shared/i18n'
 import { deleteMeetingFromKey } from '../meetingRowKeys'
 import { FolderPicker } from './FolderPicker'
 import { FolderName } from './FolderDialogs'
-import { moveToTrash, toasts } from './TrashToast'
+import { addMeetingsToFolder } from '../folders'
+import type { FolderMemberships } from '../folderSelection'
+import { toasts } from './TrashToast'
 
 /** Metadata and actions share the trailing column without moving the row content. */
-export function MeetingRow({ id, recording, children }: { id: string; recording: boolean; children: ReactNode }) {
+export function MeetingRow({ id, recording, children, selected, targets, memberships, busy, onSelect, onClick, onTrash }: {
+  id: string; recording: boolean; children: ReactNode; selected: boolean; targets: string[]; busy: boolean
+  memberships: FolderMemberships
+  onSelect: () => void; onClick: (event: MouseEvent) => void; onTrash: (ids: string[]) => void
+}) {
   const row = useRef<HTMLLIElement>(null), button = useRef<HTMLButtonElement>(null), menu = useRef<HTMLDivElement>(null)
   const [open, setOpen] = useState<'button' | { x: number; y: number } | null>(null)
   const [inFolders, setInFolders] = useState(false), [namingFolder, setNamingFolder] = useState(false)
@@ -38,29 +44,34 @@ export function MeetingRow({ id, recording, children }: { id: string; recording:
     return () => document.removeEventListener('pointerdown', away)
   }, [open])
   const menuKey = (e: KeyboardEvent) => {
-    const items = Array.from(menu.current?.querySelectorAll<HTMLElement>('[role="menuitem"]:not(:disabled), [role="menuitemcheckbox"]') ?? [])
+    const items = Array.from(menu.current?.querySelectorAll<HTMLElement>('[role="menuitem"]:not(:disabled), [role="menuitemcheckbox"]:not(:disabled)') ?? [])
     const at = items.indexOf(document.activeElement as HTMLElement)
     if (e.key === 'Escape') { e.preventDefault(); e.stopPropagation(); close() }
     else if (e.key === 'ArrowDown' || e.key === 'ArrowUp') { e.preventDefault(); items[(at + (e.key === 'ArrowDown' ? 1 : -1) + items.length) % items.length]?.focus() }
     else if (e.key === 'Home' || e.key === 'End') { e.preventDefault(); items[e.key === 'Home' ? 0 : items.length - 1]?.focus() }
     else if (e.key === 'Tab') close()
   }
-  return <li ref={row} className="native-meeting-row row-swap" data-menu-open={!!open}
+  return <li ref={row} className="native-meeting-row row-swap" data-menu-open={!!open} data-selected={selected}
+    onClickCapture={e => { if (row.current?.contains(e.target as Node) && (e.target as HTMLElement).closest('.native-meeting-link')) onClick(e) }}
     onContextMenu={(e) => { if (!row.current?.contains(e.target as Node)) return; e.preventDefault(); show({ x: e.clientX, y: e.clientY }) }}
-    onKeyDown={(e) => deleteMeetingFromKey(e, e.target === row.current?.querySelector('.native-meeting-link'), recording, () => void moveToTrash(id))}>
+    onKeyDown={(e) => {
+      if (e.key === 'ContextMenu' || (e.shiftKey && e.key === 'F10')) { e.preventDefault(); const box = row.current!.getBoundingClientRect(); show({ x: box.left + 20, y: box.bottom }); return }
+      deleteMeetingFromKey(e, e.target === row.current?.querySelector('.native-meeting-link'), busy || (recording && !selected), () => onTrash(targets))
+    }}>
     {children}
     <button ref={button} data-testid="past-note-more" className="workspace-icon meeting-more row-swap-actions" aria-label={t('More')} title={t('More')} aria-haspopup="menu" aria-expanded={!!open} aria-controls={open ? menuId : undefined}
       onClick={() => open ? close() : show('button')}><Ellipsis size={14} aria-hidden="true" /></button>
     {open && createPortal(<div ref={menu} id={menuId} data-testid="meeting-row-menu" role="menu" aria-label={t('More')} onKeyDown={menuKey}
       className="menu-entry meeting-row-menu" style={{ visibility: 'hidden' }}>
-      {inFolders ? <FolderPicker meetingId={id} testId="meeting-row-folders" onNew={() => { close(); setNamingFolder(true) }} /> : <>
-        <button role="menuitem" aria-haspopup="menu" onClick={() => setInFolders(true)}><FolderIcon size={15} aria-hidden="true" /><span className="flex-1">{t('Add to folder')}</span><ChevronRight size={14} aria-hidden="true" className="rtl:-scale-x-100" /></button>
-        <button role="menuitem" data-testid="past-note-trash" disabled={recording} title={recording ? t('Stop the recording first') : undefined} className="text-danger" onClick={() => { close(); void moveToTrash(id) }}><Trash2 size={15} aria-hidden="true" />{t('Move to Trash')}</button>
+      {inFolders ? <FolderPicker key={targets.join(',')} meetingIds={targets} memberships={memberships} testId="meeting-row-folders" onNew={() => { close(); setNamingFolder(true) }} /> : <>
+        {!selected && <><button role="menuitem" data-testid="meeting-select" onClick={() => { onSelect(); close() }}><ListChecks size={15} aria-hidden="true" />{t('Select')}</button><div role="separator" className="meeting-menu-divider" /></>}
+        <button role="menuitem" aria-haspopup="menu" onClick={() => setInFolders(true)}><FolderIcon size={15} aria-hidden="true" /><span className="flex-1">{selected ? t('Add {count} meetings to folder', { count: targets.length }) : t('Add to folder')}</span><ChevronRight size={14} aria-hidden="true" className="rtl:-scale-x-100" /></button>
+        <button role="menuitem" data-testid="past-note-trash" disabled={busy || (recording && !selected)} title={recording ? t('Stop the recording first') : undefined} className="text-danger" onClick={() => { close(); onTrash(targets) }}><Trash2 size={15} aria-hidden="true" />{selected ? t('Move {count} meetings to Trash', { count: targets.length }) : t('Move to Trash')}</button>
       </>}
     </div>, document.body)}
     {namingFolder && <FolderName onDone={(made) => {
       setNamingFolder(false); focusRow()
-      if (made) void window.yogurt.folders.add(made.id, id).catch(() => toasts.add({ title: t("Yogurt couldn't make that change. Try again.") }))
+      if (made) void addMeetingsToFolder(made.id, targets).catch(() => toasts.add({ title: t("Yogurt couldn't make that change. Try again.") }))
     }} />}
   </li>
 }

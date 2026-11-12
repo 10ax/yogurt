@@ -658,5 +658,26 @@
   "You can restart once the recording stops.": "Перезапустить можно после остановки записи.",
   "Check now": "Проверить",
   "Eject the Yogurt installer?": "Извлечь установщик Yogurt?",
-  "Eject": "Извлечь"
+  "Eject": "Извлечь",
+  "{count} selected": "Выбрано: {count}",
+  "Click meetings to add more": "Нажимайте на встречи, чтобы добавить ещё",
+  "Clear selection": "Снять выделение",
+  "Add {count} meetings to folder": {
+    "one": "Добавить {count} встречу в папку",
+    "few": "Добавить {count} встречи в папку",
+    "many": "Добавить {count} встреч в папку",
+    "other": "Добавить {count} встречи в папку"
+  },
+  "Move {count} meetings to Trash": {
+    "one": "Переместить {count} встречу в Корзину",
+    "few": "Переместить {count} встречи в Корзину",
+    "many": "Переместить {count} встреч в Корзину",
+    "other": "Переместить {count} встречи в Корзину"
+  },
+  "{count} meetings moved to Trash": {
+    "one": "{count} встреча перемещена в Корзину",
+    "few": "{count} встречи перемещены в Корзину",
+    "many": "{count} встреч перемещено в Корзину",
+    "other": "{count} встречи перемещены в Корзину"
+  }
 }

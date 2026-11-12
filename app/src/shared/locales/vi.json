@@ -593,5 +593,11 @@
   "You can restart once the recording stops.": "Bạn có thể khởi động lại khi bản ghi dừng.",
   "Check now": "Kiểm tra ngay",
   "Eject the Yogurt installer?": "Đẩy trình cài đặt Yogurt ra?",
-  "Eject": "Đẩy ra"
+  "Eject": "Đẩy ra",
+  "{count} selected": "Đã chọn {count}",
+  "Click meetings to add more": "Nhấp vào cuộc họp để thêm",
+  "Clear selection": "Bỏ chọn tất cả",
+  "Add {count} meetings to folder": "Thêm {count} cuộc họp vào thư mục",
+  "Move {count} meetings to Trash": "Chuyển {count} cuộc họp vào Thùng rác",
+  "{count} meetings moved to Trash": "Đã chuyển {count} cuộc họp vào Thùng rác"
 }

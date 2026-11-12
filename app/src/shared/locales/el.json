@@ -632,5 +632,23 @@
   "You can restart once the recording stops.": "Μπορείς να κάνεις επανεκκίνηση όταν σταματήσει η εγγραφή.",
   "Check now": "Έλεγχος τώρα",
   "Eject the Yogurt installer?": "Εξαγωγή του προγράμματος εγκατάστασης του Yogurt;",
-  "Eject": "Εξαγωγή"
+  "Eject": "Εξαγωγή",
+  "{count} selected": {
+    "one": "{count} επιλεγμένη",
+    "other": "{count} επιλεγμένες"
+  },
+  "Click meetings to add more": "Κάντε κλικ σε συσκέψεις για να προσθέσετε κι άλλες",
+  "Clear selection": "Εκκαθάριση επιλογής",
+  "Add {count} meetings to folder": {
+    "one": "Προσθήκη {count} σύσκεψης σε φάκελο",
+    "other": "Προσθήκη {count} συσκέψεων σε φάκελο"
+  },
+  "Move {count} meetings to Trash": {
+    "one": "Μετακίνηση {count} σύσκεψης στον Κάδο",
+    "other": "Μετακίνηση {count} συσκέψεων στον Κάδο"
+  },
+  "{count} meetings moved to Trash": {
+    "one": "{count} σύσκεψη μετακινήθηκε στον Κάδο",
+    "other": "{count} συσκέψεις μετακινήθηκαν στον Κάδο"
+  }
 }

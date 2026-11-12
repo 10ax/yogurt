@@ -591,3 +591,16 @@ body:has(.chat-panel[open]) .app-toast-viewport { inset-inline-end:460px; }
 .note-summary-rim { inset:0;z-index:2; }
 .note-summary-status { position:absolute;inset-inline-start:14px;bottom:10px;z-index:1;background:var(--bg);color:var(--muted);font-size:11px;line-height:16px;pointer-events:none; }
 .note-latest { position:absolute;bottom:10px;left:50%;transform:translateX(-50%);z-index:3;display:flex;align-items:center;gap:4px;border:1px solid var(--line);border-radius:6px;padding:4px 12px;background:var(--float);color:var(--ink);font-size:12px;line-height:16px;box-shadow:var(--shadow); }
+
+.native-library .native-meeting-row[data-selected=true],.native-library .native-meeting-row[data-selected=true]:hover { background:color-mix(in srgb,var(--primary) 9%,var(--bg)); }
+.native-library:has([data-selecting=true]) { padding-bottom:100px; }
+.native-library:focus-visible { outline:2px solid var(--focus);outline-offset:-2px; }
+.meeting-menu-divider { height:1px;margin:4px 0;background:var(--line); }
+.meeting-selection-bar { position:fixed;transform:translateX(-50%);display:flex;align-items:center;flex-wrap:wrap;gap:10px;width:max-content;padding:9px 10px 9px 16px;border:1px solid var(--line);border-radius:11px;background:var(--float);color:var(--ink);box-shadow:0 8px 24px #0000001F,0 1px 3px #00000014;z-index:60; }
+.meeting-selection-count { margin-inline-end:8px;font-size:12px;font-weight:500;font-variant-numeric:tabular-nums; }
+.meeting-selection-count small { display:block;color:var(--muted);font-size:11px;line-height:14px;font-weight:400; }
+.meeting-selection-delete { color:var(--danger); }
+.meeting-selection-folder { position:relative; }
+.meeting-selection-menu { position:absolute;width:240px;max-width:calc(100vw - 16px);max-height:min(320px,60vh);overflow:auto;border:1px solid var(--line); }
+.meeting-selection-bar button:focus-visible { outline:2px solid var(--focus);outline-offset:2px; }
+.meeting-drag-count { border-radius:5px;padding:2px 6px;background:var(--primary);color:#FFFFFF;font-size:11px; }

@@ -632,5 +632,20 @@
   "You can restart once the recording stops.": "Puwede kang mag-restart kapag huminto na ang recording.",
   "Check now": "Tingnan ngayon",
   "Eject the Yogurt installer?": "I-eject ang installer ng Yogurt?",
-  "Eject": "I-eject"
+  "Eject": "I-eject",
+  "{count} selected": "{count} ang napili",
+  "Click meetings to add more": "Mag-click ng mga meeting para magdagdag pa",
+  "Clear selection": "Alisin ang pagpili",
+  "Add {count} meetings to folder": {
+    "one": "Idagdag ang {count} meeting sa folder",
+    "other": "Idagdag ang {count} na meeting sa folder"
+  },
+  "Move {count} meetings to Trash": {
+    "one": "Ilipat ang {count} meeting sa Basurahan",
+    "other": "Ilipat ang {count} na meeting sa Basurahan"
+  },
+  "{count} meetings moved to Trash": {
+    "one": "Inilipat ang {count} meeting sa Basurahan",
+    "other": "Inilipat ang {count} na meeting sa Basurahan"
+  }
 }

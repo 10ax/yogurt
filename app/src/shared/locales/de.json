@@ -632,5 +632,20 @@
   "You can restart once the recording stops.": "Du kannst neu starten, sobald die Aufnahme endet.",
   "Check now": "Jetzt suchen",
   "Eject the Yogurt installer?": "Yogurt-Installationsprogramm auswerfen?",
-  "Eject": "Auswerfen"
+  "Eject": "Auswerfen",
+  "{count} selected": "{count} ausgewählt",
+  "Click meetings to add more": "Weitere Meetings durch Klicken hinzufügen",
+  "Clear selection": "Auswahl aufheben",
+  "Add {count} meetings to folder": {
+    "one": "{count} Meeting zu Ordner hinzufügen",
+    "other": "{count} Meetings zu Ordner hinzufügen"
+  },
+  "Move {count} meetings to Trash": {
+    "one": "{count} Meeting in den Papierkorb verschieben",
+    "other": "{count} Meetings in den Papierkorb verschieben"
+  },
+  "{count} meetings moved to Trash": {
+    "one": "{count} Meeting in den Papierkorb verschoben",
+    "other": "{count} Meetings in den Papierkorb verschoben"
+  }
 }

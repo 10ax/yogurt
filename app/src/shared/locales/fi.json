@@ -635,5 +635,20 @@
   "You can restart once the recording stops.": "Voit käynnistää uudelleen, kun tallennus päättyy.",
   "Check now": "Tarkista nyt",
   "Eject the Yogurt installer?": "Poistetaanko Yogurtin asennusohjelma?",
-  "Eject": "Poista"
+  "Eject": "Poista",
+  "{count} selected": "{count} valittu",
+  "Click meetings to add more": "Lisää kokouksia napsauttamalla niitä",
+  "Clear selection": "Tyhjennä valinta",
+  "Add {count} meetings to folder": {
+    "one": "Lisää {count} kokous kansioon",
+    "other": "Lisää {count} kokousta kansioon"
+  },
+  "Move {count} meetings to Trash": {
+    "one": "Siirrä {count} kokous roskakoriin",
+    "other": "Siirrä {count} kokousta roskakoriin"
+  },
+  "{count} meetings moved to Trash": {
+    "one": "{count} kokous siirretty roskakoriin",
+    "other": "{count} kokousta siirretty roskakoriin"
+  }
 }

@@ -645,5 +645,26 @@
   "You can restart once the recording stops.": "Poți reporni după ce se oprește înregistrarea.",
   "Check now": "Verifică acum",
   "Eject the Yogurt installer?": "Scoți programul de instalare Yogurt?",
-  "Eject": "Scoate"
+  "Eject": "Scoate",
+  "{count} selected": {
+    "one": "{count} selectată",
+    "other": "{count} selectate"
+  },
+  "Click meetings to add more": "Faceți clic pe întâlniri pentru a adăuga altele",
+  "Clear selection": "Ștergeți selecția",
+  "Add {count} meetings to folder": {
+    "one": "Adăugați {count} întâlnire într-un dosar",
+    "few": "Adăugați {count} întâlniri într-un dosar",
+    "other": "Adăugați {count} de întâlniri într-un dosar"
+  },
+  "Move {count} meetings to Trash": {
+    "one": "Mutați {count} întâlnire în Coș",
+    "few": "Mutați {count} întâlniri în Coș",
+    "other": "Mutați {count} de întâlniri în Coș"
+  },
+  "{count} meetings moved to Trash": {
+    "one": "{count} întâlnire mutată în Coș",
+    "few": "{count} întâlniri mutate în Coș",
+    "other": "{count} de întâlniri mutate în Coș"
+  }
 }

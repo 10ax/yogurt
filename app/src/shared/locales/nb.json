@@ -632,5 +632,20 @@
   "You can restart once the recording stops.": "Du kan starte på nytt når opptaket stopper.",
   "Check now": "Se etter nå",
   "Eject the Yogurt installer?": "Løse ut Yogurt-installasjonsprogrammet?",
-  "Eject": "Løs ut"
+  "Eject": "Løs ut",
+  "{count} selected": "{count} valgt",
+  "Click meetings to add more": "Klikk på møter for å legge til flere",
+  "Clear selection": "Fjern markering",
+  "Add {count} meetings to folder": {
+    "one": "Legg {count} møte til i mappe",
+    "other": "Legg {count} møter til i mappe"
+  },
+  "Move {count} meetings to Trash": {
+    "one": "Flytt {count} møte til papirkurven",
+    "other": "Flytt {count} møter til papirkurven"
+  },
+  "{count} meetings moved to Trash": {
+    "one": "{count} møte flyttet til papirkurven",
+    "other": "{count} møter flyttet til papirkurven"
+  }
 }

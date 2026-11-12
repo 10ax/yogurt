@@ -593,5 +593,11 @@
   "You can restart once the recording stops.": "Anda bisa memulai ulang setelah perekaman berhenti.",
   "Check now": "Periksa sekarang",
   "Eject the Yogurt installer?": "Keluarkan penginstal Yogurt?",
-  "Eject": "Keluarkan"
+  "Eject": "Keluarkan",
+  "{count} selected": "{count} dipilih",
+  "Click meetings to add more": "Klik rapat untuk menambahkan lagi",
+  "Clear selection": "Hapus pilihan",
+  "Add {count} meetings to folder": "Tambahkan {count} rapat ke folder",
+  "Move {count} meetings to Trash": "Pindahkan {count} rapat ke Sampah",
+  "{count} meetings moved to Trash": "{count} rapat dipindahkan ke Sampah"
 }

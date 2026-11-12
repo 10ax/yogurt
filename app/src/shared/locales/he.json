@@ -645,5 +645,20 @@
   "You can restart once the recording stops.": "אפשר להפעיל מחדש אחרי שההקלטה תיפסק.",
   "Check now": "בדיקה עכשיו",
   "Eject the Yogurt installer?": "להוציא את תוכנית ההתקנה של Yogurt?",
-  "Eject": "הוצא"
+  "Eject": "הוצא",
+  "{count} selected": "{count} נבחרו",
+  "Click meetings to add more": "לחצו על פגישות כדי להוסיף עוד",
+  "Clear selection": "ניקוי הבחירה",
+  "Add {count} meetings to folder": {
+    "one": "הוספת פגישה אחת לתיקייה",
+    "other": "הוספת {count} פגישות לתיקייה"
+  },
+  "Move {count} meetings to Trash": {
+    "one": "העברת פגישה אחת לאשפה",
+    "other": "העברת {count} פגישות לאשפה"
+  },
+  "{count} meetings moved to Trash": {
+    "one": "פגישה אחת הועברה לאשפה",
+    "other": "{count} פגישות הועברו לאשפה"
+  }
 }

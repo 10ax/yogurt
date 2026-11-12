@@ -630,5 +630,11 @@
   "Downloading version {version}…": "Sürüm {version} indiriliyor…",
   "Couldn't check for updates.": "Güncellemeler aranamadı.",
   "You can restart once the recording stops.": "Kayıt durduğunda yeniden başlatabilirsiniz.",
-  "Check now": "Şimdi denetle"
+  "Check now": "Şimdi denetle",
+  "{count} selected": "{count} seçildi",
+  "Click meetings to add more": "Daha fazla eklemek için toplantılara tıklayın",
+  "Clear selection": "Seçimi temizle",
+  "Add {count} meetings to folder": "{count} toplantıyı klasöre ekle",
+  "Move {count} meetings to Trash": "{count} toplantıyı Çöp Kutusuna taşı",
+  "{count} meetings moved to Trash": "{count} toplantı Çöp Kutusuna taşındı"
 }

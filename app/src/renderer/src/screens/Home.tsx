@@ -1,6 +1,6 @@
 import { LoadingContent } from '../components/LoadingContent'
 import { Mic } from '../components/Icons'
-import { useCallback, useEffect, useMemo, useRef, useState } from 'react'
+import { useCallback, useEffect, useMemo, useReducer, useRef, useState } from 'react'
 import { Circle, FileText, Users } from 'lucide-react'
 import type { MeetingCard } from '../../../shared/types'
 import { useScrollMemory } from '../useScrollMemory'
@@ -8,10 +8,13 @@ import { loadUpTo } from '../paging'
 import { t } from '../../../shared/i18n'
 import { dayLabel, timeOf, useDay } from '../dates'
 import { useLanguage } from '../i18n'
-import { toasts } from '../components/TrashToast'
+import { moveMeetingsToTrash, toasts } from '../components/TrashToast'
 import { MeetingRow } from '../components/MeetingRow'
 import { Agenda } from '../components/Agenda'
 import { MEETING_DRAG } from '../folders'
+import { command } from '../keys'
+import { emptySelection, meetingSelection, meetingTargets, selectsMeeting } from '../meetingSelection'
+import { MeetingSelectionBar } from '../components/MeetingSelectionBar'
 import { peopleSummary, useMyName } from '../components/People'
 
 const PAGE = 40
@@ -36,7 +39,7 @@ export function Home({ open, openFolder }: { open: (id: string) => void; openFol
     <div className="home-toolbar-action no-drag">
       {!recording && <button data-testid="new-note" onClick={() => start(null)} className="workspace-button primary"><Mic size={14} aria-hidden="true" />{t('Start recording')}</button>}
     </div>
-    <div className="native-library" ref={past.setRoot}>
+    <div className="native-library" ref={past.setRoot} tabIndex={-1}>
       <h1>{t('Your meetings')}</h1>
       <LoadingContent pending={!past.cards} testId="meetings-loading" skeleton={<MeetingListLoading />} className="library-load">{noMeetings ? <section data-testid="past-empty" className="library-empty empty-state"><div className="empty-state-content">
         <div className="empty-tile"><FileText size={28} strokeWidth={1.5} aria-hidden="true" /></div><h2>{t('Your notes will show up here')}</h2>
@@ -114,6 +117,36 @@ export function usePastNotes(folder?: string) {
 export function PastNotes({ cards, day, more, sentinel, onOpen, openFolder, showFolders = true, loading = false }: { loading?: boolean; cards: MeetingCard[]; day: string; more: boolean; sentinel: (el: HTMLDivElement | null) => void; onOpen: (id: string) => void; openFolder?: (id: string) => void; showFolders?: boolean }) {
   const lang = useLanguage()
   const me = useMyName()
+  const [selection, select] = useReducer(meetingSelection, emptySelection)
+  const [busy, setBusy] = useState(false)
+  const pending = useRef(false), list = useRef<HTMLElement>(null)
+  const visible = useMemo(() => cards.map(card => card.id), [cards])
+  const memberships = useMemo(() => Object.fromEntries(cards.map(card => [card.id, (card.folders ?? []).map(folder => folder.id)])), [cards])
+  const selected = selection.ids.filter(id => visible.includes(id))
+  useEffect(() => { select({ type: 'prune', visible }) }, [visible])
+  useEffect(() => {
+    if (!selected.length) return
+    const escape = (e: KeyboardEvent) => {
+      if (e.key !== 'Escape' || e.defaultPrevented || (e.target instanceof Element && e.target.closest('input,textarea,[contenteditable=true],[role="menu"],dialog,[role="dialog"]'))) return
+      e.preventDefault(); select({ type: 'clear' })
+    }
+    window.addEventListener('keydown', escape)
+    return () => window.removeEventListener('keydown', escape)
+  }, [selected.length > 0])
+  const trash = async (ids: string[]) => {
+    if (pending.current) return
+    pending.current = true; setBusy(true)
+    const keyboard = !!document.activeElement?.matches(':focus-visible')
+    try {
+      const done = await moveMeetingsToTrash(ids, undefined, selected.includes(ids[0]))
+      select({ type: 'remove', ids: done })
+      if (keyboard) {
+        const next = Array.from(list.current?.querySelectorAll<HTMLButtonElement>('.native-meeting-link') ?? []).find(row => !done.includes(row.dataset.meetingId!))
+        const target = next ?? list.current?.closest<HTMLElement>('.native-library')
+        target?.focus()
+      }
+    } finally { pending.current = false; setBusy(false) }
+  }
   const days = useMemo(() => {
     const out: Array<{ key: string; label: string; cards: MeetingCard[] }> = []
     for (const c of cards) {
@@ -123,37 +156,49 @@ export function PastNotes({ cards, day, more, sentinel, onOpen, openFolder, show
     }
     return out
   }, [cards, day, lang])
-  return <section aria-label={t('Saved meetings')}>
+  return <section ref={list} aria-label={t('Saved meetings')} data-selecting={selected.length > 0} onKeyDown={e => {
+    if (!list.current?.contains(e.target as Node) || (e.target as HTMLElement).closest('input,textarea,[contenteditable=true],[role="menu"]')) return
+    if (command(e) && e.key.toLowerCase() === 'a' && !e.altKey && !e.shiftKey) { e.preventDefault(); select({ type: 'all', visible }) }
+    else if (e.key === 'Escape') { e.preventDefault(); select({ type: 'clear' }) }
+  }}>
     {days.map((group) => <div className="native-meeting-day" key={group.key}>
       <h2 data-testid={loading ? undefined : "past-day"}>{loading ? <span className="loading-bar" style={{ width: 48 }} /> : group.label}</h2>
-      <ul>{group.cards.map((meeting) => loading ? <li className="native-meeting-row" key={meeting.id}><PastCard c={meeting} onOpen={onOpen} me="" showFolders={showFolders} loading /></li> : <MeetingRow key={meeting.id} id={meeting.id} recording={meeting.state === 'recording'}>
-        <PastCard c={meeting} onOpen={onOpen} openFolder={openFolder} me={me} showFolders={showFolders} />
+      <ul>{group.cards.map((meeting) => loading ? <li className="native-meeting-row" key={meeting.id}><PastCard c={meeting} onOpen={onOpen} me="" showFolders={showFolders} loading /></li> : <MeetingRow key={meeting.id} id={meeting.id} recording={meeting.state === 'recording'} selected={selected.includes(meeting.id)} targets={meetingTargets(selected, meeting.id)} memberships={memberships} busy={busy}
+        onSelect={() => select({ type: 'select', id: meeting.id, visible })} onTrash={ids => void trash(ids)}
+        onClick={e => {
+          if (selectsMeeting(selected.length, command(e), e.shiftKey)) {
+            e.preventDefault(); e.stopPropagation(); select({ type: e.shiftKey ? 'range' : 'toggle', id: meeting.id, visible })
+          }
+        }}>
+        <PastCard c={meeting} onOpen={onOpen} openFolder={openFolder} me={me} selected={selected.includes(meeting.id)} dragIds={meetingTargets(selected, meeting.id)} showFolders={showFolders} />
       </MeetingRow>)}</ul>
     </div>)}
     {more && <div data-testid="past-more" ref={sentinel} className="h-8" aria-hidden="true" />}
+    {!loading && selected.length > 0 && <MeetingSelectionBar ids={selected} memberships={memberships} list={list} busy={busy} clear={() => select({ type: 'clear' })} trash={() => void trash(selected)} />}
   </section>
 }
 
 /** when: in place of the time (the Trash shows the day); fixed: not dragged onto folders */
-export function PastCard({ c, onOpen, openFolder, when, fixed, me, showFolders = true, loading = false }: { loading?: boolean; c: MeetingCard; onOpen: (id: string) => void; openFolder?: (id: string) => void; when?: string; fixed?: boolean; me: string; showFolders?: boolean }) {
+export function PastCard({ c, onOpen, openFolder, when, fixed, me, selected, dragIds, showFolders = true, loading = false }: { selected?: boolean; dragIds?: string[]; loading?: boolean; c: MeetingCard; onOpen: (id: string) => void; openFolder?: (id: string) => void; when?: string; fixed?: boolean; me: string; showFolders?: boolean }) {
   const recording = c.state === 'recording'
   const minutes = (c.state === 'done' || c.state === 'stopped') && c.endedAt != null
     ? Math.max(1, Math.round((c.durationMs ?? (c.endedAt - c.startedAt)) / 60_000)) : null
   const initials = c.attendees[0]?.name.split(/\s+/).filter(Boolean).slice(0, 2).map((part) => Array.from(part)[0]).join('').toLocaleUpperCase()
   // dragged onto a folder in the sidebar, it goes into that folder
-  return <button data-testid={loading ? undefined : "past-note"} disabled={loading} draggable={!fixed && !loading} onDragStart={fixed ? undefined : (e) => {
-    e.dataTransfer.setData(MEETING_DRAG, c.id)
+  return <button data-testid={loading ? undefined : "past-note"} data-meeting-id={c.id} disabled={loading} draggable={!fixed && !loading} onDragStart={fixed ? undefined : (e) => {
+    e.dataTransfer.setData(MEETING_DRAG, dragIds && dragIds.length > 1 ? JSON.stringify(dragIds) : c.id)
     e.dataTransfer.effectAllowed = 'link'
     const preview = document.createElement('div')
     preview.className = 'meeting-drag-preview'
     preview.setAttribute('aria-hidden', 'true')
     preview.append(e.currentTarget.querySelector('.meeting-identity')!.cloneNode(true), e.currentTarget.querySelector('.meeting-description strong')!.cloneNode(true))
+    if (dragIds && dragIds.length > 1) { const count = document.createElement('span'); count.className = 'meeting-drag-count'; count.textContent = t('{count} meetings', { count: dragIds.length }); preview.append(count) }
     document.body.append(preview)
     e.dataTransfer.setDragImage(preview, 24, 24)
     // The native drag keeps its snapshot after this frame; no duplicate row stays in the page.
     requestAnimationFrame(() => preview.remove())
   }}
-    onClick={() => onOpen(c.id)} className="native-meeting-link">
+    onClick={() => onOpen(c.id)} aria-pressed={selected} className="native-meeting-link">
     <span className="meeting-content">
     <span className={`meeting-identity ${recording ? 'recording' : ''}`} aria-hidden="true">{loading ? null : recording ? <Mic size={16} /> : c.attendees.length > 1 ? <Users size={16} /> : initials || <FileText size={16} />}</span>
     <span className="meeting-description"><strong>{loading ? <span className="loading-bar" style={{ width: c.title.length * 6, maxWidth: '85%' }} /> : c.title}</strong><span data-testid={loading ? undefined : "past-note-attendees"} title={c.attendees.map((p) => p.name).join(', ') || undefined}>{loading ? <span className="loading-bar" style={{ width: 110 }} /> : c.attendees.length ? peopleSummary(c.attendees, me) : t('Personal notes')}</span>

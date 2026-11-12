@@ -630,5 +630,11 @@
   "Downloading version {version}…": "A(z) {version} verzió letöltése…",
   "Couldn't check for updates.": "Nem sikerült frissítéseket keresni.",
   "You can restart once the recording stops.": "A felvétel leállása után indíthatod újra.",
-  "Check now": "Keresés most"
+  "Check now": "Keresés most",
+  "{count} selected": "{count} kiválasztva",
+  "Click meetings to add more": "További megbeszélések hozzáadásához kattintson rájuk",
+  "Clear selection": "Kijelölés törlése",
+  "Add {count} meetings to folder": "{count} megbeszélés hozzáadása mappához",
+  "Move {count} meetings to Trash": "{count} megbeszélés áthelyezése a kukába",
+  "{count} meetings moved to Trash": "{count} megbeszélés a kukába helyezve"
 }

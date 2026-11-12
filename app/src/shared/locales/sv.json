@@ -630,5 +630,23 @@
   "Downloading version {version}…": "Hämtar version {version}…",
   "Couldn't check for updates.": "Kunde inte söka efter uppdateringar.",
   "You can restart once the recording stops.": "Du kan starta om när inspelningen har stoppat.",
-  "Check now": "Sök nu"
+  "Check now": "Sök nu",
+  "{count} selected": {
+    "one": "{count} valt",
+    "other": "{count} valda"
+  },
+  "Click meetings to add more": "Klicka på möten för att lägga till fler",
+  "Clear selection": "Rensa markering",
+  "Add {count} meetings to folder": {
+    "one": "Lägg till {count} möte i mapp",
+    "other": "Lägg till {count} möten i mapp"
+  },
+  "Move {count} meetings to Trash": {
+    "one": "Flytta {count} möte till papperskorgen",
+    "other": "Flytta {count} möten till papperskorgen"
+  },
+  "{count} meetings moved to Trash": {
+    "one": "{count} möte flyttat till papperskorgen",
+    "other": "{count} möten flyttade till papperskorgen"
+  }
 }

@@ -1,37 +1,49 @@
 import { FolderGlyph } from './FolderAppearance'
-import { useEffect, useRef, useState, type KeyboardEvent } from 'react'
-import { Check, FolderIcon, Plus, X } from 'lucide-react'
+import { useEffect, useMemo, useRef, useState, type KeyboardEvent } from 'react'
+import { Check, FolderIcon, Minus, Plus, X } from 'lucide-react'
 import type { Folder } from '../../../shared/types'
 import { t } from '../../../shared/i18n'
-import { useFolders } from '../folders'
+import { setMeetingsInFolder, useFolders } from '../folders'
+import { folderCheck, nextFolderCheck, reconcileFolderChecks, type FolderMemberships, type PendingFolderChecks } from '../folderSelection'
 import { toasts } from './TrashToast'
 
 export type FolderSuggestion = { folder: Folder; dismiss: () => void }
 
 /**
- * Every folder with a check on the ones this meeting is in; a click puts it in or takes it out, and the list stays
- * open for the next. New folder… asks for a name (onNew), and the meeting goes into it.
+ * A full check removes the selection; an empty or mixed check adds it. The picker stays open for the next toggle.
  */
-export function FolderPicker({ meetingId, onNew, testId }: { meetingId: string; onNew: () => void; testId: string }) {
+export function FolderPicker({ meetingId, meetingIds, memberships, onNew, testId }: { meetingId?: string; meetingIds?: string[]; memberships?: FolderMemberships; onNew: () => void; testId: string }) {
   const all = useFolders()
-  const mine = useFolders(meetingId)
-  // shown at once while main catches up, so a quick second click undoes the first
-  const [pending, setPending] = useState<Record<string, boolean>>({})
-  useEffect(() => { setPending({}) }, [mine])
-  const inIt = (id: string) => pending[id] ?? !!mine?.some((s) => s.id === id)
-  const toggle = (id: string) => {
-    const on = !inIt(id)
-    setPending((p) => ({ ...p, [id]: on }))
-    void (on ? window.yogurt.folders.add(id, meetingId) : window.yogurt.folders.remove(id, meetingId))
+  const mine = useFolders(memberships ? null : meetingId)
+  const ids = useMemo(() => meetingIds ?? (meetingId ? [meetingId] : []), [meetingIds, meetingId])
+  const real = useMemo(() => memberships ?? { [meetingId ?? '']: mine?.map(folder => folder.id) ?? [] }, [memberships, meetingId, mine])
+  const [pending, setPending] = useState<PendingFolderChecks>({})
+  const saving = useRef(false)
+  const busy = Object.values(pending).some(change => change.saving)
+  useEffect(() => { setPending(p => reconcileFolderChecks(p, ids, real)) }, [ids, real, pending])
+  const inIt = (id: string) => id in pending ? pending[id].checked : folderCheck(ids, real, id)
+  const toggle = async (id: string) => {
+    if (saving.current || !ids.length || (!memberships && !mine)) return
+    const on = nextFolderCheck(inIt(id))
+    saving.current = true
+    setPending(p => ({ ...p, [id]: { checked: on, saving: true, source: real } }))
+    try {
+      await setMeetingsInFolder(id, ids, on)
+      setPending(p => ({ ...p, [id]: { ...p[id], saving: false } }))
+    } catch {
+      setPending(p => { const next = { ...p }; delete next[id]; return next })
+      toasts.add({ title: t("Yogurt couldn't make that change. Try again.") })
+    } finally { saving.current = false }
   }
   const row = 'flex w-full items-center gap-2.5 rounded-xl px-3 py-2 text-start text-sm hover:bg-[var(--line)] focus-visible:bg-[var(--line)] focus-visible:outline-none'
   return <div data-testid={testId} role="group" aria-label={t('Folders')}>
-    {all?.map((s) => <button key={s.id} role="menuitemcheckbox" aria-checked={inIt(s.id)} data-testid="folder-option" onClick={() => toggle(s.id)} className={row}>
+    {all?.map((s) => <button key={s.id} role="menuitemcheckbox" aria-checked={inIt(s.id)} aria-disabled={busy || (!memberships && !mine)} data-testid="folder-option" onClick={() => void toggle(s.id)} className={row}>
       <FolderGlyph appearance={s} size={15} />
       <span className="min-w-0 flex-1 truncate">{s.name}</span>
-      {inIt(s.id) && <Check size={15} aria-hidden="true" className="shrink-0 text-accent" />}
+      {inIt(s.id) === true && <Check size={15} aria-hidden="true" className="shrink-0 text-accent" />}
+      {inIt(s.id) === 'mixed' && <Minus size={15} aria-hidden="true" className="shrink-0 text-accent" />}
     </button>)}
-    <button role="menuitem" data-testid="folder-new" onClick={onNew} className={`${row} ${all?.length ? 'folder-picker-new' : ''}`}>
+    <button role="menuitem" data-testid="folder-new" disabled={busy} onClick={onNew} className={`${row} ${all?.length ? 'folder-picker-new' : ''}`}>
       <Plus size={15} aria-hidden="true" className="shrink-0 text-muted" />{t('New folder…')}
     </button>
   </div>

@@ -686,5 +686,29 @@
   "Downloading version {version}…": "جارٍ تنزيل الإصدار {version}…",
   "Couldn't check for updates.": "تعذّر البحث عن تحديثات.",
   "You can restart once the recording stops.": "يمكنك إعادة التشغيل بعد توقف التسجيل.",
-  "Check now": "تحقّق الآن"
+  "Check now": "تحقّق الآن",
+  "{count} selected": "تم تحديد {count}",
+  "Click meetings to add more": "انقر على الاجتماعات لإضافة المزيد",
+  "Clear selection": "مسح التحديد",
+  "Add {count} meetings to folder": {
+    "one": "إضافة اجتماع واحد إلى مجلد",
+    "two": "إضافة اجتماعين إلى مجلد",
+    "few": "إضافة {count} اجتماعات إلى مجلد",
+    "many": "إضافة {count} اجتماعًا إلى مجلد",
+    "other": "إضافة {count} اجتماع إلى مجلد"
+  },
+  "Move {count} meetings to Trash": {
+    "one": "نقل اجتماع واحد إلى سلة المهملات",
+    "two": "نقل اجتماعين إلى سلة المهملات",
+    "few": "نقل {count} اجتماعات إلى سلة المهملات",
+    "many": "نقل {count} اجتماعًا إلى سلة المهملات",
+    "other": "نقل {count} اجتماع إلى سلة المهملات"
+  },
+  "{count} meetings moved to Trash": {
+    "one": "تم نقل اجتماع واحد إلى سلة المهملات",
+    "two": "تم نقل اجتماعين إلى سلة المهملات",
+    "few": "تم نقل {count} اجتماعات إلى سلة المهملات",
+    "many": "تم نقل {count} اجتماعًا إلى سلة المهملات",
+    "other": "تم نقل {count} اجتماع إلى سلة المهملات"
+  }
 }

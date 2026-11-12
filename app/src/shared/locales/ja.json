@@ -591,5 +591,11 @@
   "Downloading version {version}…": "バージョン {version} をダウンロード中…",
   "Couldn't check for updates.": "アップデートを確認できませんでした。",
   "You can restart once the recording stops.": "録音が止まったら再起動できます。",
-  "Check now": "今すぐ確認"
+  "Check now": "今すぐ確認",
+  "{count} selected": "{count}件選択中",
+  "Click meetings to add more": "ミーティングをクリックして追加",
+  "Clear selection": "選択を解除",
+  "Add {count} meetings to folder": "{count}件のミーティングをフォルダに追加",
+  "Move {count} meetings to Trash": "{count}件のミーティングをゴミ箱に移動",
+  "{count} meetings moved to Trash": "{count}件のミーティングをゴミ箱に移動しました"
 }

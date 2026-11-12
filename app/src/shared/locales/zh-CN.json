@@ -591,5 +591,11 @@
   "Downloading version {version}…": "正在下载版本 {version}…",
   "Couldn't check for updates.": "无法检查更新。",
   "You can restart once the recording stops.": "录音停止后即可重新启动。",
-  "Check now": "立即检查"
+  "Check now": "立即检查",
+  "{count} selected": "已选择 {count} 个",
+  "Click meetings to add more": "点击会议以添加更多",
+  "Clear selection": "清除选择",
+  "Add {count} meetings to folder": "将 {count} 个会议添加到文件夹",
+  "Move {count} meetings to Trash": "将 {count} 个会议移到废纸篓",
+  "{count} meetings moved to Trash": "已将 {count} 个会议移到废纸篓"
 }

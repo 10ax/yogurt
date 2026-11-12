@@ -630,5 +630,11 @@
   "Downloading version {version}…": "ভার্সন {version} ডাউনলোড হচ্ছে…",
   "Couldn't check for updates.": "আপডেট খোঁজা যায়নি।",
   "You can restart once the recording stops.": "রেকর্ডিং থামলে আবার চালু করতে পারবেন।",
-  "Check now": "এখনই দেখুন"
+  "Check now": "এখনই দেখুন",
+  "{count} selected": "{count}টি বেছে নেওয়া হয়েছে",
+  "Click meetings to add more": "আরও যোগ করতে মিটিংয়ে ক্লিক করুন",
+  "Clear selection": "নির্বাচন মুছুন",
+  "Add {count} meetings to folder": "{count}টি মিটিং ফোল্ডারে যোগ করুন",
+  "Move {count} meetings to Trash": "{count}টি মিটিং ট্র্যাশে সরান",
+  "{count} meetings moved to Trash": "{count}টি মিটিং ট্র্যাশে সরানো হয়েছে"
 }

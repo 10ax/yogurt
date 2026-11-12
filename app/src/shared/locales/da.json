@@ -630,5 +630,20 @@
   "Downloading version {version}…": "Henter version {version}…",
   "Couldn't check for updates.": "Kunne ikke søge efter opdateringer.",
   "You can restart once the recording stops.": "Du kan genstarte, når optagelsen stopper.",
-  "Check now": "Søg nu"
+  "Check now": "Søg nu",
+  "{count} selected": "{count} valgt",
+  "Click meetings to add more": "Klik på møder for at tilføje flere",
+  "Clear selection": "Ryd markering",
+  "Add {count} meetings to folder": {
+    "one": "Føj {count} møde til mappe",
+    "other": "Føj {count} møder til mappe"
+  },
+  "Move {count} meetings to Trash": {
+    "one": "Flyt {count} møde til papirkurv",
+    "other": "Flyt {count} møder til papirkurv"
+  },
+  "{count} meetings moved to Trash": {
+    "one": "{count} møde flyttet til papirkurv",
+    "other": "{count} møder flyttet til papirkurv"
+  }
 }

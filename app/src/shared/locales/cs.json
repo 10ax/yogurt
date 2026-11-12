@@ -656,5 +656,30 @@
   "Downloading version {version}…": "Stahování verze {version}…",
   "Couldn't check for updates.": "Aktualizace se nepodařilo zkontrolovat.",
   "You can restart once the recording stops.": "Restartovat můžete, až nahrávání skončí.",
-  "Check now": "Zkontrolovat"
+  "Check now": "Zkontrolovat",
+  "{count} selected": {
+    "one": "{count} vybrána",
+    "few": "{count} vybrány",
+    "other": "{count} vybráno"
+  },
+  "Click meetings to add more": "Kliknutím na schůzky přidáte další",
+  "Clear selection": "Zrušit výběr",
+  "Add {count} meetings to folder": {
+    "one": "Přidat {count} schůzku do složky",
+    "few": "Přidat {count} schůzky do složky",
+    "many": "Přidat {count} schůzky do složky",
+    "other": "Přidat {count} schůzek do složky"
+  },
+  "Move {count} meetings to Trash": {
+    "one": "Přesunout {count} schůzku do koše",
+    "few": "Přesunout {count} schůzky do koše",
+    "many": "Přesunout {count} schůzky do koše",
+    "other": "Přesunout {count} schůzek do koše"
+  },
+  "{count} meetings moved to Trash": {
+    "one": "{count} schůzka přesunuta do koše",
+    "few": "{count} schůzky přesunuty do koše",
+    "many": "{count} schůzky přesunuto do koše",
+    "other": "{count} schůzek přesunuto do koše"
+  }
 }

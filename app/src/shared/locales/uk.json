@@ -656,5 +656,26 @@
   "Downloading version {version}…": "Завантаження версії {version}…",
   "Couldn't check for updates.": "Не вдалося перевірити оновлення.",
   "You can restart once the recording stops.": "Перезапустити можна після зупинки запису.",
-  "Check now": "Перевірити"
+  "Check now": "Перевірити",
+  "{count} selected": "Вибрано: {count}",
+  "Click meetings to add more": "Натискайте на зустрічі, щоб додати ще",
+  "Clear selection": "Скасувати вибір",
+  "Add {count} meetings to folder": {
+    "one": "Додати {count} зустріч до папки",
+    "few": "Додати {count} зустрічі до папки",
+    "many": "Додати {count} зустрічей до папки",
+    "other": "Додати {count} зустрічі до папки"
+  },
+  "Move {count} meetings to Trash": {
+    "one": "Перемістити {count} зустріч до Кошика",
+    "few": "Перемістити {count} зустрічі до Кошика",
+    "many": "Перемістити {count} зустрічей до Кошика",
+    "other": "Перемістити {count} зустрічі до Кошика"
+  },
+  "{count} meetings moved to Trash": {
+    "one": "{count} зустріч переміщено до Кошика",
+    "few": "{count} зустрічі переміщено до Кошика",
+    "many": "{count} зустрічей переміщено до Кошика",
+    "other": "{count} зустрічі переміщено до Кошика"
+  }
 }

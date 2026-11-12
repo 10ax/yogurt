@@ -591,5 +591,11 @@
   "Downloading version {version}…": "Memuat turun versi {version}…",
   "Couldn't check for updates.": "Tidak dapat menyemak kemas kini.",
   "You can restart once the recording stops.": "Anda boleh mula semula selepas rakaman berhenti.",
-  "Check now": "Semak sekarang"
+  "Check now": "Semak sekarang",
+  "{count} selected": "{count} dipilih",
+  "Click meetings to add more": "Klik mesyuarat untuk menambah lagi",
+  "Clear selection": "Kosongkan pilihan",
+  "Add {count} meetings to folder": "Tambah {count} mesyuarat ke folder",
+  "Move {count} meetings to Trash": "Alih {count} mesyuarat ke Sampah",
+  "{count} meetings moved to Trash": "{count} mesyuarat dialihkan ke Sampah"
 }

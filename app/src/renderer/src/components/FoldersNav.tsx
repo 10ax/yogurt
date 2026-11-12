@@ -6,7 +6,8 @@ import { Reorder, useDragControls, useReducedMotion } from 'motion/react'
 import type { Folder } from '../../../shared/types'
 import { t } from '../../../shared/i18n'
 import { FolderGlyph } from './FolderAppearance'
-import { MEETING_DRAG } from '../folders'
+import { MEETING_DRAG, addMeetingsToFolder } from '../folders'
+import { draggedMeetings } from '../meetingSelection'
 import { DeleteFolder, FolderName, FolderAppearanceDialog } from './FolderDialogs'
 import { toasts } from './TrashToast'
 
@@ -122,8 +123,11 @@ function FolderItem({ folder, collapsed, current, go, onRename, onDelete, onAppe
       onDragLeave={() => setDrop(false)}
       onDrop={(e) => {
         setDrop(false)
-        const id = e.dataTransfer.getData(MEETING_DRAG)
-        if (id) { e.preventDefault(); void window.yogurt.folders.add(folder.id, id) }
+        const ids = draggedMeetings(e.dataTransfer.getData(MEETING_DRAG))
+        if (ids.length) {
+          e.preventDefault()
+          void addMeetingsToFolder(folder.id, ids).catch(() => toasts.add({ title: t("Yogurt couldn't add this note to the folder. Try again.") }))
+        }
       }}>
       <FolderGlyph appearance={folder} /><span>{folder.name}</span>
       <small data-testid="sidebar-folder-count" aria-label={t('{count} meetings', { count: folder.count })}>{folder.count}</small>

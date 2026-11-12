@@ -17,7 +17,7 @@ export function Folder({ folder, open, onStarted }: { folder: FolderRow; open: (
   const day = useDay()
   return <div data-testid="folder-page" className="native-folder">
     <StartRecording onStarted={onStarted} />
-    <div className="native-library" ref={past.setRoot}>
+    <div className="native-library" ref={past.setRoot} tabIndex={-1}>
       <div className="folder-page-heading"><button className="folder-heading-icon" data-testid="folder-heading-icon" aria-label={t('Change icon')} title={t('Change icon')} onClick={() => setAppearance(true)} data-folder-color={folder.color}><FolderGlyph appearance={folder} size={24} /></button><FolderTitle folder={folder} /></div>
       {appearance && <FolderAppearanceDialog folder={folder} onDone={() => setAppearance(false)} />}
       <LoadingContent pending={!past.cards} testId="meetings-loading" skeleton={<MeetingListLoading showFolders={false} />} className="library-load">{!past.cards?.length ? <section data-testid="folder-empty" className="library-empty empty-state"><div className="empty-state-content">

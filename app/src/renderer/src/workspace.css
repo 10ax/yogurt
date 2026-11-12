@@ -148,12 +148,11 @@
 .native-meeting-row:hover .meeting-delete,.native-meeting-row:has(:focus-visible) .meeting-delete { opacity:1; }
 .meeting-delete:hover { color:var(--danger); }
 .meeting-more { width:27px;height:27px; }
-.row-swap { --row-settle:2px; }
-.row-swap:dir(rtl) { --row-settle:-2px; }
-.row-swap-meta { grid-column:2;transform:translateX(0);transition:opacity 160ms ease-out,transform 160ms ease-out; }
-.row-swap-actions { grid-area:1 / 2;justify-self:end;z-index:1;opacity:0;transform:translateX(var(--row-settle));pointer-events:none;transition:opacity 160ms ease-out,transform 160ms ease-out; }
-.row-swap:is(:hover,:focus-visible,:has(:focus-visible),[data-menu-open=true],:has(>.row-swap-actions[aria-expanded=true])) .row-swap-meta { opacity:0;transform:translateX(calc(-1 * var(--row-settle)));pointer-events:none; }
-.row-swap:is(:hover,:focus-visible,:has(:focus-visible),[data-menu-open=true],:has(>.row-swap-actions[aria-expanded=true]))>.row-swap-actions { opacity:1;transform:translateX(0);pointer-events:auto; }
+/* Opacity only: sliding text a couple of pixels re-rasterizes the glyphs, which reads as a jitter. The time leaves quickly and the button arrives just after, so the two never sit on top of each other. */
+.row-swap-meta { grid-column:2;transition:opacity 90ms ease-out 40ms; }
+.row-swap-actions { grid-area:1 / 2;justify-self:end;z-index:1;opacity:0;pointer-events:none;transition:opacity 90ms ease-out; }
+.row-swap:is(:hover,:focus-visible,:has(:focus-visible),[data-menu-open=true],:has(>.row-swap-actions[aria-expanded=true])) .row-swap-meta { opacity:0;pointer-events:none;transition-delay:0ms; }
+.row-swap:is(:hover,:focus-visible,:has(:focus-visible),[data-menu-open=true],:has(>.row-swap-actions[aria-expanded=true]))>.row-swap-actions { opacity:1;pointer-events:auto;transition:opacity 120ms ease-out 50ms; }
 .row-swap :is(.workspace-icon,.chat-icon) { background:transparent; }
 .row-swap :is(.workspace-icon,.chat-icon):hover:not(:disabled) { background:var(--control-hover); }
 .row-swap :is(.workspace-icon,.chat-icon):active:not(:disabled) { background:var(--control-pressed); }
@@ -591,3 +590,20 @@ body:has(.chat-panel[open]) .app-toast-viewport { inset-inline-end:460px; }
 .note-summary-rim { inset:0;z-index:2; }
 .note-summary-status { position:absolute;inset-inline-start:14px;bottom:10px;z-index:1;background:var(--bg);color:var(--muted);font-size:11px;line-height:16px;pointer-events:none; }
 .note-latest { position:absolute;bottom:10px;left:50%;transform:translateX(-50%);z-index:3;display:flex;align-items:center;gap:4px;border:1px solid var(--line);border-radius:6px;padding:4px 12px;background:var(--float);color:var(--ink);font-size:12px;line-height:16px;box-shadow:var(--shadow); }
+
+.native-library { --meeting-selection-tint:6%; }
+@media (prefers-color-scheme:dark) { .native-library { --meeting-selection-tint:9%; } }
+.native-library .native-meeting-row[data-selected=true],.native-library .native-meeting-row[data-selected=true]:hover { background:color-mix(in srgb,var(--primary) var(--meeting-selection-tint),var(--bg)); }
+.native-meeting-row[data-selected=true]+.native-meeting-row[data-selected=true] { border-top-left-radius:0;border-top-right-radius:0; }
+.native-meeting-row[data-selected=true]:has(+.native-meeting-row[data-selected=true]) { border-bottom-left-radius:0;border-bottom-right-radius:0; }
+.native-library:has([data-selecting=true]) { padding-bottom:100px; }
+.native-library:focus-visible { outline:2px solid var(--focus);outline-offset:-2px; }
+.meeting-menu-divider { height:1px;margin:4px 0;background:var(--line); }
+.meeting-selection-bar { position:fixed;transform:translateX(-50%);display:flex;align-items:center;flex-wrap:wrap;gap:10px;width:max-content;padding:9px 10px 9px 16px;border:1px solid var(--line);border-radius:11px;background:var(--float);color:var(--ink);box-shadow:0 8px 24px #0000001F,0 1px 3px #00000014;z-index:60; }
+.meeting-selection-count { margin-inline-end:8px;font-size:12px;font-weight:500;font-variant-numeric:tabular-nums; }
+.meeting-selection-count small { display:block;color:var(--muted);font-size:11px;line-height:14px;font-weight:400; }
+.meeting-selection-delete { color:var(--danger); }
+.meeting-selection-folder { position:relative; }
+.meeting-selection-menu { position:absolute;width:240px;max-width:calc(100vw - 16px);max-height:min(320px,60vh);overflow:auto;border:1px solid var(--line); }
+.meeting-selection-bar button:focus-visible { outline:2px solid var(--focus);outline-offset:2px; }
+.meeting-drag-count { border-radius:5px;padding:2px 6px;background:var(--primary);color:#FFFFFF;font-size:11px; }

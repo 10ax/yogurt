@@ -68,5 +68,21 @@
   "Downloading Yogurt's AI: {progress}": "Downloading Yogurt's AI: {progress}",
   "{done} of {total} GB": "{done} of {total} GB",
   "{progress} · about {minutes} min left": "{progress} · about {minutes} min left",
-  "You can record now. Yogurt writes your notes and answers questions once this finishes.": "You can record now. Yogurt writes your notes and answers questions once this finishes."
+  "You can record now. Yogurt writes your notes and answers questions once this finishes.": "You can record now. Yogurt writes your notes and answers questions once this finishes.",
+  "{count} selected": {
+    "one": "{count} selected",
+    "other": "{count} selected"
+  },
+  "Add {count} meetings to folder": {
+    "one": "Add {count} meeting to folder",
+    "other": "Add {count} meetings to folder"
+  },
+  "Move {count} meetings to Trash": {
+    "one": "Move {count} meeting to Trash",
+    "other": "Move {count} meetings to Trash"
+  },
+  "{count} meetings moved to Trash": {
+    "one": "{count} meeting moved to Trash",
+    "other": "{count} meetings moved to Trash"
+  }
 }

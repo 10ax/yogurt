@@ -656,5 +656,29 @@
   "Downloading version {version}…": "Pobieranie wersji {version}…",
   "Couldn't check for updates.": "Nie udało się sprawdzić aktualizacji.",
   "You can restart once the recording stops.": "Możesz uruchomić ponownie po zatrzymaniu nagrywania.",
-  "Check now": "Sprawdź teraz"
+  "Check now": "Sprawdź teraz",
+  "{count} selected": {
+    "one": "Wybrano {count}",
+    "other": "Wybrano {count}"
+  },
+  "Click meetings to add more": "Kliknij spotkania, aby dodać kolejne",
+  "Clear selection": "Wyczyść zaznaczenie",
+  "Add {count} meetings to folder": {
+    "one": "Dodaj {count} spotkanie do folderu",
+    "few": "Dodaj {count} spotkania do folderu",
+    "many": "Dodaj {count} spotkań do folderu",
+    "other": "Dodaj {count} spotkania do folderu"
+  },
+  "Move {count} meetings to Trash": {
+    "one": "Przenieś {count} spotkanie do kosza",
+    "few": "Przenieś {count} spotkania do kosza",
+    "many": "Przenieś {count} spotkań do kosza",
+    "other": "Przenieś {count} spotkania do kosza"
+  },
+  "{count} meetings moved to Trash": {
+    "one": "Przeniesiono {count} spotkanie do kosza",
+    "few": "Przeniesiono {count} spotkania do kosza",
+    "many": "Przeniesiono {count} spotkań do kosza",
+    "other": "Przeniesiono {count} spotkania do kosza"
+  }
 }

@@ -1,5 +1,5 @@
 import { useEffect, useLayoutEffect, useRef, useState } from 'react'
-import { WidgetIntent, widgetContains, type WidgetLayout } from '../../../shared/widgetMorph'
+import { WidgetIntent, widgetContains, widgetExpanded, type WidgetLayout } from '../../../shared/widgetMorph'
 
 /** The same surface and details travel between the two shapes. */
 export function useWidgetMorph(card: React.RefObject<HTMLDivElement | null>, warning: boolean, time: string) {
@@ -43,9 +43,7 @@ export function useWidgetMorph(card: React.RefObject<HTMLDivElement | null>, war
     const items = [...el.querySelectorAll<HTMLElement>('.widget-details > *')]
     const body = el.querySelector<HTMLElement>('.widget-preview')!
     const timerWidth = items[2].getBoundingClientRect().width
-    const height = Math.min(warning ? 446 : 390, layout.open.height)
-    const up = layout.pill.y + layout.pill.height > layout.open.y + layout.open.height / 2
-    const expanded = { ...layout.open, height, y: layout.open.y + (up ? layout.open.height - height : 0) }
+    const expanded = widgetExpanded(layout, warning)
     morph.current = (immediate = false) => {
       freeze()
       const opened = intent.open, box = opened ? expanded : layout.pill
@@ -69,8 +67,8 @@ export function useWidgetMorph(card: React.RefObject<HTMLDivElement | null>, war
       freeze()
       el.style.left = `${parseFloat(el.style.left) + layout.pill.x - before.pill.x}px`
       el.style.top = `${parseFloat(el.style.top) + layout.pill.y - before.pill.y}px`
-      el.style.width = `${Math.min(parseFloat(el.style.width), layout.open.width)}px`
-      el.style.height = `${Math.min(parseFloat(el.style.height), layout.open.height)}px`
+      el.style.width = `${Math.min(parseFloat(el.style.width), layout.bounds.width)}px`
+      el.style.height = `${Math.min(parseFloat(el.style.height), layout.bounds.height)}px`
     } else morph.current(true)
     previous.current = layout
     wake.current()

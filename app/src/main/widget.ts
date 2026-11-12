@@ -8,7 +8,7 @@ import type { WidgetView } from '../shared/types'
 import { floatingType, floatOverFullScreen } from './float'
 import { isFake } from './paths'
 import { t, onLanguage } from '../shared/i18n'
-import { widgetLayout, widgetContains, type WidgetSurface, type WidgetLayout } from '../shared/widgetMorph'
+import { widgetLayout, widgetDragLayout, widgetRestLayout, widgetContains, type WidgetSurface, type WidgetLayout } from '../shared/widgetMorph'
 
 const BACKGROUND = process.env.YOGURT_BACKGROUND === '1'
 const FIRST_W = 127, FIRST_H = 42
@@ -62,7 +62,7 @@ export function createWidget(d: { open(meetingId: string): void; stop(meetingId:
   let win: BrowserWindow | undefined
   let pill = { x: 0, y: 0, width: FIRST_W, height: FIRST_H }
   let layout: WidgetLayout | null = null
-  let dragFrame: { layout: WidgetLayout; pill: typeof pill } | null = null
+  let dragFrame: { layout: WidgetLayout; pill: typeof pill; surface: WidgetSurface } | null = null
   let surface: WidgetSurface | null = null
   let pressed = false, ignoring = true, sentPointer: string | null = null
   let pointerTimer: NodeJS.Timeout | undefined
@@ -95,9 +95,11 @@ export function createWidget(d: { open(meetingId: string): void; stop(meetingId:
     if (!shown || BACKGROUND || !win || win.isDestroyed()) return
     pointerTimer = setTimeout(poll, hitTest() || pressed ? 16 : 250)
   }
-  const place = () => {
+  const place = (next?: WidgetLayout) => {
     if (!win || win.isDestroyed()) return
-    layout = widgetLayout(pill, screen.getDisplayMatching(pill).workArea)
+    const previous = layout
+    layout = next ?? widgetLayout(pill, screen.getDisplayMatching(pill).workArea)
+    if (surface && previous) surface = { ...surface, x: surface.x + layout.pill.x - previous.pill.x, y: surface.y + layout.pill.y - previous.pill.y }
     win.setBounds(layout.bounds)
     win.webContents.send('widget:layout', layout)
     hitTest()
@@ -218,33 +220,31 @@ export function createWidget(d: { open(meetingId: string): void; stop(meetingId:
     // Keep the unclamped gesture position so small deltas can cross a display boundary.
     dragPosition = { x, y }
     if (!layout) return
-    dragFrame ??= { layout, pill: { ...pill } }
-    pill = fit({ ...pill, x, y })
-    const frame = dragFrame.layout
-    if (surface && surface.height > FIRST_H + 1) {
-      const area = screen.getDisplayMatching(pill).workArea
-      if (frame.open.width > area.width || frame.open.height > area.height) {
-        place(); dragFrame = null; return
-      }
-      // Keep the frozen surface and its remaining travel on the destination display.
-      const left = Math.min(surface.x, frame.open.x) - frame.pill.x
-      const top = Math.min(surface.y, frame.open.y) - frame.pill.y
-      const right = Math.max(surface.x + surface.width, frame.open.x + frame.open.width) - frame.pill.x
-      const bottom = Math.max(surface.y + surface.height, frame.open.y + frame.open.height) - frame.pill.y
-      pill.x = Math.max(area.x - left, Math.min(area.x + area.width - right, pill.x))
-      pill.y = Math.max(area.y - top, Math.min(area.y + area.height - bottom, pill.y))
+    dragFrame ??= { layout, pill: { ...pill }, surface: surface ?? { ...layout.pill, radius: 10 } }
+    const { workArea } = screen.getDisplayNearestPoint({ x: Math.round(x + pill.width / 2), y: Math.round(y + pill.height / 2) })
+    if (dragFrame.surface.width > workArea.width || dragFrame.surface.height > workArea.height) {
+      pill = fit({ ...pill, x, y }); place(); dragFrame = null; return
     }
-    layout = { ...frame, bounds: { ...frame.bounds, x: frame.bounds.x + pill.x - dragFrame.pill.x, y: frame.bounds.y + pill.y - dragFrame.pill.y } }
-    win.setBounds(layout.bounds); hitTest()
+    layout = widgetDragLayout(dragFrame.layout, dragFrame.surface, x - dragFrame.pill.x, y - dragFrame.pill.y, workArea)
+    pill = { ...layout.pill, x: layout.bounds.x + layout.pill.x, y: layout.bounds.y + layout.pill.y }
+    surface = { ...dragFrame.surface, x: dragFrame.surface.x + layout.pill.x - dragFrame.layout.pill.x, y: dragFrame.surface.y + layout.pill.y - dragFrame.layout.pill.y }
+    win.setBounds(layout.bounds)
+    win.webContents.send('widget:layout', layout)
+    hitTest()
   })
   ipcMain.on('widget:drag-end', (e) => {
     if (!win || win.isDestroyed() || e.sender !== win.webContents) return
-    if (dragPosition) lastPosition = { x: pill.x, y: pill.y }
+    if (dragPosition) {
+      lastPosition = { x: pill.x, y: pill.y }
+      if (layout && surface && surface.height > FIRST_H + 1) place(widgetRestLayout(layout, screen.getDisplayMatching(pill).workArea, model.view(Date.now())?.note ? 446 : 390))
+    }
     dragPosition = null; dragFrame = null
     if (!surface || surface.height <= FIRST_H + 1) place()
   })
   ipcMain.on('widget:size', (e, w: unknown, h: unknown) => {
     if (!win || win.isDestroyed() || e.sender !== win.webContents || typeof w !== 'number' || !Number.isFinite(w) || w < 60 || w > 340 || h !== FIRST_H || pressed) return
+    // Apply timer width changes once collapsed, so they cannot re-anchor a dropped card.
+    if (surface && surface.height > FIRST_H + 1) return
     // rounded, not up: the timer is a fractional width, and rounding up left the right end a pixel wider than the left
     const width = Math.round(w)
     if (width === pill.width) return

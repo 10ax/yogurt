@@ -102,22 +102,50 @@ describe('floating recorder placement', () => {
     state.start!({ id: 'next', title: 'Next meeting', startedAt: 1 })
     expect(widget.snapshot().bounds).toEqual(resized)
   })
-  it('drags an expanded surface as one window and clamps all of it at the edge', async () => {
+  it.each([42, 180, 390, 446])('drags a %spt surface to every work area edge without moving it on release', async height => {
     const { widgetLayout } = await import('../src/shared/widgetMorph')
-    const before = widget.snapshot().bounds!, layout = widgetLayout(before, state.displays[0])
-    send('widget:surface', { ...layout.open, height: 390, radius: 16 })
+    const area = state.displays[0]
+    area.y = 24; area.height = 776
+    state.displayEvents.get('display-metrics-changed')!()
+    const before = widget.snapshot().bounds!, layout = widgetLayout(before, area)
+    const surface = { ...(height === 42 ? layout.pill : layout.open), height, radius: 16 }
+    send('widget:surface', surface)
     send('widget:pressed', true)
     const frame = win.getBounds()
     send('widget:drag', -100, 10)
     expect(win.getBounds()).toEqual({ ...frame, x: frame.x - 100, y: frame.y + 10 })
     expect(widget.snapshot().bounds).toEqual({ ...before, x: before.x - 100, y: before.y + 10 })
-    send('widget:drag', 9999, 9999)
-    const edge = win.getBounds()
-    expect(edge.x + layout.open.x + layout.open.width).toBe(1200)
-    expect(edge.y + layout.open.y + layout.open.height).toBe(800)
-    send('widget:drag-end'); send('widget:pressed', false)
-    expect(win.getBounds()).toEqual(edge)
-    expect(state.windows).toHaveLength(1)
+    let previous = { x: before.x - 100, y: before.y + 10 }
+    const offset = { x: surface.x - layout.pill.x, y: surface.y - layout.pill.y }
+    try {
+      for (const target of [
+        { x: 500, y: 24 }, { x: 0, y: 24 }, { x: 0, y: 800 - height },
+        { x: 1200 - surface.width, y: 800 - height }, { x: 1200 - surface.width, y: 24 },
+      ]) {
+        const anchor = { x: target.x - offset.x, y: target.y - offset.y }
+        send('widget:drag', anchor.x - previous.x, anchor.y - previous.y)
+        const next = win.webContents.send.mock.calls.filter(([channel]: [string]) => channel === 'widget:layout').at(-1)[1]
+        const visible = { ...surface, x: surface.x + next.pill.x - layout.pill.x, y: surface.y + next.pill.y - layout.pill.y }
+        expect(next.bounds.x + visible.x).toBe(target.x)
+        expect(next.bounds.y + visible.y).toBe(target.y)
+        expect(win.getBounds().x).toBeGreaterThanOrEqual(0)
+        expect(win.getBounds().y).toBeGreaterThanOrEqual(24)
+        expect(win.getBounds().x + win.getBounds().width).toBeLessThanOrEqual(1200)
+        expect(win.getBounds().y + win.getBounds().height).toBeLessThanOrEqual(800)
+        send('widget:surface', visible)
+        previous = anchor
+      }
+      const dropped = win.getBounds()
+      send('widget:drag-end'); send('widget:pressed', false)
+      expect(widget.snapshot().bounds).toEqual({ ...before, ...previous })
+      if (height > 42) {
+        send('widget:size', 134, 42)
+        expect(win.getBounds()).toEqual(dropped)
+        expect(widget.snapshot().bounds).toEqual({ ...before, ...previous })
+      }
+      else expect(win.getBounds()).toEqual(widgetLayout({ ...before, ...previous }, area).bounds)
+      expect(state.windows).toHaveLength(1)
+    } finally { area.y = 0; area.height = 800 }
   })
   it('defers timer sizing while pressed and keeps the right edge fixed afterward', () => {
     const before = widget.snapshot().bounds!
@@ -125,6 +153,32 @@ describe('floating recorder placement', () => {
     expect(widget.snapshot().bounds).toEqual(before)
     send('widget:pressed', false); send('widget:size', 134, 42)
     expect(widget.snapshot().bounds).toEqual({ ...before, x: before.x - 7, width: 134 })
+  })
+  it('restores the normal card after dragging during opening, dropping, closing and reopening', async () => {
+    const { widgetLayout, widgetExpanded, WidgetIntent } = await import('../src/shared/widgetMorph')
+    const intent = new WidgetIntent()
+    intent.enter(0); expect(intent.tick(220)).toBe(true); intent.press()
+    const frame = widgetLayout(widget.snapshot().bounds!, state.displays[0])
+    const partial = { ...frame.open, x: frame.open.x + 100, width: 240, height: 180, radius: 16 }
+    send('widget:surface', partial); send('widget:pressed', true)
+    send('widget:drag', -frame.bounds.x - partial.x, -frame.bounds.y - partial.y)
+    const latest = () => win.webContents.send.mock.calls.filter(([channel]: [string]) => channel === 'widget:layout').at(-1)[1]
+    const clipped = latest()
+    expect(clipped.bounds.width).toBeLessThan(340)
+    send('widget:drag-end'); send('widget:pressed', false)
+    intent.release(300, true)
+    expect(intent.open).toBe(true)
+    expect(widgetExpanded(latest(), false)).toMatchObject({ width: 340, height: 390 })
+    // Finish closing, with an unchanged timer width, then use the same target on reopen.
+    intent.leave(1000); expect(intent.tick(1480)).toBe(false)
+    send('widget:surface', { ...latest().pill, radius: 10 })
+    send('widget:size', frame.pill.width, 42)
+    intent.enter(1500); expect(intent.tick(1720)).toBe(true)
+    expect(widgetExpanded(latest(), false)).toMatchObject({ width: 340, height: 390 })
+    expect(latest().open.width).toBe(340)
+    expect(Math.min(390, latest().open.height)).toBe(390)
+    expect(latest().bounds.width).toBeGreaterThanOrEqual(340)
+    expect(latest().bounds.height).toBeGreaterThanOrEqual(390)
   })
   it('crosses to a negative-coordinate display with successive small deltas', () => {
     const before = widget.snapshot().bounds!

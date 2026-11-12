@@ -176,3 +176,20 @@ test('the live HE writer commits five-second fragments that remain readable afte
     await closed
   }
 })
+
+test('finishing gets past the empty files a recorder that crashed at once left behind (issue #27)', async ({}, info) => {
+  const dir = info.outputPath('crashed-at-start')
+  mkdirSync(dir, { recursive: true })
+  for (const track of tracks) {
+    await run('/usr/bin/afconvert', ['-f', 'm4af', '-d', 'aac@48000', '-b', '64000', '-c', '1', join(import.meta.dirname, 'fixtures', `meeting-${track}.wav`), join(dir, `${track}.m4a`)])
+    // the restarted recorder died before writing a byte
+    writeFileSync(join(dir, `${track}.1.m4a`), '')
+  }
+  const before = await inspect(dir).catch(() => null)
+  writeFileSync(join(dir, 'part.1.json'), JSON.stringify({ startMs: 90_000 }))
+  await run(helper, ['join', '--dir', dir])
+  expect(readdirSync(dir).filter((f) => /\.1\.m4a$|^part\.1\.json$/.test(f))).toEqual([])
+  const after = await inspect(dir)
+  for (const track of tracks) expect(after.tracks[track].durationMs).toBeGreaterThan(1000)
+  expect(before).toBeNull()
+})

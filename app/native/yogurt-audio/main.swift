@@ -473,10 +473,13 @@ final class Mic {
   /// the tap, in the input's format now (a new output device can change its rate)
   private func tap(_ e: AVAudioEngine) -> Bool {
     let input = e.inputNode
-    let fmt = input.outputFormat(forBus: 0)
+    // the microphone's own format now: after a switch (a headset in hands-free mode at 16 kHz, then the Mac's own mic)
+    // the node's remembered format can be the old one, and a tap asking for it threw an exception that ended the
+    // recorder (issue #27). nil takes the bus's format as it is, and each buffer says its own rate.
+    let fmt = input.inputFormat(forBus: 0)
     guard fmt.sampleRate > 0, fmt.channelCount > 0 else { log("no microphone"); return false }
     let onBuffer = self.onBuffer
-    input.installTap(onBus: 0, bufferSize: AVAudioFrameCount(fmt.sampleRate / 10), format: fmt) { b, _ in
+    input.installTap(onBus: 0, bufferSize: AVAudioFrameCount(fmt.sampleRate / 10), format: nil) { b, _ in
       guard let m = mono(b, firstOnly: true) else { return }
       work.async { onBuffer(m) }
     }
@@ -908,6 +911,8 @@ func joinParts(_ dir: URL) -> Int32 {
     out.openWriter()
     var used = 0, unreadable = false
     for (n, url, startMs) in parts {
+      // a recorder that died before writing a byte (it crashed as it started) leaves an empty part: nothing to keep
+      if n > 0, ((try? fm.attributesOfItem(atPath: url.path)[.size]) as? Int) == 0 { log("join: \(url.lastPathComponent) is empty; skipped"); continue }
       let asset = AVURLAsset(url: url)
       guard let src = asset.tracks(withMediaType: .audio).first, let reader = try? AVAssetReader(asset: asset) else { log("join: unreadable \(url.lastPathComponent); keeping all parts"); unreadable = true; break }
       let o = AVAssetReaderTrackOutput(track: src, outputSettings: [

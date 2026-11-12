@@ -3,6 +3,19 @@ import { GraphicsGaveUpError, type Engine } from '../engine'
 import type { Llm } from './enhance'
 import { readInSteps } from './readAhead'
 
+/**
+ * How much of what the model holds a new prompt still starts with, for the log: a long meeting's notes start within
+ * seconds only when the prompt extends what was read ahead. Counts only, never the text.
+ */
+export function heldMatch(held: string, prompt: string): string {
+  if (!held) return 'nothing read ahead (or something else used the model since)'
+  let same = 0
+  while (same < held.length && same < prompt.length && held[same] === prompt[same]) same++
+  if (same === held.length) return `reuses all ${held.length.toLocaleString('en-US')} chars read ahead`
+  const line = prompt.slice(0, same).split('\n').length
+  return `differs from what was read ahead at char ${same.toLocaleString('en-US')} of ${held.length.toLocaleString('en-US')} (line ${line}): read again from there`
+}
+
 /** an earlier prompt and answer, as the conversation they were */
 const before = (pairs: string[] = []): EngineMessage[] => pairs.map((content, i) => ({ role: i % 2 ? 'assistant' : 'user', content }))
 
@@ -47,6 +60,8 @@ export function createNotesModel(o: { engine: Engine; modelPath: () => string | 
         count: (texts) => o.engine.count(texts),
         chat: (prompt, onToken, opts) => {
           const messages: EngineMessage[] = [...before(opts?.before), { role: 'user', content: prompt }]
+          // only for a prompt long enough to be worth reading ahead: a meeting's notes or a question about one
+          if (prompt.length > 20_000) console.info('NOTES', `prompt ${heldMatch(held, prompt)}`)
           // not known while it runs; the worker skips what it already holds, so knowing less only costs a check
           held = ''
           let wrote = false

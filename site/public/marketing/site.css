@@ -1129,6 +1129,8 @@ body[data-demo=transcript] .hero-listening-widget{top:-52px;right:22px;bottom:au
 .hero-copy p>span{white-space:nowrap}
 /* the longest sentence may wrap on a phone rather than run off the edge */
 .hero-copy p>span.hero-wrap{white-space:normal}
+/* The closing sentence takes its own line, so the subtitle never breaks mid-thought on a wide screen; balanced if it wraps on a phone. */
+.hero-copy p>span.hero-wrap{display:block;text-wrap:balance}
 
 /* Keep each phone step's introduction directly above its own illustration. */
 @media(max-width:760px){

@@ -1,7 +1,7 @@
 {
-  "appCommit": "437a8cdb4956c05839ff02d2a593cf1c4da417d3",
-  "bundleSha256": "594890e88130d5df5ab6a47ace5b6984fc5350dbe3c285c2d3d1464c77c1f13b",
-  "generatedAt": "2026-11-11T16:38:52.245Z",
+  "appCommit": "f07515bb86d8169e5be57f8ab7ccf9c79ccacf4e",
+  "bundleSha256": "45600e67501aa6d8ebacb00377d668d766bd559ee3381e2c1d77f48ca6f58251",
+  "generatedAt": "2026-11-12T06:41:11.873Z",
   "images": {
     "hero-desktop.webp": {
       "bytes": 45094,

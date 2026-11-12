@@ -657,8 +657,6 @@
   "Couldn't check for updates.": "Nie udało się sprawdzić aktualizacji.",
   "You can restart once the recording stops.": "Możesz uruchomić ponownie po zatrzymaniu nagrywania.",
   "Check now": "Sprawdź teraz",
-  "Eject the Yogurt installer?": "Wysunąć instalator Yogurt?",
-  "Eject": "Wysuń",
   "{count} selected": {
     "one": "Wybrano {count}",
     "other": "Wybrano {count}"

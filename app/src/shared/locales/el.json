@@ -631,8 +631,6 @@
   "Couldn't check for updates.": "Δεν ήταν δυνατός ο έλεγχος για ενημερώσεις.",
   "You can restart once the recording stops.": "Μπορείς να κάνεις επανεκκίνηση όταν σταματήσει η εγγραφή.",
   "Check now": "Έλεγχος τώρα",
-  "Eject the Yogurt installer?": "Εξαγωγή του προγράμματος εγκατάστασης του Yogurt;",
-  "Eject": "Εξαγωγή",
   "{count} selected": {
     "one": "{count} επιλεγμένη",
     "other": "{count} επιλεγμένες"

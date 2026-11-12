@@ -644,8 +644,6 @@
   "Couldn't check for updates.": "Não foi possível procurar atualizações.",
   "You can restart once the recording stops.": "Você pode reiniciar quando a gravação parar.",
   "Check now": "Verificar agora",
-  "Eject the Yogurt installer?": "Ejetar o instalador do Yogurt?",
-  "Eject": "Ejetar",
   "{count} selected": {
     "one": "{count} selecionada",
     "other": "{count} selecionadas"

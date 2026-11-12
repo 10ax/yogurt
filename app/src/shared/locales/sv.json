@@ -631,8 +631,6 @@
   "Couldn't check for updates.": "Kunde inte söka efter uppdateringar.",
   "You can restart once the recording stops.": "Du kan starta om när inspelningen har stoppat.",
   "Check now": "Sök nu",
-  "Eject the Yogurt installer?": "Mata ut installationsprogrammet för Yogurt?",
-  "Eject": "Mata ut",
   "{count} selected": {
     "one": "{count} valt",
     "other": "{count} valda"

@@ -73,7 +73,6 @@ import { hookMcp } from './mcp'
 import { startedHidden } from './mcp/paths'
 import { AUDIO_SCHEME, audioExts, createAudioHandler, trackFile, type AudioExt } from './audio'
 import { finishQuit, hookUpdates, isPreviewBuild, updatesOn } from './updates'
-import { offerInstallerEject } from './installer'
 import type { NoteSaveResult, StartResult } from '../shared/types'
 
 // the transcript's player streams each meeting's audio from here; seeking needs stream support (before ready)
@@ -924,7 +923,6 @@ app.whenReady().then(() => {
   if (!openedAtLogin() && !startedHidden(process.platform, process.argv)) createWindow()
   startDetection()
   void setup.start()
-  void offerInstallerEject()
   // new versions from GitHub Releases, downloaded in the background and installed on quit
   const updatesAvailable = updatesOn({ packaged: app.isPackaged, fake: isFake(), profile: !!process.env.YOGURT_USER_DATA, platform: process.platform, appImage: !!process.env.APPIMAGE,
     feed: app.isPackaged && existsSync(join(process.resourcesPath, 'app-update.yml')),

@@ -47,6 +47,14 @@ describe('Zoom', () => {
     const r = readCall('zoom', [win(node('AXWindow', {}, node('AXGroup', { d: 'Dana Smith' }), node('AXTabGroup', { d: 'Chat' }), node('AXStaticText', { v: 'Dana Smith' })))])
     expect(r).toEqual({ speaking: [], participants: [], me: null })
   })
+
+  it('reads the same signals from AT-SPI roles (Linux): page tab, label, table row, tree table', () => {
+    const tree = node('frame', { t: 'Zoom Meeting' },
+      node('page tab', { d: 'Ana Ruiz, Computer audio unmuted, Active speaker' }),
+      node('label', { t: 'Talking: Ann Lee' }),
+      node('tree table', { t: 'Participants list' }, node('table row', {}, node('label', { t: 'Alex Morgan (me)' }))))
+    expect(readCall('zoom', [win(tree)])).toEqual({ speaking: ['Ana Ruiz', 'Ann Lee'], participants: ['Ana Ruiz', 'Alex Morgan'], me: 'Alex Morgan' })
+  })
 })
 
 // ---- Google Meet in a browser: names as text in each tile, the talking tile marked by a class ----
@@ -94,6 +102,44 @@ describe('Microsoft Teams', () => {
   it('never takes "You" or the app\'s own words for a person', () => {
     const tree = node('AXWindow', {}, node('AXStaticText', { v: 'You are speaking' }), node('AXButton', { d: 'Mic on' }))
     expect(readCall('teams', [win(tree)])).toEqual({ speaking: [], participants: [], me: null })
+  })
+
+  it('reads AT-SPI names as well as descriptions (Linux)', () => {
+    const tree = node('frame', {},
+      node('section', { t: 'Dana Smith, speaking' }),
+      node('section', { t: 'Ann Lee, muted' }))
+    expect(readCall('teams', [win(tree)])).toEqual({ speaking: ['Dana Smith'], participants: ['Ann Lee'], me: null })
+  })
+
+  it('reads the People panel roster (Teams for Linux): "Name, Role, Muted|Unmuted"', () => {
+    const tree = node('frame', { t: 'Meeting | Microsoft Teams' },
+      node('landmark', { t: 'Participants' },
+        node('tree', { t: 'Attendees' },
+          node('tree item', { t: 'Dana Smith, Organizer, Unmuted' },
+            node('section', { t: 'Dana Smith, Organizer, Unmuted' },
+              node('section', { t: 'Dana Smith' },
+                node('static', { t: 'Dana Smith' }),
+                node('static', { t: 'Organizer' }),
+                node('image', { t: 'Unmuted' })))))))
+    expect(readCall('teams', [win(tree)])).toEqual({ speaking: [], participants: ['Dana Smith'], me: null })
+  })
+
+  it('reads every roster row, with a role between the name and the state, and never the group header', () => {
+    const tree = node('frame', {},
+      node('tree', { t: 'Attendees' },
+        node('tree item', { t: 'Dana Smith, Organizer, Unmuted' }),
+        node('tree item', { t: 'Alex Morgan, Presenter, Muted' }),
+        node('tree item', { t: 'Sam Lee, Guest, Unmuted' }),
+        node('tree item', { t: 'In this meeting, 3 total' })))
+    expect(readCall('teams', [win(tree)])).toEqual({ speaking: [], participants: ['Dana Smith', 'Alex Morgan', 'Sam Lee'], me: null })
+  })
+
+  it('a roster row marked (You) is the person using Yogurt', () => {
+    const tree = node('frame', {},
+      node('tree', { t: 'Attendees' },
+        node('tree item', { t: 'Dana Smith (You), Organizer, Unmuted' }),
+        node('tree item', { t: 'Alex Morgan, Presenter, Unmuted' })))
+    expect(readCall('teams', [win(tree)])).toEqual({ speaking: [], participants: ['Dana Smith', 'Alex Morgan'], me: 'Dana Smith' })
   })
 })
 

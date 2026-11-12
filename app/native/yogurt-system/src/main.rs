@@ -4,6 +4,7 @@
 //!   mic-apps               [{"bundleId","name","pid"}] for each app recording from a microphone now
 //!   running-apps ID...     the IDs that have a running process
 //!   browser-title ID       {"title": the app's front window title, or null}
+//!   call-watch MS ID...    Linux: one JSON line every MS with the call app's windows (yogurt-mac's call-watch)
 //!
 //! IDs are the program's file name: "zoom.exe" (lowercased) on Windows, "zoom" or a Flatpak app id on Linux.
 
@@ -11,6 +12,10 @@
 #[allow(dead_code)]
 mod parse;
 
+#[cfg(target_os = "linux")]
+mod atspi;
+#[cfg(target_os = "linux")]
+mod calls;
 #[cfg(target_os = "linux")]
 mod linux;
 #[cfg(windows)]
@@ -46,6 +51,14 @@ fn main() {
             }
             out(json!({ "title": os::window_title(&args[1]) }))
         }
-        _ => fail("yogurt-system mic-apps | running-apps APP_ID... | browser-title APP_ID"),
+        #[cfg(target_os = "linux")]
+        Some("call-watch") => {
+            if args.len() < 3 {
+                fail("call-watch MS APP_ID...")
+            }
+            let every = args[1].parse::<u64>().unwrap_or(400);
+            calls::watch(every, &args[2..])
+        }
+        _ => fail("yogurt-system mic-apps | running-apps APP_ID... | browser-title APP_ID | call-watch MS APP_ID..."),
     }
 }

@@ -147,6 +147,20 @@ describe('SetupController', () => {
     expect(asked.filter((u) => u === embedUrl).length).toBe(6)
   })
 
+  it('the bigger notes model says in the log when it starts downloading and when it is in, and logs nothing when it is already there', async () => {
+    const info = vi.spyOn(console, 'info').mockImplementation(() => {})
+    try {
+      const { c, root } = setup()
+      await c.start(); await c.idle()
+      const lines = () => info.mock.calls.map((a) => a.join(' ')).filter((l) => /bigger notes model/.test(l))
+      expect(lines()).toEqual([expect.stringMatching(/downloading the bigger notes model gemma-4-26B.*14\.\d GB/), expect.stringMatching(/the bigger notes model is in/)])
+      info.mockClear()
+      const again = new SetupController({ getHardware: async () => m1max, getCatalog: async () => catalog, modelsDir: root, download: recorder().deps, sha256Override: 'FAKE', retryDelaysMs: [0] })
+      await again.start(); await again.idle()
+      expect(lines()).toEqual([])
+    } finally { info.mockRestore() }
+  })
+
   it('does not wait for a recommended model that fails: still ready', async () => {
     const root = mkdtempSync(join(tmpdir(), 'yogurt-setup-'))
     const inner = fakeDownloadDeps({ stepMs: 0 })

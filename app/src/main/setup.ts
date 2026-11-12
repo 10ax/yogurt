@@ -275,7 +275,12 @@ export class SetupController {
   private startBackground(item: Item): Promise<void> {
     this.backgroundItem = item
     this.backgroundFailed = false
-    this.background = this.fetch(item).then((path) => { if (this.paths) this.paths = { ...this.paths, recommendedLlm: path } }).catch((err) => {
+    const already = isVerified(item.dir, item.fileName, this.sha(item))
+    if (!already) console.info('NOTES', `downloading the bigger notes model ${item.fileName} (${(item.bytes / 1e9).toFixed(1)} GB)`)
+    this.background = this.fetch(item).then((path) => {
+      if (!already) console.info('NOTES', 'the bigger notes model is in')
+      if (this.paths) this.paths = { ...this.paths, recommendedLlm: path }
+    }).catch((err) => {
       this.backgroundFailed = true
       console.warn('the bigger notes model did not download', err)
     })

@@ -1,7 +1,7 @@
 import { chmodSync, existsSync, mkdtempSync, readFileSync, writeFileSync } from 'node:fs'
 import { availableParallelism, tmpdir } from 'node:os'
 import { join } from 'node:path'
-import { afterEach, describe, expect, it } from 'vitest'
+import { afterEach, describe, expect, it, vi } from 'vitest'
 import { createWhisperServer, killStale, recoverer } from '../src/main/asr/server'
 import { createTranscriber } from '../src/main/asr/transcribe'
 
@@ -20,6 +20,7 @@ function fakeBinary(loadMs = 0, modes: string[] = ['ok']) {
     const n = fs.readFileSync(dir + '/launches', 'utf8').trim().split('\\n').length
     const ms = fs.readFileSync(dir + '/modes', 'utf8').split('\\n'), mode = ms[Math.min(n, ms.length) - 1]
     const a = process.argv, port = Number(a[a.indexOf('--port') + 1]), host = a[a.indexOf('--host') + 1]
+    process.stderr.write('whisper_backend_init_gpu: using Vulkan0 backend\\n')
     if (mode === 'die-loading') process.exit(1)
     setTimeout(() => require('http').createServer((q, r) => {
       if (q.method !== 'POST') return r.end('ok')
@@ -126,6 +127,14 @@ describe.skipIf(process.platform === 'win32')('whisper server', () => {
     await new Promise((r) => setTimeout(r, 200))
     await t.url()
     expect(JSON.parse(readFileSync(join(bin, '../args'), 'utf8'))).not.toContain('-ng')
+  })
+
+  it('says in the log which graphics card whisper picked', async () => {
+    const info = vi.spyOn(console, 'info').mockImplementation(() => {})
+    try {
+      await make(fakeBinary()).url()
+      await vi.waitFor(() => expect(info.mock.calls.map((a) => a.join(' '))).toContain('ASR whisper-server runs on Vulkan0'))
+    } finally { info.mockRestore() }
   })
 
   it('never asks for more threads than the computer has', async () => {

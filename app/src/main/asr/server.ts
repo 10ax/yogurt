@@ -127,7 +127,13 @@ export function createWhisperServer(o: Opts) {
     died = false
     if (o.pidFile && p.pid) writeFileSync(o.pidFile, String(p.pid))
     let err = ''
-    p.stderr?.on('data', (d: Buffer) => { err = (err + d.toString()).slice(-2000) })
+    // which graphics card whisper took goes in the log (on a computer with two, it says if it took the right one)
+    let told = false
+    p.stderr?.on('data', (d: Buffer) => {
+      err = (err + d.toString()).slice(-2000)
+      const dev = !told && err.match(/whisper_backend_init_gpu: using (\S+) backend/)?.[1]
+      if (dev) { told = true; console.info('ASR', `whisper-server runs on ${dev}`) }
+    })
     const gone = new Promise<never>((_, reject) => {
       p.once('error', (e) => reject(new Error(`whisper-server could not start: ${e.message}`)))
       p.once('exit', (code, sig) => reject(new Error(`whisper-server exited (${code ?? sig}) ${err.split('\n').filter(Boolean).slice(-2).join(' | ')}`.trim())))

@@ -20,6 +20,7 @@ done
 # whisper-server: whisper.cpp at a pinned commit, Metal on, the Metal shaders embedded so it is one file.
 # The clone and build live in native/.whisper-build (gitignored); only the finished program is copied out.
 # native/whisper-server.patch is applied on top: with VAD on, a chunk with no speech in it crashed the server.
+# It also makes whisper pick a discrete graphics card over an integrated one (Windows and Linux; a Mac has one).
 WHISPER_TAG=v1.9.5
 WHISPER_COMMIT=d1be6fde11ac6e0407606b4e42fe72d34add8037
 out=resources/bin/whisper-server

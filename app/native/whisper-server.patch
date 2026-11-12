@@ -19,3 +19,45 @@ index b745f4d7..013fb37f 100644
              }
              const int n_segments = whisper_full_n_segments(ctx);
              for (int i = 0; i < n_segments; ++i)
+diff --git a/src/whisper.cpp b/src/whisper.cpp
+index 1675f33a..31995e46 100644
+--- a/src/whisper.cpp
++++ b/src/whisper.cpp
+@@ -1299,6 +1299,19 @@ static size_t aheads_masks_nbytes(struct whisper_aheads_masks & aheads_masks) {
+     return size;
+ }
+ 
++// Yogurt: with a discrete graphics card and an integrated one (a desktop with an iGPU driving the displays, a gaming
++// laptop), the integrated one often comes first and transcription ran on it, many times slower. Count only discrete
++// cards when there is one; with none, integrated ones count as before (Apple Silicon, most laptops).
++static bool whisper_dev_is_counted_gpu(ggml_backend_dev_t dev) {
++    const enum ggml_backend_dev_type t = ggml_backend_dev_type(dev);
++    if (t == GGML_BACKEND_DEVICE_TYPE_GPU) return true;
++    if (t != GGML_BACKEND_DEVICE_TYPE_IGPU) return false;
++    for (size_t i = 0; i < ggml_backend_dev_count(); ++i) {
++        if (ggml_backend_dev_type(ggml_backend_dev_get(i)) == GGML_BACKEND_DEVICE_TYPE_GPU) return false;
++    }
++    return true;
++}
++
+ static ggml_backend_t whisper_backend_init_gpu(const whisper_context_params & params) {
+     ggml_log_set(g_state.log_callback, g_state.log_callback_user_data);
+ 
+@@ -1311,7 +1324,7 @@ static ggml_backend_t whisper_backend_init_gpu(const whisper_context_params & pa
+             enum ggml_backend_dev_type dev_type = ggml_backend_dev_type(dev_cur);
+             const char * dev_name = ggml_backend_dev_name(dev_cur);
+             WHISPER_LOG_INFO("%s: device %zu: %s (type: %d)\n", __func__, i, dev_name, dev_type);
+-            if (dev_type == GGML_BACKEND_DEVICE_TYPE_GPU || dev_type == GGML_BACKEND_DEVICE_TYPE_IGPU) {
++            if (whisper_dev_is_counted_gpu(dev_cur)) {
+                 WHISPER_LOG_INFO("%s: found GPU device %zu: %s (type: %d, cnt: %d)\n", __func__, i, dev_name, dev_type, cnt);
+                 if (cnt == params.gpu_device) {
+                     dev = dev_cur;
+@@ -1381,7 +1394,7 @@ static buft_list_t make_buft_list(whisper_context_params & params) {
+         int cnt = 0;
+         for (size_t i = 0; i < ggml_backend_dev_count(); ++i) {
+             ggml_backend_dev_t dev = ggml_backend_dev_get(i);
+-            if (ggml_backend_dev_type(dev) == GGML_BACKEND_DEVICE_TYPE_GPU || ggml_backend_dev_type(dev) == GGML_BACKEND_DEVICE_TYPE_IGPU) {
++            if (whisper_dev_is_counted_gpu(dev)) {
+                 if (cnt == params.gpu_device) {
+                     auto * buft = ggml_backend_dev_buffer_type(dev);
+                     if (buft) {

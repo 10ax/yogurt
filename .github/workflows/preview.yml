@@ -75,7 +75,8 @@ jobs:
             ~/.cargo/registry
             ~/.cargo/git
             app/native/*/target
-          key: helpers-${{ runner.os }}-${{ hashFiles('app/native/*/Cargo.lock', 'app/native/*/rust-toolchain.toml') }}
+          # per image: a build from one Ubuntu restored on another broke the 0.3.8 release ("can't find crate for zbus")
+          key: helpers-build-${{ matrix.os }}-${{ hashFiles('app/native/*/Cargo.lock', 'app/native/*/rust-toolchain.toml') }}
       - name: Vulkan SDK (cached)
         uses: actions/cache@v4
         with:

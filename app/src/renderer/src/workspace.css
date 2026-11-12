@@ -469,6 +469,8 @@ body:has(.chat-panel[open]) .app-toast-viewport { inset-inline-end:460px; }
   /* deep enough for a white arrow on the matching send button, light enough to read on the dark surface */
   .ask-box,.note-reading-frame { --ask-ring-color:color-mix(in srgb,var(--primary) 35%,var(--accent));--ask-ring-highlight:color-mix(in srgb,var(--focus) 18%,var(--ink)); }
   .ask-box::before,.note-reading-frame::before { content:"";position:absolute;inset:-2px;border-radius:inherit;pointer-events:none;opacity:var(--ask-ring-opacity);box-shadow:0 0 0 2px color-mix(in srgb,var(--accent) 9%,transparent),0 0 12px 2px color-mix(in srgb,var(--accent) 16%,transparent);transition:opacity 200ms ease-out; }
+  /* The summary ring sits on the frame's edge, so its halo starts there; at Ask's -2px it left a dark gap and read as a grey second box. */
+  .note-reading-frame::before { inset:0; }
 }
 @keyframes ask-border-drift { from { transform:translate(-50%,-50%) rotate(0deg); } to { transform:translate(-50%,-50%) rotate(360deg); } }
 @media (prefers-reduced-motion:reduce) { .ask-border::before { animation:none;display:none; } .ask-box::before,.note-reading-frame::before { display:none; } .orb-material::before,.orb-material::after { animation:none; } .ask-send { transition:none;transform:none!important; } }

@@ -148,12 +148,11 @@
 .native-meeting-row:hover .meeting-delete,.native-meeting-row:has(:focus-visible) .meeting-delete { opacity:1; }
 .meeting-delete:hover { color:var(--danger); }
 .meeting-more { width:27px;height:27px; }
-.row-swap { --row-settle:2px; }
-.row-swap:dir(rtl) { --row-settle:-2px; }
-.row-swap-meta { grid-column:2;transform:translateX(0);transition:opacity 160ms ease-out,transform 160ms ease-out; }
-.row-swap-actions { grid-area:1 / 2;justify-self:end;z-index:1;opacity:0;transform:translateX(var(--row-settle));pointer-events:none;transition:opacity 160ms ease-out,transform 160ms ease-out; }
-.row-swap:is(:hover,:focus-visible,:has(:focus-visible),[data-menu-open=true],:has(>.row-swap-actions[aria-expanded=true])) .row-swap-meta { opacity:0;transform:translateX(calc(-1 * var(--row-settle)));pointer-events:none; }
-.row-swap:is(:hover,:focus-visible,:has(:focus-visible),[data-menu-open=true],:has(>.row-swap-actions[aria-expanded=true]))>.row-swap-actions { opacity:1;transform:translateX(0);pointer-events:auto; }
+/* Opacity only: sliding text a couple of pixels re-rasterizes the glyphs, which reads as a jitter. The time leaves quickly and the button arrives just after, so the two never sit on top of each other. */
+.row-swap-meta { grid-column:2;transition:opacity 90ms ease-out 40ms; }
+.row-swap-actions { grid-area:1 / 2;justify-self:end;z-index:1;opacity:0;pointer-events:none;transition:opacity 90ms ease-out; }
+.row-swap:is(:hover,:focus-visible,:has(:focus-visible),[data-menu-open=true],:has(>.row-swap-actions[aria-expanded=true])) .row-swap-meta { opacity:0;pointer-events:none;transition-delay:0ms; }
+.row-swap:is(:hover,:focus-visible,:has(:focus-visible),[data-menu-open=true],:has(>.row-swap-actions[aria-expanded=true]))>.row-swap-actions { opacity:1;pointer-events:auto;transition:opacity 120ms ease-out 50ms; }
 .row-swap :is(.workspace-icon,.chat-icon) { background:transparent; }
 .row-swap :is(.workspace-icon,.chat-icon):hover:not(:disabled) { background:var(--control-hover); }
 .row-swap :is(.workspace-icon,.chat-icon):active:not(:disabled) { background:var(--control-pressed); }

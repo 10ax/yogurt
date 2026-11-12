@@ -346,7 +346,22 @@ final class SystemAudio {
   var tap = AudioObjectID(kAudioObjectUnknown), agg = AudioObjectID(kAudioObjectUnknown)
   var proc: AudioDeviceIOProcID?
   let onBuffer: (AVAudioPCMBuffer, Double?) -> Void
+  /// the rate the sound arrives at changed (a Bluetooth headset going in and out of hands-free mode): start again
+  var onRateChange: (() -> Void)?
+  /// the sample rate the buffers are labelled with, and the listeners watching for it to change
+  var rate: Float64 = 0
+  var listeners: [(AudioObjectID, AudioObjectPropertyAddress, AudioObjectPropertyListenerBlock)] = []
   init(onBuffer: @escaping (AVAudioPCMBuffer, Double?) -> Void) { self.onBuffer = onBuffer }
+
+  /// the rate the device actually runs at: a headset's hands-free mode is 16 kHz while the tap may still say 48
+  static func nominalRate(_ dev: AudioObjectID) -> Float64? {
+    var a = address(kAudioDevicePropertyNominalSampleRate), r = Float64(0), size = UInt32(MemoryLayout<Float64>.size)
+    return AudioObjectGetPropertyData(dev, &a, 0, nil, &size, &r) == noErr && r > 0 ? r : nil
+  }
+  static func tapRate(_ tap: AudioObjectID) -> Float64? {
+    var a = address(kAudioTapPropertyFormat), d = AudioStreamBasicDescription(), size = UInt32(MemoryLayout<AudioStreamBasicDescription>.size)
+    return AudioObjectGetPropertyData(tap, &a, 0, nil, &size, &d) == noErr && d.mSampleRate > 0 ? d.mSampleRate : nil
+  }
 
   func start() -> Bool {
     let desc = CATapDescription(stereoGlobalTapButExcludeProcesses: yogurtProcesses())
@@ -359,7 +374,7 @@ final class SystemAudio {
 
     var fa = address(kAudioTapPropertyFormat), asbd = AudioStreamBasicDescription(), size = UInt32(MemoryLayout<AudioStreamBasicDescription>.size)
     err = AudioObjectGetPropertyData(tap, &fa, 0, nil, &size, &asbd)
-    guard err == noErr, let format = AVAudioFormat(streamDescription: &asbd) else { log("tap format failed: \(err)"); stop(); return false }
+    guard err == noErr else { log("tap format failed: \(err)"); stop(); return false }
 
     // a private device around the tap, clocked by the speakers: nothing shows up in Sound settings and other apps don't see it.
     // A device with only the tap in it never runs, and with tap auto-start it only runs while something plays.
@@ -372,6 +387,21 @@ final class SystemAudio {
     ]
     err = AudioHardwareCreateAggregateDevice(dict as CFDictionary, &agg)
     guard err == noErr else { log("aggregate device failed: \(err)"); agg = AudioObjectID(kAudioObjectUnknown); stop(); return false }
+    // The buffers come at the device's rate. With a Bluetooth headset's mic on, the output runs at 16 kHz while the
+    // tap can still say 48: labelled 48, the other side was recorded at three times its speed (issue #23).
+    if let r = SystemAudio.nominalRate(agg), r != asbd.mSampleRate { log("the tap says \(Int(asbd.mSampleRate)) Hz, the device runs at \(Int(r)) Hz"); asbd.mSampleRate = r }
+    guard let format = AVAudioFormat(streamDescription: &asbd) else { log("tap format failed"); stop(); return false }
+    rate = asbd.mSampleRate
+    // the rate changes mid-call (the headset's mic going on or off): start again on the new one, only if it really changed
+    let tapRate0 = SystemAudio.tapRate(tap)
+    watch(agg, kAudioDevicePropertyNominalSampleRate) { [weak self] in
+      guard let self, let r = SystemAudio.nominalRate(self.agg), r != self.rate else { return }
+      log("the device's rate changed to \(Int(r)) Hz"); self.onRateChange?()
+    }
+    watch(tap, kAudioTapPropertyFormat) { [weak self] in
+      guard let self, let r = SystemAudio.tapRate(self.tap), r != tapRate0 else { return }
+      log("the tap's rate changed to \(Int(r)) Hz"); self.onRateChange?()
+    }
 
     let onBuffer = self.onBuffer
     err = AudioDeviceCreateIOProcIDWithBlock(&proc, agg, nil) { _, inData, inTime, _, _ in
@@ -390,7 +420,16 @@ final class SystemAudio {
     return true
   }
 
+  /// listened to on the work queue, never on the audio thread; removed in stop()
+  func watch(_ obj: AudioObjectID, _ sel: AudioObjectPropertySelector, _ fn: @escaping () -> Void) {
+    var a = address(sel)
+    let block: AudioObjectPropertyListenerBlock = { _, _ in fn() }
+    if AudioObjectAddPropertyListenerBlock(obj, &a, work, block) == noErr { listeners.append((obj, a, block)) }
+  }
+
   func stop() {
+    for (obj, a, block) in listeners { var a = a; AudioObjectRemovePropertyListenerBlock(obj, &a, work, block) }
+    listeners = []
     if agg != kAudioObjectUnknown {
       if let proc { AudioDeviceStop(agg, proc); AudioDeviceDestroyIOProcID(agg, proc) }
       AudioHardwareDestroyAggregateDevice(agg)
@@ -626,6 +665,7 @@ final class Recorder {
     me = Track("me", dir: dir); them = Track("them", dir: dir)
     mic = Mic { [unowned self] b in if !self.paused && !self.finishing { self.me.append(b) } }
     sys = SystemAudio { [unowned self] b, heard in if !self.paused && !self.finishing { self.them.append(b, heardMs: heard) } }
+    sys.onRateChange = { [unowned self] in self.rebuildSystem() }
   }
 
   /// Apple's speech on both tracks, in the locale asked for; words come out as speech frames beside the pcm

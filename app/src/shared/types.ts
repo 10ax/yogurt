@@ -255,8 +255,8 @@ export type YogurtApi = {
     /** English only or Multi-language: the meeting being recorded and the next ones */
     setSpoken(v: import('./spoken').Spoken): Promise<void>
   }
-  /** finds meetings by title, transcript and notes; nothing typed: the latest. folder: only the meetings in it */
-  search: { query(q: string, folder?: string): Promise<SearchResult[]> }
+  /** finds meetings by date, title, attendees, folders, transcript and notes; nothing typed: the latest. folder: only the meetings in it */
+  search: { query(q: string, folder?: string, people?: Person[]): Promise<SearchResult[]>; people(): Promise<Person[]> }
   /** named folders of meetings; a meeting can be in several, and deleting a folder keeps its meetings */
   folders: {
     suggestion(meetingId: string): Promise<Folder | null>
@@ -315,7 +315,7 @@ export type AgendaEvent = CalEvent & { note?: { id: string; state: Meeting['stat
 /** Start notes: the meeting's id, or why it didn't start (gone: the event left the calendar) */
 export type StartResult = { id: string; alreadyRecording?: true } | { error: 'gone' | 'failed' }
 /** one meeting found: parts is a piece of its notes or transcript, hit on the words matched */
-export type SearchResult = { meetingId: string; title: string; startedAt: number; parts: SnippetPart[] }
+export type SearchResult = { meetingId: string; title: string; startedAt: number; parts: SnippetPart[]; confident?: boolean }
 
 /**
  * Where a meeting's enhanced notes are: idle (none yet, the meeting may still be on), waiting (for the transcript or

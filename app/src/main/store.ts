@@ -1,3 +1,5 @@
+import { matchSearchPeople, searchPersonKey, uniqueSearchPeople } from '../shared/searchPeople'
+import { oneEdit, parseSearchQuery, type SearchOptions } from '../shared/searchQuery'
 import { echoConfidence } from './asr/echo'
 import { backfillPeople, rememberPeople, resolvePeople } from './people'
 import { attendeeMembership, personEmail } from '../shared/people'
@@ -60,13 +62,6 @@ const toSegment = (r: Row): Segment => ({
 const CJK = /[\p{Script=Han}\p{Script=Hiragana}\p{Script=Katakana}\p{Script=Hangul}]/u
 const CJK_RUNS = /[\p{Script=Han}\p{Script=Hiragana}\p{Script=Katakana}\p{Script=Hangul}]+/gu
 
-/** Plain words become quoted FTS5 terms, so stray quotes or operators in a search can't break the query. */
-function ftsQuery(q: string): string {
-  const words = q.split(/[^\p{L}\p{N}]+/u).filter(Boolean)
-  // the last word may still be typing, so it matches as a prefix
-  return words.map((w, i) => (i === words.length - 1 ? `"${w}"*` : `"${w}"`)).join(' ')
-}
-
 /** A named group of meetings; a meeting can be in several. count: how many meetings are in it */
 export type Folder = FolderAppearance & { id: string; name: string; createdAt: number; count: number }
 const toFolder = (r: Row): Folder => ({ id: String(r.id), name: String(r.name), createdAt: Number(r.created_at), count: Number(r.count ?? 0), ...folderAppearance(r.icon, r.color) })
@@ -79,7 +74,7 @@ const folderName = (name: string) => name.replace(/\s+/g, ' ').trim().slice(0, 2
 
 export type MeetingCard = Meeting & { /** the first words of the notes, plain text; empty with none yet */ preview: string; folders?: Array<Pick<Folder, 'id' | 'name' | 'icon' | 'color'>> }
 export type SnippetPart = { text: string; hit: boolean }
-export type SearchHit = { meetingId: string; snippet: string; parts: SnippetPart[] }
+export type SearchHit = { meetingId: string; snippet: string; parts: SnippetPart[]; confident?: boolean }
 
 // where a matched word starts and ends in a snippet: characters no note or transcript contains
 const OPEN = '\u0002', CLOSE = '\u0003'
@@ -99,13 +94,6 @@ function previewOf(enhanced: string | null, mine: string): string {
   const body = md.split('\n').filter((l) => !HEADING_LINE.test(l)).join('\n')
   const text = plain(body.trim() ? body : md)
   return text.length > 240 ? text.slice(0, 240).replace(/\s+\S*$/, '') + '…' : text
-}
-
-/** Title words the way the text search sees them: whole words, the last one typed as a beginning; Chinese and Japanese anywhere */
-function titleMatches(title: string, q: string): boolean {
-  const split = (x: string) => x.toLocaleLowerCase().split(/[^\p{L}\p{N}]+/u).filter(Boolean)
-  const words = split(q), have = split(title)
-  return words.length > 0 && words.every((w, i) => CJK.test(w) ? title.includes(w) : i === words.length - 1 ? have.some((h) => h.startsWith(w)) : have.includes(w))
 }
 
 /** an FTS snippet with OPEN/CLOSE marks → pieces of plain text */
@@ -487,47 +475,85 @@ export class Store {
     return previewOf(n.enhanced, n.mine)
   }
 
-  /**
-   * Meetings whose title, transcript or notes contain the words; one hit per meeting. Titles first (newest first),
-   * then the best text matches. parts: the snippet in pieces, hit on the words matched, plain text only (the
-   * window shows them as text, never as markup). folder: only the meetings in that folder.
-   */
-  search(q: string, limit: number, folder?: string): SearchHit[] {
-    const fts = ftsQuery(q)
-    if (!fts) return []
-    // narrowed to a folder: every query below keeps only its meetings (the folder id is the last argument of each)
-    // and never a meeting in the Trash
-    const inFolder = (col: string) => notTrashed(col) + (folder == null ? '' : ` AND ${col} IN (SELECT meeting_id FROM folder_meetings WHERE folder_id = ?)`)
-    const sp = folder == null ? [] : [folder]
-    const out = new Map<string, SearchHit>()
-    const add = (id: string, parts: SnippetPart[]) => {
-      if (out.has(id)) { if (!out.get(id)!.parts.length && parts.length) out.set(id, hitOf(id, parts)); return }
-      out.set(id, hitOf(id, parts))
+  searchPeople(): Person[] {
+    const rows = this.db.prepare('SELECT attendees FROM meetings WHERE trashed_at IS NULL ORDER BY started_at DESC, id DESC').all()
+    const attendees = uniqueSearchPeople(rows.flatMap(r => JSON.parse(String(r.attendees)) as Person[]))
+    return resolvePeople(this.db, attendees)
+      .filter(p => p.name.trim() || p.email?.trim()).sort((a, b) => a.name.localeCompare(b.name))
+  }
+
+  /** Each word can match a different field; dates and folder scope always filter the meeting itself. */
+  search(q: string, limit: number, folder?: string, options: SearchOptions = {}): SearchHit[] {
+    const parsedPeople = matchSearchPeople(q, this.searchPeople(), options.people, options)
+    const people = uniqueSearchPeople([...(options.people ?? []), ...parsedPeople.matches.map(m => m.person)])
+    const { words, date } = parseSearchQuery(parsedPeople.text, options)
+    if (!words.length && !date && !people.length) return []
+    const inScope = (col: string) => notTrashed(col)
+      + (folder == null ? '' : ` AND ${col} IN (SELECT meeting_id FROM folder_meetings WHERE folder_id = ?)`)
+      + (date ? ` AND ${col} IN (SELECT id FROM meetings WHERE started_at >= ? AND started_at < ?)` : '')
+    const args = [...(folder == null ? [] : [folder]), ...(date ? [date.start, date.end] : [])]
+    const rows = this.db.prepare(`SELECT id, title, attendees, started_at,
+      (SELECT group_concat(f.name, char(10)) FROM folders f JOIN folder_meetings fm ON fm.folder_id = f.id WHERE fm.meeting_id = meetings.id) AS folders
+      FROM meetings WHERE 1${inScope('id')} ORDER BY started_at DESC, id DESC`).all(...args) as Row[]
+    const scopedRows = rows.filter(r => {
+      const attendees = (JSON.parse(String(r.attendees)) as Person[]).map(searchPersonKey)
+      return people.every(p => attendees.includes(searchPersonKey(p)))
+    })
+    const tokens = (text: string) => text.toLocaleLowerCase().split(/[^\p{L}\p{N}]+/u).filter(Boolean)
+    const phrase = words.join(' ')
+    const hasPhrase = (text: string) => words.length > 1 && ` ${tokens(text).join(' ')} `.includes(` ${phrase} `)
+    const matchScore = (text: string, word: string, prefix: boolean, fuzzy: boolean, score: number) => {
+      const have = tokens(text)
+      if (have.some(w => CJK.test(word) ? w.includes(word) : w === word || (prefix && w.startsWith(word)))) return score
+      return fuzzy && have.some(w => oneEdit(word, w)) ? score - 1 : 0
     }
-    const titled = (this.db.prepare(`SELECT id, title FROM meetings WHERE 1${inFolder('id')} ORDER BY started_at DESC, id DESC`).all(...sp) as Row[])
-      .filter((r) => titleMatches(String(r.title), q)).slice(0, limit)
-    for (const r of titled) out.set(String(r.id), hitOf(String(r.id), []))
-    const rows = this.db.prepare(`
-      SELECT meeting_id, snippet, MIN(rank) AS best FROM (
-        SELECT s.meeting_id AS meeting_id, snippet(segments_fts, 0, '${OPEN}', '${CLOSE}', '…', 12) AS snippet, segments_fts.rank AS rank
-          FROM segments_fts JOIN segments s ON s.id = segments_fts.rowid WHERE segments_fts MATCH ? AND s.hidden = 0${inFolder('s.meeting_id')}
+    const found = new Map(scopedRows.map(r => {
+      const title = String(r.title), attendees = (JSON.parse(String(r.attendees)) as Person[]).map(p => p.name).join(' '), folders = String(r.folders ?? '')
+      const fields = [[title, 40, true], [attendees, 30, true], [folders, 30, false]] as const
+      const scores = words.map((w, i) => Math.max(0, ...fields.map(([text, score, fuzzy]) => matchScore(text, w, i === words.length - 1, fuzzy, score))))
+      return [String(r.id), { scores, bonus: fields.some(([text]) => hasPhrase(text)) ? 5 : 0, parts: [] as SnippetPart[], snippetScore: 0 }]
+    }))
+    words.forEach((word, i) => {
+      const fts = `"${word}"${i === words.length - 1 ? '*' : ''}`
+      // Use the existing text indexes per word, then intersect at meeting level rather than within one field or line.
+      const hits = this.db.prepare(`SELECT meeting_id, snippet, score, MIN(rank) FROM (
+        SELECT n.meeting_id, snippet(notes_fts, -1, '${OPEN}', '${CLOSE}', '…', 24) AS snippet, 20 AS score, notes_fts.rank AS rank
+          FROM notes_fts JOIN notes n ON n.id = notes_fts.rowid WHERE notes_fts MATCH ?${inScope('n.meeting_id')}
         UNION ALL
-        SELECT n.meeting_id, snippet(notes_fts, -1, '${OPEN}', '${CLOSE}', '…', 12), notes_fts.rank
-          FROM notes_fts JOIN notes n ON n.id = notes_fts.rowid WHERE notes_fts MATCH ?${inFolder('n.meeting_id')}
-      ) GROUP BY meeting_id ORDER BY best LIMIT ?`).all(fts, ...sp, fts, ...sp, limit) as Row[]
-    for (const r of rows) add(String(r.meeting_id), partsOf(String(r.snippet)))
-    // Chinese and Japanese: NOFOLDERS_P, so the search sees a whole run as one word; lines with every pair of the characters match
-    const runs = q.match(CJK_RUNS) ?? []
-    if (runs.length && out.size < limit) {
-      const pairs = pairsOf(runs)
-      const where = (col: string) => pairs.map(() => `instr(${col}, ?) > 0`).join(' AND ')
-      const found = [
-        ...(this.db.prepare(`SELECT meeting_id, text FROM segments WHERE hidden = 0 AND ${where('text')}${inFolder('meeting_id')} ORDER BY meeting_id, start_ms LIMIT 500`).all(...pairs, ...sp) as Row[]),
-        ...(this.db.prepare(`SELECT meeting_id, coalesce(enhanced, '') || char(10) || mine AS text FROM notes WHERE ${where("coalesce(enhanced, '') || char(10) || mine")}${inFolder('meeting_id')} LIMIT 500`).all(...pairs, ...sp) as Row[]),
-      ]
-      for (const r of found) if (out.size < limit && !out.get(String(r.meeting_id))?.parts.length) add(String(r.meeting_id), around(String(r.text), pairs))
+        SELECT s.meeting_id, snippet(segments_fts, 0, '${OPEN}', '${CLOSE}', '…', 24), 10, segments_fts.rank
+          FROM segments_fts JOIN segments s ON s.id = segments_fts.rowid WHERE segments_fts MATCH ? AND s.hidden = 0${inScope('s.meeting_id')}
+      ) GROUP BY meeting_id, score`).all(fts, ...args, fts, ...args) as Row[]
+      const add = (id: string, parts: SnippetPart[], score: number) => {
+        const hit = found.get(id)
+        if (!hit) return
+        hit.scores[i] = Math.max(hit.scores[i], score)
+        if (score > hit.snippetScore) { hit.parts = parts; hit.snippetScore = score }
+      }
+      for (const r of hits) add(String(r.meeting_id), partsOf(String(r.snippet)), Number(r.score))
+      // FTS treats CJK runs as one token; retain matching inside those runs.
+      if (CJK.test(word)) {
+        const pairs = pairsOf([word])
+        const where = (col: string) => pairs.map(() => `instr(${col}, ?) > 0`).join(' AND ')
+        for (const r of this.db.prepare(`SELECT meeting_id, coalesce(enhanced, '') || char(10) || mine AS text FROM notes
+          WHERE ${where("coalesce(enhanced, '') || char(10) || mine")}${inScope('meeting_id')}`).all(...pairs, ...args) as Row[]) add(String(r.meeting_id), around(String(r.text), pairs), 20)
+        for (const r of this.db.prepare(`SELECT meeting_id, text FROM segments WHERE hidden = 0 AND ${where('text')}${inScope('meeting_id')}`).all(...pairs, ...args) as Row[]) add(String(r.meeting_id), around(String(r.text), pairs), 10)
+      }
+    })
+    if (words.length > 1) {
+      const exact = `"${phrase}"`
+      const phrases = this.db.prepare(`
+        SELECT n.meeting_id FROM notes_fts JOIN notes n ON n.id = notes_fts.rowid WHERE notes_fts MATCH ?${inScope('n.meeting_id')}
+        UNION
+        SELECT s.meeting_id FROM segments_fts JOIN segments s ON s.id = segments_fts.rowid WHERE segments_fts MATCH ? AND s.hidden = 0${inScope('s.meeting_id')}
+      `).all(exact, ...args, exact, ...args) as Row[]
+      for (const r of phrases) { const hit = found.get(String(r.meeting_id)); if (hit) hit.bonus = 5 }
     }
-    return [...out.values()].slice(0, limit)
+    return scopedRows.map(r => {
+      const hit = found.get(String(r.id))!
+      return { ...hitOf(String(r.id), hit.parts), score: hit.scores.reduce((a, b) => a + b, 0) + hit.bonus,
+        matches: hit.scores.every(s => s > 0), confident: hit.scores.every(s => s >= 29) }
+    }).filter(h => h.matches).sort((a, b) => b.score - a.score).slice(0, limit)
+      .map(({ meetingId, snippet, parts, confident }) => ({ meetingId, snippet, parts, confident }))
   }
 
   /**

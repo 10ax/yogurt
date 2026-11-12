@@ -1,4 +1,8 @@
 {
+  "No matching meetings with {name}.": "لا توجد اجتماعات مطابقة مع {name}.",
+  "No matching meetings on {date}.": "لا توجد اجتماعات مطابقة في {date}.",
+  "No matching meetings with {name} on {date}.": "لا توجد اجتماعات مطابقة مع {name} في {date}.",
+  "Meetings with {name}": "اجتماعات مع {name}",
   "Hide checklist": "إخفاء قائمة التحقق",
   "Notes": "ملاحظات",
   "Open": "فتح",

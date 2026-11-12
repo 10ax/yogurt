@@ -36,7 +36,7 @@ test('the sidebar shortcut, native View menu, command palette and shortcut refer
     await page.keyboard.press('Meta+k')
     const command = page.getByTestId('command-sidebar')
     await expect(command).toContainText('Hide Sidebar')
-    await expect(command.locator('kbd')).toHaveText('⌃⌘S')
+    await expect(command.locator('.search-shortcut')).toHaveText('⌃⌘S')
     await command.click()
     await expect(page.getByTestId('search')).toHaveCount(0)
     await expect(toggle).toHaveAttribute('aria-expanded', 'false')
@@ -74,8 +74,8 @@ test('page shortcuts are taught in the palette, work there, and respect modal ed
     ]) {
       await page.keyboard.press('Meta+k')
       const command = page.getByTestId(`command-${id}`)
-      await expect(command.locator('kbd')).toHaveText(shortcut)
-      expect((await command.locator('kbd').boundingBox())!.x).toBeGreaterThan((await command.locator('.command-label').boundingBox())!.x)
+      await expect(command.locator('.search-shortcut')).toHaveText(shortcut)
+      expect((await command.locator('.search-shortcut').boundingBox())!.x).toBeGreaterThan((await command.locator('.command-label').boundingBox())!.x)
       await page.keyboard.press(key)
       await expect(page.getByTestId('search')).toHaveCount(0)
       await expect(page.getByTestId(screen)).toBeVisible()
@@ -132,7 +132,7 @@ test('the command palette opens pages and folders and changes appearance and set
   } finally { await app.close() }
 })
 
-test('appearance commands omit the saved choice and switch between all three modes', async () => {
+test('appearance commands mark the saved choice, allow a no-op and switch between all three modes', async () => {
   const { app, page } = await launch()
   try {
     await page.evaluate(() => window.yogurt.settings.setTheme('system'))
@@ -143,12 +143,218 @@ test('appearance commands omit the saved choice and switch between all three mod
     ] as const) {
       await page.keyboard.press('Meta+k')
       await page.getByTestId('search-input').fill('Appearance')
-      await expect(page.locator('[data-testid^="command-theme-"]')).toHaveCount(2)
-      await expect(page.getByTestId(`command-theme-${current}`)).toHaveCount(0)
+      await expect(page.locator('[data-testid^="command-theme-"]')).toHaveCount(3)
+      const saved = page.getByTestId(`command-theme-${current}`)
+      await expect(saved).toHaveAttribute('aria-current', 'true')
+      await expect(saved).toContainText('✓')
+      await page.getByTestId('search-input').fill(current === 'system' ? 'Match my' : current)
+      await expect(saved).toHaveAttribute('aria-selected', 'true')
+      await page.keyboard.press('Enter')
+      await expect(page.getByTestId('search')).toHaveCount(0)
+      expect((await page.evaluate(() => window.yogurt.settings.get())).theme).toBe(current)
+      await page.keyboard.press('Meta+k')
       await page.getByTestId('search-input').fill(query)
       await page.keyboard.press('Enter')
       await expect(page.getByTestId('search')).toHaveCount(0)
       expect((await page.evaluate(() => window.yogurt.settings.get())).theme).toBe(next)
+    }
+  } finally { await app.close() }
+})
+
+test('command ranking controls visible order, selection and Enter alongside matching meetings', async () => {
+  const { app, page } = await launch()
+  try {
+    const id = await app.evaluate(() => (globalThis as unknown as { __fake__: { bigMeeting(n: number): string } }).__fake__.bigMeeting(0))
+    await page.evaluate(id => window.yogurt.meetings.rename(id, 'Dark light settings trash theme mode budget review'), id)
+    const folder = await page.evaluate(() => window.yogurt.folders.create('Dark planning'))
+    await page.reload()
+    await expect(page.getByTestId('home')).toBeVisible()
+    await page.keyboard.press('Meta+k')
+    const input = page.getByTestId('search-input')
+    const results = page.getByRole('listbox', { name: 'Results' })
+    const options = results.getByRole('option')
+    for (const [query, expected] of [
+      ['', `search-${id}`], ['dark', `command-folder-${folder!.id}`], ['light', 'command-theme-light'],
+      ['set', 'command-settings'], ['trash', 'command-trash'], ['budget review', `search-${id}`],
+      ['theme', `search-${id}`], ['mode', `search-${id}`],
+    ]) {
+      await input.fill(query)
+      await expect(results).toHaveAttribute('aria-busy', 'false')
+      await expect(options.first()).toHaveAttribute('id', query ? 'search-ask' : expected)
+      await expect(results.locator('[aria-selected="true"]')).toHaveAttribute('id', expected)
+      await expect(input).toHaveAttribute('aria-activedescendant', expected)
+      await expect(results.locator('[aria-selected="true"] .search-return')).toBeVisible()
+      await expect(page.getByTestId('search-result')).toHaveCount(1)
+    }
+    // Clearing resets settling; equal command scores keep their original order, including folders.
+    await input.fill('')
+    await expect(results).toHaveAttribute('aria-busy', 'false')
+    await input.fill('dark')
+    await expect(options).toHaveCount(4)
+    await expect(input).toHaveAttribute('aria-activedescendant', `command-folder-${folder!.id}`)
+    await expect(options.nth(1)).toHaveAttribute('id', `command-folder-${folder!.id}`)
+    await expect(options.nth(2)).toHaveAttribute('id', 'command-theme-dark')
+    await expect(options.nth(3)).toHaveAttribute('id', `search-${id}`)
+    await page.keyboard.press('ArrowDown')
+    await expect(input).toHaveAttribute('aria-activedescendant', 'command-theme-dark')
+    await page.keyboard.press('ArrowDown')
+    await expect(input).toHaveAttribute('aria-activedescendant', `search-${id}`)
+    await page.keyboard.press('Enter')
+    await expect(page.getByTestId('search')).toHaveCount(0)
+    expect(await page.evaluate(() => window.yogurt.nav.current())).toBe(`/note/${id}`)
+    await page.keyboard.press('Meta+k')
+    await input.fill('set')
+    await expect(page.getByTestId('command-settings')).toHaveAttribute('aria-selected', 'true')
+    await page.keyboard.press('Enter')
+    await expect(page.getByTestId('settings')).toBeVisible()
+  } finally { await app.close() }
+})
+
+test('Enter during a pending search follows command ranking', async () => {
+  const { app, page } = await launch({ YOGURT_FAKE_SEARCH_SLOW: '1' })
+  try {
+    const id = await app.evaluate(() => (globalThis as unknown as { __fake__: { bigMeeting(n: number): string } }).__fake__.bigMeeting(0))
+    await page.evaluate(id => window.yogurt.meetings.rename(id, 'Dark mode planning'), id)
+    await page.evaluate(() => window.yogurt.settings.setTheme('light'))
+    await page.keyboard.press('Meta+k')
+    await expect(page.getByTestId('command-theme-dark')).toBeVisible()
+    await page.getByTestId('search-input').fill('dark')
+    await page.keyboard.press('Enter')
+    await expect(page.getByTestId('search')).toHaveCount(0)
+    expect((await page.evaluate(() => window.yogurt.settings.get())).theme).toBe('dark')
+    await expect(page.getByTestId('home')).toBeVisible()
+    await page.keyboard.press('Meta+k')
+    await page.getByTestId('search-input').fill('mode')
+    await page.keyboard.press('Enter')
+    await expect(page.getByTestId('search')).toHaveCount(0)
+    expect(await page.evaluate(() => window.yogurt.nav.current())).toBe(`/note/${id}`)
+  } finally { await app.close() }
+})
+
+test('Ask is pinned and sends the question into a new conversation, including folder scope', async () => {
+  const { app, page } = await launch()
+  try {
+    const folder = await page.evaluate(() => window.yogurt.folders.create('Project'))
+    for (const scoped of [false, true]) {
+      await page.evaluate(route => window.yogurt.nav.go(route), scoped ? `/folder/${folder!.id}` : '')
+      await expect(page.getByTestId(scoped ? 'folder-title' : 'home')).toBeVisible()
+      await page.keyboard.press('Meta+k')
+      const query = 'What did we decide about the launch?'
+      await page.getByTestId('search-input').fill(query)
+      const ask = page.getByTestId('search-ask')
+      await expect(page.getByRole('listbox').getByRole('option').first()).toHaveAttribute('id', 'search-ask')
+      await expect(ask).toContainText('Ask Yogurt')
+      await expect(ask.locator('.command-label')).toHaveText(query)
+      await expect(ask).toHaveAttribute('aria-selected', 'true')
+      if (scoped) await ask.click()
+      else await page.keyboard.press('Enter')
+      await expect(page.getByTestId('search')).toHaveCount(0)
+      await expect(page.getByTestId('chat-page')).toBeVisible()
+      await expect(page.getByTestId('chat-page-question')).toHaveText(query)
+      const conversation = await page.evaluate(async () => window.yogurt.conversations.get((await window.yogurt.nav.current()).slice(6)))
+      expect(conversation!.turns).toHaveLength(1)
+      expect(conversation!.chips.map(c => ({ kind: c.kind, id: c.id }))).toEqual(scoped ? [{ kind: 'folder', id: folder!.id }] : [])
+    }
+  } finally { await app.close() }
+})
+
+test('a parsed date chip can be removed with its button or Backspace', async () => {
+  const { app, page } = await launch()
+  try {
+    await page.keyboard.press('Meta+k')
+    const input = page.getByTestId('search-input')
+    for (const keyboard of [false, true]) {
+      await input.fill('standup nov 10')
+      await expect(page.getByTestId('search-date')).toBeVisible()
+      await expect(page.getByTestId('search-date-highlight')).toHaveText('nov 10')
+      if (keyboard) {
+        await input.evaluate(el => (el as HTMLInputElement).setSelectionRange(0, 0))
+        await page.keyboard.press('Backspace')
+      } else await page.getByTestId('search-date-clear').click()
+      await expect(page.getByTestId('search-date')).toHaveCount(0)
+      await expect(input).toHaveValue('standup')
+      await expect(input).toBeFocused()
+    }
+  } finally { await app.close() }
+})
+
+test('the icon follows selection, hints stay fixed, and the secondary shortcut sends to Ask', async () => {
+  const { app, page } = await launch()
+  try {
+    await page.keyboard.press('Meta+k')
+    const input = page.getByTestId('search-input')
+    const hints = await page.locator('.search-footer').textContent()
+    for (const query of ['s', 'se', 'set', 'settings', 'why', 'why now?']) {
+      await input.fill(query)
+      await expect(page.locator('.search-footer')).toHaveText(hints!)
+    }
+    await input.fill('settings')
+    await expect(page.getByTestId('command-settings')).toHaveAttribute('aria-selected', 'true')
+    await expect(page.getByTestId('search-intent-icon')).toHaveAttribute('data-icon', 'command:settings')
+    await expect(page.getByTestId('search-primary-hint')).toHaveText('↵Select')
+    await expect(page.getByTestId('search-secondary-hint')).toContainText('Ask')
+    await page.keyboard.press('ArrowUp')
+    await expect(page.getByTestId('search-ask')).toHaveAttribute('aria-selected', 'true')
+    await expect(page.getByTestId('search-intent-icon')).toHaveAttribute('data-icon', 'ask')
+    await expect(page.getByTestId('search-primary-hint')).toHaveText('↵Select')
+    await expect(page.getByTestId('search-secondary-hint')).toContainText('Ask')
+    await page.keyboard.press('ArrowDown')
+    await page.keyboard.press('Meta+Enter')
+    await expect(page.getByTestId('search')).toHaveCount(0)
+    await expect(page.getByTestId('chat-page-question')).toHaveText('settings')
+    await page.keyboard.press('Meta+k')
+    await input.fill('Octob')
+    await expect(page.getByTestId('search-date-highlight')).toHaveCount(0)
+    await input.fill('October 28')
+    await expect(page.getByTestId('search-date-highlight')).toHaveText('October 28')
+    await expect(page.getByTestId('search-date')).toContainText('October 28')
+    await page.keyboard.press('Tab')
+    await expect(page.getByTestId('search-date-clear')).toBeFocused()
+    await page.keyboard.press('Enter')
+    await expect(input).toHaveValue('')
+    await expect(page.getByTestId('search-date')).toHaveCount(0)
+  } finally { await app.close() }
+})
+
+test('people filters recognize exact identities and require a choice for partial names', async () => {
+  const { app, page } = await launch()
+  try {
+    const ids = await app.evaluate(() => {
+      const fake = (globalThis as unknown as { __fake__: { bigMeeting(n: number): string } }).__fake__
+      return [fake.bigMeeting(0), fake.bigMeeting(0), fake.bigMeeting(0)]
+    })
+    await page.evaluate(async ids => {
+      for (const id of ids.slice(0, 2)) await window.yogurt.meetings.setAttendees(id, [{ name: 'Riley Example', email: 'riley@example.test' }])
+      await window.yogurt.meetings.rename(ids[2], 'Riley Example')
+    }, ids)
+    await page.keyboard.press('Meta+k')
+    const input = page.getByTestId('search-input')
+    for (const query of ['Riley Example', 'riley@example.test']) {
+      await input.fill(query)
+      await expect(page.getByTestId('search-person-filter')).toHaveCount(1)
+      await expect(page.getByTestId('search-person-highlight')).toHaveText(query)
+      await expect(input).toHaveValue(query)
+      await expect(page.getByTestId('command-settings')).toHaveCount(0)
+      await expect(page.getByTestId('search-result')).toHaveCount(2)
+      await page.getByTestId('search-person-filter').getByRole('button').click()
+      await expect(input).toHaveValue('')
+    }
+    for (const key of ['Enter', 'Tab']) {
+      await input.fill('Ril today')
+      await expect(page.getByTestId('search-person-filter')).toHaveCount(0)
+      await expect(page.getByTestId('search-person')).toHaveCount(1)
+      await expect(page.getByTestId('search-result')).toHaveCount(3)
+      await page.getByTestId('search-person').hover()
+      await page.keyboard.press(key)
+      await expect(page.getByTestId('search-person-filter')).toHaveCount(1)
+      await expect(input).toHaveValue('Riley Example today')
+      await expect(page.getByTestId('search-person-highlight')).toHaveText('Riley Example')
+      await expect(page.getByTestId('search-result')).toHaveCount(2)
+      await page.getByTestId('search-date-clear').click()
+      await input.evaluate((el: HTMLInputElement) => el.setSelectionRange(0, 0))
+      await page.keyboard.press('Backspace')
+      await expect(page.getByTestId('search-person-filter')).toHaveCount(0)
+      await expect(page.getByTestId('search-result')).toHaveCount(3)
     }
   } finally { await app.close() }
 })
@@ -226,7 +432,7 @@ test('typing keeps the palette frame steady and replaces meeting and command res
     await page.keyboard.press('Meta+k')
     const palette = page.getByTestId('search')
     const input = page.getByTestId('search-input')
-    await expect(palette.getByTestId('search-result')).toHaveCount(8)
+    await expect(palette.getByTestId('search-result')).toHaveCount(3)
     await page.evaluate(() => {
       const frames: number[][] = []
       const measure = () => {
@@ -242,13 +448,14 @@ test('typing keeps the palette frame steady and replaces meeting and command res
     await input.fill('sett')
     // While the delayed search is pending, retain one coherent result set instead of clearing its rows.
     await page.waitForTimeout(250)
-    await expect(palette.getByTestId('search-result')).toHaveCount(8)
+    await expect(palette.getByTestId('search-result')).toHaveCount(3)
     await expect(palette.getByTestId('command-meetings')).toHaveCount(1)
     await expect(palette.getByTestId('search-result')).toHaveCount(0)
     await expect(palette.getByTestId('command-settings')).toBeVisible()
     await expect(palette.getByTestId('command-meetings')).toHaveCount(0)
     await input.fill('zzqx')
-    await expect(palette.getByTestId('search-none')).toBeVisible()
+    await expect(palette.getByRole('option')).toHaveCount(1)
+    await expect(palette.getByTestId('search-ask')).toHaveAttribute('aria-selected', 'true')
     const frames = await page.evaluate(() => (window as unknown as { paletteFrames: number[][] }).paletteFrames)
     for (const i of [0, 1, 2]) expect(Math.max(...frames.map(f => f[i])) - Math.min(...frames.map(f => f[i]))).toBeLessThan(1)
     // Enter during a pending query uses the new command, not the retained results.

@@ -1,4 +1,8 @@
 {
+  "No matching meetings with {name}.": "{name}-এর সঙ্গে মিলে যাওয়া কোনো মিটিং নেই।",
+  "No matching meetings on {date}.": "{date} তারিখে মিলে যাওয়া কোনো মিটিং নেই।",
+  "No matching meetings with {name} on {date}.": "{date} তারিখে {name}-এর সঙ্গে মিলে যাওয়া কোনো মিটিং নেই।",
+  "Meetings with {name}": "{name}-এর সঙ্গে মিটিং",
   "Hide checklist": "চেকলিস্ট লুকান",
   "Notes": "নোট",
   "Open": "খুলুন",

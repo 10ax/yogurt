@@ -1,4 +1,8 @@
 {
+  "No matching meetings with {name}.": "Δεν βρέθηκαν συναντήσεις που να ταιριάζουν με {name}.",
+  "No matching meetings on {date}.": "Δεν βρέθηκαν συναντήσεις που να ταιριάζουν στις {date}.",
+  "No matching meetings with {name} on {date}.": "Δεν βρέθηκαν συναντήσεις που να ταιριάζουν με {name} στις {date}.",
+  "Meetings with {name}": "Συναντήσεις με {name}",
   "Hide checklist": "Απόκρυψη λίστας ελέγχου",
   "Notes": "Σημειώσεις",
   "Open": "Άνοιγμα",

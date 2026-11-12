@@ -1,4 +1,8 @@
 {
+  "No matching meetings with {name}.": "没有与{name}的匹配会议。",
+  "No matching meetings on {date}.": "{date}没有匹配的会议。",
+  "No matching meetings with {name} on {date}.": "{date}没有与{name}的匹配会议。",
+  "Meetings with {name}": "与 {name} 的会议",
   "Hide checklist": "隐藏检查清单",
   "Notes": "笔记",
   "Open": "打开",

@@ -1,4 +1,8 @@
 {
+  "No matching meetings with {name}.": "{name}님과의 일치하는 회의가 없습니다.",
+  "No matching meetings on {date}.": "{date}에 일치하는 회의가 없습니다.",
+  "No matching meetings with {name} on {date}.": "{date}에 {name}님과의 일치하는 회의가 없습니다.",
+  "Meetings with {name}": "{name} 님과의 회의",
   "Hide checklist": "체크리스트 숨기기",
   "Notes": "노트",
   "Open": "열기",

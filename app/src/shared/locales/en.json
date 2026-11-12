@@ -1,4 +1,8 @@
 {
+  "No matching meetings with {name}.": "No matching meetings with {name}.",
+  "No matching meetings on {date}.": "No matching meetings on {date}.",
+  "No matching meetings with {name} on {date}.": "No matching meetings with {name} on {date}.",
+  "Meetings with {name}": "Meetings with {name}",
   "{count} min": {
     "one": "{count} min",
     "other": "{count} min"

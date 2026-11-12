@@ -1,4 +1,8 @@
 {
+  "No matching meetings with {name}.": "Nicio întâlnire corespunzătoare cu {name}.",
+  "No matching meetings on {date}.": "Nicio întâlnire corespunzătoare pe {date}.",
+  "No matching meetings with {name} on {date}.": "Nicio întâlnire corespunzătoare cu {name} pe {date}.",
+  "Meetings with {name}": "Întâlniri cu {name}",
   "Hide checklist": "Ascunde lista de verificare",
   "Notes": "Notițe",
   "Open": "Deschide",

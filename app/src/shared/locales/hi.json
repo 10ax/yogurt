@@ -1,4 +1,8 @@
 {
+  "No matching meetings with {name}.": "{name} के साथ कोई मेल खाती मीटिंग नहीं मिली।",
+  "No matching meetings on {date}.": "{date} को कोई मेल खाती मीटिंग नहीं मिली।",
+  "No matching meetings with {name} on {date}.": "{date} को {name} के साथ कोई मेल खाती मीटिंग नहीं मिली।",
+  "Meetings with {name}": "{name} के साथ मीटिंग",
   "Hide checklist": "चेकलिस्ट छिपाएँ",
   "Notes": "नोट्स",
   "Open": "खोलें",

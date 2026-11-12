@@ -1,3 +1,4 @@
+import { matchSearchPeople, searchPersonKey } from '../shared/searchPeople'
 import { resolvePeople } from './people'
 import { createFolderSuggestions } from './folderSuggestions'
 import { speakerColor } from '../shared/speakerColors'
@@ -19,7 +20,7 @@ import { logToFile } from './log'
 import { loadSettings, localeOf, recordingReminderOn, spokenSetting, stopsWhenCallEnds, updateSettings } from './settings'
 import { CALL_GONE_MS, useCallApps } from './detect'
 import { systemLocale } from './locale'
-import { onLanguage, setLanguage, t } from '../shared/i18n'
+import { language as uiLanguage, onLanguage, setLanguage, t } from '../shared/i18n'
 import bundledCatalog from '../../../catalog/catalog.json'
 import licenses from '../../../catalog/licenses.json'
 import { loadCatalog } from './catalog'
@@ -896,19 +897,26 @@ app.whenReady().then(() => {
     }
     return was
   })
-  ipcMain.handle('search:query', async (_e, q: unknown, folder: unknown) => {
+  ipcMain.handle('search:people', () => store.searchPeople())
+  ipcMain.handle('search:query', async (_e, q: unknown, folder: unknown, filters: unknown) => {
     if (typeof q !== 'string') return []
     const query = q.slice(0, 200)
+    const known = store.searchPeople()
+    if (filters !== undefined && (!Array.isArray(filters) || filters.length > 20 || filters.some(p =>
+      !p || typeof p.name !== 'string' || !(p.email === null || typeof p.email === 'string')))) return []
+    const people = (filters ?? []) as Array<{ name: string; email: string | null }>
+    if (people.some(p => !known.some(k => searchPersonKey(k) === searchPersonKey(p)))) return []
+    const personSearch = people.length > 0 || matchSearchPeople(query, known).matches.length > 0
     // opened from a folder's page: only its meetings
     const sp = isId(folder) ? folder : undefined
     // fake mode: short questions answer late, so a test can see an older answer never replace a newer one
     if (isFake() && process.env.YOGURT_FAKE_SEARCH_SLOW === '1' && query.trim().length <= 4) await new Promise((r) => setTimeout(r, 1000))
-    const hits = query.trim() ? store.search(query, 30, sp) : store.meetingCards({ limit: 8, folder: sp }).map((c) => ({ meetingId: c.id, snippet: '', parts: [] }))
+    const hits = query.trim() || personSearch ? store.search(query, personSearch ? Infinity : 30, sp, { locale: app.getLocale(), language: uiLanguage(), people }) : store.meetingCards({ limit: 3, folder: sp }).map((c) => ({ meetingId: c.id, snippet: '', parts: [] }))
     return hits.flatMap((h) => {
       const m = store.meeting(h.meetingId)
       if (!m) return []
       const parts = h.parts.length ? h.parts : [{ text: store.preview(m.id), hit: false }]
-      return [{ meetingId: m.id, title: m.title, startedAt: m.startedAt, parts: parts.filter((p) => p.text) }]
+      return [{ meetingId: m.id, title: m.title, startedAt: m.startedAt, confident: 'confident' in h ? h.confident : false, parts: parts.filter((p) => p.text) }]
     })
   })
   // the window's own moves (home, a note from the list): remembered here so a reload stays where it was

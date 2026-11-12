@@ -198,7 +198,8 @@ test('a meeting row dragged onto a folder goes into it; ⌘K on a folder page lo
     await expect(page.getByTestId('search-scope')).toHaveText('Acme')
     await expect(page.getByTestId('search-result')).toHaveCount(2)
     await page.keyboard.type('budget')
-    await expect(page.getByTestId('search-none')).toBeVisible()
+    await expect(page.getByTestId('search-result')).toHaveCount(0)
+    await expect(page.getByTestId('search-ask')).toHaveAttribute('aria-selected', 'true')
     await page.getByTestId('search-scope-clear').click()
     await expect(page.getByTestId('search-result').first()).toContainText('Budget review')
     await expect(page.getByTestId('search-input')).toBeFocused()
@@ -208,7 +209,11 @@ test('a meeting row dragged onto a folder goes into it; ⌘K on a folder page lo
     await page.getByTestId('nav-home').click()
     await page.keyboard.press('Meta+k')
     await expect(page.getByTestId('search-scope')).toHaveCount(0)
-    await expect(page.getByTestId('search-result')).toHaveCount(4)
+    await expect(page.getByTestId('search-result')).toHaveCount(3)
+    // The fourth meeting is outside the recent preview, but still searchable without a folder scope.
+    await page.getByTestId('search-input').fill('design crit')
+    await expect(page.getByTestId('search-result')).toHaveCount(1)
+    await expect(page.getByTestId('search-result')).toContainText('Design crit')
   } finally { await app.close() }
 })
 

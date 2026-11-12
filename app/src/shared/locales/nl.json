@@ -1,4 +1,8 @@
 {
+  "No matching meetings with {name}.": "Geen overeenkomende vergaderingen met {name}.",
+  "No matching meetings on {date}.": "Geen overeenkomende vergaderingen op {date}.",
+  "No matching meetings with {name} on {date}.": "Geen overeenkomende vergaderingen met {name} op {date}.",
+  "Meetings with {name}": "Vergaderingen met {name}",
   "Hide checklist": "Checklist verbergen",
   "Notes": "Notities",
   "Open": "Openen",

@@ -1,4 +1,8 @@
 {
+  "No matching meetings with {name}.": "אין פגישות תואמות עם {name}.",
+  "No matching meetings on {date}.": "אין פגישות תואמות בתאריך {date}.",
+  "No matching meetings with {name} on {date}.": "אין פגישות תואמות עם {name} בתאריך {date}.",
+  "Meetings with {name}": "פגישות עם {name}",
   "Hide checklist": "הסתרת רשימת הבדיקה",
   "Notes": "הערות",
   "Open": "פתיחה",

@@ -50,7 +50,8 @@ test('every meeting goes to one file and into a fresh Yogurt, with notes, transc
     await b.page.keyboard.press('Meta+a')
     await b.page.keyboard.type('invite flow')
     await expect(b.page.getByTestId('search-result').first()).toContainText('Customer call with Acme')
-    await b.page.keyboard.press('Enter')
+    // Notes-only matches remain searchable; Ask is the default, so choose the restored meeting explicitly.
+    await b.page.getByTestId('search-result').first().click()
     await expect(b.page.getByTestId('note-enhanced')).toContainText('a simpler invite flow')
 
     await fake(b.app, 'go', `/note/${id}`)

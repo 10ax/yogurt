@@ -1,4 +1,8 @@
 {
+  "No matching meetings with {name}.": "Ingen samsvarende møter med {name}.",
+  "No matching meetings on {date}.": "Ingen samsvarende møter den {date}.",
+  "No matching meetings with {name} on {date}.": "Ingen samsvarende møter med {name} den {date}.",
+  "Meetings with {name}": "Møter med {name}",
   "Hide checklist": "Skjul sjekkliste",
   "Notes": "Notater",
   "Open": "Åpne",

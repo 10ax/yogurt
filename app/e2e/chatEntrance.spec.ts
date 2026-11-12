@@ -17,6 +17,9 @@ test('Ask starters hide without moving the landing layout', async ({}, info) => 
       await page.getByTestId('nav-chat').click()
       const starters = page.getByTestId('chat-starter')
       await expect(starters).toHaveCount(3)
+      // The initial landing shell is replaced when its conversation loads; measure the ready composer.
+      await expect(page.getByTestId('chat-page-input')).toBeEditable()
+      await expect(page.getByTestId('chat-page-input')).toBeFocused()
       if (!before) {
         const title = page.locator('.ask-home-title'), composer = page.getByTestId('chat-page-box')
         const titleBox = await title.boundingBox(), composerBox = await composer.boundingBox()
@@ -43,6 +46,8 @@ test('Ask starters hide without moving the landing layout', async ({}, info) => 
     await page.emulateMedia({ reducedMotion: 'reduce' })
     await page.getByTestId('nav-chat').click()
     await expect(page.getByTestId('chat-starter')).toHaveCount(3)
+    await expect(page.getByTestId('chat-page-input')).toBeEditable()
+    await expect(page.getByTestId('chat-page-input')).toBeFocused()
     expect(await page.getByTestId('chat-starter').evaluateAll(els => els.every(el => el.getAnimations().length === 0 && getComputedStyle(el).opacity === '1' && getComputedStyle(el).transform === 'none'))).toBe(true)
     if (!before) {
       const title = page.locator('.ask-home-title'), titleBox = await title.boundingBox()

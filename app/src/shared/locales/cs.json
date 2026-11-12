@@ -1,4 +1,8 @@
 {
+  "No matching meetings with {name}.": "Žádné odpovídající schůzky s {name}.",
+  "No matching meetings on {date}.": "Žádné odpovídající schůzky dne {date}.",
+  "No matching meetings with {name} on {date}.": "Žádné odpovídající schůzky s {name} dne {date}.",
+  "Meetings with {name}": "Schůzky s {name}",
   "Hide checklist": "Skrýt kontrolní seznam",
   "Notes": "Poznámky",
   "Open": "Otevřít",

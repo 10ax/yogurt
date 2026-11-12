@@ -1,4 +1,8 @@
 {
+  "No matching meetings with {name}.": "{name}との一致する会議はありません。",
+  "No matching meetings on {date}.": "{date}に一致する会議はありません。",
+  "No matching meetings with {name} on {date}.": "{date}の{name}との一致する会議はありません。",
+  "Meetings with {name}": "{name} との会議",
   "Hide checklist": "チェックリストを非表示",
   "Notes": "ノート",
   "Open": "開く",

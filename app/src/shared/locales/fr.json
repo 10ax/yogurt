@@ -1,4 +1,8 @@
 {
+  "No matching meetings with {name}.": "Aucune réunion correspondante avec {name}.",
+  "No matching meetings on {date}.": "Aucune réunion correspondante le {date}.",
+  "No matching meetings with {name} on {date}.": "Aucune réunion correspondante avec {name} le {date}.",
+  "Meetings with {name}": "Réunions avec {name}",
   "Hide checklist": "Masquer la liste de contrôle",
   "Notes": "Notes",
   "Open": "Ouvrir",

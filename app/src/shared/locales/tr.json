@@ -1,4 +1,8 @@
 {
+  "No matching meetings with {name}.": "{name} ile eşleşen toplantı yok.",
+  "No matching meetings on {date}.": "{date} tarihinde eşleşen toplantı yok.",
+  "No matching meetings with {name} on {date}.": "{date} tarihinde {name} ile eşleşen toplantı yok.",
+  "Meetings with {name}": "{name} ile toplantılar",
   "Hide checklist": "Kontrol listesini gizle",
   "Notes": "Notlar",
   "Open": "Aç",

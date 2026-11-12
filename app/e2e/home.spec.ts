@@ -111,7 +111,7 @@ test('a prepared calendar note keeps its notes without recording; Start recordin
     const hit = search.getByTestId('search-result').filter({ hasText: 'Team standup' })
     await expect(hit).toBeVisible()
     await expect(hit.locator('mark').first()).toHaveText(/pricing/i)
-    await page.keyboard.press('Enter')
+    await hit.click()
     await expect(search).toHaveCount(0)
     await expect(page.getByTestId('note-title')).toHaveText('Team standup')
     expect(await routeOf(page)).toBe(`/note/${id}`)
@@ -285,7 +285,8 @@ test('search: from any screen, as you type, arrows and Enter, Esc closes; a slow
     await page.keyboard.press('Meta+k')
     await expect(search).toBeVisible()
     await page.keyboard.type('zzqx')
-    await expect(search.getByTestId('search-none')).toBeVisible()
+    await expect(search.getByTestId('search-result')).toHaveCount(0)
+    await expect(search.getByTestId('search-ask')).toHaveAttribute('aria-selected', 'true')
     await page.keyboard.press('Escape')
     await expect(search).toHaveCount(0)
   } finally { await app.close() }

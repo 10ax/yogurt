@@ -1,4 +1,8 @@
 {
+  "No matching meetings with {name}.": "沒有與{name}的相符會議。",
+  "No matching meetings on {date}.": "{date}沒有相符的會議。",
+  "No matching meetings with {name} on {date}.": "{date}沒有與{name}的相符會議。",
+  "Meetings with {name}": "與 {name} 的會議",
   "Hide checklist": "隱藏檢查清單",
   "Notes": "筆記",
   "Open": "開啟",

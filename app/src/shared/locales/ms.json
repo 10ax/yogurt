@@ -1,4 +1,8 @@
 {
+  "No matching meetings with {name}.": "Tiada mesyuarat yang sepadan dengan {name}.",
+  "No matching meetings on {date}.": "Tiada mesyuarat yang sepadan pada {date}.",
+  "No matching meetings with {name} on {date}.": "Tiada mesyuarat yang sepadan dengan {name} pada {date}.",
+  "Meetings with {name}": "Mesyuarat dengan {name}",
   "Hide checklist": "Sembunyikan senarai semak",
   "Notes": "Nota",
   "Open": "Buka",

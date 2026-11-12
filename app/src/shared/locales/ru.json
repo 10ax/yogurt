@@ -1,4 +1,8 @@
 {
+  "No matching meetings with {name}.": "Нет подходящих встреч с {name}.",
+  "No matching meetings on {date}.": "Нет подходящих встреч на {date}.",
+  "No matching meetings with {name} on {date}.": "Нет подходящих встреч с {name} на {date}.",
+  "Meetings with {name}": "Встречи с {name}",
   "Hide checklist": "Скрыть контрольный список",
   "Notes": "Заметки",
   "Open": "Открыть",

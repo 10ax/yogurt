@@ -9,18 +9,20 @@ const launch = (env: Record<string, string> = {}) =>
   electron.launch({ args: [main], env: { ...process.env, YOGURT_FAKE: '1', YOGURT_USER_DATA: mkdtempSync(join(tmpdir(), 'yogurt-e2e-')), ...env } })
 
 for (const platform of ['win32', 'linux']) {
-  test(`@everywhere on ${platform}: no agenda, and Settings has no calendar or names from calls`, async () => {
+  // Linux reads names from calls through AT-SPI (nothing to ask for, so it reads as on); Windows has none yet
+  const names = platform === 'linux'
+  test(`@everywhere on ${platform}: no agenda, and Settings has no calendar${names ? '' : ' or names from calls'}`, async () => {
     const app = await launch({ YOGURT_FAKE_PLATFORM: platform })
     try {
       const page = await app.firstWindow()
       await expect(page.getByTestId('home')).toBeVisible({ timeout: 15_000 })
-      expect(await page.evaluate(() => window.yogurt.capabilities)).toEqual({ calendar: false, callNames: false, permissionPrompts: false, mediaPause: false })
+      expect(await page.evaluate(() => window.yogurt.capabilities)).toEqual({ calendar: false, callNames: names, permissionPrompts: false, mediaPause: false })
       await expect(page.getByRole('complementary', { name: 'Agenda' })).toHaveCount(0)
       await page.getByTestId('settings-open').click()
       await expect(page.getByTestId('settings')).toBeVisible()
-      await expect(page.getByTestId('permission-row')).toHaveCount(3)
+      await expect(page.getByTestId('permission-row')).toHaveCount(names ? 4 : 3)
       await expect(page.locator('[data-testid="permission-row"][data-kind="calendar"]')).toHaveCount(0)
-      await expect(page.locator('[data-testid="permission-row"][data-kind="accessibility"]')).toHaveCount(0)
+      await expect(page.locator('[data-testid="permission-row"][data-kind="accessibility"]')).toHaveCount(names ? 1 : 0)
       await expect(page.getByTestId('calendar-settings')).toHaveCount(0)
     } finally { await app.close() }
   })

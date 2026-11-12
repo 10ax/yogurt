@@ -73,7 +73,8 @@ for (const theme of ['light', 'dark'] as const) test(`standard recording reminde
     await page.getByTestId('settings-open').click()
     const toggle = page.getByTestId('recording-reminder-toggle')
     await expect(toggle).toHaveAttribute('aria-checked', 'true')
-    await expect(page.getByText('Show a brief reminder when recording starts.')).toBeVisible()
+    // the loaded settings, not the fading placeholder copy that holds the same words for a moment
+    await expect(page.locator('.loading-result').getByText('Show a brief reminder when recording starts.')).toBeVisible()
     await toggle.click()
     await page.reload()
     await expect(toggle).toHaveAttribute('aria-checked', 'false')

@@ -591,7 +591,5 @@
   "Downloading version {version}…": "正在下載版本 {version}…",
   "Couldn't check for updates.": "無法檢查更新。",
   "You can restart once the recording stops.": "錄音停止後即可重新啟動。",
-  "Check now": "立即檢查",
-  "Eject the Yogurt installer?": "要退出 Yogurt 安裝程式嗎？",
-  "Eject": "退出"
+  "Check now": "立即檢查"
 }

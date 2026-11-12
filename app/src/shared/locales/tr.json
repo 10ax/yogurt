@@ -630,7 +630,5 @@
   "Downloading version {version}…": "Sürüm {version} indiriliyor…",
   "Couldn't check for updates.": "Güncellemeler aranamadı.",
   "You can restart once the recording stops.": "Kayıt durduğunda yeniden başlatabilirsiniz.",
-  "Check now": "Şimdi denetle",
-  "Eject the Yogurt installer?": "Yogurt yükleyicisi çıkarılsın mı?",
-  "Eject": "Çıkar"
+  "Check now": "Şimdi denetle"
 }

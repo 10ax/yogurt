@@ -686,7 +686,5 @@
   "Downloading version {version}…": "جارٍ تنزيل الإصدار {version}…",
   "Couldn't check for updates.": "تعذّر البحث عن تحديثات.",
   "You can restart once the recording stops.": "يمكنك إعادة التشغيل بعد توقف التسجيل.",
-  "Check now": "تحقّق الآن",
-  "Eject the Yogurt installer?": "إخراج مثبّت Yogurt؟",
-  "Eject": "إخراج"
+  "Check now": "تحقّق الآن"
 }

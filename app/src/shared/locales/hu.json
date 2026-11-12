@@ -630,7 +630,5 @@
   "Downloading version {version}…": "A(z) {version} verzió letöltése…",
   "Couldn't check for updates.": "Nem sikerült frissítéseket keresni.",
   "You can restart once the recording stops.": "A felvétel leállása után indíthatod újra.",
-  "Check now": "Keresés most",
-  "Eject the Yogurt installer?": "Kiadja a Yogurt telepítőjét?",
-  "Eject": "Kiadás"
+  "Check now": "Keresés most"
 }

@@ -643,7 +643,5 @@
   "Downloading version {version}…": "Baixando a versão {version}…",
   "Couldn't check for updates.": "Não foi possível procurar atualizações.",
   "You can restart once the recording stops.": "Você pode reiniciar quando a gravação parar.",
-  "Check now": "Verificar agora",
-  "Eject the Yogurt installer?": "Ejetar o instalador do Yogurt?",
-  "Eject": "Ejetar"
+  "Check now": "Verificar agora"
 }

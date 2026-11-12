@@ -630,7 +630,5 @@
   "Downloading version {version}…": "ভার্সন {version} ডাউনলোড হচ্ছে…",
   "Couldn't check for updates.": "আপডেট খোঁজা যায়নি।",
   "You can restart once the recording stops.": "রেকর্ডিং থামলে আবার চালু করতে পারবেন।",
-  "Check now": "এখনই দেখুন",
-  "Eject the Yogurt installer?": "Yogurt ইনস্টলার বের করবেন?",
-  "Eject": "বের করুন"
+  "Check now": "এখনই দেখুন"
 }

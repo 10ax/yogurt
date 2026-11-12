@@ -630,7 +630,5 @@
   "Downloading version {version}…": "Version {version} wird geladen …",
   "Couldn't check for updates.": "Suche nach Updates fehlgeschlagen.",
   "You can restart once the recording stops.": "Du kannst neu starten, sobald die Aufnahme endet.",
-  "Check now": "Jetzt suchen",
-  "Eject the Yogurt installer?": "Yogurt-Installationsprogramm auswerfen?",
-  "Eject": "Auswerfen"
+  "Check now": "Jetzt suchen"
 }

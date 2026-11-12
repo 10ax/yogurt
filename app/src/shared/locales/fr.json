@@ -643,7 +643,5 @@
   "Downloading version {version}…": "Téléchargement de la version {version}…",
   "Couldn't check for updates.": "Impossible de rechercher les mises à jour.",
   "You can restart once the recording stops.": "Vous pourrez redémarrer une fois l’enregistrement terminé.",
-  "Check now": "Rechercher",
-  "Eject the Yogurt installer?": "Éjecter le programme d’installation de Yogurt ?",
-  "Eject": "Éjecter"
+  "Check now": "Rechercher"
 }

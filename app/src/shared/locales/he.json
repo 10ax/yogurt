@@ -643,7 +643,5 @@
   "Downloading version {version}…": "מוריד את גרסה {version}…",
   "Couldn't check for updates.": "לא ניתן לחפש עדכונים.",
   "You can restart once the recording stops.": "אפשר להפעיל מחדש אחרי שההקלטה תיפסק.",
-  "Check now": "בדיקה עכשיו",
-  "Eject the Yogurt installer?": "להוציא את תוכנית ההתקנה של Yogurt?",
-  "Eject": "הוצא"
+  "Check now": "בדיקה עכשיו"
 }

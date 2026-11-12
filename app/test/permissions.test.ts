@@ -90,7 +90,14 @@ describe('permissions on Windows and Linux', () => {
   it('nothing needs asking: the mic, call audio and notifications are on, and no helper is asked', async () => {
     for (const platform of ['win32', 'linux']) {
       const { p, calls } = offMac(platform)
-      expect(await p.status()).toEqual({ mic: 'granted', systemAudio: 'granted', calendar: 'unknown', accessibility: 'unknown', notifications: 'granted' })
+      expect(await p.status()).toEqual({
+        mic: 'granted',
+        systemAudio: 'granted',
+        calendar: 'unknown',
+        // Linux reads call names through AT-SPI, which has no permission prompt; Windows has no such permission
+        accessibility: platform === 'linux' ? 'granted' : 'unknown',
+        notifications: 'granted',
+      })
       expect(await p.request('mic')).toBe('granted')
       expect(calls).toEqual([])
     }

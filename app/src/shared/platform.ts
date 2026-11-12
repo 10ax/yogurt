@@ -24,7 +24,8 @@ export type Capabilities = {
 
 export function capabilities(platform: string): Capabilities {
   const mac = platform === 'darwin'
-  return { calendar: mac, callNames: mac, permissionPrompts: mac, mediaPause: mac }
+  // Linux reads call names through AT-SPI (yogurt-system call-watch), the same WatchLine JSON as the Mac
+  return { calendar: mac, callNames: mac || platform === 'linux', permissionPrompts: mac, mediaPause: mac }
 }
 
 /** The computer Yogurt runs on. Only fake mode may pretend to be another one (YOGURT_FAKE_PLATFORM), so Mac tests can try the others' screens. */

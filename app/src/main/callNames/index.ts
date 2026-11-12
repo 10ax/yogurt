@@ -5,25 +5,27 @@ import { readCall, summarize, type AxWindow, type CallKind } from './parse'
 
 /**
  * Names from the call: while a meeting records, the call app it is in (Zoom, Teams, Meet in a browser) is read through
- * macOS Accessibility about twice a second, and each line of the other side is named after the person the app shows
- * talking, or the only other person in the call. The mic is always You. Without the permission, in another app, or
- * when the app shows nothing clear, lines of the other side are Them. Nothing is guessed, and nothing leaves the Mac.
+ * the accessibility tree about twice a second (macOS Accessibility, AT-SPI on Linux), and each line of the other side
+ * is named after the person the app shows talking, or the only other person in the call. The mic is always You.
+ * Without the permission, in another app, or when the app shows nothing clear, lines of the other side are Them.
+ * Nothing is guessed, and nothing leaves the computer.
  */
 
 /** what yogurt-mac call-watch prints each time it reads: the call windows, or why it could not */
 export type WatchLine = { t: number; app?: string; windows?: AxWindow[]; error?: string }
 export type Watch = (ids: string[], onLine: (l: WatchLine) => void) => { stop(): void }
 
-/** the call apps that can be read, by the name meeting detection gives them (detect.ts), and the kind of window each has */
+/** the call apps that can be read, by the name meeting detection gives them (detect.ts), and the kind of window each
+ * has. A Mac's ids are bundle ids; Linux's are program names or Flatpak app ids. */
 const APPS: Record<string, { kind: CallKind; ids: string[] }> = {
-  Zoom: { kind: 'zoom', ids: ['us.zoom.xos'] },
-  Teams: { kind: 'teams', ids: ['com.microsoft.teams2', 'com.microsoft.teams'] },
-  Chrome: { kind: 'meet', ids: ['com.google.Chrome'] },
+  Zoom: { kind: 'zoom', ids: ['us.zoom.xos', 'zoom', 'us.zoom.Zoom'] },
+  Teams: { kind: 'teams', ids: ['com.microsoft.teams2', 'com.microsoft.teams', 'teams-for-linux', 'com.github.IsmaelMartinez.teams_for_linux'] },
+  Chrome: { kind: 'meet', ids: ['com.google.Chrome', 'chrome', 'google-chrome'] },
   Arc: { kind: 'meet', ids: ['company.thebrowser.Browser'] },
-  Brave: { kind: 'meet', ids: ['com.brave.Browser'] },
-  Edge: { kind: 'meet', ids: ['com.microsoft.edgemac'] },
+  Brave: { kind: 'meet', ids: ['com.brave.Browser', 'brave'] },
+  Edge: { kind: 'meet', ids: ['com.microsoft.edgemac', 'msedge', 'com.microsoft.Edge'] },
   Safari: { kind: 'meet', ids: ['com.apple.Safari'] },
-  Firefox: { kind: 'meet', ids: ['org.mozilla.firefox'] },
+  Firefox: { kind: 'meet', ids: ['org.mozilla.firefox', 'firefox', 'firefox-bin'] },
 }
 /** The apps to read for a meeting: the one it was detected in; with none (started by hand) any of them, the frontmost with a call first */
 export const watchIds = (app: string | null): string[] => (app ? APPS[app]?.ids ?? [] : Object.values(APPS).flatMap((a) => a.ids))

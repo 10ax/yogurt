@@ -49,14 +49,15 @@ function setup(o: { app?: string | null; attendees?: Meeting['attendees'] } = {}
 const wait = () => new Promise((r) => setTimeout(r, 10))
 
 describe('watchIds: only the call app the meeting is in', () => {
-  it('maps the detected app to its bundle ids; no app known: every call app (the frontmost with a call is read)', () => {
-    expect(watchIds('Zoom')).toEqual(['us.zoom.xos'])
-    expect(watchIds('Teams')).toEqual(['com.microsoft.teams2', 'com.microsoft.teams'])
-    expect(watchIds('Chrome')).toEqual(['com.google.Chrome'])
+  it('maps the detected app to its ids (bundle ids on a Mac, program names and Flatpak ids on Linux); no app known: every call app (the first with a call is read)', () => {
+    expect(watchIds('Zoom')).toEqual(['us.zoom.xos', 'zoom', 'us.zoom.Zoom'])
+    expect(watchIds('Teams')).toEqual(['com.microsoft.teams2', 'com.microsoft.teams', 'teams-for-linux', 'com.github.IsmaelMartinez.teams_for_linux'])
+    expect(watchIds('Chrome')).toEqual(['com.google.Chrome', 'chrome', 'google-chrome'])
     expect(watchIds('Safari')).toEqual(['com.apple.Safari'])
     expect(watchIds('FaceTime')).toEqual([])
     expect(watchIds(null)).toContain('us.zoom.xos')
     expect(watchIds(null)).toContain('org.mozilla.firefox')
+    expect(watchIds(null)).toContain('teams-for-linux')
   })
 })
 
@@ -74,7 +75,7 @@ describe('hookCallNames', () => {
   it('reads the meeting\'s app while it records, and a line of the other side gets the name talking then', () => {
     const s = setup()
     s.start()
-    expect(s.watched).toEqual([['us.zoom.xos']])
+    expect(s.watched).toEqual([['us.zoom.xos', 'zoom', 'us.zoom.Zoom']])
     // meeting time 0 was heard at 1_005_000 (the 100 ms of audio arrived 100 ms after it started)
     s.audio(0, 1_005_100)
     for (let t = 1_006_000; t < 1_014_000; t += 500) s.emit(zoomLine(t, ['Alex Morgan', 'Dana Smith', 'Ann Lee'], t < 1_010_000 ? 'Dana Smith' : 'Ann Lee'))

@@ -129,9 +129,9 @@ export class UtilityEngine implements Engine {
   }
   load(modelPath: string, contextSize: number, minContext: number) {
     console.info('NOTES', `loading the notes model ${modelPath.split(/[\\/]/).pop()}${this.opts.gpuFallback ? (this.cpuOnly ? ' without the graphics card' : ' (graphics card allowed)') : ''}`)
-    const { id, done } = this.call<{ contextSize: number; gpu?: string | false }>({ type: 'load', modelPath, contextSize, minContext })
+    const { id, done } = this.call<{ contextSize: number; gpu?: string | false; gpuLayers?: number }>({ type: 'load', modelPath, contextSize, minContext })
     this.watch(id, 'loading the model', this.limits.loadMs, this.limits.cpuLoadMs)
-    return done.then((r) => { console.info('NOTES', `notes model loaded: context ${r.contextSize}, graphics ${r.gpu === undefined ? 'unknown' : r.gpu || 'none'}`); return r })
+    return done.then((r) => { console.info('NOTES', `notes model loaded: context ${r.contextSize}, graphics ${r.gpu === undefined ? 'unknown' : r.gpu || 'none'}${r.gpu && r.gpuLayers !== undefined ? ` (${r.gpuLayers} layers)` : ''}`); return r })
   }
   async unload() { if (this.proc) await this.call({ type: 'unload' }).done }
   count(texts: string[]) { return this.call<number[]>({ type: 'count', texts }).done }

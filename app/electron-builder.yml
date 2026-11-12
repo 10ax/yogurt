@@ -136,7 +136,11 @@ linux:
   target:
     - target: AppImage
       arch: [x64]
-  icon: build/icon.png
+  # Electron's app_id/WM_CLASS is desktopName minus .desktop: the installed file must use the same name, and
+  # StartupWMClass follows it. Without this the .desktop says StartupWMClass=Yogurt but the window is "yogurt".
+  syncDesktopName: true
+  # one PNG per hicolor size: KDE's icon lookup ignores 1024x1024, which hicolor's index.theme doesn't declare
+  icon: build/icons
   category: Office
 dmg:
   title: Yogurt

@@ -16,6 +16,11 @@ describe('citations in an answer', () => {
     expect(tidyCitations('It came up [1][2] [3, 4].', of('aaab'))).toBe('It came up [1, 4].')
     expect(tidyCitations('- With Dana [2] [3] [4] [5] [6]\n- Other [1]', of('baaaaa'))).toBe('- With Dana [2]\n- Other [1]')
   })
+  it('reads citations listed with commas or "and" as one, so one meeting shows one number', () => {
+    expect(tidyCitations('A session titled "Retell" [1], [2], [3].', of('aaa'))).toBe('A session titled "Retell" [1].')
+    expect(tidyCitations('Pricing [1] and [3]; launch [2].', of('aab'))).toBe('Pricing [1, 3]; launch [2].')
+    expect(tidyCitations('Pricing [1] and Bo said so [2].', of('ab'))).toBe('Pricing [1] and Bo said so [2].')
+  })
   it('drops a pile that cites most of the meetings at once: that points at nothing in particular', () => {
     expect(tidyCitations('Nothing here is about politics [1][2][3][4][5][6].', of('abcdefgh'))).toBe('Nothing here is about politics.')
     expect(tidyCitations('No word of it [1, 2, 3, 4, 5, 6, 7, 8, 9, 10].', of('aabbccddee'))).toBe('No word of it.')

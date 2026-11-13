@@ -7,8 +7,8 @@ import { mdToDoc, type PMNode } from './markdown'
 
 /** one [1] or [1, 2] */
 export const CITE = /\[(\d+(?:\s*,\s*\d+)*)\]/g
-/** citations side by side ("[1][2] [3]"): read as one */
-const RUN = /\[\d+(?:\s*,\s*\d+)*\](?:\s*\[\d+(?:\s*,\s*\d+)*\])*/g
+/** citations side by side ("[1][2] [3]"), or listed ("[1], [2] and [3]"): read as one */
+const RUN = /\[\d+(?:\s*,\s*\d+)*\](?:\s*(?:,|;|&|and)?\s*\[\d+(?:\s*,\s*\d+)*\])*/g
 /** with this many meetings or more found, a citation naming most of them is a pile, not a source */
 const PILE_FROM = 4
 

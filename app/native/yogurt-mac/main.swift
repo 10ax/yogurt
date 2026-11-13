@@ -354,6 +354,9 @@ case "events":
   needAccess()
   guard args.count >= 3 else { fail("events FROM TO") }
   let from = date(args[1]), to = date(args[2])
+  // ask the Mac to fetch new changes from Google, iCloud and Exchange now rather than on its own schedule (often
+  // 15 minutes); it syncs in the background, so an event added elsewhere shows on the next read, a minute later at most
+  store.refreshSourcesIfNecessary()
   let found = store.events(matching: store.predicateForEvents(withStart: from, end: to, calendars: nil))
     .filter { !$0.isAllDay && $0.status != .canceled }
     .sorted { $0.startDate < $1.startDate }

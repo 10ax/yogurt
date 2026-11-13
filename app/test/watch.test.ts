@@ -280,3 +280,22 @@ it('does not keep a FaceTime recording alive for the shared daemon after FaceTim
   reading.runningApps = []; clock += 10000; await w.tick()
   expect(log).toEqual(['auto:m1'])
 })
+
+describe('on a call', () => {
+  it('a call app on the mic is a call, even unrecorded or with its card closed; it ends when the app lets go', async () => {
+    expect(w.onCall()).toBe(false)
+    reading = { micApps: [zoom], events: [] }
+    await w.tick()
+    expect(w.onCall()).toBe(true)
+    w.dismiss('app:Zoom')
+    await w.tick()
+    expect(w.onCall()).toBe(true)
+    reading = { micApps: [], events: [] }
+    await w.tick()
+    expect(w.onCall()).toBe(false)
+  })
+  it('recording is a call too', () => {
+    active = meeting()
+    expect(w.onCall()).toBe(true)
+  })
+})

@@ -682,5 +682,6 @@
     "many": "{count} встреч перемещено в Корзину",
     "other": "{count} встречи перемещены в Корзину"
   },
-  "Recorded with {app}": "Записано в {app}"
+  "Recorded with {app}": "Записано в {app}",
+  "A new version of Yogurt is ready": "Новая версия Yogurt готова"
 }

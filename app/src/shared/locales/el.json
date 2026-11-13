@@ -653,5 +653,6 @@
     "one": "{count} σύσκεψη μετακινήθηκε στον Κάδο",
     "other": "{count} συσκέψεις μετακινήθηκαν στον Κάδο"
   },
-  "Recorded with {app}": "Ηχογραφήθηκε με το {app}"
+  "Recorded with {app}": "Ηχογραφήθηκε με το {app}",
+  "A new version of Yogurt is ready": "Μια νέα έκδοση του Yogurt είναι έτοιμη"
 }

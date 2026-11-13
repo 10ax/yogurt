@@ -74,7 +74,7 @@ export function TrashToast({ go }: { go: (route: string) => void }) {
       if (!s.offer || !s.next) { if (shown) toasts.close(shown); shown = undefined; return }
       if (shown) return
       const id = shown = toasts.add({
-        id: 'update-ready', title: t('Yogurt {version} is ready', { version: s.next }), timeout: 0,
+        id: 'update-ready', title: t('A new version of Yogurt is ready'), timeout: 0,
         data: { testId: 'update-toast', actionTestId: 'update-restart' },
         onClose: () => { if (shown !== id) return; shown = undefined; if (!restarting) void window.yogurt.updates.later() },
         actionProps: { children: t('Restart Yogurt'), onClick: async () => {

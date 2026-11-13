@@ -641,5 +641,6 @@
   "Add {count} meetings to folder": "{count} megbeszélés hozzáadása mappához",
   "Move {count} meetings to Trash": "{count} megbeszélés áthelyezése a kukába",
   "{count} meetings moved to Trash": "{count} megbeszélés a kukába helyezve",
-  "Recorded with {app}": "Rögzítve: {app}"
+  "Recorded with {app}": "Rögzítve: {app}",
+  "A new version of Yogurt is ready": "Elkészült a Yogurt új verziója"
 }

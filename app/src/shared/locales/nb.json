@@ -650,5 +650,6 @@
     "one": "{count} møte flyttet til papirkurven",
     "other": "{count} møter flyttet til papirkurven"
   },
-  "Recorded with {app}": "Tatt opp med {app}"
+  "Recorded with {app}": "Tatt opp med {app}",
+  "A new version of Yogurt is ready": "En ny versjon av Yogurt er klar"
 }

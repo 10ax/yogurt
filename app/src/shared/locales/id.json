@@ -602,5 +602,6 @@
   "Add {count} meetings to folder": "Tambahkan {count} rapat ke folder",
   "Move {count} meetings to Trash": "Pindahkan {count} rapat ke Sampah",
   "{count} meetings moved to Trash": "{count} rapat dipindahkan ke Sampah",
-  "Recorded with {app}": "Direkam dengan {app}"
+  "Recorded with {app}": "Direkam dengan {app}",
+  "A new version of Yogurt is ready": "Versi baru Yogurt sudah siap"
 }

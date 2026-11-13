@@ -22,7 +22,7 @@ test('a downloaded version waits, then the corner offers Restart Yogurt, which r
   try {
     const toast = page.getByTestId('update-toast')
     await expect(toast).toHaveCount(0)
-    await expect(toast).toContainText('Yogurt 9.9.9 is ready', { timeout: 10_000 })
+    await expect(toast).toContainText('A new version of Yogurt is ready', { timeout: 10_000 })
     await toast.getByTestId('update-restart').click()
     await expect.poll(() => restarts(app)).toBe(1)
     await expect(toast).toHaveCount(0)
@@ -52,5 +52,15 @@ test('never offered while recording', async () => {
     await expect(page.getByTestId('update-toast')).toHaveCount(0)
     await page.getByTestId('note-stop').click()
     await expect(page.getByTestId('update-toast')).toBeVisible({ timeout: 10_000 })
+  } finally { await app.close() }
+})
+
+test('an offer already in the corner goes away the moment a recording starts', async () => {
+  const { app, page } = await launch()
+  try {
+    const toast = page.getByTestId('update-toast')
+    await expect(toast).toBeVisible({ timeout: 10_000 })
+    await page.evaluate(() => window.yogurt.meetings.start(null))
+    await expect(toast).toHaveCount(0, { timeout: 1000 })
   } finally { await app.close() }
 })

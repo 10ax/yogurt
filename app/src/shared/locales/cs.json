@@ -686,5 +686,6 @@
     "many": "{count} schůzky přesunuto do koše",
     "other": "{count} schůzek přesunuto do koše"
   },
-  "Recorded with {app}": "Nahráno v aplikaci {app}"
+  "Recorded with {app}": "Nahráno v aplikaci {app}",
+  "A new version of Yogurt is ready": "Nová verze Yogurtu je připravená"
 }

@@ -666,5 +666,6 @@
     "one": "{count} réunion déplacée vers la corbeille",
     "other": "{count} réunions déplacées vers la corbeille"
   },
-  "Recorded with {app}": "Enregistré avec {app}"
+  "Recorded with {app}": "Enregistré avec {app}",
+  "A new version of Yogurt is ready": "Une nouvelle version de Yogurt est prête"
 }

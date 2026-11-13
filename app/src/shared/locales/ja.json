@@ -602,5 +602,6 @@
   "Add {count} meetings to folder": "{count}件のミーティングをフォルダに追加",
   "Move {count} meetings to Trash": "{count}件のミーティングをゴミ箱に移動",
   "{count} meetings moved to Trash": "{count}件のミーティングをゴミ箱に移動しました",
-  "Recorded with {app}": "{app} で録音"
+  "Recorded with {app}": "{app} で録音",
+  "A new version of Yogurt is ready": "Yogurt の新しいバージョンの準備ができました"
 }

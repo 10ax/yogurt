@@ -49,6 +49,9 @@ export class Watcher {
   /** the card went away by an action, or a recording started or stopped (a resumed note is watched afresh) */
   cleared() { this.shown = null; this.rec = null }
 
+  /** someone is on a call now: recording, or a call app on the mic (card closed or never clicked) */
+  onCall(): boolean { return !!this.d.active() || this.idleMic.size > 0 }
+
   async tick(): Promise<void> {
     if (this.busy) return
     this.busy = true

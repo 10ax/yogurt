@@ -641,5 +641,6 @@
   "Add {count} meetings to folder": "{count} मीटिंग फ़ोल्डर में जोड़ें",
   "Move {count} meetings to Trash": "{count} मीटिंग ट्रैश में ले जाएँ",
   "{count} meetings moved to Trash": "{count} मीटिंग ट्रैश में ले जाई गईं",
-  "Recorded with {app}": "{app} से रिकॉर्ड किया गया"
+  "Recorded with {app}": "{app} से रिकॉर्ड किया गया",
+  "A new version of Yogurt is ready": "Yogurt का नया संस्करण तैयार है"
 }

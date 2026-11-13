@@ -602,5 +602,6 @@
   "Add {count} meetings to folder": "회의 {count}개를 폴더에 추가",
   "Move {count} meetings to Trash": "회의 {count}개를 휴지통으로 이동",
   "{count} meetings moved to Trash": "회의 {count}개를 휴지통으로 이동했습니다",
-  "Recorded with {app}": "{app}(으)로 녹음됨"
+  "Recorded with {app}": "{app}(으)로 녹음됨",
+  "A new version of Yogurt is ready": "Yogurt 새 버전이 준비되었어요"
 }

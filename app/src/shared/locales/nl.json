@@ -650,5 +650,6 @@
     "one": "{count} meeting naar prullenmand verplaatst",
     "other": "{count} meetings naar prullenmand verplaatst"
   },
-  "Recorded with {app}": "Opgenomen met {app}"
+  "Recorded with {app}": "Opgenomen met {app}",
+  "A new version of Yogurt is ready": "Er is een nieuwe versie van Yogurt klaar"
 }

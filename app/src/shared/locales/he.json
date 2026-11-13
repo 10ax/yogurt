@@ -663,5 +663,6 @@
     "one": "פגישה אחת הועברה לאשפה",
     "other": "{count} פגישות הועברו לאשפה"
   },
-  "Recorded with {app}": "הוקלט עם {app}"
+  "Recorded with {app}": "הוקלט עם {app}",
+  "A new version of Yogurt is ready": "גרסה חדשה של Yogurt מוכנה"
 }

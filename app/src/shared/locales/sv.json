@@ -653,5 +653,6 @@
     "one": "{count} möte flyttat till papperskorgen",
     "other": "{count} möten flyttade till papperskorgen"
   },
-  "Recorded with {app}": "Inspelat med {app}"
+  "Recorded with {app}": "Inspelat med {app}",
+  "A new version of Yogurt is ready": "En ny version av Yogurt är klar"
 }

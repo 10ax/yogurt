@@ -602,5 +602,6 @@
   "Add {count} meetings to folder": "เพิ่มการประชุม {count} รายการไปยังโฟลเดอร์",
   "Move {count} meetings to Trash": "ย้ายการประชุม {count} รายการไปถังขยะ",
   "{count} meetings moved to Trash": "ย้ายการประชุม {count} รายการไปถังขยะแล้ว",
-  "Recorded with {app}": "บันทึกด้วย {app}"
+  "Recorded with {app}": "บันทึกด้วย {app}",
+  "A new version of Yogurt is ready": "Yogurt เวอร์ชันใหม่พร้อมแล้ว"
 }

@@ -685,5 +685,6 @@
     "many": "Przeniesiono {count} spotkań do kosza",
     "other": "Przeniesiono {count} spotkania do kosza"
   },
-  "Recorded with {app}": "Nagrano w {app}"
+  "Recorded with {app}": "Nagrano w {app}",
+  "A new version of Yogurt is ready": "Nowa wersja Yogurt jest gotowa"
 }

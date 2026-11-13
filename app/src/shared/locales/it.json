@@ -669,5 +669,6 @@
     "one": "{count} riunione spostata nel Cestino",
     "other": "{count} riunioni spostate nel Cestino"
   },
-  "Recorded with {app}": "Registrato con {app}"
+  "Recorded with {app}": "Registrato con {app}",
+  "A new version of Yogurt is ready": "Una nuova versione di Yogurt è pronta"
 }

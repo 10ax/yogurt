@@ -26,13 +26,16 @@ export const OFFER_AFTER_MS = 24 * 60 * 60 * 1000
 
 /**
  * The corner offers Restart Yogurt for a downloaded version. Most people quit within a day, and it installs then
- * without a word; only someone who keeps Yogurt open longer is asked. Never during a recording (restarting would end it).
+ * without a word; only someone who keeps Yogurt open longer is asked. Never during a call or a recording (restarting would end it).
  */
 export function offersRestart(o: { readyAt?: number; now: number; snoozedUntil: number; recording: boolean; on: boolean; afterMs?: number }): boolean {
   return o.readyAt !== undefined && o.on && !o.recording && o.now - o.readyAt >= (o.afterMs ?? OFFER_AFTER_MS) && o.now >= o.snoozedUntil
 }
 
 let updater: AppUpdater | undefined
+let announce = () => {}
+/** a recording started or stopped: the corner's offer may change now */
+export const updateOfferChanged = (): void => announce()
 let installOnQuit = false
 
 /** After quit, installs a downloaded version and reopens if that was requested via Settings. */
@@ -46,13 +49,13 @@ export function finishQuit(): void {
  * available: false in a build that never updates (see updatesOn); Settings then shows only the version.
  * DOES NOT WORK WHILE RECORDING.
  */
-export async function hookUpdates(d: { file: string; available: boolean; recording(): boolean; /** fake mode: a version already downloaded */ fake?: { version: string; afterMs: number; restarted(): void } }): Promise<void> {
+export async function hookUpdates(d: { file: string; available: boolean; recording(): boolean; /** a call app is on the mic, recorded or not */ onCall?(): boolean; /** fake mode: a version already downloaded */ fake?: { version: string; afterMs: number; restarted(): void } }): Promise<void> {
   let state: UpdateStatus['state'] = 'idle'
   let next: string | undefined
   let readyAt: number | undefined, snoozedUntil = 0
   const status = (): UpdateStatus => {
     const on = autoUpdateOn(loadSettings(d.file))
-    const offer = offersRestart({ readyAt, now: Date.now(), snoozedUntil, recording: d.recording(), on, afterMs: d.fake?.afterMs })
+    const offer = offersRestart({ readyAt, now: Date.now(), snoozedUntil, recording: d.recording() || !!d.onCall?.(), on, afterMs: d.fake?.afterMs })
     return { version: app.getVersion(), available: d.available || !!d.fake, on, state, next, offer }
   }
   const set = (s: UpdateStatus['state'], version?: string) => {
@@ -62,6 +65,7 @@ export async function hookUpdates(d: { file: string; available: boolean; recordi
     for (const w of BrowserWindow.getAllWindows()) if (!w.isDestroyed()) w.webContents.send('updates:status', status())
   }
 
+  announce = () => set(state)
   ipcMain.handle('updates:status', status)
   ipcMain.handle('updates:set', (_e, on: unknown) => {
     if (typeof on !== 'boolean') return status()
@@ -83,7 +87,7 @@ export async function hookUpdates(d: { file: string; available: boolean; recordi
   // the corner's X: ask again tomorrow
   ipcMain.handle('updates:later', () => { snoozedUntil = Date.now() + (d.fake?.afterMs ?? OFFER_AFTER_MS); set(state) })
   // the offer depends on the clock and on recording, so tell the windows again now and then once a version is ready
-  setInterval(() => { if (state === 'ready') set(state) }, d.fake ? Math.max(200, d.fake.afterMs / 4) : 10 * 60 * 1000).unref?.()
+  setInterval(() => { if (state === 'ready') set(state) }, d.fake ? Math.max(200, d.fake.afterMs / 4) : 60 * 1000).unref?.()
 
   if (d.fake) { set('ready', d.fake.version); return }
 

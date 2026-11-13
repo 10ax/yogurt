@@ -641,5 +641,6 @@
   "Add {count} meetings to folder": "{count} toplantıyı klasöre ekle",
   "Move {count} meetings to Trash": "{count} toplantıyı Çöp Kutusuna taşı",
   "{count} meetings moved to Trash": "{count} toplantı Çöp Kutusuna taşındı",
-  "Recorded with {app}": "{app} ile kaydedildi"
+  "Recorded with {app}": "{app} ile kaydedildi",
+  "A new version of Yogurt is ready": "Yogurt'un yeni sürümü hazır"
 }

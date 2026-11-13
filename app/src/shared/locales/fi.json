@@ -653,5 +653,6 @@
     "one": "{count} kokous siirretty roskakoriin",
     "other": "{count} kokousta siirretty roskakoriin"
   },
-  "Recorded with {app}": "Tallennettu sovelluksella {app}"
+  "Recorded with {app}": "Tallennettu sovelluksella {app}",
+  "A new version of Yogurt is ready": "Uusi Yogurt-versio on valmis"
 }

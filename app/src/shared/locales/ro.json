@@ -669,5 +669,6 @@
     "few": "{count} întâlniri mutate în Coș",
     "other": "{count} de întâlniri mutate în Coș"
   },
-  "Recorded with {app}": "Înregistrat cu {app}"
+  "Recorded with {app}": "Înregistrat cu {app}",
+  "A new version of Yogurt is ready": "O versiune nouă de Yogurt este gata"
 }

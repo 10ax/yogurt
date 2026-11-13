@@ -668,5 +668,6 @@
   "{count} meetings moved to Trash": {
     "one": "{count} riunione spostata nel Cestino",
     "other": "{count} riunioni spostate nel Cestino"
-  }
+  },
+  "Recorded with {app}": "Registrato con {app}"
 }

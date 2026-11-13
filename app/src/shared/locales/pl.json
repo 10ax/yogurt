@@ -684,5 +684,6 @@
     "few": "Przeniesiono {count} spotkania do kosza",
     "many": "Przeniesiono {count} spotkań do kosza",
     "other": "Przeniesiono {count} spotkania do kosza"
-  }
+  },
+  "Recorded with {app}": "Nagrano w {app}"
 }

@@ -662,5 +662,6 @@
   "{count} meetings moved to Trash": {
     "one": "פגישה אחת הועברה לאשפה",
     "other": "{count} פגישות הועברו לאשפה"
-  }
+  },
+  "Recorded with {app}": "הוקלט עם {app}"
 }

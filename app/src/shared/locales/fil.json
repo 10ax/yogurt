@@ -649,5 +649,6 @@
   "{count} meetings moved to Trash": {
     "one": "Inilipat ang {count} meeting sa Basurahan",
     "other": "Inilipat ang {count} na meeting sa Basurahan"
-  }
+  },
+  "Recorded with {app}": "Ni-record gamit ang {app}"
 }

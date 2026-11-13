@@ -640,5 +640,6 @@
   "Clear selection": "নির্বাচন মুছুন",
   "Add {count} meetings to folder": "{count}টি মিটিং ফোল্ডারে যোগ করুন",
   "Move {count} meetings to Trash": "{count}টি মিটিং ট্র্যাশে সরান",
-  "{count} meetings moved to Trash": "{count}টি মিটিং ট্র্যাশে সরানো হয়েছে"
+  "{count} meetings moved to Trash": "{count}টি মিটিং ট্র্যাশে সরানো হয়েছে",
+  "Recorded with {app}": "{app} দিয়ে রেকর্ড করা"
 }

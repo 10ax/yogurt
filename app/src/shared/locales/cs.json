@@ -685,5 +685,6 @@
     "few": "{count} schůzky přesunuty do koše",
     "many": "{count} schůzky přesunuto do koše",
     "other": "{count} schůzek přesunuto do koše"
-  }
+  },
+  "Recorded with {app}": "Nahráno v aplikaci {app}"
 }

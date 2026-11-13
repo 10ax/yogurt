@@ -601,5 +601,6 @@
   "Clear selection": "Kosongkan pilihan",
   "Add {count} meetings to folder": "Tambah {count} mesyuarat ke folder",
   "Move {count} meetings to Trash": "Alih {count} mesyuarat ke Sampah",
-  "{count} meetings moved to Trash": "{count} mesyuarat dialihkan ke Sampah"
+  "{count} meetings moved to Trash": "{count} mesyuarat dialihkan ke Sampah",
+  "Recorded with {app}": "Dirakam dengan {app}"
 }

@@ -649,5 +649,6 @@
   "{count} meetings moved to Trash": {
     "one": "{count} møte flyttet til papirkurven",
     "other": "{count} møter flyttet til papirkurven"
-  }
+  },
+  "Recorded with {app}": "Tatt opp med {app}"
 }

@@ -668,5 +668,6 @@
     "one": "{count} întâlnire mutată în Coș",
     "few": "{count} întâlniri mutate în Coș",
     "other": "{count} de întâlniri mutate în Coș"
-  }
+  },
+  "Recorded with {app}": "Înregistrat cu {app}"
 }

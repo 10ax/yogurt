@@ -640,5 +640,6 @@
   "Clear selection": "चयन हटाएँ",
   "Add {count} meetings to folder": "{count} मीटिंग फ़ोल्डर में जोड़ें",
   "Move {count} meetings to Trash": "{count} मीटिंग ट्रैश में ले जाएँ",
-  "{count} meetings moved to Trash": "{count} मीटिंग ट्रैश में ले जाई गईं"
+  "{count} meetings moved to Trash": "{count} मीटिंग ट्रैश में ले जाई गईं",
+  "Recorded with {app}": "{app} से रिकॉर्ड किया गया"
 }

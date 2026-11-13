@@ -601,5 +601,6 @@
   "Clear selection": "選択を解除",
   "Add {count} meetings to folder": "{count}件のミーティングをフォルダに追加",
   "Move {count} meetings to Trash": "{count}件のミーティングをゴミ箱に移動",
-  "{count} meetings moved to Trash": "{count}件のミーティングをゴミ箱に移動しました"
+  "{count} meetings moved to Trash": "{count}件のミーティングをゴミ箱に移動しました",
+  "Recorded with {app}": "{app} で録音"
 }

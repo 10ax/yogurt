@@ -665,5 +665,6 @@
   "{count} meetings moved to Trash": {
     "one": "{count} réunion déplacée vers la corbeille",
     "other": "{count} réunions déplacées vers la corbeille"
-  }
+  },
+  "Recorded with {app}": "Enregistré avec {app}"
 }

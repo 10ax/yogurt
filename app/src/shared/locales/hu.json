@@ -640,5 +640,6 @@
   "Clear selection": "Kijelölés törlése",
   "Add {count} meetings to folder": "{count} megbeszélés hozzáadása mappához",
   "Move {count} meetings to Trash": "{count} megbeszélés áthelyezése a kukába",
-  "{count} meetings moved to Trash": "{count} megbeszélés a kukába helyezve"
+  "{count} meetings moved to Trash": "{count} megbeszélés a kukába helyezve",
+  "Recorded with {app}": "Rögzítve: {app}"
 }

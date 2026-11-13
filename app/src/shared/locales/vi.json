@@ -601,5 +601,6 @@
   "Clear selection": "Bỏ chọn tất cả",
   "Add {count} meetings to folder": "Thêm {count} cuộc họp vào thư mục",
   "Move {count} meetings to Trash": "Chuyển {count} cuộc họp vào Thùng rác",
-  "{count} meetings moved to Trash": "Đã chuyển {count} cuộc họp vào Thùng rác"
+  "{count} meetings moved to Trash": "Đã chuyển {count} cuộc họp vào Thùng rác",
+  "Recorded with {app}": "Ghi âm bằng {app}"
 }

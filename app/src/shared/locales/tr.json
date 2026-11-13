@@ -640,5 +640,6 @@
   "Clear selection": "Seçimi temizle",
   "Add {count} meetings to folder": "{count} toplantıyı klasöre ekle",
   "Move {count} meetings to Trash": "{count} toplantıyı Çöp Kutusuna taşı",
-  "{count} meetings moved to Trash": "{count} toplantı Çöp Kutusuna taşındı"
+  "{count} meetings moved to Trash": "{count} toplantı Çöp Kutusuna taşındı",
+  "Recorded with {app}": "{app} ile kaydedildi"
 }

@@ -652,5 +652,6 @@
   "{count} meetings moved to Trash": {
     "one": "{count} kokous siirretty roskakoriin",
     "other": "{count} kokousta siirretty roskakoriin"
-  }
+  },
+  "Recorded with {app}": "Tallennettu sovelluksella {app}"
 }

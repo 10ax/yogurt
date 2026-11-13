@@ -601,5 +601,6 @@
   "Clear selection": "清除選取",
   "Add {count} meetings to folder": "將 {count} 場會議加入資料夾",
   "Move {count} meetings to Trash": "將 {count} 場會議移到垃圾桶",
-  "{count} meetings moved to Trash": "已將 {count} 場會議移到垃圾桶"
+  "{count} meetings moved to Trash": "已將 {count} 場會議移到垃圾桶",
+  "Recorded with {app}": "由 {app} 錄製"
 }

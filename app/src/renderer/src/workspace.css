@@ -199,6 +199,8 @@
 .agenda-event { position:relative;display:grid;grid-template-columns:48px minmax(0,1fr);gap:12px;padding:8px 6px;border-radius:8px;cursor:pointer; }
 .agenda-event:hover:not(:has(:focus-visible)) { background:var(--row-hover); }
 .agenda-event-body { min-width:0;border-inline-start:2px solid var(--line);padding-inline-start:12px; }
+/* an event that has notes in Yogurt */
+.agenda-event[data-has-note=true] .agenda-event-body { border-inline-start-color:var(--accent); }
 .agenda-event.live .agenda-title { font-weight:600; }
 .agenda-event[data-selected=true] .agenda-title { color:var(--ink);font-weight:600; }
 .agenda-time { font-size:10px;line-height:20px;color:var(--muted);padding-top:4px;font-variant-numeric:tabular-nums;text-align:end;white-space:nowrap; }

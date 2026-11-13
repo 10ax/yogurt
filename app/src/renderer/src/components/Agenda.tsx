@@ -140,7 +140,7 @@ function Event({ event, me, now, near, initial, selected, onInspect, recording, 
   const phase = eventPhase(event, now)
   const mine = recording?.eventId === event.id
   const takeNotes = () => { setPending(true); void onStart(event.id).finally(() => setPending(false)) }
-  return <article className={`agenda-event ${phase}`} data-testid={loading ? "agenda-skeleton" : "event"} data-selected={selected} data-agenda-default={initial}>
+  return <article className={`agenda-event ${phase}`} data-testid={loading ? "agenda-skeleton" : "event"} data-selected={selected} data-agenda-default={initial} data-has-note={!loading && !!event.note}>
     <div className="agenda-time">{loading ? <span className="loading-bar" style={{ width: 45 }} /> : timeOf(event.start)}</div>
     <div className="agenda-event-body">
       <div className="agenda-heading">

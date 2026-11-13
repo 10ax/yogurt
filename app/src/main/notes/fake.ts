@@ -14,7 +14,9 @@ export class FakeEngine implements Engine {
     fakePrompts.notes.push(prompt)
     if (prompt.startsWith('Suggest one existing folder')) {
       const data = JSON.parse(prompt.slice(prompt.indexOf('{')))
-      return this.stream(JSON.stringify({ folder: data.folders[0]?.name ?? null, confidence: 0.95 }), onToken, signal)
+      // sure only of a folder the meeting's title names, like "Customer call with Acme" for Acme
+      const named = data.folders.find((f: { name: string }) => data.meeting.title.toLowerCase().includes(f.name.toLowerCase()))
+      return this.stream(JSON.stringify({ folder: named?.name ?? null, confidence: named ? 0.95 : 0.2 }), onToken, signal)
     }
     // a question across meetings: like a small model, the first two meetings found with every part of each cited
     if (prompt.includes('</sources>')) {

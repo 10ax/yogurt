@@ -119,8 +119,16 @@ test('a note goes into folders from its menu and its chip, and a new folder from
   try {
     await withMeetings(app, page)
     await newFolder(page, 'Acme')
+    // a meeting with a summary and no folder yet goes where it clearly fits, with nothing to confirm; taking it out sticks
+    await openNote(page, 'Customer call with Acme')
+    await expect(page.getByTestId('note-folders-summary')).toHaveText('Acme')
+    await expect(page.getByTestId('folder-suggestion')).toHaveCount(0)
+    await page.getByTestId('note-folders').click()
+    await page.getByTestId('folder-chip-list').getByTestId('folder-option').filter({ hasText: 'Acme' }).click()
+    await expect(page.getByTestId('note-folders-summary')).toHaveText('Add to folder')
+    await page.keyboard.press('Escape')
+    // one that fits no folder stays out of them
     await openNote(page, 'Weekly sync')
-    await page.getByTestId('folder-suggestion-cancel').click()
     await expect(page.getByTestId('note-folders-summary')).toHaveText('Add to folder')
 
     await page.getByTestId('note-menu-button').click()
@@ -150,9 +158,7 @@ test('a note goes into folders from its menu and its chip, and a new folder from
     await expect(page.getByTestId('note-folders-summary')).toHaveText('Board')
     await page.keyboard.press('Escape')
 
-    // Dismiss this note's independent suggestion before testing manual filing.
     await openNote(page, 'Budget review')
-    await page.getByTestId('folder-suggestion-cancel').click()
     await page.getByTestId('note-folders').click()
     await page.getByTestId('folder-chip-list').getByTestId('folder-option').filter({ hasText: 'Board' }).click()
     await expect(page.getByTestId('note-folders-summary')).toHaveText('Board')
@@ -221,24 +227,24 @@ test('deleting a folder asks first and keeps its meetings; deleting a meeting ta
   const { app, page } = await launch()
   try {
     await withMeetings(app, page)
-    await newFolder(page, 'Acme')
+    await newFolder(page, 'Partners')
     for (const title of ['Weekly sync', 'Design crit']) {
       await page.getByTestId('nav-home').click()
-      await page.getByTestId('past-note').filter({ hasText: title }).dragTo(folder(page, 'Acme').getByTestId('sidebar-folder-open'))
+      await page.getByTestId('past-note').filter({ hasText: title }).dragTo(folder(page, 'Partners').getByTestId('sidebar-folder-open'))
     }
-    await expect(folder(page, 'Acme').getByTestId('sidebar-folder-count')).toHaveText('2')
+    await expect(folder(page, 'Partners').getByTestId('sidebar-folder-count')).toHaveText('2')
 
     // a meeting deleted from the folder's page (to the Trash) leaves the folder too
-    await folder(page, 'Acme').getByTestId('sidebar-folder-open').click()
+    await folder(page, 'Partners').getByTestId('sidebar-folder-open').click()
     const row = page.getByTestId('folder-page').getByRole('listitem').filter({ hasText: 'Design crit' })
     await row.hover()
     await row.getByTestId('past-note-more').click()
     await page.getByTestId('past-note-trash').click()
     await expect(page.getByTestId('folder-page').getByTestId('past-note')).toHaveText([/Weekly sync/])
-    await expect(folder(page, 'Acme').getByTestId('sidebar-folder-count')).toHaveText('1')
+    await expect(folder(page, 'Partners').getByTestId('sidebar-folder-count')).toHaveText('1')
 
-    await folder(page, 'Acme').hover()
-    await folder(page, 'Acme').getByTestId('sidebar-folder-more').click()
+    await folder(page, 'Partners').hover()
+    await folder(page, 'Partners').getByTestId('sidebar-folder-more').click()
     await page.getByTestId('sidebar-folder-delete').click()
     const confirm = page.getByTestId('folder-delete-confirm')
     await expect(confirm).toContainText('Its meetings stay in Meetings.')
@@ -246,8 +252,8 @@ test('deleting a folder asks first and keeps its meetings; deleting a meeting ta
     await page.getByTestId('folder-delete-cancel').click()
     await expect(page.getByTestId('sidebar-folder')).toHaveCount(1)
 
-    await folder(page, 'Acme').hover()
-    await folder(page, 'Acme').getByTestId('sidebar-folder-more').click()
+    await folder(page, 'Partners').hover()
+    await folder(page, 'Partners').getByTestId('sidebar-folder-more').click()
     await page.getByTestId('sidebar-folder-delete').click()
     await page.getByTestId('folder-delete-yes').click()
     await expect(page.getByTestId('sidebar-folder')).toHaveCount(0)
@@ -262,10 +268,10 @@ test('a backup carries folders and which meetings are in them', async () => {
   const a = await launch({ YOGURT_BACKUP_PATH: file })
   try {
     await withMeetings(a.app, a.page)
-    await newFolder(a.page, 'Acme')
+    await newFolder(a.page, 'Partners')
     await a.page.getByTestId('nav-home').click()
-    await a.page.getByTestId('past-note').filter({ hasText: 'Weekly sync' }).dragTo(folder(a.page, 'Acme').getByTestId('sidebar-folder-open'))
-    await expect(folder(a.page, 'Acme').getByTestId('sidebar-folder-count')).toHaveText('1')
+    await a.page.getByTestId('past-note').filter({ hasText: 'Weekly sync' }).dragTo(folder(a.page, 'Partners').getByTestId('sidebar-folder-open'))
+    await expect(folder(a.page, 'Partners').getByTestId('sidebar-folder-count')).toHaveText('1')
     await newFolder(a.page, 'Zulu')
     await a.page.evaluate(async () => { const folders = await window.yogurt.folders.list(); await window.yogurt.folders.reorder(folders.map(f => f.id).reverse()) })
     await a.page.getByTestId('settings-open').click()
@@ -279,10 +285,10 @@ test('a backup carries folders and which meetings are in them', async () => {
     await b.page.getByTestId('settings-open').click()
     await b.page.getByTestId('backup-import').click()
     await expect(b.page.getByTestId('backup-said')).toHaveText('Added 4 meetings.')
-    await expect(b.page.getByTestId('sidebar-folder-open')).toHaveText([/Zulu/, /Acme/])
+    await expect(b.page.getByTestId('sidebar-folder-open')).toHaveText([/Zulu/, /Partners/])
     // the sidebar heard about it without a reload
-    await expect(folder(b.page, 'Acme').getByTestId('sidebar-folder-count')).toHaveText('1')
-    await folder(b.page, 'Acme').getByTestId('sidebar-folder-open').click()
+    await expect(folder(b.page, 'Partners').getByTestId('sidebar-folder-count')).toHaveText('1')
+    await folder(b.page, 'Partners').getByTestId('sidebar-folder-open').click()
     await expect(b.page.getByTestId('folder-page').getByTestId('past-note')).toHaveText([/Weekly sync/])
   } finally { await b.app.close() }
 })

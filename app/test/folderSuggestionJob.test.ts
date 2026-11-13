@@ -16,23 +16,27 @@ function setup() {
   const settled = () => vi.waitFor(() => expect(queue.busy()).toBe(false))
   return { store, m, f, chat, jobs, settled }
 }
-it('persists a proposal once, accepts through normal filing and never repeats after removing membership', async () => {
+it('files the meeting in the folder it picked, once, and never again after the person takes it out', async () => {
   const { store, m, f, chat, jobs, settled } = setup()
   jobs.schedule(m.id); jobs.schedule(m.id); await settled()
-  expect(store.folderSuggestion(m.id)).toMatchObject({ state: 'pending', folderId: f.id, confidence: 0.9 })
-  expect(store.foldersOf(m.id)).toEqual([])
+  expect(store.foldersOf(m.id).map(x => x.id)).toEqual([f.id])
+  expect(store.folderSuggestion(m.id)).toMatchObject({ state: 'accepted', folderId: f.id, confidence: 0.9 })
   jobs.refresh(); await settled(); expect(chat).toHaveBeenCalledTimes(1)
-  store.addToFolder(f.id, m.id)
-  expect(store.folderSuggestion(m.id).state).toBe('accepted')
   store.removeFromFolder(f.id, m.id); store.createFolder('Other'); jobs.refresh(); await settled()
-  expect(chat).toHaveBeenCalledTimes(1)
+  expect(chat).toHaveBeenCalledTimes(1); expect(store.foldersOf(m.id)).toEqual([])
 })
-it('dismissal is final, and a stale result cannot overwrite it', async () => {
+it('leaves an unsure pick unfiled', async () => {
+  const { store, m, f, chat, jobs, settled } = setup()
+  chat.mockResolvedValue(JSON.stringify({ folder: f.name, confidence: 0.5 }))
+  jobs.schedule(m.id); await settled()
+  expect(store.foldersOf(m.id)).toEqual([])
+})
+it('a proposal from an older version, once dismissed, stays dismissed and is not filed', async () => {
   const { store, m, f, jobs, settled, chat } = setup()
-  jobs.schedule(m.id); await settled(); store.dismissFolderSuggestion(m.id)
+  store.saveFolderSuggestion(m.id, { folderId: f.id, confidence: 0.9 }, 'old'); store.dismissFolderSuggestion(m.id)
   store.saveFolderSuggestion(m.id, { folderId: f.id, confidence: 1 }, 'new')
   store.renameFolder(f.id, 'Clients'); jobs.refresh(); await settled()
-  expect(store.folderSuggestion(m.id).state).toBe('dismissed'); expect(chat).toHaveBeenCalledTimes(1)
+  expect(store.folderSuggestion(m.id).state).toBe('dismissed'); expect(chat).not.toHaveBeenCalled(); expect(store.foldersOf(m.id)).toEqual([])
 })
 it('none is not retried on reopen, but a changed folder set permits one new attempt', async () => {
   const { store, m, f, chat, jobs, settled } = setup()

@@ -4,7 +4,8 @@ import type { Store } from './store'
 import type { Queue } from './notes/queue'
 import type { NotesModel } from './notes/model'
 
-/** Never files anything: this background job only saves a proposal for the note's confirmation pill. */
+/** Once a meeting has its summary and is in no folder yet, files it in the folder the model is sure fits. The person can move
+ * it; a meeting they filed themselves, took out, or that was tried before is left alone. */
 export function createFolderSuggestions(o: { store: Store; queue: Queue; model: Pick<NotesModel, 'llm'>; changed: () => void }) {
   const { store } = o
   const queued = new Set<string>()
@@ -35,7 +36,10 @@ export function createFolderSuggestions(o: { store: Store; queue: Queue; model: 
       const answer = await llm.chat(prompt, () => {}, { maxTokens: 128, temperature: 0 })
       if (signal.aborted || fingerprint() !== stamp) return
       const result = parseFolderSuggestion(answer, folders)
-      store.saveFolderSuggestion(id, eligible(id, stamp) ? result : { ...result, folderId: null }, stamp)
+      const fits = eligible(id, stamp)
+      store.saveFolderSuggestion(id, fits ? result : { ...result, folderId: null }, stamp)
+      // filing marks the suggestion accepted, so it is never made again, even once the person takes it out
+      if (fits && result.folderId) store.addToFolder(result.folderId, id)
       o.changed()
     }, 'folder', id).catch(e => console.error('suggesting a folder failed', id, e)).finally(() => { queued.delete(id); if (fingerprint() !== requested) schedule(id) })
   }

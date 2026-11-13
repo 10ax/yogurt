@@ -106,18 +106,28 @@ test('native titlebar drag regions leave the sidebar and toolbar controls clicka
   } finally { await app.close() }
 })
 
-test('titlebar chrome stays continuous throughout either sidebar direction', async ({}, testInfo) => {
+for (const reducedTransparency of ['no-preference', 'reduce']) test(`titlebar chrome stays continuous throughout either sidebar direction with transparency ${reducedTransparency}`, async ({}, testInfo) => {
   const { app, page } = await launch()
   try {
+    await app.evaluate(() => (globalThis as unknown as { __fake__: { manyMeetings(o: { n: number; clean: boolean }): void } }).__fake__.manyMeetings({ n: 1, clean: true }))
+    await page.reload()
+    await page.getByTestId('past-note').click()
+    await expect(page.getByTestId('note')).toBeVisible()
+    const cdp = await page.context().newCDPSession(page)
     const divider = await page.locator('.workspace-sidebar').evaluate(el => ({ border: getComputedStyle(el).borderInlineEndColor, start: getComputedStyle(el, '::after').top }))
     expect(divider).toEqual({ border: 'rgba(0, 0, 0, 0)', start: '52px' })
     for (const colorScheme of ['light', 'dark'] as const) {
-      await page.emulateMedia({ colorScheme })
+      await cdp.send('Emulation.setEmulatedMedia', { features: [
+        { name: 'prefers-color-scheme', value: colorScheme },
+        { name: 'prefers-reduced-transparency', value: reducedTransparency },
+        { name: 'prefers-contrast', value: 'no-preference' },
+        { name: 'prefers-reduced-motion', value: 'no-preference' },
+      ] })
       for (const direction of ['ltr', 'rtl']) {
         await page.evaluate((direction) => { document.documentElement.dir = direction }, direction)
         for (let toggle = 0; toggle < 2; toggle++) {
           await page.locator('.workspace-sidebar-toggle').click()
-          for (const time of [0, 60, 120, 180, 239]) {
+          for (const time of [0, 60, 120, 180, 239, 300]) {
             const chrome = await page.evaluate((time) => {
               const workspace = document.querySelector('.workspace')!
               for (const animation of workspace.getAnimations({ subtree: true })) {
@@ -138,6 +148,11 @@ test('titlebar chrome stays continuous throughout either sidebar direction', asy
               edge = Math.max(edge, piece.right)
             }
             expect(edge).toBeGreaterThanOrEqual(chrome.width - 0.5)
+            // The loaded note must not paint over the title bar through its loading wrappers.
+            await expect(page.getByTestId('note')).toHaveCSS('background-color', 'rgba(0, 0, 0, 0)')
+            await expect(page.getByTestId('note')).toHaveCSS('background-image', 'none')
+            await expect(page.locator('.workspace-content')).toHaveCSS('background-image', /rgba\(0, 0, 0, 0\) 52px/)
+            await expect(page.locator('.workspace')).toHaveCSS('background-image', /^linear-gradient\(rgb\(.+52px/)
             if (direction === 'ltr' && time === 120) {
               const name = `${colorScheme}-${toggle === 0 ? 'collapse' : 'expand'}`
               const path = testInfo.outputPath(`${name}.png`)
@@ -146,11 +161,13 @@ test('titlebar chrome stays continuous throughout either sidebar direction', asy
             }
           }
           await page.locator('.workspace').evaluate((el) => {
-            for (const animation of el.getAnimations({ subtree: true })) animation.finish()
+            // a note page has endless animations (the level bars); only the sidebar's own transitions can finish
+            for (const animation of el.getAnimations({ subtree: true })) if (animation.effect?.getComputedTiming().endTime !== Infinity) animation.finish()
           })
         }
       }
     }
+    await cdp.detach()
   } finally { await app.close() }
 })
 

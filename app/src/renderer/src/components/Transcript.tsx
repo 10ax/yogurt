@@ -182,8 +182,6 @@ export function Transcript({ id, recording, inline = false, active = true, onClo
     void window.yogurt.transcript.restore(id, [l.id]).catch(() => { restoreFocus.current = undefined; setRestoreError(true) })
   }, [id])
   const [query, setQuery] = useState('')
-  const pointerSearch = useRef(false)
-  const [animateSearch, setAnimateSearch] = useState(false)
   useEffect(() => { setQuery(''); setRestoreError(false) }, [id])
 
   // the recording is only playable once it is finished
@@ -364,9 +362,9 @@ export function Transcript({ id, recording, inline = false, active = true, onClo
 
   const tools = (
       <div className="transcript-toolbar">
-        <label className="transcript-search-field" data-pointer={animateSearch} onPointerDown={() => { pointerSearch.current = true }}>
+        <label className="transcript-search-field">
           <SearchIcon size={14} strokeWidth={1.75} aria-hidden="true" className="shrink-0 text-muted" />
-          <input data-testid="transcript-search" value={query} onFocus={() => { setAnimateSearch(pointerSearch.current); pointerSearch.current = false }} onChange={(e) => setQuery(e.target.value)} placeholder={t('Search')} aria-label={t('Search the transcript')} spellCheck={false} />
+          <input data-testid="transcript-search" value={query} onChange={(e) => setQuery(e.target.value)} placeholder={t('Search')} aria-label={t('Search the transcript')} spellCheck={false} />
         </label>
         {!inline && onClose && <div className="transcript-actions"><button data-testid="transcript-close" onClick={onClose} aria-label={t('Hide transcript')} title={t('Hide transcript')} className="ghost-btn !p-1.5"><ChevronDown size={15} aria-hidden="true" /></button></div>}
       </div>

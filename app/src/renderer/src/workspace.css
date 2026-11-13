@@ -83,16 +83,13 @@
 .workspace-sidebar-footer { padding:9px var(--sidebar-inset) 0; }
 .workspace-brand { display:flex;align-items:center;justify-content:flex-start;min-height:var(--workspace-footer-height);border-top:1px solid var(--line);margin-top:9px;margin-inline:calc(-1 * var(--sidebar-inset));padding:0 calc(var(--sidebar-inset) + var(--nav-inset)); }
 .workspace-content { position:relative;z-index:1;contain:layout;flex:1;min-width:0;height:100%;background:var(--reading-surface);container-type:inline-size; }
-.workspace-content>.bg-bg { background:transparent; }
+.workspace-content>.bg-bg,.workspace-content .document-main { background:transparent; }
 .document-body { padding-inline:clamp(20px,calc(10cqw - 42px),48px); }
 .workspace-toolbar { position:absolute;inset-inline:0;top:0;height:52px;z-index:50;display:flex;align-items:center;padding:0 24px;border-bottom:1px solid var(--line);background:transparent; }
 .workspace-toolbar[data-note=true] { padding-inline-end:185px; }
 .workspace-breadcrumb { display:flex;gap:9px;align-items:center;min-width:0;color:var(--muted);font-size:13px;white-space:nowrap; }
 .workspace-breadcrumb>svg { flex:none; }
 .workspace-breadcrumb>[aria-current] { color:var(--ink);font-weight:500;overflow:hidden;text-overflow:ellipsis; }
-.workspace-parent { color:var(--muted);flex:none; }
-.workspace-parent:hover { color:var(--ink); }
-.workspace-parent-separator { color:var(--muted);opacity:.55; }
 .workspace-history { display:flex;gap:2px;flex:none; }
 .workspace-history button:disabled { opacity:.3;background:transparent; }
 /* Keep chrome edge-to-edge while the canvas moves; only the controls need clearance. */

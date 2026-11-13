@@ -679,15 +679,14 @@ input::selection, textarea::selection, .note-prose ::selection { background: var
 .note-primary-tools .transcript-actions { order:-1;margin-inline-start:0; }
 .transcript-toolbar { display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:8px 16px;padding:10px 12px;border-bottom:1px solid var(--line); }
 .transcript-search-field { display:flex;align-items:center;gap:8px;flex:0 1 auto;width:68px;max-width:100%;min-width:32px;height:32px;padding-inline:0;border:1px solid transparent;border-radius:6px;background:transparent; }
-.transcript-search-field[data-pointer=true] { transition:width 220ms cubic-bezier(.23,1,.32,1),padding 220ms cubic-bezier(.23,1,.32,1),background-color 140ms ease,border-color 140ms ease; }
-@media(prefers-reduced-motion:reduce) { .transcript-search-field[data-pointer=true] { transition:none; } }
+.transcript-search-field { transition:background-color 100ms ease,border-color 100ms ease; }
+@media(prefers-reduced-motion:reduce) { .transcript-search-field { transition:none; } }
 /* collapsed it reads as a button: a pointer, no hover box (with no padding yet it hugged the word); it opens on click */
 .transcript-search-field,.transcript-search-field [data-testid="transcript-search"] { cursor:pointer; }
 .transcript-search-field:focus-within [data-testid="transcript-search"],.transcript-search-field:has(input:not(:placeholder-shown)) [data-testid="transcript-search"] { cursor:text; }
 .transcript-search-field:focus-within,.transcript-search-field:has(input:not(:placeholder-shown)) { width:224px;padding-inline:10px;border-color:var(--line);background:var(--control); }
-.transcript-search-field:focus-within { border-color:var(--accent);box-shadow:0 0 0 2px var(--accent-soft); }
-[data-testid="transcript-search"] { min-width:0;width:100%;height:100%;padding:0;border:0;background:transparent;color:var(--ink);font-size:13px;font-weight:500;line-height:20px;text-align:end; }
-.transcript-search-field:focus-within input,.transcript-search-field:has(input:not(:placeholder-shown)) input { text-align:start; }
+.transcript-search-field:focus-within { border-color:var(--accent); }
+[data-testid="transcript-search"] { min-width:0;width:100%;height:100%;padding:0;border:0;background:transparent;color:var(--ink);font-size:13px;font-weight:500;line-height:20px;text-align:start; }
 [data-testid="transcript-search"]::placeholder { color:var(--muted); }
 [data-testid="transcript-search"]:focus-visible { outline:none;box-shadow:none; }
 .transcript-actions { display:flex;align-items:center;gap:4px;margin-inline-start:auto; }

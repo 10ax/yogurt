@@ -2,7 +2,7 @@ import { toasts } from './TrashToast'
 import { askDestination } from '../../../shared/askContext'
 import * as Sidebar from '@animate-ui/react/primitives/sidebar'
 import { useEffect, useState, type ReactNode } from 'react'
-import { ChevronLeft, ChevronRight, Slash, Trash2 } from 'lucide-react'
+import { ChevronLeft, ChevronRight, Trash2 } from 'lucide-react'
 import type { MeetingView, Folder, WidgetView } from '../../../shared/types'
 import { t } from '../../../shared/i18n'
 import { command, keys, onMac } from '../keys'
@@ -101,9 +101,6 @@ export function Workspace({ route, meeting, folders, go, back, forward, search, 
             <button data-testid="nav-back" className="workspace-icon" disabled={!back && !note} onClick={back ?? (() => go(''))} aria-label={t('Back')} title={`${t('Back')} (${keys('⌘[')})`}><ChevronLeft size={14} strokeWidth={1.75} className="rtl:-scale-x-100" aria-hidden="true" /></button>
             <button data-testid="nav-forward" className="workspace-icon" disabled={!forward} onClick={forward} aria-label={t('Forward')} title={`${t('Forward')} (${keys('⌘]')})`}><ChevronRight size={14} strokeWidth={1.75} className="rtl:-scale-x-100" aria-hidden="true" /></button>
           </span>
-          {note && <>
-            <button className="workspace-parent" onClick={() => go('')}>{t('Meetings')}</button><Slash size={12} strokeWidth={1.4} className="workspace-parent-separator rtl:-scale-x-100" aria-hidden="true" />
-          </>}
           <span data-testid="workspace-heading" aria-current="page" title={label}>{label}</span>
         </div>
       {returnToRecording && <button className="workspace-recording-link no-drag" data-testid="recording-return" data-paused={recording.paused}

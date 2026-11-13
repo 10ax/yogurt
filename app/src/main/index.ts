@@ -233,6 +233,8 @@ let refreshCalendarConsumers = () => {}
 const systemSettings: string[] = []
 /** fake mode: how many times Yogurt would have quit and opened again for a permission */
 let relaunched = 0
+/** fake mode: how many times Yogurt would have restarted to install a new version */
+let updateRestarts = 0
 
 /** What is still to come today and tomorrow (meetings on now included), soonest first */
 async function comingUp(): Promise<CalEvent[]> {
@@ -399,7 +401,7 @@ function startDetection() {
       signals: async (r) => { signals.override(r); await watcher.tick() },
       advance: () => watcher.tick(),
       widget: () => widget.snapshot(),
-      main: () => ({ presented, visible: !!win?.isVisible(), route, settingsOpened, systemSettings, mediaCalls, relaunched }),
+      main: () => ({ presented, visible: !!win?.isVisible(), route, settingsOpened, systemSettings, mediaCalls, relaunched, updateRestarts }),
       go: (r) => goTo(r),
       warn: (code) => tell({ t: 'warn', code: code as WarnCode }),
       // a long finished meeting: n lines half a second apart, voices taking turns, with quiet low-rate audio to play
@@ -936,7 +938,9 @@ app.whenReady().then(() => {
   const updatesAvailable = updatesOn({ packaged: app.isPackaged, fake: isFake(), profile: !!process.env.YOGURT_USER_DATA, platform: process.platform, appImage: !!process.env.APPIMAGE,
     feed: app.isPackaged && existsSync(join(process.resourcesPath, 'app-update.yml')),
     preview: app.isPackaged && isPreviewBuild((() => { try { return readFileSync(join(app.getAppPath(), 'package.json'), 'utf8') } catch { return '' } })()) })
-  hookUpdates({ file: join(userDataDir(), 'settings.json'), available: updatesAvailable, recording: () => !!activeMeeting() })
+  hookUpdates({ file: join(userDataDir(), 'settings.json'), available: updatesAvailable, recording: () => !!activeMeeting(),
+    // fake mode: a test pretends a version downloaded, and how long it waits before the corner offers Restart
+    fake: isFake() && process.env.YOGURT_FAKE_UPDATE ? { version: process.env.YOGURT_FAKE_UPDATE, afterMs: Number(process.env.YOGURT_FAKE_UPDATE_AFTER_MS ?? 0), restarted: () => { updateRestarts++ } } : undefined })
     .catch((err) => console.warn("couldn't start looking for new versions", err))
   // the Dock icon: the main window, even while the widget is up
   app.on('activate', showMain)

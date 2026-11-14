@@ -3,7 +3,7 @@ import { MotionPopup } from './MotionPopup'
 import { motion } from '../motion'
 import { FolderGlyph } from './FolderAppearance'
 import { Fragment, useEffect, useRef, useState } from 'react'
-import { AudioLines, CalendarDays, FileText, FolderIcon, Keyboard, LogIn, MessageCircle, Monitor, Moon, PanelLeft, Search as SearchIcon, Settings, Sun, Trash2, UserRound, X } from 'lucide-react'
+import { AudioLines, CalendarDays, FileText, FolderIcon, Keyboard, LogIn, MessageCircle, Monitor, Moon, PanelLeft, Settings, Sun, Trash2, UserRound, X } from 'lucide-react'
 import type { SearchResult, SnippetPart, Folder, Person } from '../../../shared/types'
 import { t, language } from '../../../shared/i18n'
 import { command, keys, osWords } from '../keys'
@@ -124,7 +124,6 @@ export function Search({ folder, folders, onOpen, onNavigate, onSettingsChange, 
   useEffect(() => {
     defaultSelection.current = q.trim() && rows[palette.active] ? searchSelectionKey(rows[palette.active]) : undefined
   })
-  const intent = !q.trim() && active === null ? 'search' : selected?.kind === 'command' ? `command:${selected.command.id}` : selected?.kind === 'ask' ? 'ask' : selected?.kind === 'person' ? 'person' : 'search'
   const dateLabel = parsed.date && searchDateLabel(parsed.date)
   const clearDate = () => { if (parsed.dateSpan) setQ(removeSearchSpan(q, parsed.dateSpan)); setActive(null); input.current?.focus() }
   const clearPerson = (person: Person) => {
@@ -210,15 +209,6 @@ export function Search({ folder, folders, onOpen, onNavigate, onSettingsChange, 
         className="search-panel flex max-h-[74vh] w-full max-w-[640px] flex-col overflow-hidden rounded-2xl border border-line bg-float">
         <div className="search-header">
           <div className="search-input-row">
-            <span data-testid="search-intent-icon" data-icon={intent} className="flex shrink-0 text-muted" aria-hidden="true">
-              {{
-                search: <SearchIcon size={24} strokeWidth={1.6} />,
-                ask: <MessageCircle size={24} strokeWidth={1.6} />,
-                person: <UserRound size={24} strokeWidth={1.6} />,
-                ...Object.fromEntries(allCommands.map(c => [`command:${c.id}`, 'folder' in c
-                  ? <FolderGlyph appearance={c.folder} size={24} /> : <c.Icon size={24} strokeWidth={1.6} />])),
-              }[intent]}
-            </span>
             <div className="search-field">
               <div ref={highlight} className="search-input-highlight" aria-hidden="true">
                 <span>{searchFilterHighlights(q, personQuery.matches, parsed.dateSpan).map((part, i) => part.kind
@@ -237,16 +227,16 @@ export function Search({ folder, folders, onOpen, onNavigate, onSettingsChange, 
               <button data-testid="search-scope-clear" onClick={() => { setScope(undefined); input.current?.focus() }} aria-label={t('Search all meetings')} title={t('Search all meetings')}><X size={13} aria-hidden="true" /></button>
             </span>}
             {selectedPeople.map(person => <span key={searchPersonKey(person)} data-testid="search-person-filter" className="search-filter">
-              <UserRound size={14} aria-hidden="true" /><span className="truncate" title={person.email || person.name}>{person.name || person.email}</span>
+              <UserRound size={14} strokeWidth={1.75} aria-hidden="true" /><span className="truncate" title={person.email || person.name}>{person.name || person.email}</span>
               <button onClick={() => clearPerson(person)} aria-label={t('Remove {name}', { name: person.name || person.email || '' })}><X size={13} aria-hidden="true" /></button>
             </span>)}
             {dateLabel && <span data-testid="search-date" className="search-filter">
-              <CalendarDays size={14} aria-hidden="true" /><span className="truncate" title={dateLabel}>{dateLabel}</span>
+              <CalendarDays size={14} strokeWidth={1.75} aria-hidden="true" /><span className="truncate" title={dateLabel}>{dateLabel}</span>
               <button data-testid="search-date-clear" onClick={clearDate} aria-label={t('Remove {name}', { name: dateLabel })}><X size={13} aria-hidden="true" /></button>
             </span>}
           </div>}
         </div>
-        <ul ref={list} id="search-results" role="listbox" aria-label={t('Results')} aria-busy={running || !settled} className="min-h-0 flex-1 overflow-y-auto [overflow-anchor:none] px-2.5 pb-3">
+        <ul ref={list} id="search-results" role="listbox" aria-label={t('Results')} aria-busy={running || !settled} className="min-h-0 flex-1 overflow-y-auto [overflow-anchor:none] px-2 pb-2">
           {rows.map((row, i) => {
             const previous = rows[i - 1]
             if (row.kind === 'ask') return <Fragment key="ask">
@@ -254,7 +244,7 @@ export function Search({ folder, folders, onOpen, onNavigate, onSettingsChange, 
               <li id="search-ask" data-testid="search-ask" role="option" aria-selected={activeIndex === i} aria-disabled={running}
                 onMouseMove={(e) => hover(e, i)} onClick={() => void ask(row.query)} className="search-row command-row">
                 <MessageCircle size={16} strokeWidth={1.75} aria-hidden="true" />
-                <span className="shrink-0 text-accent">{t('Ask Yogurt')}</span><span className="command-label truncate">{row.query}</span>
+                <span className="shrink-0">{t('Ask Yogurt')}</span><span className="command-label truncate text-muted">{row.query}</span>
                 <kbd className="search-key search-return" aria-hidden="true">↵</kbd>
               </li>
             </Fragment>
@@ -277,10 +267,10 @@ export function Search({ folder, folders, onOpen, onNavigate, onSettingsChange, 
                   onMouseMove={(e) => hover(e, i)} onClick={() => onOpen(r.meetingId)}
                   className="search-row search-meeting"
                 >
-                  <span className="search-result-icon"><FileText size={17} strokeWidth={1.6} aria-hidden="true" /></span>
+                  <FileText size={16} strokeWidth={1.75} aria-hidden="true" />
                   <span className="min-w-0 flex-1">
                     <span data-testid="search-result-title" className="block truncate text-sm font-medium leading-5"><Marked parts={markWords(r.title, typed)} /></span>
-                    {typed && r.parts.length > 0 && <span className="mt-0.5 line-clamp-1 text-[13px] leading-relaxed text-muted"><Marked parts={r.parts} /></span>}
+                    {typed && r.parts.length > 0 && <span className="mt-0.5 line-clamp-1 text-xs leading-5 text-muted"><Marked parts={r.parts} /></span>}
                   </span>
                   <time className="search-metadata" dateTime={new Date(r.startedAt).toISOString()}>{dayLabel(r.startedAt)}<span>{timeOf(r.startedAt)}</span></time>
                   <kbd className="search-key search-return" aria-hidden="true">↵</kbd>

@@ -316,24 +316,36 @@ test('a parsed date chip can be removed with its button or Backspace', async () 
   } finally { await app.close() }
 })
 
-test('the icon follows selection, hints stay fixed, and the secondary shortcut sends to Ask', async () => {
+test('the input stays icon-free, row icons and hints stay fixed, and the secondary shortcut sends to Ask', async () => {
   const { app, page } = await launch()
   try {
     await page.keyboard.press('Meta+k')
     const input = page.getByTestId('search-input')
+    await expect(input).toBeFocused()
+    const glyphs = await page.locator('.search-row>svg, .search-row>.folder-glyph>svg').evaluateAll(icons => icons.map(icon => {
+      const style = getComputedStyle(icon)
+      return [parseFloat(style.width), parseFloat(style.height), icon.getAttribute('stroke-width'), style.color]
+    }))
+    expect(glyphs.length).toBeGreaterThan(0)
+    for (const glyph of glyphs) expect(glyph).toEqual([16, 16, '1.75', glyphs[0][3]])
     const hints = await page.locator('.search-footer').textContent()
     for (const query of ['s', 'se', 'set', 'settings', 'why', 'why now?']) {
       await input.fill(query)
       await expect(page.locator('.search-footer')).toHaveText(hints!)
+      await expect(page.locator('.search-input-row svg')).toHaveCount(0)
     }
     await input.fill('settings')
     await expect(page.getByTestId('command-settings')).toHaveAttribute('aria-selected', 'true')
-    await expect(page.getByTestId('search-intent-icon')).toHaveAttribute('data-icon', 'command:settings')
+    await expect(page.locator('.search-input-row svg')).toHaveCount(0)
+    const settingsIcon = await page.getByTestId('command-settings').locator('svg').innerHTML()
+    const askIcon = await page.getByTestId('search-ask').locator('svg').innerHTML()
     await expect(page.getByTestId('search-primary-hint')).toHaveText('↵Select')
     await expect(page.getByTestId('search-secondary-hint')).toContainText('Ask')
     await page.keyboard.press('ArrowUp')
     await expect(page.getByTestId('search-ask')).toHaveAttribute('aria-selected', 'true')
-    await expect(page.getByTestId('search-intent-icon')).toHaveAttribute('data-icon', 'ask')
+    await expect(page.locator('.search-input-row svg')).toHaveCount(0)
+    expect(await page.getByTestId('command-settings').locator('svg').innerHTML()).toBe(settingsIcon)
+    expect(await page.getByTestId('search-ask').locator('svg').innerHTML()).toBe(askIcon)
     await expect(page.getByTestId('search-primary-hint')).toHaveText('↵Select')
     await expect(page.getByTestId('search-secondary-hint')).toContainText('Ask')
     await page.keyboard.press('ArrowDown')

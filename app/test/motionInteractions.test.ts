@@ -147,7 +147,7 @@ it('keeps initial search results still, ignores stationary hover, and scrolls on
   let tree = render()
   find(tree, 'search-results').props.ref.current = { querySelector: () => ({ scrollIntoView }) }
   expect(find(tree, 'search-results').props.className).toContain('[overflow-anchor:none]')
-  expect(find(tree, 'search-intent-icon').props['data-icon']).toBe('search')
+  expect(() => find(tree, 'search-intent-icon')).toThrow('Missing')
   scroll()
   expect(scrollIntoView).not.toHaveBeenCalled()
   // Recent meetings arrive after the initial commands, without scrolling the commands back into view.
@@ -159,11 +159,12 @@ it('keeps initial search results still, ignores stationary hover, and scrolls on
   find(tree, 'command-meetings').props.onMouseMove({ movementX: 0, movementY: 0 })
   tree = render(); scroll()
   expect(find(tree, 'search-result').props['aria-selected']).toBe(true)
-  expect(find(tree, 'search-intent-icon').props['data-icon']).toBe('search')
+  expect(() => find(tree, 'search-intent-icon')).toThrow('Missing')
   find(tree, 'command-meetings').props.onMouseMove({ movementX: 1, movementY: 0 })
   tree = render(); scroll()
   expect(find(tree, 'command-meetings').props['aria-selected']).toBe(true)
-  expect(find(tree, 'search-intent-icon').props.children.type.displayName).toBe('FileText')
+  expect(() => find(tree, 'search-intent-icon')).toThrow('Missing')
+  expect(find(tree, 'command-meetings').props.children[0].type.displayName).toBe('FileText')
   expect(scrollIntoView).not.toHaveBeenCalled()
   find(tree, 'search').props.onKeyDown({ key: 'ArrowDown', nativeEvent: {}, preventDefault() {} })
   tree = render(); scroll()
@@ -177,6 +178,56 @@ it('keeps initial search results still, ignores stationary hover, and scrolls on
   tree = render(); scroll()
   expect(find(tree, 'search-result').props['aria-selected']).toBe(true)
   expect(scrollIntoView).not.toHaveBeenCalled()
+})
+
+it('keeps row glyphs stable across typing, filters, and keyboard selection without an input icon', async () => {
+  vi.useFakeTimers()
+  vi.stubGlobal('document', { activeElement: null })
+  vi.stubGlobal('HTMLButtonElement', class {})
+  vi.stubGlobal('window', { yogurt: {
+    capabilities: { calendar: true },
+    settings: { get: async () => ({ theme: 'light' }) },
+    meetings: { onChange: () => () => {} },
+    search: {
+      people: async () => [{ name: 'Sample attendee', email: 'participant@example.test' }],
+      query: async () => [{ meetingId: 'm1', title: 'Planning', startedAt: 1000, parts: [] }],
+    },
+  } })
+  const folders = [{ id: 'f1', name: 'Planning', icon: 'calendar' as const, color: 'violet' as const, count: 1, createdAt: 1 }]
+  const render = renderer(() => Search({ folder: folders[0], folders, onOpen() {}, onNavigate() {}, onSettingsChange() {}, onShortcuts() {}, onClose() {}, sidebarCollapsed: false, onToggleSidebar() {} }))
+  render()
+  vi.mocked(useEffect).mock.calls[1][0]()
+  vi.mocked(useEffect).mock.calls[2][0]()
+  await Promise.resolve()
+  const icons = new Map<string, unknown>()
+  const inspect = (node: ReactNode) => {
+    if (Array.isArray(node)) { node.forEach(inspect); return }
+    if (!node || typeof node !== 'object' || !('props' in node)) return
+    const { props } = node as ReactElement<any>
+    if (props.role === 'option') {
+      const icon = props.children[0]
+      if (icons.has(props.id)) expect(icon.type).toBe(icons.get(props.id))
+      icons.set(props.id, icon.type)
+      if (icon.props.appearance) expect(icon.props.appearance).toBe(folders[0])
+      else expect(icon.props).toMatchObject({ size: 16, strokeWidth: 1.75, 'aria-hidden': 'true' })
+    }
+    inspect(props.children)
+  }
+  for (const query of ['', 'plan', 'planning', 'November 11, 2028', 'att', 'Sample attendee', 'theme']) {
+    find(render(), 'search-input').props.onChange({ target: { value: query } })
+    render()
+    vi.mocked(useEffect).mock.calls.find(([, deps]) => deps?.length === 6)![0]()
+    await vi.runAllTimersAsync()
+    let tree = render()
+    expect(() => find(tree, 'search-intent-icon')).toThrow('Missing')
+    inspect(tree)
+    if (query === 'Sample attendee') expect(find(tree, 'search-person-filter')).toBeDefined()
+    if (query === 'November 11, 2028') expect(find(tree, 'search-date')).toBeDefined()
+    find(tree, 'search').props.onKeyDown({ key: 'ArrowDown', nativeEvent: {}, preventDefault() {} })
+    tree = render()
+    inspect(tree)
+  }
+  expect([...icons.keys()]).toEqual(expect.arrayContaining(['search-m1', 'search-ask', 'command-agenda-date', 'command-folder-f1', 'command-theme-light', 'search-person-email%3Aparticipant%40example.test']))
 })
 
 it.each(['darwin', 'win32'])('toggles the meeting panel once per shortcut press on %s', os => {

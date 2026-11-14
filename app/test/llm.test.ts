@@ -2,7 +2,7 @@ import { beforeEach, describe, expect, it, vi } from 'vitest'
 import { Gemma4ChatWrapper, type LlamaChatSessionOptions } from 'node-llama-cpp'
 import { createLlm } from '../src/engine/llm'
 
-const fake = vi.hoisted(() => ({ architecture: 'gemma4', sessions: [] as unknown[], loads: [] as unknown[], disposed: 0, contextFails: 0, contextError: undefined as (() => Error) | undefined }))
+const fake = vi.hoisted(() => ({ architecture: 'gemma4', sessions: [] as unknown[], loads: [] as unknown[], disposed: 0, contextFails: 0, loadFails: 0, contextError: undefined as (() => Error) | undefined }))
 vi.mock('node-llama-cpp', async (original) => {
   const actual = await original<typeof import('node-llama-cpp')>()
   const sequence = { contextTokens: [], tokenMeter: { usedInputTokens: 0 }, evaluateWithoutGeneratingNewTokens: async () => {} }
@@ -10,6 +10,7 @@ vi.mock('node-llama-cpp', async (original) => {
     ...actual,
     getLlama: async () => ({ gpu: 'vulkan', loadModel: async (o: { gpuLayers?: unknown }) => {
       fake.loads.push(o.gpuLayers)
+      if (fake.loadFails > 0 && o.gpuLayers !== 0) { fake.loadFails--; throw new Error('Failed to load model') }
       return {
         fileInfo: { metadata: { general: { architecture: fake.architecture } } }, gpuLayers: o.gpuLayers === 0 ? 0 : 20,
         tokenize: () => [], dispose: async () => { fake.disposed++ },
@@ -29,7 +30,7 @@ vi.mock('node-llama-cpp', async (original) => {
   }
 })
 
-beforeEach(() => { fake.sessions.length = 0; fake.loads.length = 0; fake.disposed = 0; fake.contextFails = 0; fake.contextError = undefined })
+beforeEach(() => { fake.sessions.length = 0; fake.loads.length = 0; fake.disposed = 0; fake.contextFails = 0; fake.loadFails = 0; fake.contextError = undefined })
 
 describe('model prompt wrapper', () => {
   it.each(['gemma4', 'qwen3', 'gpt-oss'])('preload and answers use the same format for %s', async (architecture) => {
@@ -76,6 +77,17 @@ describe('too little room on the graphics card for the notes', () => {
   it('gives up when the processor alone does not fit either', async () => {
     fake.contextFails = 3
     await expect(createLlm().load('fixture.gguf', 32768, 8192)).rejects.toThrow(/too large/)
+  })
+  it('a model too big for the card that fails to load at all loads again with fewer layers there (#37)', async () => {
+    fake.loadFails = 1
+    const llm = createLlm()
+    expect(await llm.load('fixture.gguf', 32768, 8192)).toMatchObject({ gpu: 'vulkan', gpuLayers: 20 })
+    expect(fake.loads).toEqual([undefined, { fitContext: { contextSize: 8192 } }])
+  })
+  it('falls back to the processor when the model fails to load on the card twice', async () => {
+    fake.loadFails = 2
+    expect(await createLlm().load('fixture.gguf', 32768, 8192)).toMatchObject({ gpu: false, gpuLayers: 0 })
+    expect(fake.loads).toEqual([undefined, { fitContext: { contextSize: 8192 } }, 0])
   })
   it('another error is not retried', async () => {
     fake.contextFails = 1; fake.contextError = () => new Error('bad file')

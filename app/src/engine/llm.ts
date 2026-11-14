@@ -70,8 +70,13 @@ export function createLlm() {
       // The model fills the graphics card first and keeps room for only a tiny context; on a card with little memory the
       // notes' context then doesn't fit (InsufficientMemoryError, every summary failing). So: load again leaving room for
       // the smallest context we accept, then with nothing on the card. A computer where it fits loads once, as before.
+      // A model that doesn't fit on the card at all can fail to load outright (#37): that gets the same fewer layers.
       for (const gpuLayers of [undefined, { fitContext: { contextSize: size.min } }, 0] as const) {
-        model = await l.loadModel(gpuLayers === undefined ? { modelPath } : { modelPath, gpuLayers })
+        try { model = await l.loadModel(gpuLayers === undefined ? { modelPath } : { modelPath, gpuLayers }) } catch (e) {
+          if (gpuLayers === 0) throw e
+          console.warn('the notes model did not load on the graphics card; loading it again with fewer layers there', (e as Error).message)
+          continue
+        }
         try { context = await model.createContext({ contextSize: size, ...threads(l) }); break } catch (e) {
           if (!(e instanceof InsufficientMemoryError) || gpuLayers === 0 || model.gpuLayers === 0) throw e
           console.warn('the notes did not fit next to the model on the graphics card; loading it again with fewer layers there', e.message)

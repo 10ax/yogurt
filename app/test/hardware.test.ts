@@ -26,6 +26,11 @@ describe('graphics on Windows and Linux (the notes engine checks the card)', () 
   it('graphics that share the memory', () => {
     expect(toHardware(pc, { gpuType: 'vulkan', vramTotalGB: 16, unifiedGB: 16, gpuNames: ['Intel(R) Iris(R) Xe Graphics'] }).gpu.kind).toBe('unified')
   })
+  it('a graphics card next to graphics built into the processor counts as the card, with its own memory (#37)', () => {
+    // node-llama-cpp adds the card's 12 GB to the shared memory the built-in graphics can use
+    expect(toHardware(pc, { gpuType: 'vulkan', vramTotalGB: 67.8, unifiedGB: 55.8, gpuNames: ['NVIDIA GeForce RTX 4070 Ti', 'AMD Radeon(TM) Graphics'] }).gpu)
+      .toEqual({ kind: 'discrete', name: 'NVIDIA GeForce RTX 4070 Ti', vramGB: 12 })
+  })
   it('no usable graphics, or a check that failed: the processor only', () => {
     expect(toHardware(pc, { gpuType: false, vramTotalGB: 0, unifiedGB: 0, gpuNames: [] }).gpu).toEqual({ kind: 'none', name: '', vramGB: 0 })
     expect(toHardware(pc, null).gpu.kind).toBe('none')

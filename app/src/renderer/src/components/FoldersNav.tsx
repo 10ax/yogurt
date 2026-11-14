@@ -16,7 +16,7 @@ import { toasts } from './TrashToast'
  * The sidebar's folders: each opens its page, takes a meeting row dropped on it, and has a small menu to rename or
  * delete it; New folder at the end.
  */
-export function FoldersNav({ folders, route, go, collapsed = false }: { collapsed?: boolean; folders?: Folder[]; route: string; go: (route: string) => void }) {
+export function FoldersNav({ folders, route, go, collapsed = false, sidebarMotion }: { collapsed?: boolean; sidebarMotion: boolean; folders?: Folder[]; route: string; go: (route: string) => void }) {
   const [naming, setNaming] = useState<{ folder?: Folder }>()
   const [appearance, setAppearance] = useState<Folder>()
   const [deleting, setDeleting] = useState<Folder>()
@@ -52,7 +52,7 @@ export function FoldersNav({ folders, route, go, collapsed = false }: { collapse
         onReorder={next => { latest.current = next; setOrder(next) }}>
         {ids.map((id, i) => {
           const s = folders!.find(f => f.id === id)!
-          return <FolderItem key={s.id} folder={s} collapsed={collapsed} current={route === `/folder/${s.id}`} go={go}
+          return <FolderItem key={s.id} folder={s} collapsed={collapsed} sidebarMotion={sidebarMotion} current={route === `/folder/${s.id}`} go={go}
             constraints={group} reorderable={!busy && ids.length > 1} onDragStart={() => { dragging.current = true }} onDragEnd={() => void save(latest.current)}
             moveUp={!busy && i > 0 ? () => move(id, -1) : undefined} moveDown={!busy && i < ids.length - 1 ? () => move(id, 1) : undefined}
             onAppearance={() => setAppearance(s)} onRename={() => setNaming({ folder: s })} onDelete={() => setDeleting(s)} />
@@ -71,12 +71,15 @@ export function FoldersNav({ folders, route, go, collapsed = false }: { collapse
   </>
 }
 
-function FolderItem({ folder, collapsed, current, go, onRename, onDelete, onAppearance, constraints, reorderable, onDragStart, onDragEnd, moveUp, moveDown }: {
-  folder: Folder; collapsed: boolean; current: boolean; go: (route: string) => void; onAppearance: () => void; onRename: () => void; onDelete: () => void
+function FolderItem({ folder, collapsed, sidebarMotion, current, go, onRename, onDelete, onAppearance, constraints, reorderable, onDragStart, onDragEnd, moveUp, moveDown }: {
+  folder: Folder; collapsed: boolean; sidebarMotion: boolean; current: boolean; go: (route: string) => void; onAppearance: () => void; onRename: () => void; onDelete: () => void
   constraints: RefObject<HTMLDivElement | null>; reorderable: boolean; onDragStart: () => void; onDragEnd: () => void; moveUp?: () => void; moveDown?: () => void
 }) {
   const controls = useDragControls()
   const reduced = useReducedMotion()
+  const previousCollapsed = useRef(collapsed)
+  const instant = reduced || (previousCollapsed.current !== collapsed && !sidebarMotion)
+  useEffect(() => { previousCollapsed.current = collapsed }, [collapsed])
   const dragged = useRef(false)
   const [moving, setMoving] = useState(false)
   const [drop, setDrop] = useState(false)
@@ -111,7 +114,7 @@ function FolderItem({ folder, collapsed, current, go, onRename, onDelete, onAppe
   const carries = (e: DragEvent) => e.dataTransfer.types.includes(MEETING_DRAG)
   return <Reorder.Item as="div" ref={row} value={folder.id} className="workspace-folder-item" data-testid="sidebar-folder" data-folder={folder.id} data-moving={moving}
     dragListener={false} dragControls={controls} dragConstraints={constraints} dragElastic={0} dragMomentum={false}
-    transition={reduced ? { duration: 0 } : { type: 'spring', stiffness: 520, damping: 42 }}
+    transition={instant ? { duration: 0 } : { type: 'spring', stiffness: 520, damping: 42 }}
     onDragStart={() => { dragged.current = true; setMoving(true); setMenu(undefined); onDragStart() }}
     onDragEnd={() => { setMoving(false); onDragEnd() }}>
     <button ref={open} className="workspace-nav" data-sidebar="menu-button" aria-label={folder.name} title={collapsed ? folder.name : undefined} data-testid="sidebar-folder-open" data-drop={drop} aria-current={current ? 'page' : undefined}

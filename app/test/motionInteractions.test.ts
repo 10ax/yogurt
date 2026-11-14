@@ -33,11 +33,16 @@ function renderer(component: () => ReactNode) {
   }
 }
 
-it.each(['/meetings', '/note/m1'])('keeps the original folder reorder animation across sidebar toggles on %s', route => {
-  vi.stubGlobal('window', { matchMedia: () => ({ matches: false }) })
+it.each([
+  { sidebarMotion: false, reduced: false },
+  { sidebarMotion: true, reduced: false },
+  { sidebarMotion: false, reduced: true },
+  { sidebarMotion: true, reduced: true },
+].flatMap(options => ['/meetings', '/note/m1'].map(route => ({ ...options, route }))))('snaps folder rows only for instant sidebar changes or reduced motion ($sidebarMotion, $reduced) on $route', ({ sidebarMotion, reduced, route }) => {
+  vi.stubGlobal('window', { matchMedia: () => ({ matches: reduced }) })
   const folders = [{ id: 'f1', name: 'Planning', icon: 'calendar' as const, color: 'violet' as const, count: 2, createdAt: 1 }]
   let collapsed = false
-  const nav = renderer(() => FoldersNav({ folders, route, collapsed, go() {} }))
+  const nav = renderer(() => FoldersNav({ folders, route, collapsed, sidebarMotion, go() {} }))
   let item: ReactElement<any>
   const row = renderer(() => (item.type as Function)(item.props))
   const render = () => {
@@ -46,12 +51,18 @@ it.each(['/meetings', '/note/m1'])('keeps the original folder reorder animation 
     expect(element.props.layout).toBeUndefined()
     expect(element.props.dragControls).toBeDefined()
     expect(element.props.onDragStart).toBeTypeOf('function')
+    vi.mocked(useEffect).mock.calls.find(([, deps]) => deps?.length === 1 && deps[0] === collapsed)![0]()
     return element
   }
-  expect(render().props.transition).toMatchObject({ type: 'spring' })
+  const reorder = reduced ? { duration: 0 } : { type: 'spring', stiffness: 520, damping: 42 }
+  expect(render().props.transition).toEqual(reorder)
   for (const next of [true, false, true, false]) {
     collapsed = next
-    expect(render().props.transition).toEqual({ type: 'spring', stiffness: 520, damping: 42 })
+    expect(render().props.transition).toEqual(reduced || !sidebarMotion ? { duration: 0 } : reorder)
+    // Reordering after a keyboard toggle still uses the original spring.
+    const element = render()
+    element.props.onDragStart()
+    expect(render().props.transition).toEqual(reorder)
   }
 })
 function find(node: ReactNode, testId: string): ReactElement<any> {

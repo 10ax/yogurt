@@ -183,6 +183,7 @@ const api: YogurtApi = {
   calendar: {
     list: () => ipcRenderer.invoke('calendar:list'),
     setEnabled: (id, enabled) => ipcRenderer.invoke('calendar:set-enabled', id, enabled),
+    setHideWithoutLink: (hide) => ipcRenderer.invoke('calendar:set-hide-without-link', hide),
     onChange: (cb) => { ipcRenderer.on('calendar:changed', cb); return () => { ipcRenderer.off('calendar:changed', cb) } },
     comingUp: () => ipcRenderer.invoke('calendar:coming-up'),
     connect: () => ipcRenderer.invoke('calendar:connect'),

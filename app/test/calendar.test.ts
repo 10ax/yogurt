@@ -1,5 +1,7 @@
-import { readFileSync } from 'node:fs'
+import { mkdtempSync, readFileSync, rmSync } from 'node:fs'
 import { join } from 'node:path'
+import { tmpdir } from 'node:os'
+import { loadSettings, updateSettings } from '../src/main/settings'
 import { afterEach, beforeEach, describe, expect, it } from 'vitest'
 import { calendars, calendarStatus, meetingLink, parseEvents, refreshCalendarStatus, requestCalendarAccess, setCalendarSelection, setCalendarSupported, setHelper, upcoming } from '../src/main/calendar'
 
@@ -68,21 +70,50 @@ describe('meetingLink', () => {
 
 describe('upcoming', () => {
   beforeEach(() => setHelper(async () => { throw new Error('no helper') }))
-  afterEach(() => setCalendarSelection(() => []))
+  afterEach(() => setCalendarSelection(() => ({})))
 
   it('reads source calendars only with permission and applies the saved selection on each read', async () => {
     const row = { id: 'one', title: 'Work meeting', calendarId: 'work', start: '2026-11-03T18:00:00Z', end: '2026-11-03T19:00:00Z' }
     const calls: string[] = []
     setHelper(async (args) => { calls.push(args[0]); return args[0] === 'calendar-status' ? { status: 'granted' } : args[0] === 'calendars' ? [{ id: 'work', name: 'Work', source: 'Example' }, null] : [row] })
     expect(await calendars()).toEqual([{ id: 'work', name: 'Work', source: 'Example' }])
-    setCalendarSelection(() => ['work'])
+    setCalendarSelection(() => ({ hiddenCalendarIds: ['work'] }))
     expect(await upcoming(0, 1e12)).toEqual([])
-    setCalendarSelection(() => [])
+    setCalendarSelection(() => ({}))
     expect(await upcoming(0, 1e12)).toHaveLength(1)
     setHelper(async (args) => { calls.push(args[0]); return { status: 'denied' } })
     calls.length = 0
     expect(await calendars()).toEqual([])
     expect(calls).toEqual(['calendar-status'])
+  })
+
+  it('defaults off, persists the filter across reads, and preserves other settings', async () => {
+    const dir = mkdtempSync(join(tmpdir(), 'calendar-filter-'))
+    const file = join(dir, 'settings.json')
+    setHelper(async args => args[0] === 'calendar-status' ? { status: 'granted' } : fixture)
+    setCalendarSelection(() => loadSettings(file))
+    try {
+      expect(await upcoming(0, 1e12)).toHaveLength(3)
+      updateSettings(file, { hiddenCalendarIds: ['excluded'], theme: 'dark' })
+      updateSettings(file, { hideEventsWithoutCallLink: true })
+      expect(loadSettings(file)).toEqual({ hiddenCalendarIds: ['excluded'], theme: 'dark', hideEventsWithoutCallLink: true })
+      expect((await upcoming(0, 1e12)).map(e => e.title)).toEqual(['Design review', 'Sync'])
+      setCalendarSelection(() => loadSettings(file))
+      expect(await upcoming(0, 1e12)).toHaveLength(2)
+      updateSettings(file, { hideEventsWithoutCallLink: false })
+      expect(await upcoming(0, 1e12)).toHaveLength(3)
+    } finally { rmSync(dir, { recursive: true, force: true }) }
+  })
+
+  it('keeps noted events by alias only when requested and never restores excluded calendars', async () => {
+    const row = { id: 'original', externalId: 'event', calendarId: 'work', start: '2026-11-03T18:00:00Z', end: '2026-11-03T19:00:00Z', url: 'https://example.com/document' }
+    setHelper(async args => args[0] === 'calendar-status' ? { status: 'granted' } : [row, { ...row, id: 'alias' }])
+    setCalendarSelection(() => ({ hideEventsWithoutCallLink: true }))
+    expect(await upcoming(0, 1e12)).toEqual([])
+    const keep = (event: import('../src/main/calendar').CalEvent) => event.aliases?.includes('alias') === true
+    expect(await upcoming(0, 1e12, keep)).toHaveLength(1)
+    setCalendarSelection(() => ({ hideEventsWithoutCallLink: true, hiddenCalendarIds: ['work'] }))
+    expect(await upcoming(0, 1e12, keep)).toEqual([])
   })
 
   it('keeps native calendar colours and ignores missing or invalid colour values', async () => {

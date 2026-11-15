@@ -36,6 +36,8 @@ export type Settings = { theme?: 'light' | 'dark'; language?: string; /** what t
   mic?: string
   /** Calendars excluded from Yogurt's agenda and meeting detection. Others stay visible. */
   hiddenCalendarIds?: string[]
+  /** Hide events without a call link; off unless enabled. */
+  hideEventsWithoutCallLink?: boolean
   /** names, products and acronyms to spell right in transcripts and notes (shared/jargon.ts) */
   jargon?: string[]
   /** the language people speak in meetings: English only unless 'multi' (shared/spoken.ts) */

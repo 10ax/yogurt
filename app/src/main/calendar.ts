@@ -3,6 +3,7 @@ import { existsSync } from 'node:fs'
 import { join } from 'node:path'
 import { helperFile } from '../shared/platform'
 import type { Person } from './store'
+import type { Settings } from './settings'
 import { noteOwnEmail } from './vocab'
 
 /** One meeting on the calendar, times in ms */
@@ -82,8 +83,8 @@ const LINK = /https?:\/\/(?:[\w-]+\.)?(?:zoom\.us|zoomgov\.com|meet\.google\.com
 export const meetingLink = (text: string | undefined | null): string | null => text?.match(LINK)?.[0] ?? null
 
 const str = (v: unknown) => (typeof v === 'string' && v ? v : null)
-let hiddenCalendars = (): string[] => []
-export const setCalendarSelection = (read: () => string[]) => { hiddenCalendars = read }
+let calendarSelection = (): Pick<Settings, 'hiddenCalendarIds' | 'hideEventsWithoutCallLink'> => ({})
+export const setCalendarSelection = (read: typeof calendarSelection) => { calendarSelection = read }
 
 export async function calendars(): Promise<CalendarSource[]> {
   if (await refreshCalendarStatus() !== 'granted') return []
@@ -129,7 +130,12 @@ export function parseEvents(raw: unknown, hidden: string[] = []): CalEvent[] {
 }
 
 /** Events between two times. No Calendar access, or a helper that fails: none, never a crash. */
-export async function upcoming(fromMs: number, toMs: number): Promise<CalEvent[]> {
+export async function upcoming(fromMs: number, toMs: number, keep?: (event: CalEvent) => boolean): Promise<CalEvent[]> {
   if (await refreshCalendarStatus() !== 'granted') return []
-  try { return parseEvents(await helper(['events', new Date(fromMs).toISOString(), new Date(toMs).toISOString()]), hiddenCalendars()) } catch { status = 'error'; return [] }
+  try {
+    const raw = await helper(['events', new Date(fromMs).toISOString(), new Date(toMs).toISOString()])
+    const selection = calendarSelection()
+    return parseEvents(raw, selection.hiddenCalendarIds).filter(event =>
+      selection.hideEventsWithoutCallLink !== true || event.url !== null || keep?.(event))
+  } catch { status = 'error'; return [] }
 }

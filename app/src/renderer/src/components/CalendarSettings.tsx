@@ -12,7 +12,7 @@ export function CalendarSettings() {
   const [error, setError] = useState(false)
   const [open, setOpen] = useState(expanded)
   const reload = useCallback(() => {
-    void window.yogurt.calendar.list().then(setView, () => setView({ status: 'error', calendars: [] }))
+    void window.yogurt.calendar.list().then(setView, () => setView({ status: 'error', calendars: [], hideEventsWithoutCallLink: false }))
   }, [])
   useEffect(() => { reload(); window.addEventListener('focus', reload); return () => window.removeEventListener('focus', reload) }, [reload])
   const choose = async (id: string, enabled: boolean) => {
@@ -20,6 +20,15 @@ export function CalendarSettings() {
     setView((v) => v && { ...v, calendars: v.calendars.map((c) => c.id === id ? { ...c, enabled } : c) })
     try {
       if (!await window.yogurt.calendar.setEnabled(id, enabled)) throw new Error('Calendar unavailable')
+    } catch { setError(true); reload() } finally { setBusy(false) }
+  }
+  const hideWithoutLink = async () => {
+    if (!view) return
+    const hide = !view.hideEventsWithoutCallLink
+    setBusy(true); setError(false)
+    setView({ ...view, hideEventsWithoutCallLink: hide })
+    try {
+      if (!await window.yogurt.calendar.setHideWithoutLink(hide)) throw new Error('Calendar unavailable')
     } catch { setError(true); reload() } finally { setBusy(false) }
   }
   const selected = view?.calendars.filter(c => c.enabled) ?? []
@@ -61,6 +70,15 @@ export function CalendarSettings() {
             <input type="checkbox" checked={c.enabled} disabled={busy} onChange={(e) => void choose(c.id, e.target.checked)} />
           </label>))}</LoadingContent>
         {view?.status === 'granted' && view.calendars.length > 0 && <div data-testid="calendar-disconnect" className="settings-calendar-actions">
+          <div className="settings-row">
+            <div className="settings-row-copy">
+              <p className="settings-label">{t('Hide events without a call link')}</p>
+              <p id="calendar-call-link-description" className="settings-description">{t('Keep your agenda and reminders focused on calls.')}</p>
+            </div>
+            <button type="button" data-testid="calendar-call-link-toggle" role="switch" aria-checked={view.hideEventsWithoutCallLink}
+              aria-label={t('Hide events without a call link')} aria-describedby="calendar-call-link-description" disabled={busy}
+              onClick={() => void hideWithoutLink()} className="settings-toggle"><span className="settings-toggle-knob" /></button>
+          </div>
           <div className="settings-row">
             <span className="settings-row-copy"><span className="settings-label">{t('Disconnect calendars')}</span><span className="settings-description block">{t('Yogurt stops using these calendars.')}</span></span>
             <button type="button" data-testid="calendar-disconnect-all" className="workspace-button shrink-0" disabled={busy || !selected.length} onClick={() => void disconnect()}>{t('Disconnect')}</button>

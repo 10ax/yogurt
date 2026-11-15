@@ -216,8 +216,9 @@ export type YogurtApi = {
   }
   /** the Mac's calendar: what is still to come today and tomorrow */
   calendar: {
-    list(): Promise<{ status: CalendarStatus; calendars: (CalendarSource & { enabled: boolean })[] }>
+    list(): Promise<{ status: CalendarStatus; calendars: (CalendarSource & { enabled: boolean })[]; hideEventsWithoutCallLink: boolean }>
     setEnabled(id: string, enabled: boolean): Promise<boolean>
+    setHideWithoutLink(hide: boolean): Promise<boolean>
     onChange(cb: () => void): () => void
     comingUp(): Promise<{ status: CalendarStatus; events: CalEvent[] }>
     /** not asked yet: asks; turned off: opens the Mac's settings */

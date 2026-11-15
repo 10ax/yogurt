@@ -246,8 +246,8 @@ let relaunched = 0
 /** fake mode: how many times Yogurt would have restarted to install a new version */
 let updateRestarts = 0
 
-async function readCalendar(from: number, to: number): Promise<CalEvent[]> {
-  const events = await upcoming(from, to)
+async function readCalendar(from: number, to: number, keep?: (event: CalEvent) => boolean): Promise<CalEvent[]> {
+  const events = await upcoming(from, to, keep)
   refreshEventSnapshots(events)
   return events
 }
@@ -263,7 +263,7 @@ async function comingUp(): Promise<CalEvent[]> {
 async function eventsOn(at: number): Promise<CalEvent[]> {
   const from = new Date(at); from.setHours(0, 0, 0, 0)
   const to = new Date(from); to.setDate(to.getDate() + 1)
-  return (await readCalendar(from.getTime(), to.getTime())).sort((a, b) => a.start - b.start)
+  return (await readCalendar(from.getTime(), to.getTime(), event => eventIds(event).some(id => !!storeRef?.meetingForEvent(id)))).sort((a, b) => a.start - b.start)
 }
 
 /** the Mac's full name: who "You" is unless Settings says otherwise (fake mode: a fixed one) */
@@ -504,7 +504,7 @@ app.whenReady().then(() => {
   initMeetings(store)
   // the person's own names, never given to the other side: the one in Settings and the Mac's
   const settingsFile = join(userDataDir(), 'settings.json')
-  setCalendarSelection(() => loadSettings(settingsFile).hiddenCalendarIds ?? [])
+  setCalendarSelection(() => loadSettings(settingsFile))
   const me = () => loadSettings(settingsFile).myName?.trim() || macName()
   setOwnerName(me)
   setJargon(() => cleanJargon(loadSettings(settingsFile).jargon))
@@ -897,8 +897,8 @@ app.whenReady().then(() => {
       .map((m) => ({ ...withStopState(m), ...(recordingPaused(m.id) ? { paused: true } : {}) }))
   })
   const calendarList = async () => {
-    const list = await calendars(), hidden = loadSettings(settingsFile).hiddenCalendarIds ?? []
-    return { status: calendarStatus(), calendars: list.map((c) => ({ ...c, enabled: !hidden.includes(c.id) })) }
+    const list = await calendars(), settings = loadSettings(settingsFile), hidden = settings.hiddenCalendarIds ?? []
+    return { status: calendarStatus(), hideEventsWithoutCallLink: settings.hideEventsWithoutCallLink === true, calendars: list.map((c) => ({ ...c, enabled: !hidden.includes(c.id) })) }
   }
   ipcMain.handle('calendar:list', calendarList)
   ipcMain.handle('calendar:set-enabled', async (_e, id: unknown, enabled: unknown) => {
@@ -907,6 +907,13 @@ app.whenReady().then(() => {
     const hidden = new Set(loadSettings(settingsFile).hiddenCalendarIds ?? [])
     if (enabled) hidden.delete(id); else hidden.add(id)
     updateSettings(settingsFile, { hiddenCalendarIds: [...hidden] })
+    refreshCalendarConsumers()
+    win?.webContents.send('calendar:changed')
+    return true
+  })
+  ipcMain.handle('calendar:set-hide-without-link', (_e, hide: unknown) => {
+    if (typeof hide !== 'boolean') return false
+    updateSettings(settingsFile, { hideEventsWithoutCallLink: hide })
     refreshCalendarConsumers()
     win?.webContents.send('calendar:changed')
     return true

@@ -300,7 +300,7 @@ html.widget { --pill:#232326;--pill-ink:#F7F7FA;--accent:#B780FF;--pill-accent:v
 
 /* ---- the transcript ---- */
 /* chat: the conversation rises into place; an answer's words fade up as they arrive */
-.chat-in { animation: motion-fade var(--dur-base) var(--ease-out) both; }
+.chat-in { animation: motion-fade var(--dur-base) var(--ease-out) backwards; }
 .fw { animation: fade-in var(--dur-micro) var(--ease-out) both; }
 .chat-answer { font-size: 14.5px; line-height: 1.6; }
 /* text still streaming in (useSmoothText): a soft pulsing dot after the last word, in the last block or list item */
@@ -355,7 +355,7 @@ html.widget { --pill:#232326;--pill-ink:#F7F7FA;--accent:#B780FF;--pill-accent:v
 .chat-answer > * + * { margin-top: 0.45em; }
 @media (prefers-reduced-motion: reduce) { .chat-in, .fw { animation:motion-fade var(--dur-micro) var(--ease-out); } .stream-caret::after, .stream-caret *::after, .streaming .note-prose::after, .streaming .note-prose *::after { animation: none; } }
 
-.line-in { animation: motion-fade var(--dur-base) var(--ease-out) both; }
+.line-in { animation: motion-fade var(--dur-base) var(--ease-out) backwards; }
 /* the transcript as a conversation: compact bubbles of one fill, the mic's side at the end, the other side's at the start */
 .bubble { max-width: min(85%, 560px); padding: 5px 10px; border-radius: 9px; font-size: 13.5px; line-height: 1.5; text-align: start; overflow-wrap: anywhere; color: var(--ink); }
 .bubble-me, .bubble-them { background: var(--control); }
@@ -365,7 +365,7 @@ html.widget { --pill:#232326;--pill-ink:#F7F7FA;--accent:#B780FF;--pill-accent:v
 .transcript-turn:hover .turn-time, .transcript-turn:has([data-playing]) .turn-time { opacity: 1; }
 /* words not final yet: lighter, each new one fading in, three soft dots after them; once final they deepen in place */
 .live-words { color: var(--muted); }
-.live-word { animation: motion-fade var(--dur-base) var(--ease-out) both; }
+.live-word { animation: motion-fade var(--dur-base) var(--ease-out) backwards; }
 .live-dots { display: inline-flex; align-items: center; gap: 3px; margin-inline-start: 7px; height: 1em; vertical-align: -0.1em; }
 .live-dots i { width: 4px; height: 4px; border-radius: 999px; background: var(--muted); animation: live-dot 1.2s ease-in-out infinite; }
 .live-dots i:nth-child(2) { animation-delay: 0.2s; }
@@ -388,7 +388,7 @@ html.widget { --pill:#232326;--pill-ink:#F7F7FA;--accent:#B780FF;--pill-accent:v
 [data-playing] .line-time { opacity: 1; color: var(--accent); }
 .transcript-turn:has([data-playing]) .line-who:not([data-color]) { color: var(--accent); }
 /* names arrive once the meeting is over: they slide in above the lines, which stay where they are */
-.name-in { animation: motion-fade var(--dur-base) var(--ease-out) both; }
+.name-in { animation: motion-fade var(--dur-base) var(--ease-out) backwards; }
 .player-btn { transition: transform var(--dur-micro) var(--ease-out), opacity var(--dur-micro) var(--ease-out); }
 .player-btn:hover { opacity: 0.88; }
 .player-btn:active { transform: scale(.97); }

@@ -24,13 +24,13 @@ const webexWindows = (): WatchLine['windows'] => [{ title: 'Webex meeting', tree
     { r: 'AXUnknown', i: 'GenericParticipantListCellView', d: 'alex@example.com, Host, presenter, me, Muted, ' },
     { r: 'AXStaticText', v: 'alex@example.com' }, { r: 'AXStaticText', v: 'Host, presenter, me' },
   ] },
-  { r: 'AXCell', d: 'Wilson Pei, apple.com, speaking, ', k: [
-    { r: 'AXUnknown', i: 'GenericParticipantListCellView', d: 'Wilson Pei, apple.com, speaking, ' },
-    { r: 'AXStaticText', v: 'Wilson Pei' }, { r: 'AXStaticText', v: 'apple.com' },
+  { r: 'AXCell', d: 'Riley Okafor, example.org, speaking, ', k: [
+    { r: 'AXUnknown', i: 'GenericParticipantListCellView', d: 'Riley Okafor, example.org, speaking, ' },
+    { r: 'AXStaticText', v: 'Riley Okafor' }, { r: 'AXStaticText', v: 'example.org' },
   ] },
 ] }] } }]
 const webexFloatingWindows = (): WatchLine['windows'] => [{ title: 'Webex multitasking floating window', tree: { r: 'AXWindow', k: [{
-  r: 'AXGroup', t: 'Wilson Pei, , , speaking, Video off, ', k: [{ r: 'AXStaticText', v: 'Wilson Pei' }],
+  r: 'AXGroup', t: 'Riley Okafor, , , speaking, Video off, ', k: [{ r: 'AXStaticText', v: 'Riley Okafor' }],
 }] } }]
 const webexLine = (t: number): WatchLine => ({ t, app: 'Cisco-Systems.Spark', windows: webexWindows() })
 
@@ -81,12 +81,12 @@ describe('watchIds: only the call app the meeting is in', () => {
 describe('Webex accessibility roster', () => {
   it('reads roster names, the speaking mark, and me while ignoring group rows', () => {
     expect(readCall('webex', webexWindows()!)).toEqual({
-      speaking: ['Wilson Pei'], participants: ['alex@example.com', 'Wilson Pei'], me: 'alex@example.com',
+      speaking: ['Riley Okafor'], participants: ['alex@example.com', 'Riley Okafor'], me: 'alex@example.com',
     })
   })
 
   it('reads the marked speaker from the floating video tile when the roster is closed', () => {
-    expect(readCall('webex', webexFloatingWindows()!)).toEqual({ speaking: ['Wilson Pei'], participants: [], me: null })
+    expect(readCall('webex', webexFloatingWindows()!)).toEqual({ speaking: ['Riley Okafor'], participants: [], me: null })
   })
 })
 
@@ -120,7 +120,7 @@ describe('hookCallNames', () => {
     expect(s.watched).toEqual([['Cisco-Systems.Spark', 'com.cisco.webexmeetingsapp']])
     s.audio(0, 1_000_100)
     for (let t = 1_000_000; t < 1_005_000; t += 500) s.emit(webexLine(t))
-    expect(s.hook.nameFor(s.m.id, 1000, 3000)).toBe('Wilson Pei')
+    expect(s.hook.nameFor(s.m.id, 1000, 3000)).toBe('Riley Okafor')
   })
 
   it('after the meeting every line of the other side is named again from the whole timeline; new people join the attendees', async () => {

@@ -8,7 +8,7 @@
 /** one element of the tree as the helper copies it: role, subrole, description, title, value, identifier, DOM classes, size */
 export type AxNode = { r: string; s?: string; d?: string; t?: string; v?: string; i?: string; c?: string[]; w?: number; h?: number; k?: AxNode[] }
 export type AxWindow = { title?: string; id?: string; tree: AxNode }
-export type CallKind = 'zoom' | 'teams' | 'meet'
+export type CallKind = 'zoom' | 'teams' | 'meet' | 'webex'
 export type CallReading = { speaking: string[]; participants: string[]; me: string | null }
 
 // A role has two names: macOS Accessibility says AXTabGroup, AXStaticText, AXRow, AXOutline; AT-SPI (Linux) says
@@ -252,9 +252,43 @@ function readTeams(windows: AxWindow[]): CallReading {
   return { speaking: uniq(speaking), participants: uniq(participants.filter((p) => p.length >= 2)), me }
 }
 
+// ---- Webex desktop app ----
+// The meeting's Participants outline contains AXCell rows backed by GenericParticipantListCellView. Each person row
+// describes its name, organization, and (when present) "speaking" / "me". With that panel closed, the floating video
+// tile still marks its person as speaking in a fixed English shape; it is safe to use only that explicit mark.
+const WEBEX_SPEAKING_TILE = /^(.+?),\s*,\s*,\s*speaking,\s*Video (?:on|off),?$/i
+function readWebex(windows: AxWindow[]): CallReading {
+  const speaking: string[] = [], participants: string[] = []
+  let me: string | null = null
+  for (const w of windows) {
+    walk(w.tree, (n, up) => {
+      if (n.r === 'AXGroup' && n.t) {
+        const tile = WEBEX_SPEAKING_TILE.exec(n.t.normalize('NFKC').trim())
+        if (tile && tile[1].trim().length >= 2 && tile[1].trim().length <= 60) speaking.push(tile[1].trim())
+      }
+      if (n.r !== 'AXCell' || !up.some((a) => a.r === 'AXOutline' && /^participants(?:\s|$)/i.test((a.d ?? a.t ?? '').trim()))) return
+      let personRow = false, name: string | undefined
+      const labels: string[] = []
+      walk(n, (x) => {
+        if (x.i === 'GenericParticipantListCellView') personRow = true
+        labels.push(...texts(x))
+        if (!name && STATIC_TEXT.has(x.r)) name = x.v ?? x.t
+      })
+      if (!personRow || !name) return
+      name = name.normalize('NFKC').trim()
+      if (name.length < 2 || name.length > 60) return
+      const label = labels.join(', ').normalize('NFKC')
+      participants.push(name)
+      if (/(?:^|[,،]\s*)speaking(?:\s*[,،]|$)/i.test(label)) speaking.push(name)
+      if (/(?:^|[,،]\s*)me(?:\s*[,،]|$)/i.test(label)) me = name
+    })
+  }
+  return { speaking: uniq(speaking), participants: uniq(participants), me }
+}
+
 /** What the call app shows right now */
 export function readCall(kind: CallKind, windows: AxWindow[], o: { talkingClasses?: string[] } = {}): CallReading {
-  return kind === 'zoom' ? readZoom(windows) : kind === 'meet' ? readMeet(windows, o) : readTeams(windows)
+  return kind === 'zoom' ? readZoom(windows) : kind === 'meet' ? readMeet(windows, o) : kind === 'webex' ? readWebex(windows) : readTeams(windows)
 }
 
 /**

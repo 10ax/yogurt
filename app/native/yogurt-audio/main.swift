@@ -659,6 +659,8 @@ final class Recorder {
   var paused = false, finishing = false, sysAllowed = true
   var timer: DispatchSourceTimer?
   var micRebuild: DispatchWorkItem?, sysRebuild: DispatchWorkItem?
+  /// mic starts that failed in a row (retryMic)
+  var micTries = 0
   /// the microphone the person chose (its UID); nil is Auto, the Mac's default input, followed as it changes
   var micUID: String? = argValue("--mic")
   /// Apple's live speech per track (macOS 26, when asked for with --speech), as Any so older Macs never see the type
@@ -705,7 +707,7 @@ final class Recorder {
     // a remembered mic that isn't here today: Auto, quietly (nothing was lost mid-meeting)
     if let uid = micUID, micDevice(uid: uid) == nil { log("the chosen microphone isn't here: using the Mac's"); micUID = nil }
     mic.device = micUID.flatMap(micDevice)
-    if !mic.start() { log("recording without the microphone") }
+    if !mic.start() { log("recording without the microphone for now: trying again"); retryMic() }
     if mic.device == nil { micUID = nil }
     reportMic()
     startSystem()
@@ -783,7 +785,12 @@ final class Recorder {
       }
       self.mic.stop(); self.me.resync()
       self.mic.device = self.micUID.flatMap(micDevice)
-      if !self.mic.start() { log("microphone lost") }
+      guard self.mic.start() else {
+        // the log keeps the first few tries; a mic that never comes back would otherwise fill it every 5 seconds
+        if self.micTries < 3 { log("microphone lost") }
+        self.retryMic(); return
+      }
+      self.micTries = 0
       // the chosen mic can't be recorded from: Auto, and the picker is told
       if self.micUID != nil && self.mic.device == nil { self.micUID = nil; send(["t": "warn", "code": "mic-gone"]) }
       send(["t": "warn", "code": "device-changed"])
@@ -791,6 +798,15 @@ final class Recorder {
     }
     micRebuild = item
     work.asyncAfter(deadline: .now() + delay, execute: item)
+  }
+  /// A mic that wouldn't start (macOS refused its format while a call app like Teams was still setting it up, #26):
+  /// tried again after 1, 2, 4, then every 5 seconds for as long as the recording runs, so your side isn't lost for the
+  /// whole meeting. A chosen mic that keeps failing gives way to the Mac's default.
+  func retryMic() {
+    guard !finishing else { return }
+    micTries += 1
+    if micTries >= 2, micUID != nil { log("the chosen microphone won't start: using the Mac's"); micUID = nil; send(["t": "warn", "code": "mic-gone"]) }
+    rebuildMic(after: min(5, pow(2, Double(micTries - 1))))
   }
   /// Which mic records now, for the picker: the chosen one, or Auto with the default's name
   func reportMic() {

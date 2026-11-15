@@ -336,7 +336,7 @@ export async function recordingSettled(id: string, capMs = 30_000): Promise<void
   clearTimeout(timer)
 }
 
-/** Records while a meeting is recording: starts with it, stops with it, restarts once if the helper dies */
+/** Records while a meeting is recording: starts with it, stops with it, restarts the helper if it dies (crashPolicy) */
 export function hookCapture(p: {
   dirOf: (id: string) => string
   onStart: (fn: (m: Pick<RecordingStart, 'id' | 'resume'>) => void) => unknown

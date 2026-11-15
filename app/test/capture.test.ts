@@ -353,11 +353,15 @@ describe('restart after a crash', () => {
     await tick()
     r.procs[0].exit(null, 'SIGKILL')
     expect(r.starts[1]).toEqual({ dir: '/meetings/m1', opts: { part: 1, startMs: 3100 } })
-    // a second crash after more audio: the meeting is stopped, and the parts are joined
+    // a second crash after more audio: the next part, from where that audio ended
     r.procs[1].out.write(encodeFrame(pcm('them', 3100, new Array(3200).fill(0.1))))
     await tick()
     r.procs[1].exit(null, 'SIGKILL')
-    expect(r.starts).toHaveLength(2)
+    expect(r.starts[2]).toEqual({ dir: '/meetings/m1', opts: { part: 2, startMs: 3300 } })
+    expect(r.stopped).toEqual([])
+    // a third within two minutes is a crash loop: the meeting is stopped, and the parts are joined
+    r.procs[2].exit(null, 'SIGKILL')
+    expect(r.starts).toHaveLength(3)
     expect(r.stopped).toEqual(['m1'])
     await recordingFinished('m1')
     expect(r.joined).toEqual(['/meetings/m1'])

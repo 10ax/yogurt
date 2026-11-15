@@ -28,8 +28,8 @@ export function launchCommand(platform: string, packaged: boolean, execPath: str
   return undefined
 }
 
-/** started by the helper off a Mac: no window, like opening at login. A Mac launch never changes */
-export const startedHidden = (platform: string, argv: string[]): boolean => platform !== 'darwin' && argv.includes(HIDDEN_ARG)
+/** started by the helper (an AI app's session): no window, like opening at login (#54: a Mac popped up on every session) */
+export const startedHidden = (_platform: string, argv: string[]): boolean => argv.includes(HIDDEN_ARG)
 
 /** Linux: the AppImage is mounted somewhere new each launch, so AI apps are given a copy in the profile folder */
 export function helperCopyPath(platform: string, profile: string): string | undefined {

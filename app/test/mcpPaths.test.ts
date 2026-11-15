@@ -37,11 +37,12 @@ describe('what the helper opens when Yogurt is closed', () => {
     expect(launchCommand('win32', false, 'C:\\dev\\electron.exe', {})).toBeUndefined()
     expect(launchCommand('linux', false, '/dev/electron', { APPIMAGE: '/x.AppImage' })).toBeUndefined()
   })
-  it('starts without a window off a Mac when the helper asks, and never changes a Mac launch', () => {
+  it('starts without a window when the helper asks, a Mac too (an AI app session no longer pops Yogurt up, #54)', () => {
     expect(startedHidden('win32', ['Yogurt.exe', '--hidden'])).toBe(true)
     expect(startedHidden('linux', ['yogurt', '--hidden'])).toBe(true)
     expect(startedHidden('linux', ['yogurt'])).toBe(false)
-    expect(startedHidden('darwin', ['Yogurt', '--hidden'])).toBe(false)
+    expect(startedHidden('darwin', ['Yogurt', '--hidden'])).toBe(true)
+    expect(startedHidden('darwin', ['Yogurt'])).toBe(false)
   })
 })
 

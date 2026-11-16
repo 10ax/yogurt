@@ -82,7 +82,7 @@ test('denying both recording inputs keeps the microphone first, then fixes call 
     await page.getByTestId('rec-hint-fix').click()
     await fake(app, 'permission', ['systemAudio', 'granted'])
     await expect(page.getByTestId('permission-guide')).toHaveCount(0, { timeout: 5000 })
-    await expect(page.getByTestId('rec-hint')).toContainText('start again')
+    await expect(page.getByTestId('rec-hint')).toContainText('Your next recording will use both the microphone and call audio.')
     await expect(page.getByTestId('rec-hint-fix')).toHaveCount(0)
   } finally { await app.close() }
 })

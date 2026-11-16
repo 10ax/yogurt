@@ -52,7 +52,7 @@ test('first run records as soon as speech and speakers are in; notes say they ar
     await expect.poll(async () => (await page.evaluate((id) => window.yogurt.transcript.get(id), id)).length, { timeout: 30_000 }).toBeGreaterThanOrEqual(2)
     await page.getByTestId('note-stop').click()
     await page.getByRole('tab', { name: 'Summary', exact: true }).click()
-    await expect(page.getByTestId('note-enhanced-model-download')).toContainText('Yogurt is still downloading its AI model.')
+    await expect(page.getByTestId('note-enhanced-model-download')).toContainText("Your summary is waiting for Yogurt's AI to download.")
     // a question waits too, and says why (never as if notes were being written)
     await page.getByTestId('chat-open').click()
     await page.getByTestId('chat-input').fill('What was decided?')

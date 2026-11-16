@@ -94,7 +94,7 @@ test('a folder starts recording immediately and only files the note after a succ
   const { app, page } = await launch()
   try {
     const folder = await folderPage(page)
-    await expect(page.getByTestId('folder-empty')).toContainText('Start recording here')
+    await expect(page.getByTestId('folder-empty')).toContainText('You can record here')
     await page.getByTestId('start-recording').click()
     await expect(page.getByTestId('note-state')).toHaveAttribute('data-state', 'recording')
     const id = await meetingId(page)

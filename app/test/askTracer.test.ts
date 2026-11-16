@@ -26,7 +26,7 @@ it('plays one lap after opening even with autofocus, then stays quiet while focu
   s.dispose()
 })
 
-it.each(['hasText', 'hovered', 'reduced', 'hidden'] as const)('suppresses opening with %s, without replaying an opening when it clears', flag => {
+it.each(['hasText', 'reduced', 'hidden'] as const)('suppresses opening with %s, without replaying an opening when it clears', flag => {
   const s = setup({ ...idle, focused: true, [flag]: true })
   vi.advanceTimersByTime(TRACER_DELAY_MS)
   s.update({ ...idle, focused: true })
@@ -40,7 +40,7 @@ it.each(['hasText', 'hovered', 'reduced', 'hidden'] as const)('suppresses openin
   s.dispose()
 })
 
-it.each(['hasText', 'hovered', 'reduced', 'hidden'] as const)('cancels a running opening on %s and waits a full idle interval', flag => {
+it.each(['hasText', 'reduced', 'hidden'] as const)('cancels a running opening on %s and waits a full idle interval', flag => {
   const s = setup()
   vi.advanceTimersByTime(TRACER_DELAY_MS)
   expect(s.play).toHaveBeenCalledTimes(1)
@@ -77,8 +77,25 @@ it('repeats at eight-second start-to-start intervals only while empty, unfocused
   s.dispose()
 })
 
-it('cancels the pending opening on input or hover, including input cleared before the delay ends', () => {
-  for (const flag of ['hasText', 'hovered'] as const) {
+it('plays the opening lap with a pointer on the box, as after a click, but skips idle laps while it stays there', () => {
+  const s = setup({ ...idle, focused: true, hovered: true })
+  vi.advanceTimersByTime(TRACER_DELAY_MS)
+  expect(s.play).toHaveBeenCalledTimes(1)
+  s.update({ ...idle, focused: true, hovered: true })
+  expect(s.stop).not.toHaveBeenCalled()
+  vi.advanceTimersByTime(TRACER_LAP_MS)
+  expect(s.stop).toHaveBeenCalledTimes(1)
+  s.update({ ...idle, hovered: true })
+  vi.advanceTimersByTime(24000)
+  expect(s.play).toHaveBeenCalledTimes(1)
+  s.update(idle)
+  vi.advanceTimersByTime(8000)
+  expect(s.play).toHaveBeenCalledTimes(2)
+  s.dispose()
+})
+
+it('cancels the pending opening on input, including input cleared before the delay ends', () => {
+  for (const flag of ['hasText'] as const) {
     const s = setup({ ...idle, focused: true })
     vi.advanceTimersByTime(TRACER_DELAY_MS / 2)
     s.update({ ...idle, focused: true, [flag]: true })

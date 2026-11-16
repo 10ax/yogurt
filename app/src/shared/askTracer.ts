@@ -9,7 +9,8 @@ export type TracerState = { focused: boolean; hovered: boolean; hasText: boolean
 export function createTracerSchedule(initial: TracerState, play: () => void, stop: () => void) {
   let state = initial, opening = true, disposed = false
   let timer: ReturnType<typeof setTimeout> | undefined
-  const allowed = () => !state.hovered && !state.hasText && !state.reduced && !state.hidden && (opening || !state.focused)
+  // The opening lap plays the same however the panel opened: a pointer on the box (as after clicking Ask) only skips idle laps.
+  const allowed = () => !state.hasText && !state.reduced && !state.hidden && (opening || !state.focused && !state.hovered)
   const cancel = () => { clearTimeout(timer); timer = undefined; stop() }
   const schedule = (delay: number) => {
     timer = setTimeout(() => {

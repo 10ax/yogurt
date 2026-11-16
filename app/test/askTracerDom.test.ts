@@ -55,7 +55,7 @@ it('animates explicit dash offsets, follows the composer size, and cancels on na
   expect(vi.getTimerCount()).toBe(0)
 })
 
-it('plays the opening under a resting pointer, but movement inside the box cancels it', () => {
+it('plays the opening under a resting or a moving pointer, as after a click', () => {
   vi.useFakeTimers()
   const nodes: { animate: ReturnType<typeof vi.fn> }[] = []
   const field = { value: '' }
@@ -73,9 +73,10 @@ it('plays the opening under a resting pointer, but movement inside the box cance
   vi.advanceTimersByTime(TRACER_DELAY_MS)
   expect(nodes[0].animate).toHaveBeenCalledOnce()
   resting.tracer.dispose()
+  // clicking Ask leaves the pointer moving over the box; the opening lap still plays, like ⌘J
   const moving = open()
   moving.box.dispatchEvent(new Event('pointermove'))
   vi.advanceTimersByTime(TRACER_DELAY_MS)
-  expect(nodes[0].animate).not.toHaveBeenCalled()
+  expect(nodes[0].animate).toHaveBeenCalledOnce()
   moving.tracer.dispose()
 })

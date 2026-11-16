@@ -494,3 +494,25 @@ it('migrates old meetings with nullable snapshot columns and preserves them acro
   expect(reopened.meeting('old')).toMatchObject({ title: 'My old note', startedAt: 50, eventEndedAt: 200, eventTitle: 'Event', eventCalendarName: 'Work', eventCalendarSource: 'Calendar' })
   expect(reopened.notes('old').mine).toBe('My existing notes')
 })
+
+describe('meetings recorded before transcripts were tracked (#30)', () => {
+  it('on the first open after the update, a stopped meeting with no transcript is marked as waiting for one, once', () => {
+    const dir = mkdtempSync(join(tmpdir(), 'yogurt-store-30-')), file = join(dir, 'y.db')
+    let s = openStore(file)
+    const silent = s.createMeeting({ title: 'old call', startedAt: 1, endedAt: 2, eventId: null, app: null, attendees: [], state: 'stopped' })
+    const heard = s.createMeeting({ title: 'had words', startedAt: 3, endedAt: 4, eventId: null, app: null, attendees: [], state: 'stopped' })
+    s.addSegments([{ meetingId: heard.id, track: 'them', startMs: 0, endMs: 900, text: 'hello', speaker: null }])
+    // as an older Yogurt left it: nothing marked, and the store never looked
+    ;(s as unknown as { db: { exec(q: string): void } }).db.exec('PRAGMA user_version = 0')
+    s.close()
+    s = openStore(file)
+    expect(s.untranscribedMeetings().map((m) => m.id)).toEqual([silent.id])
+    s.updateMeeting(silent.id, { transcriptionPending: false })
+    s.close()
+    s = openStore(file)
+    // only once: a meeting that really had nothing to transcribe is not tried on every launch
+    expect(s.untranscribedMeetings()).toEqual([])
+    s.close()
+    rmSync(dir, { recursive: true, force: true })
+  })
+})

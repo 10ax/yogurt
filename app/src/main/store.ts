@@ -253,6 +253,14 @@ export class Store {
     if (this.db.prepare("SELECT 1 FROM sqlite_master WHERE type = 'table' AND name = 'speakers'").get()) {
       this.db.exec("UPDATE segments SET speaker = NULL WHERE track = 'them'; DROP TABLE speakers")
     }
+    // Meetings recorded before transcripts were tracked (0.3.15) were never marked as waiting: a stopped one with not
+    // one line is marked once, so a recording made before the speech model was in gets transcribed (#30). Once only: a
+    // meeting that really had nothing to transcribe is not tried on every launch.
+    if (Number((this.db.prepare('PRAGMA user_version').get() as Row).user_version) < 1) {
+      this.db.exec(`UPDATE meetings SET transcription_pending = 1 WHERE state = 'stopped' AND trashed_at IS NULL
+        AND NOT EXISTS (SELECT 1 FROM segments s WHERE s.meeting_id = meetings.id)`)
+      this.db.exec('PRAGMA user_version = 1')
+    }
   }
   private readMeeting(r: Row): Meeting {
     const m = toMeeting(r)

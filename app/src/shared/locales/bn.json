@@ -588,14 +588,6 @@
   "Still searching your meetings…": "এখনও আপনার মিটিংয়ে খোঁজা হচ্ছে…",
   "Reading {title}…": "{title} পড়া হচ্ছে…",
   "Still reading {title}…": "এখনও {title} পড়া হচ্ছে…",
-  "Reading {count} meetings…": {
-    "one": "{count}টি মিটিং পড়া হচ্ছে…",
-    "other": "{count}টি মিটিং পড়া হচ্ছে…"
-  },
-  "Still reading {count} meetings…": {
-    "one": "এখনও {count}টি মিটিং পড়া হচ্ছে…",
-    "other": "এখনও {count}টি মিটিং পড়া হচ্ছে…"
-  },
   "Still reading. Your answer comes next.": "এখনও পড়া হচ্ছে। এরপর আপনার উত্তর আসবে।",
   "Yogurt can't hear your mic. Turn on microphone access for desktop apps in Windows Settings.": "Yogurt আপনার মাইক শুনতে পাচ্ছে না। Windows সেটিংসে ডেস্কটপ অ্যাপের জন্য মাইক্রোফোন অ্যাক্সেস চালু করুন।",
   "Yogurt can't hear your mic. Check your sound settings.": "Yogurt আপনার মাইক শুনতে পাচ্ছে না। আপনার সাউন্ড সেটিংস দেখুন।",
@@ -677,5 +669,6 @@
   "In this chat": "এই চ্যাটে",
   "and {count} others": "ও আরও {count}টি",
   "{count} more": "আরও {count}টি",
-  "Clear": "মুছুন"
+  "Clear": "মুছুন",
+  "Reading {title} {others}…": "{title} {others} পড়া হচ্ছে…"
 }

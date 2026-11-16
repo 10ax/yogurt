@@ -601,16 +601,6 @@
   "Still searching your meetings…": "Ricerca nelle tue riunioni ancora in corso…",
   "Reading {title}…": "Lettura di «{title}»…",
   "Still reading {title}…": "Lettura di «{title}» ancora in corso…",
-  "Reading {count} meetings…": {
-    "one": "Lettura di {count} riunione…",
-    "many": "Lettura di {count} riunioni…",
-    "other": "Lettura di {count} riunioni…"
-  },
-  "Still reading {count} meetings…": {
-    "one": "Lettura di {count} riunione ancora in corso…",
-    "many": "Lettura di {count} riunioni ancora in corso…",
-    "other": "Lettura di {count} riunioni ancora in corso…"
-  },
   "Still reading. Your answer comes next.": "Lettura ancora in corso. Poi arriva la tua risposta.",
   "Yogurt can't hear your mic. Turn on microphone access for desktop apps in Windows Settings.": "Yogurt non sente il microfono. Attiva l’accesso al microfono per le app desktop nelle Impostazioni di Windows.",
   "Yogurt can't hear your mic. Check your sound settings.": "Yogurt non sente il microfono. Controlla le impostazioni audio.",
@@ -710,5 +700,6 @@
     "other": "e {count} altri"
   },
   "{count} more": "Altri {count}",
-  "Clear": "Cancella"
+  "Clear": "Cancella",
+  "Reading {title} {others}…": "Lettura di «{title}» {others}…"
 }

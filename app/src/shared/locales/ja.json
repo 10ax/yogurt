@@ -558,8 +558,6 @@
   "Still searching your meetings…": "まだミーティングを探しています…",
   "Reading {title}…": "「{title}」を読んでいます…",
   "Still reading {title}…": "まだ「{title}」を読んでいます…",
-  "Reading {count} meetings…": "{count}件のミーティングを読んでいます…",
-  "Still reading {count} meetings…": "まだ{count}件のミーティングを読んでいます…",
   "Still reading. Your answer comes next.": "まだ読んでいます。このあと回答します。",
   "Yogurt can't hear your mic. Turn on microphone access for desktop apps in Windows Settings.": "Yogurtにマイクの音が聞こえません。Windowsの設定で、デスクトップアプリのマイクへのアクセスをオンにしてください。",
   "Yogurt can't hear your mic. Check your sound settings.": "Yogurtにマイクの音が聞こえません。サウンドの設定を確認してください。",
@@ -641,5 +639,6 @@
   "In this chat": "この会話内",
   "and {count} others": "と他 {count} 件",
   "{count} more": "他 {count} 件",
-  "Clear": "クリア"
+  "Clear": "クリア",
+  "Reading {title} {others}…": "「{title}」{others}を読んでいます…"
 }

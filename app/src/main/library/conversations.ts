@@ -164,7 +164,7 @@ export function hookConversations(p: Deps) {
           return source
         })
         const found = [...new Set(items.map((i) => i.meetingId))]
-        turn.step = { kind: 'reading', meetings: found.length, ...(found.length === 1 ? { title: items[0].title } : {}) }
+        turn.step = { kind: 'reading', meetings: found.length, ...(found.length ? { title: items[0].title } : {}) }
         // the sources go out at once, so citations become links as they are written
         if (!over) flush()
         if (signal.aborted) return

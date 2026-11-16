@@ -588,14 +588,6 @@
   "Still searching your meetings…": "Toplantılarınızda hâlâ aranıyor…",
   "Reading {title}…": "“{title}” okunuyor…",
   "Still reading {title}…": "“{title}” hâlâ okunuyor…",
-  "Reading {count} meetings…": {
-    "one": "{count} toplantı okunuyor…",
-    "other": "{count} toplantı okunuyor…"
-  },
-  "Still reading {count} meetings…": {
-    "one": "{count} toplantı hâlâ okunuyor…",
-    "other": "{count} toplantı hâlâ okunuyor…"
-  },
   "Still reading. Your answer comes next.": "Hâlâ okunuyor. Ardından yanıtınız gelecek.",
   "Yogurt can't hear your mic. Turn on microphone access for desktop apps in Windows Settings.": "Yogurt mikrofonunuzu duyamıyor. Windows Ayarları’nda masaüstü uygulamaları için mikrofon erişimini açın.",
   "Yogurt can't hear your mic. Check your sound settings.": "Yogurt mikrofonunuzu duyamıyor. Ses ayarlarınızı kontrol edin.",
@@ -677,5 +669,6 @@
   "In this chat": "Bu sohbette",
   "and {count} others": "ve {count} diğer",
   "{count} more": "{count} tane daha",
-  "Clear": "Temizle"
+  "Clear": "Temizle",
+  "Reading {title} {others}…": "“{title}” {others} okunuyor…"
 }

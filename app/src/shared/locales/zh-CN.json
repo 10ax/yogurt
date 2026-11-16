@@ -558,8 +558,6 @@
   "Still searching your meetings…": "仍在查找你的会议…",
   "Reading {title}…": "正在读取“{title}”…",
   "Still reading {title}…": "仍在读取“{title}”…",
-  "Reading {count} meetings…": "正在读取 {count} 个会议…",
-  "Still reading {count} meetings…": "仍在读取 {count} 个会议…",
   "Still reading. Your answer comes next.": "仍在读取。读完就回答你。",
   "Yogurt can't hear your mic. Turn on microphone access for desktop apps in Windows Settings.": "Yogurt 听不到你的麦克风。请在 Windows 设置中打开桌面应用的麦克风访问权限。",
   "Yogurt can't hear your mic. Check your sound settings.": "Yogurt 听不到你的麦克风。请检查声音设置。",
@@ -641,5 +639,6 @@
   "In this chat": "在此对话中",
   "and {count} others": "及其他 {count} 项",
   "{count} more": "还有 {count} 项",
-  "Clear": "清除"
+  "Clear": "清除",
+  "Reading {title} {others}…": "正在读取“{title}”{others}…"
 }

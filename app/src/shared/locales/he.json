@@ -598,16 +598,6 @@
   "Still searching your meetings…": "עדיין מחפש בפגישות…",
   "Reading {title}…": "קורא את {title}…",
   "Still reading {title}…": "עדיין קורא את {title}…",
-  "Reading {count} meetings…": {
-    "one": "קורא פגישה אחת…",
-    "two": "קורא {count} פגישות…",
-    "other": "קורא {count} פגישות…"
-  },
-  "Still reading {count} meetings…": {
-    "one": "עדיין קורא פגישה אחת…",
-    "two": "עדיין קורא {count} פגישות…",
-    "other": "עדיין קורא {count} פגישות…"
-  },
   "Still reading. Your answer comes next.": "עדיין קורא. התשובה תגיע מיד אחר כך.",
   "Yogurt can't hear your mic. Turn on microphone access for desktop apps in Windows Settings.": "Yogurt לא שומע את המיקרופון. יש להפעיל גישה למיקרופון לאפליקציות שולחן עבודה בהגדרות Windows.",
   "Yogurt can't hear your mic. Check your sound settings.": "Yogurt לא שומע את המיקרופון. כדאי לבדוק את הגדרות הקול.",
@@ -701,5 +691,6 @@
   "In this chat": "בשיחה הזו",
   "and {count} others": "ועוד {count}",
   "{count} more": "עוד {count}",
-  "Clear": "נקה"
+  "Clear": "נקה",
+  "Reading {title} {others}…": "קורא את {title} {others}…"
 }

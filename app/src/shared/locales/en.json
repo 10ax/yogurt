@@ -68,14 +68,6 @@
     "one": "{count} left",
     "other": "{count} left"
   },
-  "Reading {count} meetings…": {
-    "one": "Reading 1 meeting…",
-    "other": "Reading {count} meetings…"
-  },
-  "Still reading {count} meetings…": {
-    "one": "Still reading 1 meeting…",
-    "other": "Still reading {count} meetings…"
-  },
   "Downloading AI": "Downloading AI",
   "Downloading AI · {percent}": "Downloading AI · {percent}",
   "Waiting for Yogurt's AI to finish downloading ({percent}). Your answer comes as soon as it's ready.": "Waiting for Yogurt's AI to finish downloading ({percent}). Your answer comes as soon as it's ready.",

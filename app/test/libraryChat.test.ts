@@ -86,6 +86,7 @@ describe('conversations across meetings', () => {
     expect(order.filter((m, i) => i === 0 || m !== order[i - 1])).toHaveLength(new Set(order).size)
     expect(t.prompts[0].match(/^Meeting: /gm)).toHaveLength(2)
     expect(new Set(turn.sources.map((s) => s.meetingId)).size).toBe(2)
+    expect(t.views.filter(v => v.id === id).map(v => v.turns[0]?.step)).toContainEqual({ kind: 'reading', meetings: 2, title: turn.sources[0].title })
     // [1][2] [3] cite at most two meetings: one citation each
     const cited = turn.answer.match(/\[([\d, ]+)\]/)![1].split(', ').map(Number)
     expect(new Set(cited.map((n) => turn.sources[n - 1].meetingId)).size).toBe(cited.length)

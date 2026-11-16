@@ -598,16 +598,6 @@
   "Still searching your meetings…": "Încă căutăm în întâlnirile dvs.…",
   "Reading {title}…": "Se citește „{title}”…",
   "Still reading {title}…": "Încă se citește „{title}”…",
-  "Reading {count} meetings…": {
-    "one": "Se citește {count} întâlnire…",
-    "few": "Se citesc {count} întâlniri…",
-    "other": "Se citesc {count} de întâlniri…"
-  },
-  "Still reading {count} meetings…": {
-    "one": "Încă se citește {count} întâlnire…",
-    "few": "Încă se citesc {count} întâlniri…",
-    "other": "Încă se citesc {count} de întâlniri…"
-  },
   "Still reading. Your answer comes next.": "Încă citim. Urmează răspunsul.",
   "Yogurt can't hear your mic. Turn on microphone access for desktop apps in Windows Settings.": "Yogurt nu vă aude microfonul. Activați accesul la microfon pentru aplicațiile desktop în Setările Windows.",
   "Yogurt can't hear your mic. Check your sound settings.": "Yogurt nu vă aude microfonul. Verificați setările de sunet.",
@@ -708,5 +698,6 @@
   "In this chat": "În această conversație",
   "and {count} others": "și încă {count}",
   "{count} more": "Încă {count}",
-  "Clear": "Șterge"
+  "Clear": "Șterge",
+  "Reading {title} {others}…": "Se citesc „{title}” {others}…"
 }

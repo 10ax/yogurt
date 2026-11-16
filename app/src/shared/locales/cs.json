@@ -608,18 +608,6 @@
   "Still searching your meetings…": "Prohledávání schůzek stále probíhá…",
   "Reading {title}…": "Čtení schůzky {title}…",
   "Still reading {title}…": "Čtení schůzky {title} stále probíhá…",
-  "Reading {count} meetings…": {
-    "one": "Čtení {count} schůzky…",
-    "few": "Čtení {count} schůzek…",
-    "many": "Čtení {count} schůzky…",
-    "other": "Čtení {count} schůzek…"
-  },
-  "Still reading {count} meetings…": {
-    "one": "Čtení {count} schůzky stále probíhá…",
-    "few": "Čtení {count} schůzek stále probíhá…",
-    "many": "Čtení {count} schůzky stále probíhá…",
-    "other": "Čtení {count} schůzek stále probíhá…"
-  },
   "Still reading. Your answer comes next.": "Čtení stále probíhá. Odpověď přijde hned potom.",
   "Yogurt can't hear your mic. Turn on microphone access for desktop apps in Windows Settings.": "Yogurt neslyší váš mikrofon. Zapněte přístup aplikací pro stolní počítače k mikrofonu v Nastavení Windows.",
   "Yogurt can't hear your mic. Check your sound settings.": "Yogurt neslyší váš mikrofon. Zkontrolujte nastavení zvuku.",
@@ -724,5 +712,6 @@
   "In this chat": "V této konverzaci",
   "and {count} others": "a {count} další",
   "{count} more": "{count} další",
-  "Clear": "Vymazat"
+  "Clear": "Vymazat",
+  "Reading {title} {others}…": "Čtení {title} {others}…"
 }

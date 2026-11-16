@@ -632,22 +632,6 @@
   "Still searching your meetings…": "لا يزال البحث في اجتماعاتك جاريًا…",
   "Reading {title}…": "جارٍ قراءة {title}…",
   "Still reading {title}…": "لا تزال قراءة {title} جارية…",
-  "Reading {count} meetings…": {
-    "zero": "جارٍ قراءة {count} اجتماع…",
-    "one": "جارٍ قراءة اجتماع واحد…",
-    "two": "جارٍ قراءة اجتماعين…",
-    "few": "جارٍ قراءة {count} اجتماعات…",
-    "many": "جارٍ قراءة {count} اجتماعًا…",
-    "other": "جارٍ قراءة {count} اجتماع…"
-  },
-  "Still reading {count} meetings…": {
-    "zero": "لا تزال قراءة {count} اجتماع جارية…",
-    "one": "لا تزال قراءة اجتماع واحد جارية…",
-    "two": "لا تزال قراءة اجتماعين جارية…",
-    "few": "لا تزال قراءة {count} اجتماعات جارية…",
-    "many": "لا تزال قراءة {count} اجتماعًا جارية…",
-    "other": "لا تزال قراءة {count} اجتماع جارية…"
-  },
   "Still reading. Your answer comes next.": "لا تزال القراءة جارية. ستصلك الإجابة بعدها.",
   "Yogurt can't hear your mic. Turn on microphone access for desktop apps in Windows Settings.": "لا يسمع Yogurt الميكروفون. شغّل وصول تطبيقات سطح المكتب إلى الميكروفون في إعدادات Windows.",
   "Yogurt can't hear your mic. Check your sound settings.": "لا يسمع Yogurt الميكروفون. تحقق من إعدادات الصوت.",
@@ -753,5 +737,6 @@
   "In this chat": "في هذه المحادثة",
   "and {count} others": "و{count} إضافية",
   "{count} more": "{count} إضافية",
-  "Clear": "مسح"
+  "Clear": "مسح",
+  "Reading {title} {others}…": "جارٍ قراءة {title} {others}…"
 }

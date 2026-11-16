@@ -558,8 +558,6 @@
   "Still searching your meetings…": "Vẫn đang tìm trong các cuộc họp…",
   "Reading {title}…": "Đang đọc {title}…",
   "Still reading {title}…": "Vẫn đang đọc {title}…",
-  "Reading {count} meetings…": "Đang đọc {count} cuộc họp…",
-  "Still reading {count} meetings…": "Vẫn đang đọc {count} cuộc họp…",
   "Still reading. Your answer comes next.": "Vẫn đang đọc. Sau đó sẽ có câu trả lời.",
   "Yogurt can't hear your mic. Turn on microphone access for desktop apps in Windows Settings.": "Yogurt không nghe được micrô của bạn. Hãy bật quyền truy cập micrô cho ứng dụng máy tính trong Cài đặt Windows.",
   "Yogurt can't hear your mic. Check your sound settings.": "Yogurt không nghe được micrô của bạn. Hãy kiểm tra cài đặt âm thanh.",
@@ -641,5 +639,6 @@
   "In this chat": "Trong cuộc trò chuyện này",
   "and {count} others": "và {count} mục khác",
   "{count} more": "Thêm {count} mục",
-  "Clear": "Xóa"
+  "Clear": "Xóa",
+  "Reading {title} {others}…": "Đang đọc {title} {others}…"
 }

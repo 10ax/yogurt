@@ -588,14 +588,6 @@
   "Still searching your meetings…": "Még tart a keresés a megbeszéléseidben…",
   "Reading {title}…": "„{title}” olvasása…",
   "Still reading {title}…": "„{title}” olvasása még tart…",
-  "Reading {count} meetings…": {
-    "one": "{count} megbeszélés olvasása…",
-    "other": "{count} megbeszélés olvasása…"
-  },
-  "Still reading {count} meetings…": {
-    "one": "{count} megbeszélés olvasása még tart…",
-    "other": "{count} megbeszélés olvasása még tart…"
-  },
   "Still reading. Your answer comes next.": "Az olvasás még tart. Utána jön a válasz.",
   "Yogurt can't hear your mic. Turn on microphone access for desktop apps in Windows Settings.": "A Yogurt nem hallja a mikrofonodat. Kapcsold be az asztali alkalmazások mikrofon-hozzáférését a Windows Gépházban.",
   "Yogurt can't hear your mic. Check your sound settings.": "A Yogurt nem hallja a mikrofonodat. Nézd meg a hangbeállításokat.",
@@ -677,5 +669,6 @@
   "In this chat": "Ebben a beszélgetésben",
   "and {count} others": "és {count} további",
   "{count} more": "Még {count}",
-  "Clear": "Törlés"
+  "Clear": "Törlés",
+  "Reading {title} {others}…": "„{title}” {others} olvasása…"
 }

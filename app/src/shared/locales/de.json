@@ -588,14 +588,6 @@
   "Still searching your meetings…": "Deine Meetings werden noch durchsucht …",
   "Reading {title}…": "„{title}“ wird gelesen …",
   "Still reading {title}…": "„{title}“ wird noch gelesen …",
-  "Reading {count} meetings…": {
-    "one": "{count} Meeting wird gelesen …",
-    "other": "{count} Meetings werden gelesen …"
-  },
-  "Still reading {count} meetings…": {
-    "one": "{count} Meeting wird noch gelesen …",
-    "other": "{count} Meetings werden noch gelesen …"
-  },
   "Still reading. Your answer comes next.": "Wird noch gelesen. Danach kommt deine Antwort.",
   "Yogurt can't hear your mic. Turn on microphone access for desktop apps in Windows Settings.": "Yogurt hört dein Mikrofon nicht. Schalte in den Windows-Einstellungen den Mikrofonzugriff für Desktop-Apps ein.",
   "Yogurt can't hear your mic. Check your sound settings.": "Yogurt hört dein Mikrofon nicht. Prüfe deine Toneinstellungen.",
@@ -689,5 +681,6 @@
   "In this chat": "In diesem Gespräch",
   "and {count} others": "und {count} weitere",
   "{count} more": "{count} weitere",
-  "Clear": "Zurücksetzen"
+  "Clear": "Zurücksetzen",
+  "Reading {title} {others}…": "„{title}“ {others} werden gelesen …"
 }

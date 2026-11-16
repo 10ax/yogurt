@@ -558,8 +558,6 @@
   "Still searching your meetings…": "Masih mencari di rapat Anda…",
   "Reading {title}…": "Membaca {title}…",
   "Still reading {title}…": "Masih membaca {title}…",
-  "Reading {count} meetings…": "Membaca {count} rapat…",
-  "Still reading {count} meetings…": "Masih membaca {count} rapat…",
   "Still reading. Your answer comes next.": "Masih membaca. Jawaban Anda menyusul.",
   "Yogurt can't hear your mic. Turn on microphone access for desktop apps in Windows Settings.": "Yogurt tidak bisa mendengar mikrofon Anda. Aktifkan akses mikrofon untuk aplikasi desktop di Pengaturan Windows.",
   "Yogurt can't hear your mic. Check your sound settings.": "Yogurt tidak bisa mendengar mikrofon Anda. Periksa pengaturan suara Anda.",
@@ -641,5 +639,6 @@
   "In this chat": "Dalam percakapan ini",
   "and {count} others": "dan {count} lainnya",
   "{count} more": "{count} lagi",
-  "Clear": "Hapus"
+  "Clear": "Hapus",
+  "Reading {title} {others}…": "Membaca {title} {others}…"
 }

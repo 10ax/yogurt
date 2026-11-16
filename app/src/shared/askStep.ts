@@ -17,9 +17,8 @@ function wordings(step: AskStep | undefined): string[] {
   if (!step || step.kind === 'loading') return [t('Thinking…'), t('Still thinking…')]
   if (step.kind === 'searching') return [t('Searching your meetings…'), t('Still searching your meetings…')]
   const next = t('Still reading. Your answer comes next.')
-  if (step.title !== undefined || !step.meetings) {
-    const title = step.title?.trim() || t('Untitled meeting')
-    return [t('Reading {title}…', { title }), t('Still reading {title}…', { title }), next]
-  }
-  return [t('Reading {count} meetings…', { count: step.meetings }), t('Still reading {count} meetings…', { count: step.meetings }), next]
+  const title = step.title?.trim() || t('Untitled meeting')
+  // several meetings: named like the scope pill, the closest match first
+  if (step.meetings && step.meetings > 1) return [t('Reading {title} {others}…', { title, others: t('and {count} others', { count: step.meetings - 1 }) }), next]
+  return [t('Reading {title}…', { title }), t('Still reading {title}…', { title }), next]
 }

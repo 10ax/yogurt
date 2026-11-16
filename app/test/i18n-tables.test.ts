@@ -215,3 +215,16 @@ it('translates scope labels and actions in every locale', () => {
   }
   expect(load('en')['and {count} others']).toEqual({ one: 'and {count} other', other: 'and {count} others' })
 })
+
+
+it('translates the closest matching meeting and count in every locale', () => {
+  const key = 'Reading {title} {others}…'
+  expect(keys).toContain(key)
+  for (const { id } of LOCALES) {
+    if (id === 'en') continue
+    expect(load(id)[key]).toBeTypeOf('string')
+    expect(load(id)[key]).not.toBe(key)
+    expect(load(id)[key]).toContain('{title}')
+    expect(load(id)[key]).toContain('{others}')
+  }
+})

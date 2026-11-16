@@ -558,8 +558,6 @@
   "Still searching your meetings…": "ยังค้นในการประชุมของคุณอยู่…",
   "Reading {title}…": "กำลังอ่าน {title}…",
   "Still reading {title}…": "ยังอ่าน {title} อยู่…",
-  "Reading {count} meetings…": "กำลังอ่าน {count} การประชุม…",
-  "Still reading {count} meetings…": "ยังอ่าน {count} การประชุมอยู่…",
   "Still reading. Your answer comes next.": "ยังอ่านอยู่ จากนั้นจะได้คำตอบ",
   "Yogurt can't hear your mic. Turn on microphone access for desktop apps in Windows Settings.": "Yogurt ไม่ได้ยินไมโครโฟนของคุณ เปิดการเข้าถึงไมโครโฟนสำหรับแอปเดสก์ท็อปในการตั้งค่า Windows",
   "Yogurt can't hear your mic. Check your sound settings.": "Yogurt ไม่ได้ยินไมโครโฟนของคุณ ตรวจสอบการตั้งค่าเสียง",
@@ -641,5 +639,6 @@
   "In this chat": "ในการสนทนานี้",
   "and {count} others": "และอีก {count} รายการ",
   "{count} more": "อีก {count} รายการ",
-  "Clear": "ล้าง"
+  "Clear": "ล้าง",
+  "Reading {title} {others}…": "กำลังอ่าน {title} {others}…"
 }

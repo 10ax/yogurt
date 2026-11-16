@@ -588,14 +588,6 @@
   "Still searching your meetings…": "Søger stadig i dine møder…",
   "Reading {title}…": "Læser {title}…",
   "Still reading {title}…": "Læser stadig {title}…",
-  "Reading {count} meetings…": {
-    "one": "Læser {count} møde…",
-    "other": "Læser {count} møder…"
-  },
-  "Still reading {count} meetings…": {
-    "one": "Læser stadig {count} møde…",
-    "other": "Læser stadig {count} møder…"
-  },
   "Still reading. Your answer comes next.": "Læser stadig. Dit svar kommer bagefter.",
   "Yogurt can't hear your mic. Turn on microphone access for desktop apps in Windows Settings.": "Yogurt kan ikke høre din mikrofon. Slå mikrofonadgang til for skrivebordsapps i Windows Indstillinger.",
   "Yogurt can't hear your mic. Check your sound settings.": "Yogurt kan ikke høre din mikrofon. Tjek dine lydindstillinger.",
@@ -689,5 +681,6 @@
   "In this chat": "I denne samtale",
   "and {count} others": "og {count} andre",
   "{count} more": "{count} flere",
-  "Clear": "Ryd"
+  "Clear": "Ryd",
+  "Reading {title} {others}…": "Læser {title} {others}…"
 }

@@ -608,18 +608,6 @@
   "Still searching your meetings…": "Всё ещё ищем в ваших встречах…",
   "Reading {title}…": "Читаем «{title}»…",
   "Still reading {title}…": "Всё ещё читаем «{title}»…",
-  "Reading {count} meetings…": {
-    "one": "Читаем {count} встречу…",
-    "few": "Читаем {count} встречи…",
-    "many": "Читаем {count} встреч…",
-    "other": "Читаем {count} встречи…"
-  },
-  "Still reading {count} meetings…": {
-    "one": "Всё ещё читаем {count} встречу…",
-    "few": "Всё ещё читаем {count} встречи…",
-    "many": "Всё ещё читаем {count} встреч…",
-    "other": "Всё ещё читаем {count} встречи…"
-  },
   "Still reading. Your answer comes next.": "Всё ещё читаем. Потом будет ответ.",
   "Yogurt can't hear your mic. Turn on microphone access for desktop apps in Windows Settings.": "Yogurt не слышит ваш микрофон. Включите доступ к микрофону для классических приложений в Параметрах Windows.",
   "Yogurt can't hear your mic. Check your sound settings.": "Yogurt не слышит ваш микрофон. Проверьте настройки звука.",
@@ -721,5 +709,6 @@
   "In this chat": "В этом разговоре",
   "and {count} others": "и ещё {count}",
   "{count} more": "Ещё {count}",
-  "Clear": "Очистить"
+  "Clear": "Очистить",
+  "Reading {title} {others}…": "Читаем «{title}» {others}…"
 }

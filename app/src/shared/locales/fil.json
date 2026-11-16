@@ -588,14 +588,6 @@
   "Still searching your meetings…": "Hinahanap pa rin sa mga meeting mo…",
   "Reading {title}…": "Binabasa ang {title}…",
   "Still reading {title}…": "Binabasa pa rin ang {title}…",
-  "Reading {count} meetings…": {
-    "one": "Binabasa ang {count} meeting…",
-    "other": "Binabasa ang {count} na meeting…"
-  },
-  "Still reading {count} meetings…": {
-    "one": "Binabasa pa rin ang {count} meeting…",
-    "other": "Binabasa pa rin ang {count} na meeting…"
-  },
   "Still reading. Your answer comes next.": "Binabasa pa rin. Susunod na ang sagot mo.",
   "Yogurt can't hear your mic. Turn on microphone access for desktop apps in Windows Settings.": "Hindi marinig ng Yogurt ang mic mo. I-on ang access sa mikropono para sa mga desktop app sa Windows Settings.",
   "Yogurt can't hear your mic. Check your sound settings.": "Hindi marinig ng Yogurt ang mic mo. Tingnan ang mga setting ng tunog.",
@@ -689,5 +681,6 @@
   "In this chat": "Sa pag-uusap na ito",
   "and {count} others": "at {count} pa",
   "{count} more": "{count} pa",
-  "Clear": "I-clear"
+  "Clear": "I-clear",
+  "Reading {title} {others}…": "Binabasa ang {title} {others}…"
 }

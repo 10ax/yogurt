@@ -558,8 +558,6 @@
   "Still searching your meetings…": "아직 회의를 살펴보는 중…",
   "Reading {title}…": "‘{title}’ 읽는 중…",
   "Still reading {title}…": "아직 ‘{title}’ 읽는 중…",
-  "Reading {count} meetings…": "회의 {count}개 읽는 중…",
-  "Still reading {count} meetings…": "아직 회의 {count}개 읽는 중…",
   "Still reading. Your answer comes next.": "아직 읽는 중이에요. 다 읽으면 답해 드릴게요.",
   "Yogurt can't hear your mic. Turn on microphone access for desktop apps in Windows Settings.": "Yogurt가 마이크 소리를 들을 수 없어요. Windows 설정에서 데스크톱 앱의 마이크 액세스를 켜세요.",
   "Yogurt can't hear your mic. Check your sound settings.": "Yogurt가 마이크 소리를 들을 수 없어요. 소리 설정을 확인하세요.",
@@ -641,5 +639,6 @@
   "In this chat": "이 대화에서",
   "and {count} others": "외 {count}개",
   "{count} more": "{count}개 더",
-  "Clear": "지우기"
+  "Clear": "지우기",
+  "Reading {title} {others}…": "‘{title}’ {others} 읽는 중…"
 }

@@ -588,14 +588,6 @@
   "Still searching your meetings…": "Nog steeds je meetings aan het doorzoeken…",
   "Reading {title}…": "{title} lezen…",
   "Still reading {title}…": "Nog steeds {title} aan het lezen…",
-  "Reading {count} meetings…": {
-    "one": "{count} meeting lezen…",
-    "other": "{count} meetings lezen…"
-  },
-  "Still reading {count} meetings…": {
-    "one": "Nog steeds {count} meeting aan het lezen…",
-    "other": "Nog steeds {count} meetings aan het lezen…"
-  },
   "Still reading. Your answer comes next.": "Nog aan het lezen. Daarna komt je antwoord.",
   "Yogurt can't hear your mic. Turn on microphone access for desktop apps in Windows Settings.": "Yogurt hoort je microfoon niet. Zet microfoontoegang voor bureaublad-apps aan in Windows-instellingen.",
   "Yogurt can't hear your mic. Check your sound settings.": "Yogurt hoort je microfoon niet. Controleer je geluidsinstellingen.",
@@ -689,5 +681,6 @@
   "In this chat": "In dit gesprek",
   "and {count} others": "en {count} andere",
   "{count} more": "Nog {count}",
-  "Clear": "Wissen"
+  "Clear": "Wissen",
+  "Reading {title} {others}…": "{title} {others} lezen…"
 }

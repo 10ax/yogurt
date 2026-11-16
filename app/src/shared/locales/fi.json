@@ -591,14 +591,6 @@
   "Still searching your meetings…": "Etsitään yhä kokouksistasi…",
   "Reading {title}…": "Luetaan: {title}…",
   "Still reading {title}…": "Luetaan yhä: {title}…",
-  "Reading {count} meetings…": {
-    "one": "Luetaan {count} kokous…",
-    "other": "Luetaan {count} kokousta…"
-  },
-  "Still reading {count} meetings…": {
-    "one": "Luetaan yhä {count} kokous…",
-    "other": "Luetaan yhä {count} kokousta…"
-  },
   "Still reading. Your answer comes next.": "Luetaan yhä. Vastaus tulee sen jälkeen.",
   "Yogurt can't hear your mic. Turn on microphone access for desktop apps in Windows Settings.": "Yogurt ei kuule mikrofoniasi. Salli työpöytäsovellusten mikrofonin käyttö Windowsin asetuksissa.",
   "Yogurt can't hear your mic. Check your sound settings.": "Yogurt ei kuule mikrofoniasi. Tarkista ääniasetukset.",
@@ -695,5 +687,6 @@
     "other": "ja {count} muuta"
   },
   "{count} more": "{count} lisää",
-  "Clear": "Tyhjennä"
+  "Clear": "Tyhjennä",
+  "Reading {title} {others}…": "Luetaan {title} {others}…"
 }

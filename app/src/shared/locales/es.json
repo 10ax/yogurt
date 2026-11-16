@@ -598,16 +598,6 @@
   "Still searching your meetings…": "Todavía buscando en tus reuniones…",
   "Reading {title}…": "Leyendo {title}…",
   "Still reading {title}…": "Todavía leyendo {title}…",
-  "Reading {count} meetings…": {
-    "one": "Leyendo {count} reunión…",
-    "many": "Leyendo {count} reuniones…",
-    "other": "Leyendo {count} reuniones…"
-  },
-  "Still reading {count} meetings…": {
-    "one": "Todavía leyendo {count} reunión…",
-    "many": "Todavía leyendo {count} reuniones…",
-    "other": "Todavía leyendo {count} reuniones…"
-  },
   "Still reading. Your answer comes next.": "Todavía leyendo. Luego llega tu respuesta.",
   "Yogurt can't hear your mic. Turn on microphone access for desktop apps in Windows Settings.": "Yogurt no oye tu micrófono. Activa el acceso al micrófono para aplicaciones de escritorio en Configuración de Windows.",
   "Yogurt can't hear your mic. Check your sound settings.": "Yogurt no oye tu micrófono. Revisa la configuración de sonido.",
@@ -704,5 +694,6 @@
   "In this chat": "En esta conversación",
   "and {count} others": "y {count} más",
   "{count} more": "{count} más",
-  "Clear": "Borrar"
+  "Clear": "Borrar",
+  "Reading {title} {others}…": "Leyendo {title} {others}…"
 }

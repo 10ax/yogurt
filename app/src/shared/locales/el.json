@@ -588,14 +588,6 @@
   "Still searching your meetings…": "Συνεχίζεται η αναζήτηση στις συσκέψεις σας…",
   "Reading {title}…": "Ανάγνωση: {title}…",
   "Still reading {title}…": "Συνεχίζεται η ανάγνωση: {title}…",
-  "Reading {count} meetings…": {
-    "one": "Ανάγνωση {count} σύσκεψης…",
-    "other": "Ανάγνωση {count} συσκέψεων…"
-  },
-  "Still reading {count} meetings…": {
-    "one": "Συνεχίζεται η ανάγνωση {count} σύσκεψης…",
-    "other": "Συνεχίζεται η ανάγνωση {count} συσκέψεων…"
-  },
   "Still reading. Your answer comes next.": "Συνεχίζεται η ανάγνωση. Μετά έρχεται η απάντησή σας.",
   "Yogurt can't hear your mic. Turn on microphone access for desktop apps in Windows Settings.": "Το Yogurt δεν ακούει το μικρόφωνό σας. Ενεργοποιήστε την πρόσβαση των εφαρμογών υπολογιστή στο μικρόφωνο στις Ρυθμίσεις των Windows.",
   "Yogurt can't hear your mic. Check your sound settings.": "Το Yogurt δεν ακούει το μικρόφωνό σας. Ελέγξτε τις ρυθμίσεις ήχου.",
@@ -692,5 +684,6 @@
   "In this chat": "Σε αυτή τη συνομιλία",
   "and {count} others": "και {count} ακόμη",
   "{count} more": "{count} ακόμη",
-  "Clear": "Εκκαθάριση"
+  "Clear": "Εκκαθάριση",
+  "Reading {title} {others}…": "Ανάγνωση {title} {others}…"
 }

@@ -86,7 +86,7 @@ test('asking across meetings says it is reading what it found until the answer s
     const input = page.getByTestId('chat-page-input')
     await input.fill('Who said twenty dollars?')
     await input.press('Enter')
-    await expect(page.getByTestId('chat-step')).toHaveText(/^Reading (\d+ meetings|.+)…$/)
+    await expect(page.getByTestId('chat-step')).toHaveText(/^Reading .+…$/)
     await expect(page.getByText('Looking through your meetings…')).toHaveCount(0)
     await page.getByTestId('chat-page-stop').click()
     await expect(page.getByTestId('chat-page-turn')).toHaveAttribute('data-status', 'stopped')

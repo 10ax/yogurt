@@ -2,6 +2,7 @@ import { afterEach, expect, it, vi } from 'vitest'
 import { useEffect, useLayoutEffect, useRef, useState, type ReactElement, type ReactNode } from 'react'
 import { Search } from '../src/renderer/src/components/Search'
 import { Ask } from '../src/renderer/src/components/Chat'
+import { AskContext, scopeLabel } from '../src/renderer/src/components/AskContext'
 import { AskConversation } from '../src/renderer/src/components/AskConversation'
 import type { ConversationView } from '../src/shared/types'
 import { Workspace } from '../src/renderer/src/components/Workspace'
@@ -373,7 +374,7 @@ it.each(['send', 'load', 'resolve'] as const)('keeps an early Enter through load
   const enter = (tree: ReactNode) => find(tree, 'chat-input').props.onKeyDown({ key: 'Enter', nativeEvent: {}, preventDefault() {} })
   let tree = render()
   const focus = vi.fn()
-  find(tree, 'chat-input').props.ref.current = { focus }
+  find(tree, 'chat-input').props.ref.current = { focus, closest: () => null }
   find(tree, 'chat-input').props.onChange({ target: { value: 'Who owns the next step?', selectionStart: 23 } })
   tree = render()
   enter(tree)
@@ -408,4 +409,354 @@ it.each(['send', 'load', 'resolve'] as const)('keeps an early Enter through load
     enter(tree)
     expect(ask).toHaveBeenCalledTimes(2)
   }
+})
+
+function mentionComposer(panel: boolean, draft = 'Keep this question') {
+  vi.stubGlobal('document', { body: {} })
+  const context = vi.fn().mockResolvedValue(undefined), save = vi.fn().mockResolvedValue(undefined)
+  const targets = vi.fn().mockResolvedValue([
+    { kind: 'folder', id: 'folder', title: 'Planning' },
+    { kind: 'meeting', id: 'attached', title: 'Already attached' },
+    { kind: 'meeting', id: 'meeting', title: 'Planning review' },
+  ])
+  const removeContext = vi.fn().mockResolvedValue(undefined)
+  vi.stubGlobal('window', { yogurt: { conversations: { context, removeContext, draft: save, targets } } })
+  vi.stubGlobal('requestAnimationFrame', (callback: () => void) => { callback(); return 0 })
+  const initial: ConversationView = { id: `mention-${panel}`, title: '', draft, chips: [{ kind: 'meeting', id: 'attached', title: 'Already attached' }], draftChips: [], firstChips: null, turns: [], waitsForMeeting: false, waitsForModel: false }
+  const render = renderer(() => AskConversation({ id: initial.id, initial, panel, onSelect() {}, onDeleted() {}, onSource() {} }))
+  const prefix = panel ? 'chat' : 'chat-page'
+  const input = () => find(render(), `${prefix}-input`).props
+  const popup = () => find(render(), 'ask-box-actions').props.children[0].props
+  const caret = { closest: () => null, selectionStart: 5, selectionEnd: 9, focus: vi.fn(), setSelectionRange: vi.fn() }
+  input().ref.current = caret
+  const flush = async () => { for (let i = 0; i < 5; i++) await Promise.resolve() }
+  const lookup = async () => {
+    render()
+    const cleanup = vi.mocked(useEffect).mock.calls.find(([, deps]) => deps?.length === 4)![0]()
+    await flush()
+    return cleanup
+  }
+  const type = (value: string) => input().onChange({ target: { value, selectionStart: value.length } })
+  const key = (props: any, key: string) => props.onKeyDown({ key, nativeEvent: {}, preventDefault() {}, stopPropagation() {} })
+  return { render, prefix, input, popup, caret, lookup, type, key, flush, context, removeContext, save, targets, initial }
+}
+
+it.each([false, true])('keeps the scope selector open after picking and restores the saved caret on close (panel: %s)', async panel => {
+  const c = mentionComposer(panel)
+  c.popup().onOpenChange(true)
+  expect(c.popup().open).toBe(true)
+  expect(c.input().value).toBe('Keep this question')
+  expect(c.input()['aria-expanded']).toBe(false)
+  expect(c.save).not.toHaveBeenCalled()
+  expect(find(c.render(), 'ask-selector-positioner').props.side).toBe(panel ? 'top' : 'bottom')
+  await c.lookup()
+  expect(c.targets).toHaveBeenCalledWith('')
+  let search = find(c.render(), 'Search meetings and folders').props
+  expect(search.placeholder).toBe('Search…')
+  expect(search.role).toBe('combobox')
+  expect(search['aria-controls']).toBe(`${c.prefix}-contexts`)
+  expect(search['aria-activedescendant']).toBe(`${c.prefix}-context-0`)
+  // Arrow order follows the displayed groups, even when the service returns folders first.
+  expect(find(c.render(), `${c.prefix}-context-0`).props.children[1].props.children).toBe('Already attached')
+  expect(find(c.render(), `${c.prefix}-context-0`).props['aria-selected']).toBe(true)
+  expect(find(c.render(), `${c.prefix}-context-1`).props.children[1].props.children).toBe('Planning review')
+  search.onChange({ target: { value: 'Plan' } })
+  await c.lookup()
+  expect(c.targets).toHaveBeenLastCalledWith('Plan')
+  search = find(c.render(), 'Search meetings and folders').props
+  c.key(search, 'ArrowDown')
+  c.key(find(c.render(), 'Search meetings and folders').props, 'ArrowDown')
+  search = find(c.render(), 'Search meetings and folders').props
+  expect(search['aria-activedescendant']).toBe(`${c.prefix}-context-2`)
+  find(c.render(), `${c.prefix}-context-2`).props.onClick()
+  await c.flush()
+  expect(c.context).toHaveBeenCalledExactlyOnceWith(c.initial.id, [...c.initial.chips, { kind: 'folder', id: 'folder', title: 'Planning' }])
+  expect(c.input().value).toBe('Keep this question')
+  expect(c.save).not.toHaveBeenCalled()
+  expect(c.popup().open).toBe(true)
+  expect(c.caret.focus).not.toHaveBeenCalled()
+  c.key(find(c.render(), 'Search meetings and folders').props, 'Escape')
+  expect(c.popup().open).toBe(false)
+  c.popup().children[1].props.children.props.children.props.finalFocus()
+  expect(c.caret.focus).toHaveBeenCalled()
+  expect(c.caret.setSelectionRange).toHaveBeenCalledWith(5, 9)
+})
+
+it('leaves the selector and draft intact if attaching fails, and dismisses without saving on Escape or outside press', async () => {
+  const c = mentionComposer(true)
+  c.context.mockRejectedValue(new Error('write failed'))
+  c.popup().onOpenChange(true)
+  await c.lookup()
+  find(c.render(), `${c.prefix}-context-2`).props.onClick()
+  await c.flush()
+  expect(c.popup().open).toBe(true)
+  expect(c.input().value).toBe('Keep this question')
+  expect(find(c.render(), 'chat-send-error').props.role).toBe('alert')
+  expect(c.save).not.toHaveBeenCalled()
+  c.key(find(c.render(), 'Search meetings and folders').props, 'Escape')
+  expect(c.popup().open).toBe(false)
+  c.popup().onOpenChange(true)
+  c.popup().onOpenChange(false, { reason: 'outside-press' })
+  expect(c.popup().open).toBe(false)
+  expect(c.input().value).toBe('Keep this question')
+})
+
+it.each([false, true])('follows caret selection between mentions without taking focus or editing the draft (panel: %s)', async panel => {
+  const c = mentionComposer(panel, '')
+  c.type('@First\n@Second')
+  await c.lookup()
+  expect(c.targets).toHaveBeenLastCalledWith('Second')
+  c.save.mockClear()
+  c.input().onSelect({ currentTarget: { value: c.input().value, selectionStart: 6 } })
+  await c.lookup()
+  expect(c.targets).toHaveBeenLastCalledWith('First')
+  expect(c.input()['aria-controls']).toBe(`${c.prefix}-contexts`)
+  expect(c.input()['aria-activedescendant']).toBe(`${c.prefix}-context-0`)
+  expect(find(c.render(), 'ask-picker ask-mention').props.id).toBe(`${c.prefix}-contexts`)
+  expect(c.caret.focus).not.toHaveBeenCalled()
+  expect(c.save).not.toHaveBeenCalled()
+  c.input().onSelect({ currentTarget: { value: c.input().value, selectionStart: 0 } })
+  expect(c.input()['aria-expanded']).toBe(false)
+})
+
+it.each([false, true])('dismisses empty inline searches on space until a new @, and still inserts inline matches (panel: %s)', async panel => {
+  const c = mentionComposer(panel, '')
+  c.targets.mockResolvedValue([])
+  c.type('@missing')
+  await c.lookup()
+  expect(c.input()['aria-expanded']).toBe(true)
+  c.type('@missing ')
+  expect(c.input()['aria-expanded']).toBe(false)
+  c.type('@missing and now I am typing')
+  expect(c.input()['aria-expanded']).toBe(false)
+  c.input().onClick({ currentTarget: { value: c.input().value, selectionStart: 8 } })
+  expect(c.input()['aria-expanded']).toBe(false)
+  expect(c.input().value).toBe('@missing and now I am typing')
+  c.type('@')
+  expect(c.input()['aria-expanded']).toBe(false)
+  c.type('@missing and now I am typing @')
+  expect(c.input()['aria-expanded']).toBe(true)
+  const target = { kind: 'meeting', id: 'next', title: 'Next meeting' }
+  c.targets.mockResolvedValue([target])
+  c.type('@missing and now I am typing @Next')
+  await c.lookup()
+  c.type('@missing and now I am typing @Next ')
+  expect(c.input()['aria-expanded']).toBe(true)
+  await c.lookup()
+  c.key(c.input(), 'Enter')
+  await c.flush()
+  expect(c.context).toHaveBeenCalledWith(c.initial.id, [...c.initial.chips, target])
+  expect(c.input().value).toBe('@missing and now I am typing ')
+  expect(c.input()['aria-expanded']).toBe(false)
+})
+
+it.each([false, true].flatMap(panel => [false, true].flatMap(inline => [
+  { query: '', meetings: 8, folders: 5, shown: 5, firstNew: 3 },
+  { query: '', meetings: 8, folders: 1, shown: 4, firstNew: 3 },
+  { query: '', meetings: 8, folders: 0, shown: 5, firstNew: 5 },
+  { query: 'Plan', meetings: 8, folders: 5, shown: 10, firstNew: 6 },
+  { query: 'Plan', meetings: 12, folders: 0, shown: 10, firstNew: 10 },
+  { query: 'Plan', meetings: 2, folders: 5, shown: 6, firstNew: 6 },
+  { query: '', meetings: 2, folders: 2, shown: 4, firstNew: -1 },
+].map(example => ({ panel, inline, ...example })))))(
+  'caps and expands $meetings meetings/$folders folders for "$query" (panel: $panel, inline: $inline)',
+  async ({ panel, inline, query, meetings, folders, shown, firstNew }) => {
+    const c = mentionComposer(panel, '')
+    const matches = [
+      ...Array.from({ length: meetings }, (_, i) => ({ kind: 'meeting', id: `m${i}`, title: `Plan meeting ${i}` })),
+      ...Array.from({ length: folders }, (_, i) => ({ kind: 'folder', id: `f${i}`, title: `Plan folder ${i}` })),
+    ]
+    c.targets.mockResolvedValue(matches)
+    if (inline) c.type(`@${query}`)
+    else { c.popup().onOpenChange(true); find(c.render(), 'Search meetings and folders').props.onChange({ target: { value: query } }) }
+    await c.lookup()
+    const control = () => inline ? c.input() : find(c.render(), 'Search meetings and folders').props
+    const offset = !inline && !query ? 1 : 0
+    const count = meetings + folders - shown
+    if (!count) {
+      expect(() => find(c.render(), `${c.prefix}-context-${offset + shown}`)).toThrow('Missing')
+      return
+    }
+    const more = find(c.render(), `${c.prefix}-context-${offset + shown}`).props
+    expect(more.children[1].props.children).toBe(`${count} more ${count === 1 ? 'result' : 'results'}`)
+    expect(() => find(c.render(), `${c.prefix}-context-${offset + shown + 1}`)).toThrow('Missing')
+    if (panel) more.onClick()
+    else {
+      c.key(control(), 'ArrowUp')
+      expect(control()['aria-activedescendant']).toBe(`${c.prefix}-context-${offset + shown}`)
+      c.key(control(), 'Enter')
+    }
+    expect(c.context).not.toHaveBeenCalled()
+    expect(control()['aria-activedescendant']).toBe(`${c.prefix}-context-${offset + firstNew}`)
+    expect(find(c.render(), `${c.prefix}-context-${offset + firstNew}`).props.children[1].props.children).toBe(matches[firstNew].title)
+    expect(find(c.render(), `${c.prefix}-context-${offset + matches.length - 1}`).props.children[1].props.children).toBe(matches.at(-1)!.title)
+    expect(() => find(c.render(), `${c.prefix}-context-${offset + matches.length}`)).toThrow('Missing')
+    c.key(control(), 'Enter')
+    await c.flush()
+    expect(c.context).toHaveBeenCalledWith(c.initial.id, [...c.initial.chips, matches[firstNew]])
+  },
+)
+
+it('collapses expanded results for a new search and each new button opening', async () => {
+  const c = mentionComposer(false)
+  c.targets.mockResolvedValue(Array.from({ length: 20 }, (_, i) => ({ kind: 'meeting', id: String(i), title: `Plan ${i}` })))
+  c.popup().onOpenChange(true)
+  await c.lookup()
+  find(c.render(), `${c.prefix}-context-6`).props.onClick()
+  find(c.render(), 'Search meetings and folders').props.onChange({ target: { value: 'Plan' } })
+  await c.lookup()
+  expect(find(c.render(), `${c.prefix}-context-10`).props.children[1].props.children).toBe('10 more results')
+  find(c.render(), `${c.prefix}-context-10`).props.onClick()
+  c.popup().onOpenChange(false)
+  c.popup().onOpenChange(true)
+  await c.lookup()
+  expect(find(c.render(), `${c.prefix}-context-6`).props.children[1].props.children).toBe('15 more results')
+})
+
+
+it.each([0, 1, 2, 5])('labels a scope of %s items without truncating its count', count => {
+  const chips = Array.from({ length: count }, (_, i) => ({ kind: 'meeting' as const, id: String(i), title: 'A very long meeting title '.repeat(20) }))
+  const label = scopeLabel(chips)
+  expect(label.name).toBe(count ? chips[0].title.trim() : 'All meetings')
+  expect(label.others).toBe(count > 1 ? `and ${count - 1} ${count === 2 ? 'other' : 'others'}` : '')
+  const contents = AskContext({ chips })
+  expect(find(contents, 'ask-scope-name').props.children).toBe(label.name)
+  if (count > 1) expect(find(contents, 'ask-scope-others').props.children).toBe(` ${label.others}`)
+})
+
+it('caps selected scope at three, reveals the rest, and gives query matches the full list', async () => {
+  const c = mentionComposer(true)
+  c.initial.chips = Array.from({ length: 5 }, (_, i) => ({ kind: i ? 'meeting' : 'folder', id: String(i), title: `Scope ${i}` }))
+  c.popup().onOpenChange(true)
+  await c.lookup()
+  expect(find(c.render(), 'In this chat').props.children[1]).toHaveLength(3)
+  expect(find(c.render(), `${c.prefix}-context-3`).props.children[1].props.children).toBe('2 more')
+  expect(find(c.render(), `${c.prefix}-context-4`).props.children[1].props.children).toBe('Already attached')
+  find(c.render(), `${c.prefix}-context-3`).props.onClick()
+  expect(find(c.render(), 'In this chat').props.children[1]).toHaveLength(5)
+  c.targets.mockResolvedValue([c.initial.chips[0]])
+  find(c.render(), 'Search meetings and folders').props.onChange({ target: { value: 'Scope' } })
+  await c.lookup()
+  expect(() => find(c.render(), 'In this chat')).toThrow('Missing')
+  const row = find(c.render(), `${c.prefix}-context-0`).props
+  expect(row['aria-selected']).toBe(true)
+  expect(row.children[1].props.children).toBe('Scope 0')
+  expect(() => find(c.render(), `${c.prefix}-context-1`)).toThrow('Missing')
+  row.onClick(); await c.flush()
+  expect(c.removeContext).toHaveBeenCalledExactlyOnceWith(c.initial.id, c.initial.chips[0])
+  expect(c.popup().open).toBe(true)
+})
+
+it.each(['picker', 'pill'])('clears saved and draft scope from the %s and keeps history', async control => {
+  const c = mentionComposer(false)
+  c.initial.firstChips = [...c.initial.chips]
+  c.initial.draftChips = [{ kind: 'folder', id: 'pending', title: 'Pending' }]
+  const scope = [...c.initial.chips, ...c.initial.draftChips]
+  c.popup().onOpenChange(true)
+  await c.lookup()
+  find(c.render(), control === 'picker' ? 'ask-picker-clear' : 'ask-scope-clear').props.onClick()
+  await c.flush()
+  expect(c.removeContext.mock.calls).toEqual(scope.map(chip => [c.initial.id, chip]))
+  expect(c.popup().open).toBe(true)
+  c.initial.chips = []; c.initial.draftChips = []
+  expect(scopeLabel(c.initial.chips).name).toBe('All meetings')
+  expect(() => find(c.render(), 'ask-scope-clear')).toThrow('Missing')
+  expect(() => find(c.render(), 'In this chat')).toThrow('Missing')
+  expect(c.initial.firstChips).toEqual([scope[0]])
+})
+
+it('adds only pending scope after a chat starts and disables toggles during an answer', async () => {
+  const c = mentionComposer(true)
+  c.initial.firstChips = [...c.initial.chips]
+  c.popup().onOpenChange(true)
+  await c.lookup()
+  find(c.render(), `${c.prefix}-context-1`).props.onClick()
+  await c.flush()
+  expect(c.context).toHaveBeenCalledWith(c.initial.id, [{ kind: 'meeting', id: 'meeting', title: 'Planning review' }])
+  c.initial.turns = [{ id: 1, question: 'Question', answer: '', status: 'answering', sources: [] }]
+  const row = find(c.render(), `${c.prefix}-context-0`).props
+  expect(row.disabled).toBe(true)
+  row.onClick(); await c.flush()
+  expect(c.removeContext).not.toHaveBeenCalled()
+})
+
+
+it('toggles query matches repeatedly without closing (mouse)', async () => {
+  const c = mentionComposer(false)
+  c.initial.chips = []
+  const target = { kind: 'folder' as const, id: 'planning', title: 'Planning' }
+  c.targets.mockResolvedValue([target])
+  c.context.mockImplementation(async (_id, chips) => { c.initial.chips = chips })
+  c.removeContext.mockImplementation(async () => { c.initial.chips = [] })
+  c.popup().onOpenChange(true)
+  find(c.render(), 'Search meetings and folders').props.onChange({ target: { value: 'Plan' } })
+  await c.lookup()
+  for (const checked of [true, false, true]) {
+    find(c.render(), `${c.prefix}-context-0`).props.onClick()
+    await c.flush()
+    expect(find(c.render(), `${c.prefix}-context-0`).props['aria-selected']).toBe(checked)
+    expect(c.popup().open).toBe(true)
+    expect(c.input().value).toBe('Keep this question')
+  }
+  c.popup().onOpenChange(false)
+  c.popup().children[1].props.children.props.children.props.finalFocus()
+  expect(c.caret.setSelectionRange).toHaveBeenCalledWith(5, 9)
+})
+
+it('Enter picks a query match and closes the picker, back to the question', async () => {
+  const c = mentionComposer(false)
+  c.initial.chips = []
+  const target = { kind: 'folder' as const, id: 'planning', title: 'Planning' }
+  c.targets.mockResolvedValue([target])
+  c.context.mockImplementation(async (_id, chips) => { c.initial.chips = chips })
+  c.popup().onOpenChange(true)
+  find(c.render(), 'Search meetings and folders').props.onChange({ target: { value: 'Plan' } })
+  await c.lookup()
+  c.key(find(c.render(), 'Search meetings and folders').props, 'Enter')
+  await c.flush()
+  expect(c.context).toHaveBeenCalledWith(expect.anything(), [target])
+  expect(c.popup().open).toBe(false)
+  expect(c.input().value).toBe('Keep this question')
+})
+
+it('keeps checked scope and reports failed removal without closing', async () => {
+  const c = mentionComposer(true)
+  c.removeContext.mockRejectedValue(new Error('write failed'))
+  c.popup().onOpenChange(true)
+  await c.lookup()
+  find(c.render(), `${c.prefix}-context-0`).props.onClick()
+  await c.flush()
+  expect(find(c.render(), `${c.prefix}-context-0`).props['aria-selected']).toBe(true)
+  expect(find(c.render(), 'chat-send-error').props.role).toBe('alert')
+  expect(c.popup().open).toBe(true)
+  expect(c.input().readOnly).toBe(false)
+})
+
+
+it('prefills a reopened picker and anchors it to the composer without sideways fallback', async () => {
+  const c = mentionComposer(false)
+  find(c.render(), 'ask-scope').props.onPointerEnter()
+  await c.flush()
+  c.popup().onOpenChange(true)
+  expect(find(c.render(), `${c.prefix}-context-1`).props.children[1].props.children).toBe('Planning review')
+  const positioner = find(c.render(), 'ask-selector-positioner').props
+  expect(positioner.anchor).toBe(find(c.render(), `${c.prefix}-box`).props.ref)
+  expect(positioner.collisionAvoidance).toEqual({ fallbackAxisSide: 'none' })
+  expect(positioner.align).toBe('start')
+  expect(positioner.sideOffset).toBe(6)
+})
+
+it('checks an inline match already in scope and consumes its mention without adding it twice', async () => {
+  const c = mentionComposer(false, '')
+  c.targets.mockResolvedValue([c.initial.chips[0]])
+  c.type('@Already')
+  await c.lookup()
+  const row = find(c.render(), `${c.prefix}-context-0`).props
+  expect(row.children[2].type.displayName).toBe('Check')
+  c.key(c.input(), 'Enter')
+  await c.flush()
+  expect(c.context).not.toHaveBeenCalled()
+  expect(c.removeContext).not.toHaveBeenCalled()
+  expect(c.input().value).toBe('')
+  expect(c.input()['aria-expanded']).toBe(false)
 })

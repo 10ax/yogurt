@@ -569,7 +569,6 @@
   "Calendar event unavailable": "Kalenderhendelsen er utilgjengelig",
   "{count} left": "{count} igjen",
   "Delete now": "Slett nå",
-  "Add a meeting or folder": "Legg til et møte eller en mappe",
   "Recent": "Nylige",
   "Show all": "Vis alle",
   "Move to Trash": "Flytt til papirkurven",
@@ -678,5 +677,17 @@
   "New recording": "Nytt opptak",
   "Hide events without a call link": "Skjul hendelser uten anropslenke",
   "Keep your agenda and reminders focused on calls.": "Hold fokus på samtaler i agendaen og påminnelsene dine.",
-  "Show earlier lines": "Vis tidligere linjer"
+  "Show earlier lines": "Vis tidligere linjer",
+  "{count} more results": {
+    "one": "{count} resultat til",
+    "other": "{count} resultater til"
+  },
+  "Search meetings and folders": "Søk i møter og mapper",
+  "Search…": "Søk…",
+  "All meetings": "Alle møter",
+  "Choose meetings or folders": "Velg møter eller mapper",
+  "In this chat": "I denne samtalen",
+  "and {count} others": "og {count} andre",
+  "{count} more": "{count} til",
+  "Clear": "Tøm"
 }

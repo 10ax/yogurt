@@ -572,7 +572,6 @@
   "Calendar event unavailable": "Kalenteritapahtuma ei ole saatavilla",
   "{count} left": "{count} jäljellä",
   "Delete now": "Poista nyt",
-  "Add a meeting or folder": "Lisää kokous tai kansio",
   "Recent": "Viimeisimmät",
   "Show all": "Näytä kaikki",
   "Move to Trash": "Siirrä roskakoriin",
@@ -681,5 +680,20 @@
   "New recording": "Uusi tallennus",
   "Hide events without a call link": "Piilota tapahtumat ilman puhelulinkkiä",
   "Keep your agenda and reminders focused on calls.": "Keskity puheluihin päiväohjelmassa ja muistutuksissa.",
-  "Show earlier lines": "Näytä aiemmat rivit"
+  "Show earlier lines": "Näytä aiemmat rivit",
+  "{count} more results": {
+    "one": "{count} tulos lisää",
+    "other": "{count} tulosta lisää"
+  },
+  "Search meetings and folders": "Etsi kokouksia ja kansioita",
+  "Search…": "Hae…",
+  "All meetings": "Kaikki kokoukset",
+  "Choose meetings or folders": "Valitse kokouksia tai kansioita",
+  "In this chat": "Tässä keskustelussa",
+  "and {count} others": {
+    "one": "ja {count} muu",
+    "other": "ja {count} muuta"
+  },
+  "{count} more": "{count} lisää",
+  "Clear": "Tyhjennä"
 }

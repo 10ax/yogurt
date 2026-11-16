@@ -539,7 +539,6 @@
   "Calendar event unavailable": "Acara kalender tidak tersedia",
   "{count} left": "{count} tersisa",
   "Delete now": "Hapus sekarang",
-  "Add a meeting or folder": "Tambahkan rapat atau folder",
   "Recent": "Terbaru",
   "Show all": "Tampilkan semua",
   "Move to Trash": "Pindahkan ke Sampah",
@@ -633,5 +632,14 @@
   "New recording": "Rekaman baru",
   "Hide events without a call link": "Sembunyikan acara tanpa tautan panggilan",
   "Keep your agenda and reminders focused on calls.": "Fokuskan agenda dan pengingat Anda pada panggilan.",
-  "Show earlier lines": "Tampilkan baris sebelumnya"
+  "Show earlier lines": "Tampilkan baris sebelumnya",
+  "{count} more results": "{count} hasil lainnya",
+  "Search meetings and folders": "Cari rapat dan folder",
+  "Search…": "Cari…",
+  "All meetings": "Semua rapat",
+  "Choose meetings or folders": "Pilih rapat atau folder",
+  "In this chat": "Dalam percakapan ini",
+  "and {count} others": "dan {count} lainnya",
+  "{count} more": "{count} lagi",
+  "Clear": "Hapus"
 }

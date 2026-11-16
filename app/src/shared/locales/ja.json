@@ -539,7 +539,6 @@
   "Calendar event unavailable": "カレンダーの予定を表示できません",
   "{count} left": "残り{count}件",
   "Delete now": "今すぐ削除",
-  "Add a meeting or folder": "会議やフォルダを追加",
   "Recent": "最近の会話",
   "Show all": "すべて表示",
   "Move to Trash": "ゴミ箱に移動",
@@ -633,5 +632,14 @@
   "New recording": "新規録音",
   "Hide events without a call link": "通話リンクのない予定を非表示",
   "Keep your agenda and reminders focused on calls.": "予定とリマインダーを通話中心に整理します。",
-  "Show earlier lines": "前の行を表示"
+  "Show earlier lines": "前の行を表示",
+  "{count} more results": "さらに{count}件の結果",
+  "Search meetings and folders": "会議とフォルダを検索",
+  "Search…": "検索…",
+  "All meetings": "すべての会議",
+  "Choose meetings or folders": "会議やフォルダを選択",
+  "In this chat": "この会話内",
+  "and {count} others": "と他 {count} 件",
+  "{count} more": "他 {count} 件",
+  "Clear": "クリア"
 }

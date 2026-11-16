@@ -539,7 +539,6 @@
   "Calendar event unavailable": "日历活动不可用",
   "{count} left": "剩余 {count} 项",
   "Delete now": "立即删除",
-  "Add a meeting or folder": "添加会议或文件夹",
   "Recent": "最近",
   "Show all": "显示全部",
   "Move to Trash": "移到废纸篓",
@@ -633,5 +632,14 @@
   "New recording": "新建录音",
   "Hide events without a call link": "隐藏没有通话链接的日程",
   "Keep your agenda and reminders focused on calls.": "让日程和提醒专注于通话。",
-  "Show earlier lines": "显示更早的内容"
+  "Show earlier lines": "显示更早的内容",
+  "{count} more results": "还有 {count} 个结果",
+  "Search meetings and folders": "搜索会议和文件夹",
+  "Search…": "搜索…",
+  "All meetings": "所有会议",
+  "Choose meetings or folders": "选择会议或文件夹",
+  "In this chat": "在此对话中",
+  "and {count} others": "及其他 {count} 项",
+  "{count} more": "还有 {count} 项",
+  "Clear": "清除"
 }

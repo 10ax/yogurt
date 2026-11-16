@@ -539,7 +539,6 @@
   "Calendar event unavailable": "캘린더 일정을 사용할 수 없습니다",
   "{count} left": "{count}개 남음",
   "Delete now": "지금 삭제",
-  "Add a meeting or folder": "회의 또는 폴더 추가",
   "Recent": "최근 대화",
   "Show all": "모두 보기",
   "Move to Trash": "휴지통으로 이동",
@@ -633,5 +632,14 @@
   "New recording": "새 녹음",
   "Hide events without a call link": "통화 링크가 없는 일정 숨기기",
   "Keep your agenda and reminders focused on calls.": "일정과 알림을 통화 중심으로 정리하세요.",
-  "Show earlier lines": "이전 줄 보기"
+  "Show earlier lines": "이전 줄 보기",
+  "{count} more results": "결과 {count}개 더 보기",
+  "Search meetings and folders": "회의 및 폴더 검색",
+  "Search…": "검색…",
+  "All meetings": "모든 회의",
+  "Choose meetings or folders": "회의 또는 폴더 선택",
+  "In this chat": "이 대화에서",
+  "and {count} others": "외 {count}개",
+  "{count} more": "{count}개 더",
+  "Clear": "지우기"
 }

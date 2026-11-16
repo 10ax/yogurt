@@ -579,7 +579,6 @@
   "Calendar event unavailable": "אירוע היומן אינו זמין",
   "{count} left": "נותרו {count}",
   "Delete now": "מחק עכשיו",
-  "Add a meeting or folder": "הוספת פגישה או תיקייה",
   "Recent": "אחרונות",
   "Show all": "הצגת הכול",
   "Move to Trash": "העברה לאשפה",
@@ -690,5 +689,17 @@
   "New recording": "הקלטה חדשה",
   "Hide events without a call link": "הסתרת אירועים ללא קישור לשיחה",
   "Keep your agenda and reminders focused on calls.": "מקדו את סדר היום והתזכורות בשיחות.",
-  "Show earlier lines": "הצגת שורות קודמות"
+  "Show earlier lines": "הצגת שורות קודמות",
+  "{count} more results": {
+    "one": "עוד תוצאה אחת",
+    "other": "עוד {count} תוצאות"
+  },
+  "Search meetings and folders": "חיפוש פגישות ותיקיות",
+  "Search…": "חיפוש…",
+  "All meetings": "כל הפגישות",
+  "Choose meetings or folders": "בחירת פגישות או תיקיות",
+  "In this chat": "בשיחה הזו",
+  "and {count} others": "ועוד {count}",
+  "{count} more": "עוד {count}",
+  "Clear": "נקה"
 }

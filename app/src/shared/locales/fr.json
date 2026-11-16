@@ -579,7 +579,6 @@
   "Calendar event unavailable": "Événement du calendrier indisponible",
   "{count} left": "{count} à faire",
   "Delete now": "Supprimer maintenant",
-  "Add a meeting or folder": "Ajouter une réunion ou un dossier",
   "Recent": "Récentes",
   "Show all": "Tout afficher",
   "Move to Trash": "Déplacer vers la corbeille",
@@ -693,5 +692,20 @@
   "New recording": "Nouvel enregistrement",
   "Hide events without a call link": "Masquer les événements sans lien d’appel",
   "Keep your agenda and reminders focused on calls.": "Gardez les appels au centre de votre agenda et de vos rappels.",
-  "Show earlier lines": "Afficher les lignes précédentes"
+  "Show earlier lines": "Afficher les lignes précédentes",
+  "{count} more results": {
+    "one": "{count} résultat de plus",
+    "other": "{count} résultats de plus"
+  },
+  "Search meetings and folders": "Rechercher réunions et dossiers",
+  "Search…": "Rechercher…",
+  "All meetings": "Toutes les réunions",
+  "Choose meetings or folders": "Choisir des réunions ou dossiers",
+  "In this chat": "Dans cette conversation",
+  "and {count} others": {
+    "one": "et {count} autre",
+    "other": "et {count} autres"
+  },
+  "{count} more": "{count} de plus",
+  "Clear": "Effacer"
 }

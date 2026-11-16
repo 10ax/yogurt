@@ -539,7 +539,6 @@
   "Calendar event unavailable": "Sự kiện lịch không khả dụng",
   "{count} left": "Còn {count}",
   "Delete now": "Xóa ngay",
-  "Add a meeting or folder": "Thêm cuộc họp hoặc thư mục",
   "Recent": "Gần đây",
   "Show all": "Hiển thị tất cả",
   "Move to Trash": "Chuyển vào Thùng rác",
@@ -633,5 +632,14 @@
   "New recording": "Bản ghi mới",
   "Hide events without a call link": "Ẩn sự kiện không có liên kết cuộc gọi",
   "Keep your agenda and reminders focused on calls.": "Tập trung lịch trình và lời nhắc vào các cuộc gọi.",
-  "Show earlier lines": "Hiện các dòng trước"
+  "Show earlier lines": "Hiện các dòng trước",
+  "{count} more results": "Thêm {count} kết quả",
+  "Search meetings and folders": "Tìm cuộc họp và thư mục",
+  "Search…": "Tìm kiếm…",
+  "All meetings": "Tất cả cuộc họp",
+  "Choose meetings or folders": "Chọn cuộc họp hoặc thư mục",
+  "In this chat": "Trong cuộc trò chuyện này",
+  "and {count} others": "và {count} mục khác",
+  "{count} more": "Thêm {count} mục",
+  "Clear": "Xóa"
 }

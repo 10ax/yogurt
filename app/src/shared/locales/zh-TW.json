@@ -539,7 +539,6 @@
   "Calendar event unavailable": "行事曆活動無法使用",
   "{count} left": "剩餘 {count} 項",
   "Delete now": "立即刪除",
-  "Add a meeting or folder": "新增會議或資料夾",
   "Recent": "最近",
   "Show all": "顯示全部",
   "Move to Trash": "移到垃圾桶",
@@ -633,5 +632,14 @@
   "New recording": "新增錄音",
   "Hide events without a call link": "隱藏沒有通話連結的行程",
   "Keep your agenda and reminders focused on calls.": "讓行程與提醒專注於通話。",
-  "Show earlier lines": "顯示更早的內容"
+  "Show earlier lines": "顯示更早的內容",
+  "{count} more results": "還有 {count} 個結果",
+  "Search meetings and folders": "搜尋會議與資料夾",
+  "Search…": "搜尋…",
+  "All meetings": "所有會議",
+  "Choose meetings or folders": "選擇會議或資料夾",
+  "In this chat": "在此對話中",
+  "and {count} others": "及其他 {count} 項",
+  "{count} more": "還有 {count} 項",
+  "Clear": "清除"
 }

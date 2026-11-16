@@ -569,7 +569,6 @@
   "Calendar event unavailable": "Το συμβάν ημερολογίου δεν είναι διαθέσιμο",
   "{count} left": "Απομένουν {count}",
   "Delete now": "Διαγραφή τώρα",
-  "Add a meeting or folder": "Προσθήκη συνάντησης ή φακέλου",
   "Recent": "Πρόσφατες",
   "Show all": "Εμφάνιση όλων",
   "Move to Trash": "Μετακίνηση στον Κάδο",
@@ -681,5 +680,17 @@
   "New recording": "Νέα ηχογράφηση",
   "Hide events without a call link": "Απόκρυψη συμβάντων χωρίς σύνδεσμο κλήσης",
   "Keep your agenda and reminders focused on calls.": "Εστιάστε το πρόγραμμά σας και τις υπενθυμίσεις στις κλήσεις.",
-  "Show earlier lines": "Εμφάνιση προηγούμενων γραμμών"
+  "Show earlier lines": "Εμφάνιση προηγούμενων γραμμών",
+  "{count} more results": {
+    "one": "{count} ακόμη αποτέλεσμα",
+    "other": "{count} ακόμη αποτελέσματα"
+  },
+  "Search meetings and folders": "Αναζήτηση συναντήσεων και φακέλων",
+  "Search…": "Αναζήτηση…",
+  "All meetings": "Όλες οι συσκέψεις",
+  "Choose meetings or folders": "Επιλογή συσκέψεων ή φακέλων",
+  "In this chat": "Σε αυτή τη συνομιλία",
+  "and {count} others": "και {count} ακόμη",
+  "{count} more": "{count} ακόμη",
+  "Clear": "Εκκαθάριση"
 }

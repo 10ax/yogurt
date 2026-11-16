@@ -613,7 +613,6 @@
   "Calendar event unavailable": "حدث التقويم غير متاح",
   "{count} left": "متبقٍ {count}",
   "Delete now": "حذف الآن",
-  "Add a meeting or folder": "إضافة اجتماع أو مجلد",
   "Recent": "الأخيرة",
   "Show all": "عرض الكل",
   "Move to Trash": "نقل إلى سلة المهملات",
@@ -739,5 +738,20 @@
   "New recording": "تسجيل جديد",
   "Hide events without a call link": "إخفاء الأحداث التي ليس لها رابط مكالمة",
   "Keep your agenda and reminders focused on calls.": "ركّز جدولك وتذكيراتك على المكالمات.",
-  "Show earlier lines": "عرض الأسطر السابقة"
+  "Show earlier lines": "عرض الأسطر السابقة",
+  "{count} more results": {
+    "one": "نتيجة إضافية واحدة",
+    "two": "نتيجتان إضافيتان",
+    "few": "{count} نتائج إضافية",
+    "many": "{count} نتيجة إضافية",
+    "other": "{count} نتيجة إضافية"
+  },
+  "Search meetings and folders": "ابحث عن الاجتماعات والمجلدات",
+  "Search…": "بحث…",
+  "All meetings": "كل الاجتماعات",
+  "Choose meetings or folders": "اختر اجتماعات أو مجلدات",
+  "In this chat": "في هذه المحادثة",
+  "and {count} others": "و{count} إضافية",
+  "{count} more": "{count} إضافية",
+  "Clear": "مسح"
 }

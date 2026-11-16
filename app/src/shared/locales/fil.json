@@ -569,7 +569,6 @@
   "Calendar event unavailable": "Hindi available ang event sa kalendaryo",
   "{count} left": "{count} pa",
   "Delete now": "Burahin ngayon",
-  "Add a meeting or folder": "Magdagdag ng pulong o folder",
   "Recent": "Kamakailan",
   "Show all": "Ipakita lahat",
   "Move to Trash": "Ilipat sa Basurahan",
@@ -678,5 +677,17 @@
   "New recording": "Bagong recording",
   "Hide events without a call link": "Itago ang mga event na walang link sa tawag",
   "Keep your agenda and reminders focused on calls.": "Ituon ang iyong agenda at mga paalala sa mga tawag.",
-  "Show earlier lines": "Ipakita ang mga naunang linya"
+  "Show earlier lines": "Ipakita ang mga naunang linya",
+  "{count} more results": {
+    "one": "{count} pang resulta",
+    "other": "{count} pang resulta"
+  },
+  "Search meetings and folders": "Maghanap ng mga pulong at folder",
+  "Search…": "Maghanap…",
+  "All meetings": "Lahat ng pulong",
+  "Choose meetings or folders": "Pumili ng pulong o folder",
+  "In this chat": "Sa pag-uusap na ito",
+  "and {count} others": "at {count} pa",
+  "{count} more": "{count} pa",
+  "Clear": "I-clear"
 }

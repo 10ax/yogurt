@@ -569,7 +569,6 @@
   "Calendar event unavailable": "Kalenderhändelsen är inte tillgänglig",
   "{count} left": "{count} kvar",
   "Delete now": "Radera nu",
-  "Add a meeting or folder": "Lägg till ett möte eller en mapp",
   "Recent": "Senaste",
   "Show all": "Visa alla",
   "Move to Trash": "Flytta till papperskorgen",
@@ -681,5 +680,14 @@
   "New recording": "Ny inspelning",
   "Hide events without a call link": "Dölj händelser utan samtalslänk",
   "Keep your agenda and reminders focused on calls.": "Fokusera din agenda och dina påminnelser på samtal.",
-  "Show earlier lines": "Visa tidigare rader"
+  "Show earlier lines": "Visa tidigare rader",
+  "{count} more results": "{count} fler resultat",
+  "Search meetings and folders": "Sök möten och mappar",
+  "Search…": "Sök…",
+  "All meetings": "Alla möten",
+  "Choose meetings or folders": "Välj möten eller mappar",
+  "In this chat": "I det här samtalet",
+  "and {count} others": "och {count} till",
+  "{count} more": "{count} till",
+  "Clear": "Rensa"
 }

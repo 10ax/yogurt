@@ -132,5 +132,23 @@
   "New recording": "New recording",
   "Hide events without a call link": "Hide events without a call link",
   "Keep your agenda and reminders focused on calls.": "Keep your agenda and reminders focused on calls.",
-  "Show earlier lines": "Show earlier lines"
+  "Show earlier lines": "Show earlier lines",
+  "{count} more results": {
+    "one": "{count} more result",
+    "other": "{count} more results"
+  },
+  "Search meetings and folders": "Search meetings and folders",
+  "Search…": "Search…",
+  "All meetings": "All meetings",
+  "Choose meetings or folders": "Choose meetings or folders",
+  "In this chat": "In this chat",
+  "and {count} others": {
+    "one": "and {count} other",
+    "other": "and {count} others"
+  },
+  "{count} more": {
+    "one": "{count} more",
+    "other": "{count} more"
+  },
+  "Clear": "Clear"
 }

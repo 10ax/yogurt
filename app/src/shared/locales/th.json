@@ -539,7 +539,6 @@
   "Calendar event unavailable": "ไม่พบกิจกรรมในปฏิทิน",
   "{count} left": "เหลือ {count}",
   "Delete now": "ลบตอนนี้",
-  "Add a meeting or folder": "เพิ่มการประชุมหรือโฟลเดอร์",
   "Recent": "ล่าสุด",
   "Show all": "แสดงทั้งหมด",
   "Move to Trash": "ย้ายไปถังขยะ",
@@ -633,5 +632,14 @@
   "New recording": "การบันทึกใหม่",
   "Hide events without a call link": "ซ่อนกิจกรรมที่ไม่มีลิงก์การโทร",
   "Keep your agenda and reminders focused on calls.": "เน้นการโทรในกำหนดการและการแจ้งเตือนของคุณ",
-  "Show earlier lines": "แสดงบรรทัดก่อนหน้า"
+  "Show earlier lines": "แสดงบรรทัดก่อนหน้า",
+  "{count} more results": "อีก {count} ผลลัพธ์",
+  "Search meetings and folders": "ค้นหาการประชุมและโฟลเดอร์",
+  "Search…": "ค้นหา…",
+  "All meetings": "การประชุมทั้งหมด",
+  "Choose meetings or folders": "เลือกการประชุมหรือโฟลเดอร์",
+  "In this chat": "ในการสนทนานี้",
+  "and {count} others": "และอีก {count} รายการ",
+  "{count} more": "อีก {count} รายการ",
+  "Clear": "ล้าง"
 }

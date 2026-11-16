@@ -569,7 +569,6 @@
   "Calendar event unavailable": "A naptáresemény nem érhető el",
   "{count} left": "{count} van hátra",
   "Delete now": "Törlés most",
-  "Add a meeting or folder": "Megbeszélés vagy mappa hozzáadása",
   "Recent": "Legutóbbiak",
   "Show all": "Összes megjelenítése",
   "Move to Trash": "Áthelyezés a kukába",
@@ -669,5 +668,14 @@
   "New recording": "Új felvétel",
   "Hide events without a call link": "Híváshivatkozás nélküli események elrejtése",
   "Keep your agenda and reminders focused on calls.": "A napirendben és az emlékeztetőkben a hívásokra összpontosítson.",
-  "Show earlier lines": "Korábbi sorok megjelenítése"
+  "Show earlier lines": "Korábbi sorok megjelenítése",
+  "{count} more results": "További {count} találat",
+  "Search meetings and folders": "Megbeszélések és mappák keresése",
+  "Search…": "Keresés…",
+  "All meetings": "Minden megbeszélés",
+  "Choose meetings or folders": "Megbeszélések vagy mappák választása",
+  "In this chat": "Ebben a beszélgetésben",
+  "and {count} others": "és {count} további",
+  "{count} more": "Még {count}",
+  "Clear": "Törlés"
 }

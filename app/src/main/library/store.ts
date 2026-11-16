@@ -165,9 +165,13 @@ export class Library {
     return (this.db.prepare('SELECT meeting_id, people FROM library_sources').all() as Row[]).map((r) => ({ meetingId: String(r.meeting_id), people: JSON.parse(String(r.people)) }))
   }
 
+  /** The picker starts with a few of each kind and can reveal the remaining matches. */
   targets(query = ''): ContextTarget[] {
-    const meetings = this.db.prepare("SELECT id,title,started_at FROM meetings WHERE trashed_at IS NULL AND instr(lower(title),lower(?)) > 0 ORDER BY started_at DESC LIMIT 40").all(query) as Row[]
-    const folders = this.db.prepare("SELECT id,name FROM folders WHERE instr(lower(name),lower(?)) > 0 ORDER BY name LIMIT 40").all(query) as Row[]
+    const typed = query !== ''
+    const folders = this.db.prepare(`SELECT id,name FROM folders WHERE instr(lower(name),lower(?)) > 0
+      ORDER BY ${typed ? 'name' : '(SELECT MAX(added_at) FROM folder_meetings WHERE folder_id = folders.id) DESC, created_at DESC'} LIMIT 40`).all(query) as Row[]
+    const meetings = this.db.prepare("SELECT id,title,started_at FROM meetings WHERE trashed_at IS NULL AND instr(lower(title),lower(?)) > 0 ORDER BY started_at DESC LIMIT 40")
+      .all(query) as Row[]
     return [...meetings.map(r => ({ kind: 'meeting' as const, id: String(r.id), title: String(r.title), startedAt: Number(r.started_at) })),
       ...folders.map(r => ({ kind: 'folder' as const, id: String(r.id), title: String(r.name) }))]
   }

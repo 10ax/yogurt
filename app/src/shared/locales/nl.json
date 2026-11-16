@@ -569,7 +569,6 @@
   "Calendar event unavailable": "Agenda-afspraak niet beschikbaar",
   "{count} left": "{count} over",
   "Delete now": "Nu verwijderen",
-  "Add a meeting or folder": "Vergadering of map toevoegen",
   "Recent": "Recent",
   "Show all": "Alles tonen",
   "Move to Trash": "Verplaats naar prullenmand",
@@ -678,5 +677,17 @@
   "New recording": "Nieuwe opname",
   "Hide events without a call link": "Afspraken zonder gesprekslink verbergen",
   "Keep your agenda and reminders focused on calls.": "Richt je agenda en herinneringen op gesprekken.",
-  "Show earlier lines": "Eerdere regels tonen"
+  "Show earlier lines": "Eerdere regels tonen",
+  "{count} more results": {
+    "one": "Nog {count} resultaat",
+    "other": "Nog {count} resultaten"
+  },
+  "Search meetings and folders": "Vergaderingen en mappen zoeken",
+  "Search…": "Zoeken…",
+  "All meetings": "Alle meetings",
+  "Choose meetings or folders": "Kies meetings of mappen",
+  "In this chat": "In dit gesprek",
+  "and {count} others": "en {count} andere",
+  "{count} more": "Nog {count}",
+  "Clear": "Wissen"
 }

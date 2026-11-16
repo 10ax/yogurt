@@ -569,7 +569,6 @@
   "Calendar event unavailable": "कैलेंडर इवेंट उपलब्ध नहीं है",
   "{count} left": "{count} बाकी",
   "Delete now": "अभी हटाएँ",
-  "Add a meeting or folder": "मीटिंग या फ़ोल्डर जोड़ें",
   "Recent": "हाल की",
   "Show all": "सभी दिखाएँ",
   "Move to Trash": "ट्रैश में ले जाएँ",
@@ -669,5 +668,14 @@
   "New recording": "नई रिकॉर्डिंग",
   "Hide events without a call link": "कॉल लिंक के बिना इवेंट छिपाएँ",
   "Keep your agenda and reminders focused on calls.": "अपने एजेंडा और रिमाइंडर को कॉल पर केंद्रित रखें।",
-  "Show earlier lines": "पिछली पंक्तियाँ दिखाएँ"
+  "Show earlier lines": "पिछली पंक्तियाँ दिखाएँ",
+  "{count} more results": "{count} और परिणाम",
+  "Search meetings and folders": "मीटिंग और फ़ोल्डर खोजें",
+  "Search…": "सर्च करें…",
+  "All meetings": "सभी मीटिंग",
+  "Choose meetings or folders": "मीटिंग या फ़ोल्डर चुनें",
+  "In this chat": "इस बातचीत में",
+  "and {count} others": "और {count} अन्य",
+  "{count} more": "{count} और",
+  "Clear": "साफ़ करें"
 }

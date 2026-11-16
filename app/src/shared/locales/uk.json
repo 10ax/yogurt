@@ -589,7 +589,6 @@
   "Calendar event unavailable": "Подія календаря недоступна",
   "{count} left": "Залишилось: {count}",
   "Delete now": "Видалити зараз",
-  "Add a meeting or folder": "Додати зустріч або папку",
   "Recent": "Нещодавні",
   "Show all": "Показати всі",
   "Move to Trash": "Перемістити до Кошика",
@@ -708,5 +707,19 @@
   "New recording": "Новий запис",
   "Hide events without a call link": "Приховувати події без посилання на дзвінок",
   "Keep your agenda and reminders focused on calls.": "Зосередьте розклад і нагадування на дзвінках.",
-  "Show earlier lines": "Показати попередні рядки"
+  "Show earlier lines": "Показати попередні рядки",
+  "{count} more results": {
+    "one": "Ще {count} результат",
+    "few": "Ще {count} результати",
+    "many": "Ще {count} результатів",
+    "other": "Ще {count} результату"
+  },
+  "Search meetings and folders": "Пошук зустрічей і папок",
+  "Search…": "Пошук…",
+  "All meetings": "Усі зустрічі",
+  "Choose meetings or folders": "Вибрати зустрічі або папки",
+  "In this chat": "У цій розмові",
+  "and {count} others": "і ще {count}",
+  "{count} more": "Ще {count}",
+  "Clear": "Очистити"
 }

@@ -589,7 +589,6 @@
   "Calendar event unavailable": "Událost kalendáře není dostupná",
   "{count} left": "Zbývá {count}",
   "Delete now": "Smazat nyní",
-  "Add a meeting or folder": "Přidat schůzku nebo složku",
   "Recent": "Nedávné",
   "Show all": "Zobrazit vše",
   "Move to Trash": "Přesunout do koše",
@@ -712,5 +711,18 @@
   "New recording": "Nová nahrávka",
   "Hide events without a call link": "Skrýt události bez odkazu na hovor",
   "Keep your agenda and reminders focused on calls.": "Zaměřte svůj program a připomínky na hovory.",
-  "Show earlier lines": "Zobrazit starší řádky"
+  "Show earlier lines": "Zobrazit starší řádky",
+  "{count} more results": {
+    "one": "{count} další výsledek",
+    "few": "{count} další výsledky",
+    "other": "{count} dalších výsledků"
+  },
+  "Search meetings and folders": "Hledat schůzky a složky",
+  "Search…": "Hledat…",
+  "All meetings": "Všechny schůzky",
+  "Choose meetings or folders": "Vybrat schůzky nebo složky",
+  "In this chat": "V této konverzaci",
+  "and {count} others": "a {count} další",
+  "{count} more": "{count} další",
+  "Clear": "Vymazat"
 }

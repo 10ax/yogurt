@@ -579,7 +579,6 @@
   "Calendar event unavailable": "Evenimentul din calendar nu este disponibil",
   "{count} left": "Au rămas {count}",
   "Delete now": "Șterge acum",
-  "Add a meeting or folder": "Adaugă o întâlnire sau un dosar",
   "Recent": "Recente",
   "Show all": "Arată tot",
   "Move to Trash": "Mutați în Coș",
@@ -696,5 +695,18 @@
   "New recording": "Înregistrare nouă",
   "Hide events without a call link": "Ascunde evenimentele fără link de apel",
   "Keep your agenda and reminders focused on calls.": "Concentrează agenda și mementourile pe apeluri.",
-  "Show earlier lines": "Afișează rândurile anterioare"
+  "Show earlier lines": "Afișează rândurile anterioare",
+  "{count} more results": {
+    "one": "Încă {count} rezultat",
+    "few": "Încă {count} rezultate",
+    "other": "Încă {count} de rezultate"
+  },
+  "Search meetings and folders": "Caută întâlniri și dosare",
+  "Search…": "Caută…",
+  "All meetings": "Toate întâlnirile",
+  "Choose meetings or folders": "Alege întâlniri sau dosare",
+  "In this chat": "În această conversație",
+  "and {count} others": "și încă {count}",
+  "{count} more": "Încă {count}",
+  "Clear": "Șterge"
 }

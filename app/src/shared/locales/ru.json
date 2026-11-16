@@ -589,7 +589,6 @@
   "Calendar event unavailable": "Событие календаря недоступно",
   "{count} left": "Осталось: {count}",
   "Delete now": "Удалить сейчас",
-  "Add a meeting or folder": "Добавить встречу или папку",
   "Recent": "Недавние",
   "Show all": "Показать все",
   "Move to Trash": "Переместить в Корзину",
@@ -708,5 +707,19 @@
   "New recording": "Новая запись",
   "Hide events without a call link": "Скрывать события без ссылки на звонок",
   "Keep your agenda and reminders focused on calls.": "Сосредоточьтесь на звонках в расписании и напоминаниях.",
-  "Show earlier lines": "Показать предыдущие строки"
+  "Show earlier lines": "Показать предыдущие строки",
+  "{count} more results": {
+    "one": "Ещё {count} результат",
+    "few": "Ещё {count} результата",
+    "many": "Ещё {count} результатов",
+    "other": "Ещё {count} результата"
+  },
+  "Search meetings and folders": "Поиск встреч и папок",
+  "Search…": "Поиск…",
+  "All meetings": "Все встречи",
+  "Choose meetings or folders": "Выбрать встречи или папки",
+  "In this chat": "В этом разговоре",
+  "and {count} others": "и ещё {count}",
+  "{count} more": "Ещё {count}",
+  "Clear": "Очистить"
 }

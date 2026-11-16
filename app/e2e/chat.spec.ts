@@ -79,7 +79,7 @@ test('a narrow chat is modal, contains keyboard focus, and keeps its draft when 
     expect(await panel.evaluate((el) => el.matches(':modal'))).toBe(true)
     await expect(input).toBeFocused()
     await page.keyboard.press('Tab')
-    await expect(panel.getByRole('button', { name: 'Add a meeting or folder' })).toBeFocused()
+    await expect(panel.getByRole('button', { name: 'Choose meetings or folders' })).toBeFocused()
     await page.keyboard.press('Escape')
     await expect(panel).toHaveCount(0)
     await expect(page.getByTestId('chat-open')).toBeFocused()

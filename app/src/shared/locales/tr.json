@@ -569,7 +569,6 @@
   "Calendar event unavailable": "Takvim etkinliği kullanılamıyor",
   "{count} left": "{count} kaldı",
   "Delete now": "Şimdi sil",
-  "Add a meeting or folder": "Toplantı veya klasör ekle",
   "Recent": "Son konuşmalar",
   "Show all": "Tümünü göster",
   "Move to Trash": "Çöp Kutusuna taşı",
@@ -669,5 +668,14 @@
   "New recording": "Yeni kayıt",
   "Hide events without a call link": "Arama bağlantısı olmayan etkinlikleri gizle",
   "Keep your agenda and reminders focused on calls.": "Ajandanızı ve hatırlatıcılarınızı aramalara odaklayın.",
-  "Show earlier lines": "Önceki satırları göster"
+  "Show earlier lines": "Önceki satırları göster",
+  "{count} more results": "{count} sonuç daha",
+  "Search meetings and folders": "Toplantı ve klasör ara",
+  "Search…": "Ara…",
+  "All meetings": "Tüm toplantılar",
+  "Choose meetings or folders": "Toplantı veya klasör seç",
+  "In this chat": "Bu sohbette",
+  "and {count} others": "ve {count} diğer",
+  "{count} more": "{count} tane daha",
+  "Clear": "Temizle"
 }

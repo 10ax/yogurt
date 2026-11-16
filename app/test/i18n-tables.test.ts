@@ -65,8 +65,8 @@ it('translates the contextual recording action and menu timing in every locale',
 })
 
 it('uses Ask and conversations throughout the interface', () => {
-  // The rebuild explicitly calls its fresh-conversation action New chat; the page remains Ask.
-  expect(keys.filter(key => /\bchats?\b/i.test(key))).toEqual(['New chat'])
+  // Chat names the fresh-conversation action and selected scope group; the page remains Ask.
+  expect(keys.filter(key => /\bchats?\b/i.test(key))).toEqual(['In this chat', 'New chat'])
   expect(keys).toContain('Ask')
   expect(keys).toContain('Conversations')
 })
@@ -179,4 +179,39 @@ it('translates recording deletion and retention in every locale', () => {
     expect(load(id)[key]).toBeTypeOf('string')
     if (id !== 'en' && !(id === 'fil' && key === 'Settings')) expect(load(id)[key]).not.toBe(key)
   }
+})
+
+it('translates the context selector search in every locale', () => {
+  for (const key of ['Search…', 'Search meetings and folders']) {
+    expect(keys).toContain(key)
+    for (const { id } of LOCALES) {
+      expect(load(id)[key]).toBeTypeOf('string')
+      expect(load(id)[key]).not.toBe('')
+      if (id !== 'en') expect(load(id)[key]).not.toBe(key)
+    }
+  }
+})
+
+it('translates additional context results and their singular form', () => {
+  const key = '{count} more results'
+  expect(keys).toContain(key)
+  for (const { id } of LOCALES) {
+    const entry = load(id)[key]
+    expect(entry).toBeDefined()
+    expect(forms(entry).every(value => value.trim().length > 0)).toBe(true)
+    if (id !== 'en') expect(forms(entry)).not.toContain(key)
+  }
+  expect(load('en')[key]).toEqual({ one: '{count} more result', other: key })
+})
+
+
+it('translates scope labels and actions in every locale', () => {
+  for (const key of ['All meetings', 'Choose meetings or folders', 'In this chat', 'and {count} others', '{count} more', 'Clear']) {
+    expect(keys).toContain(key)
+    for (const { id } of LOCALES) {
+      expect(load(id)[key]).toBeDefined()
+      if (id !== 'en') expect(forms(load(id)[key])).not.toContain(key)
+    }
+  }
+  expect(load('en')['and {count} others']).toEqual({ one: 'and {count} other', other: 'and {count} others' })
 })

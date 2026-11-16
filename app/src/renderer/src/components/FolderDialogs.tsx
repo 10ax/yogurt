@@ -28,7 +28,7 @@ export function FolderName({ folder, onDone }: { folder?: Folder; onDone: (made?
   }
   return (
     <Modal testId="folder-name" title={folder ? t('Rename folder') : t('New folder')}
-      description={folder ? t('Its meetings stay in it.') : t('A folder keeps related meetings together. A meeting can be in more than one.')}
+      description={folder ? undefined : t('A meeting can be in more than one folder.')}
       onCancel={() => onDone()} busy={busy}>
       <form onSubmit={(e) => { e.preventDefault(); void save() }}>
         <div className="people-add-field mx-5 mb-4 flex h-9 items-center gap-2 rounded-md border border-line bg-card px-2.5">
@@ -38,7 +38,7 @@ export function FolderName({ folder, onDone }: { folder?: Folder; onDone: (made?
             className="h-full min-w-0 flex-1 bg-transparent text-[13px] outline-none placeholder:text-muted" />
         </div>
         {!folder && <FolderChoices value={appearance} onChange={setAppearance} disabled={busy} />}
-        {failed && <p className="modal-error" role="alert">{t("Yogurt couldn't save this folder. Try again.")}</p>}
+        {failed && <p className="modal-error" role="alert">{t("Yogurt couldn't save this folder.")}</p>}
         <div className="modal-actions">
           <button data-testid="folder-name-save" type="submit" disabled={busy || !name.trim()} className="modal-button primary">{folder ? t('Rename') : t('Create folder')}</button>
           <ModalClose data-testid="folder-name-cancel" type="button" data-dialog-cancel disabled={busy} className="modal-button">{t('Cancel')}</ModalClose>
@@ -59,7 +59,7 @@ export function DeleteFolder({ folder, onDone }: { folder: Folder; onDone: (dele
   return (
     <Modal testId="folder-delete-confirm" role="alertdialog" title={t('Delete “{name}”?', { name: folder.name })}
       description={t('Only the folder is deleted. Its meetings stay in Meetings.')} onCancel={() => onDone(false)} busy={busy}>
-      {failed && <p className="modal-error" role="alert">{t("Yogurt couldn't delete this folder. Try again.")}</p>}
+      {failed && <p className="modal-error" role="alert">{t("Yogurt couldn't delete this folder.")}</p>}
       <div className="modal-actions">
         <button data-testid="folder-delete-yes" onClick={() => void yes()} disabled={busy} className="modal-button danger">{t('Delete folder')}</button>
         <ModalClose data-testid="folder-delete-cancel" data-dialog-cancel disabled={busy} className="modal-button">{t('Cancel')}</ModalClose>
@@ -83,7 +83,7 @@ export function FolderAppearanceDialog({ folder, onDone }: { folder: Folder; onD
   return <Modal testId="folder-appearance" title={t('Change icon')} onCancel={onDone} busy={busy}>
     <div className="folder-appearance-preview"><span className="folder-preview-tile" data-folder-color={appearance.color}><FolderGlyph appearance={appearance} size={23} /></span><strong>{folder.name}</strong></div>
     <FolderChoices value={appearance} onChange={setAppearance} disabled={busy} />
-    {failed && <p className="modal-error" role="alert">{t("Yogurt couldn't save this folder. Try again.")}</p>}
+    {failed && <p className="modal-error" role="alert">{t("Yogurt couldn't save this folder.")}</p>}
     <div className="modal-actions">
       <button data-testid="folder-appearance-save" onClick={() => void save()} disabled={busy} className="modal-button primary">{t('Save')}</button>
       <ModalClose data-dialog-cancel disabled={busy} className="modal-button">{t('Cancel')}</ModalClose>

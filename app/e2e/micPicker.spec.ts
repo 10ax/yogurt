@@ -62,7 +62,7 @@ test('the mic picker lists the mics, switches the live recording, remembers the 
     await page.getByTestId('mic-option').filter({ hasText: 'Webcam' }).click()
     await expect(page.getByTestId('rec-mic')).toHaveText('HD Pro Webcam C920')
     await fake(app, 'micDevices', null)
-    await expect(page.getByTestId('rec-mic-note')).toHaveText("HD Pro Webcam C920 isn't available anymore. Recording continues with Auto.")
+    await expect(page.getByTestId('rec-mic-note')).toHaveText("The selected microphone is unavailable, so recording is using your system microphone.")
     await expect(page.getByTestId('rec-mic')).toHaveText('MacBook Pro Microphone')
     await expect(page.getByTestId('note-state')).toHaveAttribute('data-state', 'recording')
     await chip.click()

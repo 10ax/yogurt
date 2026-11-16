@@ -141,7 +141,7 @@ test('both AI stages live beside recording, open below, retry failures and disap
         })
       }, state)
       await page.getByTestId('notes-setup-retry').click()
-      await expect(popup).toContainText("Couldn't restart the download. Try again.")
+      await expect(popup).toContainText("Yogurt couldn't restart the download.")
       await page.getByTestId('notes-setup-retry').click()
       await expect(trigger).toHaveAccessibleName(`${label} · 27%`)
       await setSetup(app, ready)
@@ -280,7 +280,7 @@ test('skipping from the popover confirms only success, opens Settings, and dismi
     await setSetup(app, upgrade)
     await page.getByTestId('notes-setup-open').click()
     await page.getByTestId('notes-setup-skip').click()
-    await expect(page.getByRole('alert')).toHaveText("Couldn't change the notes model. Try again.")
+    await expect(page.getByRole('alert')).toHaveText("Yogurt couldn't change the notes model.")
     await expect(toast).toHaveCount(0)
     for (const dismiss of ['settings', 'close', 'timeout']) {
       if (dismiss !== 'settings') {
@@ -366,7 +366,7 @@ test('Settings shows restore progress without a title-bar download and keeps the
       await expect(row).not.toContainText('Getting the smaller model')
       await expect(row).not.toContainText('The larger model keeps running summaries and Ask')
       if (fail) {
-        await expect(row.getByRole('alert')).toHaveText("Couldn't change the notes model. Try again.")
+        await expect(row.getByRole('alert')).toHaveText("Yogurt couldn't change the notes model.")
         await expect(action).toHaveText('Remove')
       } else {
         await expect(row.getByRole('alert')).toHaveCount(0)
@@ -384,12 +384,12 @@ test('Settings download, Skip, restart and Remove use the real setup controller'
     await go(page, '/settings')
     const action = page.getByTestId('settings-notes-model-action')
     await expect(action).toHaveText('Remove')
-    await expect(page.getByTestId('settings-notes-model')).toContainText('Notes use this model. Removing it brings back the smaller one.')
+    await expect(page.getByTestId('settings-notes-model')).toContainText('Removing this model restores the smaller one.')
     await action.click()
     await expect(action).toHaveText(/^Download \([\d.]+ GB\)$/)
     await expect(page.getByTestId('settings-notes-model')).toContainText("More detailed, accurate notes. Replaces the current model, so you don't keep both.")
     await action.click()
-    await expect(action).toHaveText('Skip for now')
+    await expect(action).toHaveText('Skip')
     await action.click()
     await expect(action).toHaveText(/^Download \([\d.]+ GB\)$/)
     await expect(page.getByTestId('notes-skipped-toast')).toHaveCount(0)

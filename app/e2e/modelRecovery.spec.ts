@@ -14,7 +14,7 @@ test('a failed notes-model download explains waiting notes and answers, and retr
     // Controller download/retry/concurrency is covered in setup.test.ts. Exercise the
     // real renderer's existing IPC boundary while fake model work waits in its queue.
     await app.evaluate(({ ipcMain, BrowserWindow }) => {
-      let state = { phase: 'ready', fraction: 1, notesError: 'Not enough disk space. Free up 4 GB and try again.' } as { phase: string; fraction: number; notesError?: string }
+      let state = { phase: 'ready', fraction: 1, notesError: 'The download needs 4 GB more free space.' } as { phase: string; fraction: number; notesError?: string }
       let rejectOnce = true
       ipcMain.removeHandler('setup:state')
       ipcMain.handle('setup:state', () => state)
@@ -66,7 +66,7 @@ test('a failed notes-model download explains waiting notes and answers, and retr
     await expect(page.getByTestId('note-enhanced-waiting')).toHaveCount(0)
     // A rejected Retry request remains visible and retryable instead of escaping the click handler.
     await page.getByTestId('notes-model-retry').click()
-    await expect(page.getByTestId('notes-model-error')).toContainText("Couldn't restart the download. Try again.")
+    await expect(page.getByTestId('notes-model-error')).toContainText("Yogurt couldn't restart the download.")
     await expect(page.getByTestId('notes-model-retry')).toBeEnabled()
     await page.getByTestId('chat-open').click()
     await expect(chatError).toBeVisible()

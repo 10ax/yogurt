@@ -49,7 +49,7 @@ test('paused recording controls fit the minimum window and keep focus inside eac
   } finally { await app.close() }
 })
 
-test('Personal jargon has the same visible unfocused field boundary in light and dark mode', async ({}, testInfo) => {
+test('Custom words has the same visible unfocused field boundary in light and dark mode', async ({}, testInfo) => {
   const { app, page } = await launch()
   try {
     await page.getByTestId('settings-open').click()

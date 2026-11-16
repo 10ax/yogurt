@@ -205,7 +205,7 @@ describe('SetupController', () => {
       const first = c.installed()?.llm
       expect(first).toBeTruthy()
       expect(c.installed()?.recommendedLlm).toBeUndefined()
-      expect(c.state).toMatchObject({ phase: 'ready', notesUpgradeError: 'Not enough disk space. Free up 4 GB and try again.', notesUpgradeDownloading: undefined, notesUpgradeFraction: .42, notesUpgradeTotalBytes: expect.any(Number), notesUpgradeEtaSec: undefined })
+      expect(c.state).toMatchObject({ phase: 'ready', notesUpgradeError: 'The download needs 4 GB more free space.', notesUpgradeDownloading: undefined, notesUpgradeFraction: .42, notesUpgradeTotalBytes: expect.any(Number), notesUpgradeEtaSec: undefined })
       expect(c.state.notesError).toBeUndefined()
       blocked = false
       await Promise.all(Array.from({ length: 10 }, () => c.retry()))
@@ -249,7 +249,7 @@ describe('SetupController', () => {
     try {
       await c.start()
       await vi.advanceTimersByTimeAsync(0)
-      expect(c.state).toMatchObject({ phase: 'ready', notesError: 'Not enough disk space. Free up 4 GB and try again.' })
+      expect(c.state).toMatchObject({ phase: 'ready', notesError: 'The download needs 4 GB more free space.' })
       expect(c.state.notesTotalBytes).toBeGreaterThan(0)
       expect(c.state.notesFraction).toBe(.42)
       expect(c.state.notesEtaSec).toBeUndefined()
@@ -352,7 +352,7 @@ describe('SetupController', () => {
     const { c } = setup({ download: { ...inner, freeDiskGB: async () => free } })
     await c.start()
     expect(c.state.phase).toBe('error')
-    expect(c.state.message).toMatch(/Not enough disk space/)
+    expect(c.state.message).toMatch(/The download needs 12 GB more free space/)
     free = 500
     await c.retry(); await c.idle()
     expect(c.state.phase).toBe('ready')

@@ -22,7 +22,7 @@ export function Folder({ folder, open, onStarted }: { folder: FolderRow; open: (
       {appearance && <FolderAppearanceDialog folder={folder} onDone={() => setAppearance(false)} />}
       <LoadingContent pending={!past.cards} testId="meetings-loading" skeleton={<MeetingListLoading showFolders={false} />} className="library-load">{!past.cards?.length ? <section data-testid="folder-empty" className="library-empty empty-state"><div className="empty-state-content">
         <div className="empty-tile"><FolderIcon size={28} strokeWidth={1.5} aria-hidden="true" /></div><h2>{t('No meetings here yet')}</h2>
-        <p>{t('Start recording here, drag a meeting from Meetings, or add one from its note.')}</p>
+        <p>{t('You can record here or add existing meetings to this folder.')}</p>
       </div></section> : <PastNotes showFolders={false} cards={past.cards ?? []} day={day} more={past.more} sentinel={past.setSentinel} onOpen={open} />}</LoadingContent>
     </div>
   </div>

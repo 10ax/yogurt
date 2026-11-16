@@ -43,7 +43,7 @@ test('a failed rewrite keeps the previous edited Enhanced note visible, copyable
     await expect(page.getByTestId('note-enhanced-rewrite-failed')).toHaveAttribute('role', 'alert')
     const retry = page.getByTestId('note-enhanced-rewrite-failed').getByRole('button', { name: 'Try again' })
     await expect(retry).toHaveCSS('text-decoration-line', 'underline')
-    expect(await retry.evaluate((el) => getComputedStyle(el).color)).not.toBe(await page.getByText("Couldn't regenerate the summary. Your previous version is below.").evaluate((el) => getComputedStyle(el).color))
+    expect(await retry.evaluate((el) => getComputedStyle(el).color)).not.toBe(await page.getByText("Yogurt couldn't regenerate the summary, so your previous version is still shown.").evaluate((el) => getComputedStyle(el).color))
     await expect(page.getByTestId('note-enhanced-editor')).toHaveText(prior)
     await page.getByTestId('share-button').click()
     await page.getByTestId('share-copy-summary').click()

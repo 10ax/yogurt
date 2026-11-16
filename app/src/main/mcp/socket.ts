@@ -1,6 +1,7 @@
 import { chmodSync, existsSync, unlinkSync } from 'node:fs'
 import { createServer, type Socket } from 'node:net'
 import type { Mcp } from './server'
+import { t } from '../../shared/i18n'
 
 /** one message is never this big; a client sending more is cut off rather than growing memory */
 const MAX_LINE = 1024 * 1024
@@ -31,7 +32,7 @@ export async function serveMcp(path: string, mcp: Mcp, onClients: (names: string
         const m = msg as { method?: string; params?: { clientInfo?: { name?: unknown } } } | null
         if (m?.method === 'initialize') {
           const name = m.params?.clientInfo?.name
-          names.set(sock, typeof name === 'string' && name.trim() ? name.trim().slice(0, 60) : 'An AI app')
+          names.set(sock, typeof name === 'string' && name.trim() ? name.trim().slice(0, 60) : t('An AI app'))
           changed()
         }
         chain = chain.then(async () => {

@@ -17,11 +17,11 @@ describe('stepText: what an answer that has not started says it is doing', () =>
   it('a long step says it is still on it, then stays on the last wording', () => {
     const read = { kind: 'reading' as const, title: 'Standup' }
     expect(stepText(read, 1)).toBe('Still reading Standup…')
-    expect(stepText(read, 2)).toBe('Still reading. Your answer comes next.')
-    expect(stepText(read, 9)).toBe('Still reading. Your answer comes next.')
+    expect(stepText(read, 2)).toBe('Still reading…')
+    expect(stepText(read, 9)).toBe('Still reading…')
     expect(stepText({ kind: 'loading' }, 5)).toBe('Still thinking…')
     expect(stepText({ kind: 'searching' }, 5)).toBe('Still searching your meetings…')
-    expect(stepText({ kind: 'reading', meetings: 4, title: 'Standup' }, 1)).toBe('Still reading. Your answer comes next.')
+    expect(stepText({ kind: 'reading', meetings: 4, title: 'Standup' }, 1)).toBe('Still reading…')
     expect(STEP_EVERY_MS).toBe(4000)
   })
   it('never says notes are being generated: that is the summary\'s wording, not an answer\'s', () => {

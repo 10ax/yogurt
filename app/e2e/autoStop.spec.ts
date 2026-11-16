@@ -53,7 +53,7 @@ test('the call ends: after the grace the recording stops by itself, with no ques
     // nothing asked
     expect(cards(app)).toBe(0)
     // the window is away in test runs: the notification says it, and clicking it opens the note to resume
-    await expect.poll(() => notice(app)).toEqual({ title: 'Call ended. Recording stopped.', body: 'Design review' })
+    await expect.poll(() => notice(app)).toEqual({ title: 'Recording stopped when the call ended.', body: 'Design review' })
     await expect.poll(async () => (await fake<{ view: { kind: string; callEnded?: boolean } | null }>(app, 'widget')).view).toMatchObject({ kind: 'captured', callEnded: true })
     // Automatic stops use the existing system notice, never a finished recorder or a second notice.
     await expect.poll(() => fake(app, 'widget')).toMatchObject({ visible: false, bounds: null, notice: null })

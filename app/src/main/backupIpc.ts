@@ -22,7 +22,7 @@ export function hookBackup(d: { db: DatabaseSync; meetingsDir: string; window: (
       if (unsaved) return { ok: false, error: 'unsaved', meetingId: unsaved }
       let path = fakePath()
       if (!path) {
-        const opts = { title: t('Export all notes'), defaultPath: join(app.getPath('documents'), `Yogurt backup ${today()}.zip`), filters: [{ name: 'Zip', extensions: ['zip'] }] }
+        const opts = { title: t('Export backup'), defaultPath: join(app.getPath('documents'), `Yogurt backup ${today()}.zip`), filters: [{ name: 'Zip', extensions: ['zip'] }] }
         const win = d.window()
         const r = win ? await dialog.showSaveDialog(win, opts) : await dialog.showSaveDialog(opts)
         if (r.canceled || !r.filePath) return { ok: false, error: 'cancelled' }

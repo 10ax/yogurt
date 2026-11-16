@@ -61,7 +61,7 @@ test('the menu copies the notes as text and HTML, the transcript, and Mac shortc
   try {
     await finished(app, page)
     await page.getByTestId('share-button').click()
-    await expect(page.getByTestId('share-menu').getByRole('menuitem')).toHaveText([/Copy my notes/, /Copy summary/, /Copy transcript/, /Export as Markdown/])
+    await expect(page.getByTestId('share-menu').getByRole('menuitem')).toHaveText([/Copy my notes/, /Copy summary/, /Copy transcript/, /Export Markdown/])
     await page.getByTestId('share-copy-summary').click()
     await expect(page.getByTestId('share-said')).toHaveText('Copied')
     await expect(page.getByTestId('share-button')).toHaveAttribute('data-state', 'copied')
@@ -99,7 +99,7 @@ test('the menu copies the notes as text and HTML, the transcript, and Mac shortc
   } finally { await putClipboardBack(app); await app.close() }
 })
 
-test('Export as Markdown writes the title, notes and transcript to the file the save step gives', async () => {
+test('Export Markdown writes the title, notes and transcript to the file the save step gives', async () => {
   const file = join(mkdtempSync(join(tmpdir(), 'yogurt-export-')), 'out.md')
   const { app, page } = await launch({ YOGURT_EXPORT_PATH: file })
   try {

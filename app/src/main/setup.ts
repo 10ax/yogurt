@@ -44,8 +44,8 @@ const DISK_HEADROOM_GB = 10
 
 /** Plain-English message for anything that can go wrong during setup. */
 export function friendly(err: unknown): string {
-  if (err instanceof DiskSpaceError) return t('Not enough disk space. Free up {gb} GB and try again.', { gb: err.needGB })
-  if (err instanceof ChecksumError) return t('The download was corrupted. Try again.')
+  if (err instanceof DiskSpaceError) return t('The download needs {gb} GB more free space.', { gb: err.needGB })
+  if (err instanceof ChecksumError) return t('The downloaded file is damaged.')
   const msg = err instanceof Error ? err.message : String(err)
   if (/fetch failed|ENOTFOUND|ECONN|ETIMEDOUT|EAI_AGAIN|network|socket|HTTP \d|receiving data/i.test(msg)) {
     return t('Download interrupted. Check your connection and try again.')

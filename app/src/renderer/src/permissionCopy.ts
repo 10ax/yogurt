@@ -2,7 +2,6 @@ import { AudioLines, Bell, CalendarDays, Mic, Users, type LucideIcon } from 'luc
 import type { PermissionKind } from '../../shared/types'
 import type { ScreenId } from '../../shared/onboarding'
 import { t } from '../../shared/i18n'
-import { osWords } from './keys'
 
 /**
  * What each permission gives the person: reason is the explanation Settings shows. pane and where
@@ -11,23 +10,23 @@ import { osWords } from './keys'
 export const permissionCopy = (k: PermissionKind): { icon: LucideIcon; name: string; reason: string; pane: string; where: string } => {
   switch (k) {
     case 'mic': return {
-      icon: Mic, name: t('Microphone'), reason: t('So it can hear you and write down what you say.'),
+      icon: Mic, name: t('Microphone'), reason: t('Yogurt transcribes your voice.'),
       pane: t('Microphone'), where: t('In Microphone, find Yogurt and turn it on.'),
     }
     case 'systemAudio': return {
-      icon: AudioLines, name: t('Call audio'), reason: t('So it can write down what the others say. No bot joins the call.'),
+      icon: AudioLines, name: t('Call audio'), reason: t('Yogurt transcribes the call audio without joining the call.'),
       pane: t('Screen & System Audio Recording'), where: t('In Screen & System Audio Recording, under System Audio Recording Only, turn on Yogurt.'),
     }
     case 'calendar': return {
-      icon: CalendarDays, name: t('Calendar'), reason: t("So your notes get the meeting's name and who was in it."),
+      icon: CalendarDays, name: t('Calendar'), reason: t("You can use calendar events to add meeting titles and attendees to your notes."),
       pane: t('Calendars'), where: t('In Calendars, find Yogurt and turn it on.'),
     }
     case 'notifications': return {
-      icon: Bell, name: t('Notifications'), reason: t('So it can offer to take notes when a call starts.'),
+      icon: Bell, name: t('Notifications'), reason: t('You can get a reminder when Yogurt detects a call.'),
       pane: t('Notifications'), where: t('In Notifications, click Yogurt, then turn on Allow notifications.'),
     }
     case 'accessibility': return {
-      icon: Users, name: t('Names from your calls'), reason: t('Lets Yogurt read who is talking in Zoom, Meet and Teams. Without it, the others show as Them.'),
+      icon: Users, name: t('Names from your calls'), reason: t('Yogurt uses names shown by supported call apps to label speakers in your transcript.'),
       pane: t('Accessibility'), where: t('In Accessibility, find Yogurt and turn it on.'),
     }
   }
@@ -47,12 +46,12 @@ export function finishSetupReason(k: PermissionKind): string {
 /** The first run's screens: a short headline and one sentence on why it matters */
 export const screenCopy = (id: 'welcome' | ScreenId | 'ready'): { title: string; text: string } => {
   switch (id) {
-    case 'welcome': return { title: t('Take note.'), text: osWords({ mac: t('Yogurt writes your meeting notes while you talk. No bot joins the call, and nothing leaves your Mac.'), other: t('Yogurt writes your meeting notes while you talk. No bot joins the call, and nothing leaves your computer.') }) }
+    case 'welcome': return { title: t('Take note.'), text: t('Yogurt records calls without joining them and writes summaries on your computer afterward.') }
     case 'record': return { title: t('Hear the whole call'), text: t("Yogurt hears you through your microphone, and everyone else through your Mac's sound.") }
-    case 'calendar': return { title: t('Know every meeting'), text: t("Notes start with the meeting's name and who's invited, from the calendars already on your Mac.") }
-    case 'notifications': return { title: t('Never miss a call'), text: t('When a call starts, Yogurt offers to take notes. One click and it starts recording.') }
-    case 'accessibility': return { title: t('See who said what'), text: t('Yogurt reads the names Zoom, Meet and Teams show, so your transcript says who spoke instead of Them.') }
-    case 'ready': return { title: t('Almost ready'), text: osWords({ mac: t('Yogurt is setting up transcription. This happens once, then it all runs on your Mac.'), other: t('Yogurt is setting up transcription. This happens once, then it all runs on your computer.') }) }
+    case 'calendar': return { title: t('Your calendar'), text: t("You can use calendar events to add meeting titles and attendees to your notes.") }
+    case 'notifications': return { title: t('Recording reminders'), text: t('You can get a reminder when Yogurt detects a call.') }
+    case 'accessibility': return { title: t('See who said what'), text: t('Yogurt uses names shown by supported call apps to label speakers in your transcript.') }
+    case 'ready': return { title: t('Almost ready'), text: t('Yogurt is setting up transcription on your computer.') }
   }
 }
 

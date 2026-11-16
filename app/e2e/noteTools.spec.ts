@@ -16,7 +16,7 @@ test('meeting tools expose all copy choices, an anchored search, and a multiline
     const copy = page.getByTestId('share-button')
     await expect(page.locator('.note-header').getByTestId('share-button')).toHaveText('Copy')
     await copy.click()
-    await expect(page.getByTestId('share-menu').getByRole('menuitem')).toHaveText(['Copy my notes', 'Copy summary', 'Copy transcript', 'Export as Markdown…'])
+    await expect(page.getByTestId('share-menu').getByRole('menuitem')).toHaveText(['Copy my notes', 'Copy summary', 'Copy transcript', 'Export Markdown…'])
     await page.keyboard.press('Escape')
     await page.getByTestId('note-transcript-toggle').click()
     const search = page.getByTestId('transcript-search'), field = page.locator('.transcript-search-field')

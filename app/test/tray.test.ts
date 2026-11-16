@@ -92,7 +92,7 @@ it('refreshes calendar targets without letting an older read overwrite a newer o
   const old = tray.refreshCalendar()
   d.events.mockResolvedValueOnce([event]); await tray.refreshCalendar()
   finish([]); await old
-  expect(tray.items()[0]).toBe('Now: Next call')
+  expect(tray.items()[0]).toBe('Now · Next call')
   tray.click('next'); expect(d.event).toHaveBeenLastCalledWith(event, false)
   tray.click('join'); expect(d.event).toHaveBeenLastCalledWith(event, true)
   state.meeting = { id: 'm1', title: 'Standup' }; state.change()

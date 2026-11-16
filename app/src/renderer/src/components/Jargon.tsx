@@ -31,8 +31,8 @@ export function Jargon() {
     <LoadingContent pending={!loaded}><div className="settings-row">
       <span className="settings-permission-icon"><BookA size={17} strokeWidth={1.75} aria-hidden="true" /></span>
       <div className="settings-row-copy">
-        <label htmlFor="jargon-input" className="settings-label">{t('Personal jargon')}</label>
-        <p className="settings-description">{t('Names, products, and acronyms you want Yogurt to spell right in your transcripts and notes.')}</p>
+        <label htmlFor="jargon-input" className="settings-label">{t('Custom words')}</label>
+        <p className="settings-description">{t('Yogurt uses these words to spell names and terms in your transcripts and notes.')}</p>
         <div data-testid="jargon-field" className="settings-jargon-field" onMouseDown={(e) => { if (e.target === e.currentTarget) { e.preventDefault(); input.current?.focus() } }}>
           {terms.map((term) => (
             <span key={term.toLowerCase()} data-testid="jargon-chip" className="settings-jargon-chip">
@@ -44,9 +44,9 @@ export function Jargon() {
           ))}
           <input ref={input} id="jargon-input" data-testid="jargon-input" value={text} maxLength={MAX_TERM + 20} autoComplete="off" spellCheck={false}
             role="combobox" aria-expanded={fresh} aria-controls="jargon-suggestions" aria-autocomplete="list" aria-activedescendant={fresh ? 'jargon-suggest' : undefined}
-            placeholder={full ? t('Your list is full. Remove a term to add another.') : t('Add a term and press Enter')}
+            placeholder={full ? t('The list is full.') : t('Add a term and press Enter')}
             onChange={(e) => setText(e.target.value)} onKeyDown={keys} className="settings-jargon-input" />
-          <ul id="jargon-suggestions" role="listbox" aria-label={t('Personal jargon')} hidden={!fresh} className="settings-jargon-suggest">
+          <ul id="jargon-suggestions" role="listbox" aria-label={t('Custom words')} hidden={!fresh} className="settings-jargon-suggest">
             {fresh && (
               // keeps the field focused, so the next term can be typed straight away
               <li id="jargon-suggest" data-testid="jargon-suggest" role="option" aria-selected="true" onMouseDown={(e) => e.preventDefault()} onClick={add} className="settings-jargon-option">

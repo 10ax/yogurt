@@ -107,7 +107,7 @@ export function ShareMenu({ id, shown, status, hasEnhanced, beforeUse }: { id: s
             <Copy size={15} strokeWidth={1.75} aria-hidden="true" className="text-muted" />{t('Copy transcript')}
           </button>
           <button ref={(el) => { items.current[3] = el }} role="menuitem" data-testid="share-export" onClick={() => run(() => void save())} className={row}>
-            <FileDown size={15} strokeWidth={1.75} aria-hidden="true" className="text-muted" />{t('Export as Markdown…')}
+            <FileDown size={15} strokeWidth={1.75} aria-hidden="true" className="text-muted" />{t('Export Markdown…')}
           </button>
         </div>
       )}

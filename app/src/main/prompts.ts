@@ -107,7 +107,7 @@ export function createPrompts(d: {
     stopped(m: Meeting) {
       close()
       if (d.windowVisible()) return
-      const title = t('Call ended. Recording stopped.'), body = m.title
+      const title = t('Recording stopped when the call ended.'), body = m.title
       const click = () => { notice?.n?.close(); notice = null; d.open(m.id) }
       notice = { title, body, click }
       if (!BACKGROUND && Notification.isSupported()) {

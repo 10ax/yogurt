@@ -38,7 +38,7 @@ export function hookShare(d: { store: Pick<Store, 'meeting' | 'notes' | 'segment
     // tests name the file themselves; people get the Mac's save panel
     let path: string | undefined = isFake() ? process.env.YOGURT_EXPORT_PATH : undefined
     if (!path) {
-      const opts = { title: t('Export as Markdown'), defaultPath: join(app.getPath('documents'), fileNameFor(m.title, m.startedAt)), filters: [{ name: 'Markdown', extensions: ['md'] }] }
+      const opts = { title: t('Export Markdown'), defaultPath: join(app.getPath('documents'), fileNameFor(m.title, m.startedAt)), filters: [{ name: 'Markdown', extensions: ['md'] }] }
       const win = d.window()
       const r = win ? await dialog.showSaveDialog(win, opts) : await dialog.showSaveDialog(opts)
       if (r.canceled || !r.filePath) return 'cancelled'

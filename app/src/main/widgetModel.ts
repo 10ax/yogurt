@@ -64,7 +64,7 @@ export class WidgetModel {
     const end = this.pausedAt ?? (this.kind === 'captured' ? this.endedAt : now)
     let note: WidgetView['note'] = null
     if (this.kind === 'recording') {
-      if (now < this.hiccupUntil) note = { tone: 'hiccup', text: this.pausedAt !== null ? t('Recording hiccup. Still paused.') : t('Recording hiccup. Still going.') }
+      if (now < this.hiccupUntil) note = { tone: 'hiccup', text: this.pausedAt !== null ? t('Recording is still paused after an interruption.') : t('Recording resumed after an interruption.') }
       else if (this.missingAudio.size === 2) note = { tone: 'hint', code: 'no-mic', missingAudio: ['mic', 'systemAudio'], text: this.mac ? t("Yogurt can't hear your microphone or the call. Turn on microphone and call audio in System Settings.") : this.noMic() }
       else if (this.missingAudio.has('mic')) note = { tone: 'hint', code: 'no-mic', text: this.mac ? t("Yogurt can't hear your mic. Allow it in System Settings.") : this.noMic() }
       else if (this.missingAudio.has('systemAudio')) note = { tone: 'hint', code: 'no-system-audio', text: this.mac ? t("Yogurt can't hear the call audio. Allow it in System Settings.") : t("Yogurt can't hear the call audio on this computer.") }

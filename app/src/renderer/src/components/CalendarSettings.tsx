@@ -54,7 +54,7 @@ export function CalendarSettings() {
       <button type="button" data-testid="calendar-settings-toggle" aria-expanded={open} aria-controls="settings-calendar-list" onClick={() => { expanded = !open; setOpen(expanded) }} className="settings-row settings-disclosure">
         <span className="settings-row-copy">
           <LoadingContent pending={!view} skeleton={<span className="settings-label settings-calendar-summary"><span className="loading-bar" style={{ width: 150 }} /></span>}><span data-testid="calendar-settings-summary" className="settings-label settings-calendar-summary" title={summary}>{summary}</span></LoadingContent>
-          <span className="settings-description block">{t('Choose which calendars Yogurt uses for your agenda and meeting reminders. Your calendar events stay unchanged.')}</span>
+          <span className="settings-description block">{t('Yogurt reads these calendars and never changes them.')}</span>
         </span>
         <ChevronDown size={16} aria-hidden="true" />
       </button>

@@ -75,11 +75,11 @@ export function NotesSetup({ go }: { go: (route: string) => void }) {
                 : upgrading ? t("Once this model is ready, we'll remove the old one.") : t('You can record meetings. AI summaries and Ask work when this finishes.')}</p>
               {(failed || upgrading) && <div className="notes-download-actions">
                 {failed && <button data-testid="notes-setup-retry" className="notes-download-retry" disabled={retrying} onClick={() => void retry()}>{retrying ? t('Retrying…') : t('Try again')}</button>}
-                {upgrading && <button data-testid="notes-setup-skip" className="notes-download-skip" disabled={setup.notesUpgradeChanging} onClick={() => void skip()}>{t('Skip for now')}</button>}
+                {upgrading && <button data-testid="notes-setup-skip" className="notes-download-skip" disabled={setup.notesUpgradeChanging} onClick={() => void skip()}>{t('Skip')}</button>}
               </div>}
             </div>
-            {retryFailed && <p role="alert">{t("Couldn't restart the download. Try again.")}</p>}
-            {skipFailed && <p role="alert">{t("Couldn't change the notes model. Try again.")}</p>}
+            {retryFailed && <p role="alert">{t("Yogurt couldn't restart the download.")}</p>}
+            {skipFailed && <p role="alert">{t("Yogurt couldn't change the notes model.")}</p>}
           </Popover.Popup>
         </Popover.Positioner>
       </Popover.Portal>

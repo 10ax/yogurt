@@ -64,7 +64,6 @@ export function Settings({ revision = 0, focus }: { revision?: number; focus?: s
       <div className="settings-scroll" ref={scroll}>
         <div className="settings-content">
           <h1 data-testid="settings-heading" className="settings-heading">{t('Settings')}</h1>
-          <p className="settings-intro">{osWords({ mac: t('Make Yogurt feel at home on your Mac.'), other: t('Make Yogurt feel at home on your computer.') })}</p>
 
           <h2 className="settings-section-heading">{t('General')}</h2>
           <div className="settings-group"><LoadingContent pending={!prefs} testId="settings-loading" onReady={() => setGeneralReady(true)}>
@@ -81,7 +80,7 @@ export function Settings({ revision = 0, focus }: { revision?: number; focus?: s
             <div className="settings-row">
               <div className="settings-row-copy">
                 <label htmlFor="settings-name" className="settings-label">{t('Your name')}</label>
-                <p className="settings-description">{t('So Yogurt knows which name in your calls is you.')}</p>
+                <p className="settings-description">{t('Yogurt uses your name to identify you in calls.')}</p>
               </div>
               <input id="settings-name" data-testid="settings-name" value={name} maxLength={80} autoComplete="name" spellCheck={false}
                 onChange={(e) => setName(e.target.value)} onBlur={saveName} onKeyDown={(e) => { if (e.key === 'Enter') e.currentTarget.blur() }}
@@ -155,7 +154,7 @@ export function Settings({ revision = 0, focus }: { revision?: number; focus?: s
               <div className="settings-row" key={keys}><dt>{label}</dt><dd><kbd>{keys}</kbd></dd></div>)}
           </dl>
 
-          <p className="settings-privacy"><Lock size={12} aria-hidden="true" />{osWords({ mac: t('Your meetings, notes and audio stay on this Mac.'), other: t('Your meetings, notes and audio stay on this computer.') })}</p>
+          <p className="settings-privacy"><Lock size={12} aria-hidden="true" />{t('Yogurt stores your meetings, notes and audio on this computer.')}</p>
         </div>
       </div>
     </div>
@@ -191,14 +190,14 @@ function NotesModel({ reveal = false }: { reveal?: boolean }) {
       <p className="settings-description">{setup.notesRestoreFraction !== undefined
         ? t('Getting the smaller model · {progress}', { progress: notesDownloadText(setup).detail })
         : downloading ? notesDownloadText(setup).detail : setup.notesUpgradeInstalled
-        ? t('Notes use this model. Removing it brings back the smaller one.')
+        ? t('Removing this model restores the smaller one.')
         : t("More detailed, accurate notes. Replaces the current model, so you don't keep both.")}</p>
       {setup.notesRestoreFraction !== undefined && <p className="settings-description">{t('The larger model keeps running summaries and Ask until then, and is removed after.')}</p>}
       {setup.notesUpgradeError && <p className="settings-description">{setup.notesUpgradeError}</p>}
-      {failed && <p role="alert" className="settings-description">{t("Couldn't change the notes model. Try again.")}</p>}
+      {failed && <p role="alert" className="settings-description">{t("Yogurt couldn't change the notes model.")}</p>}
     </div>
     <button data-testid="settings-notes-model-action" className="workspace-button settings-action" aria-busy={busy || setup.notesUpgradeChanging} disabled={busy || setup.notesUpgradeChanging} onClick={() => void act()}>
-      {setup.notesUpgradeInstalled ? (busy || setup.notesUpgradeChanging ? t('Removing…') : t('Remove')) : downloading ? t('Skip for now') : t('Download ({size} GB)', { size: notesUpgradeSize(setup.notesUpgradeBytes) })}
+      {setup.notesUpgradeInstalled ? (busy || setup.notesUpgradeChanging ? t('Removing…') : t('Remove')) : downloading ? t('Skip') : t('Download ({size} GB)', { size: notesUpgradeSize(setup.notesUpgradeBytes) })}
     </button>
   </div>
 }
@@ -217,7 +216,7 @@ function AppLanguage() {
       <span className="settings-permission-icon"><Globe size={17} strokeWidth={1.75} aria-hidden="true" /></span>
       <div className="settings-row-copy">
         <label htmlFor="settings-app-language" className="settings-label">{t('App language')}</label>
-        <p className="settings-description">{t("Yogurt's menus and buttons. Notes are written in the language of each meeting.")}</p>
+        <p className="settings-description">{t("This changes the language of Yogurt's menus and buttons.")}</p>
       </div>
       <span className="settings-select-wrap">
       <select id="settings-app-language" data-testid="settings-app-language" value={s?.language ?? ''} disabled={!s} onChange={(e) => pick(e.target.value)} className="settings-select">
@@ -301,10 +300,10 @@ function Backup() {
     <>
       <h2 className="settings-section-heading">{t('Backup')}</h2>
       <div data-testid="backup" className="settings-group settings-backup">
-        <p className="settings-description">{osWords({ mac: t('Save every meeting, its notes, transcript and recording to one file. Use it to move to a new Mac or after reinstalling.'), other: t('Save every meeting, its notes, transcript and recording to one file. Use it to move to a new computer or after reinstalling.') })}</p>
+        <p className="settings-description">{t('You can back up meetings, notes, transcripts and saved audio in one file.')}</p>
         <div className="settings-backup-actions">
           <button data-testid="backup-export" disabled={!!busy} onClick={() => void exportAll()} className={pill}>
-            <Download size={14} aria-hidden="true" className="text-muted" />{busy === 'export' ? t('Exporting…') : t('Export all notes')}
+            <Download size={14} aria-hidden="true" className="text-muted" />{busy === 'export' ? t('Exporting…') : t('Export backup')}
           </button>
           <button data-testid="backup-import" disabled={!!busy || recording} onClick={() => void importAll()} className={pill}>
             <Upload size={14} aria-hidden="true" className="text-muted" />{busy === 'import' ? t('Importing…') : t('Import notes')}
@@ -365,7 +364,7 @@ function AiApps() {
                 </button>
               </div>
               {status.clients.length > 0 && <p data-testid="ai-apps-clients" aria-live="polite" className="mt-3 text-[12px] leading-[18px] text-muted">
-                {t('Connected now: {apps}', { apps: [...new Set(status.clients)].join(', ') })}
+                {t('Connected apps · {apps}', { apps: [...new Set(status.clients)].join(', ') })}
               </p>}
             </div>
           </div>

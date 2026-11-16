@@ -122,7 +122,7 @@ it('explains the notes model benefit and removal in every locale', () => {
     const table = load(id)
     for (const key of [
       "More detailed, accurate notes. Replaces the current model, so you don't keep both.",
-      'Notes use this model. Removing it brings back the smaller one.',
+      'Removing this model restores the smaller one.',
       'Getting the smaller model · {progress}',
       'The larger model keeps running summaries and Ask until then, and is removed after.',
       'Removing…',
@@ -184,7 +184,7 @@ describe.each(LOCALES.filter((l) => l.id !== 'en'))('$english', ({ id }) => {
 
 it('translates recording deletion and retention in every locale', () => {
   for (const { id } of LOCALES) for (const old of ['Keep recordings after meetings', 'Turn off to delete audio after the transcript and summary are saved.', 'Only applies to meetings that finish from now on.']) expect(load(id)[old]).toBeUndefined()
-  for (const { id } of LOCALES) for (const key of ["Recording deleted", "Settings", "Delete recording", "Delete recording?", "The audio is deleted for good. Your transcript and notes stay.", "Keep the audio until the transcript is saved.", "Couldn't delete the recording. Try again.", "Keep audio recordings after meetings", "When off, new meetings' audio is deleted once the summary is saved."]) {
+  for (const { id } of LOCALES) for (const key of ["Recording deleted", "Settings", "Delete recording", "Delete recording?", "The audio is deleted for good. Your transcript and notes stay.", "Keep the audio until the transcript is saved.", "Yogurt couldn't delete the recording.", "Keep audio recordings after meetings", "When off, new meetings' audio is deleted once the summary is saved."]) {
     expect(keys).toContain(key)
     expect(load(id)[key]).toBeTypeOf('string')
     if (id !== 'en' && !(id === 'fil' && key === 'Settings')) expect(load(id)[key]).not.toBe(key)

@@ -38,7 +38,7 @@ test('an AI app on this Mac reads meetings through yogurt-mcp only once Settings
   try {
     await expect(page.getByTestId('home')).toBeVisible()
     await fake(app, 'manyMeetings', { n: 2, clean: true })
-    const hello = await ai.ask('initialize', { protocolVersion: '2025-06-18', capabilities: {}, clientInfo: { name: 'Claude', version: '1' } })
+    const hello = await ai.ask('initialize', { protocolVersion: '2025-06-18', capabilities: {}, clientInfo: { name: 'Test client', version: '1' } })
     expect(hello.result.serverInfo!.name).toBe('yogurt')
     // off by default: nothing is read
     const off = await ai.tool('list_meetings')
@@ -50,7 +50,7 @@ test('an AI app on this Mac reads meetings through yogurt-mcp only once Settings
     await expect(toggle).toHaveAttribute('aria-checked', 'false')
     await toggle.click()
     await expect(toggle).toHaveAttribute('aria-checked', 'true')
-    await expect(page.getByTestId('ai-apps-clients')).toHaveText('Connected now: Claude')
+    await expect(page.getByTestId('ai-apps-clients')).toHaveText('Connected apps · Test client')
     await expect(page.getByTestId('ai-apps-command')).toHaveValue(/yogurt-mcp$/)
     await expect(page.getByTestId('ai-apps-claude')).toHaveCount(0)
     await expect(page.getByTestId('ai-apps')).toContainText('Copy this command and add it as a local MCP server in your AI app.')

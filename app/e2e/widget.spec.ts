@@ -218,7 +218,7 @@ test('a helper that dies is restarted with a hiccup note; a crash loop (a third 
     const w = await record(app, page)
     await fake(app, 'crashCapture')
     const preview = await windowOf(app, '#widget')
-    await expect(preview.getByTestId('widget-note')).toHaveText('Recording hiccup. Still going.')
+    await expect(preview.getByTestId('widget-note')).toHaveText('Recording resumed after an interruption.')
     await expect(page.getByTestId('note-state')).toHaveAttribute('data-state', 'recording')
     // The warning leaves after 4 s; the hidden conversation stays mounted for the next hover.
     await expect(preview.getByTestId('widget-note')).toHaveCount(0, { timeout: 8000 })

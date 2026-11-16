@@ -305,7 +305,7 @@ export function AskConversation({ id, pendingDraftKey, initial, loadError = fals
       <LoadingContent pending={!panel && !chat && !error} onReady={() => { if (chat) input.current?.focus({ preventScroll: true }) }} testId={landing ? "chat-loading" : undefined}><form ref={composer} className="ask-box" data-busy={busy || undefined} data-testid={`${prefix}-box`} onSubmit={e => { e.preventDefault(); send(text) }} onBlur={e => { if (!e.currentTarget.contains(e.relatedTarget)) setMention(undefined) }}>
         <div className="ask-field">
         <textarea autoFocus={panel} ref={input} id={panel ? 'meeting-question' : 'library-question'} data-testid={`${prefix}-input`} rows={1} maxLength={4000}
-          placeholder={panel ? t('Ask anything') : t('Ask about your meetings')} aria-label={panel ? t('Ask anything') : t('Ask about your meetings')} value={text} disabled={!panel && !chat} readOnly={sending || changing}
+          placeholder={landing ? undefined : panel ? t('Ask anything') : t('Ask about your meetings')} aria-label={panel ? t('Ask anything') : t('Ask about your meetings')} value={text} disabled={!panel && !chat} readOnly={sending || changing}
           role="combobox" aria-autocomplete="list" aria-expanded={!!mention} aria-controls={mention ? `${prefix}-contexts` : undefined}
           aria-activedescendant={mention && selected < rowCount ? `${prefix}-context-${selected}` : undefined}
           onChange={e => { saveText(e.target.value); detectMention(e.target.value, e.target.selectionStart) }}
@@ -356,12 +356,12 @@ function Turn({ turn, chat, panel, showCopy, onSource, onRetry }: { showCopy: bo
   return <div data-testid={`${prefix}-turn`} data-status={turn.status} data-show-copy={showCopy || undefined} className="ask-turn">
     <p className="ask-question" data-testid={`${prefix}-question`}>{turn.question}</p>
     {(turn.status === 'waiting' || live && !answer) && (chat.waitsForModel && turn.status === 'waiting'
-      ? <NotesModelWait downloading={percent => <p role="status" className="text-sm text-muted">{t("Waiting for Yogurt's AI to finish downloading ({percent}). Your answer comes as soon as it's ready.", { percent })}</p>}><p role="status" className="text-sm text-muted">{t('Getting ready to answer. Yogurt is still setting up.')}</p></NotesModelWait>
+      ? <NotesModelWait downloading={percent => <p role="status" className="text-sm text-muted">{t("Your question is waiting for Yogurt's AI to download.")} <span className="whitespace-nowrap">{percent}</span></p>}><p role="status" className="text-sm text-muted">{t('Getting ready to answer. Yogurt is still setting up.')}</p></NotesModelWait>
       : <p className="chat-progress" role="status">{chat.waitsForMeeting && turn.status === 'waiting' ? t('Yogurt will answer once the meeting ends.') : <><ThinkingDots /><StepText step={turn.status === 'waiting' ? undefined : turn.step} /></>}</p>)}
     {answer && <div data-testid={`${prefix}-answer`} dir="auto" data-streaming={live || undefined} className={`note-prose chat-answer${live ? ' stream-caret' : ''}`}><AnswerText md={answer} live={live} sources={turn.sources} onSource={onSource} /></div>}
     {answer && !live && <div className="chat-answer-actions"><button className="chat-copy-action" data-testid="chat-copy-answer" aria-label={copied ? t('Copied') : t('Copy answer')} onClick={() => {
       void navigator.clipboard.writeText(turn.answer).then(() => { setCopied(true); setFailed(false) }).catch(() => setFailed(true))
-    }}><Swap show={copied ? 'done' : 'copy'} options={{ copy: <Copy size={13} />, done: <Check size={13} /> }} /><SwapText text={copied ? t('Copied') : t('Copy')} widest={t('Copied')} /></button>{turn.scope && <AnswerScope chips={turn.scope} />}<span role="status" className={failed ? 'text-danger' : 'sr-only'}>{failed ? t("Couldn't copy. Try again.") : copied ? t('Copied') : ''}</span></div>}
+    }}><Swap show={copied ? 'done' : 'copy'} options={{ copy: <Copy size={13} />, done: <Check size={13} /> }} /><SwapText text={copied ? t('Copied') : t('Copy')} widest={t('Copied')} /></button>{turn.scope && <AnswerScope chips={turn.scope} />}<span role="status" className={failed ? 'text-danger' : 'sr-only'}>{failed ? t("Yogurt couldn't copy.") : copied ? t('Copied') : ''}</span></div>}
     {turn.status === 'stopped' && <p className="text-xs text-muted">{answer ? t('Stopped') : t('Stopped before answering')}</p>}
     {turn.status === 'failed' && <p role="alert">{t("Yogurt couldn't answer that.")} <button className="ghost-btn" onClick={onRetry}>{t('Try again')}</button></p>}
   </div>

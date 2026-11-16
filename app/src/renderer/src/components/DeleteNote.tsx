@@ -25,7 +25,7 @@ export function DeleteNote({ id, title, onDone }: { id: string; title: string; o
       onCancel={cancel} busy={busy}>
         {failed && <InlineError testId="delete-failed" className="inline-error-in-dialog"><span>{failed === 'recording' ? t('Stop the recording first, then try again.')
           : failed === 'save-pending' ? t('Open this note and finish saving before deleting it.')
-          : t("Yogurt couldn't finish deleting this note. Try again.")}</span></InlineError>}
+          : t("Yogurt couldn't finish deleting this note.")}</span></InlineError>}
         <div className="modal-actions">
           <button data-testid="delete-yes" onClick={() => void yes()} disabled={busy} className="modal-button danger">{t('Delete forever')}</button>
           <ModalClose data-testid="delete-cancel" data-dialog-cancel disabled={busy} className="modal-button">{t('Cancel')}</ModalClose>

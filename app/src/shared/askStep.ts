@@ -16,7 +16,7 @@ export function stepText(step: AskStep | undefined, tick: number): string {
 function wordings(step: AskStep | undefined): string[] {
   if (!step || step.kind === 'loading') return [t('Thinking…'), t('Still thinking…')]
   if (step.kind === 'searching') return [t('Searching your meetings…'), t('Still searching your meetings…')]
-  const next = t('Still reading. Your answer comes next.')
+  const next = t('Still reading…')
   const title = step.title?.trim() || t('Untitled meeting')
   // several meetings: named like the scope pill, the closest match first
   if (step.meetings && step.meetings > 1) return [t('Reading {title} {others}…', { title, others: t('and {count} others', { count: step.meetings - 1 }) }), next]

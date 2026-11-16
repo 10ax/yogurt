@@ -72,7 +72,7 @@ describe('widget model', () => {
     w.start(m)
     w.warn('no-system-audio')
     w.hiccup(10_000)
-    expect(w.view(12_000)?.note).toMatchObject({ tone: 'hiccup', text: 'Recording hiccup. Still going.' })
+    expect(w.view(12_000)?.note).toMatchObject({ tone: 'hiccup', text: 'Recording resumed after an interruption.' })
     expect(w.view(14_001)?.note?.tone).toBe('hint')
   })
   it.each([['no-mic', 'no-system-audio'], ['no-system-audio', 'no-mic']] as const)('keeps both unavailable inputs regardless of warning order: %s then %s', (first, second) => {

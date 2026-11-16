@@ -57,7 +57,7 @@ test('first run records as soon as speech and speakers are in; notes say they ar
     await page.getByTestId('chat-open').click()
     await page.getByTestId('chat-input').fill('What was decided?')
     await page.getByTestId('chat-input').press('Enter')
-    await expect(page.getByTestId('chat-turn').last()).toContainText("Waiting for Yogurt's AI to finish downloading")
+    await expect(page.getByTestId('chat-turn').last()).toContainText("Your question is waiting for Yogurt's AI to download.")
     await expect(page.getByTestId('chat-turn').last()).not.toContainText('Generating notes')
     // the notes model lands: the notes are written without anyone asking, and the question is answered
     await expect(page.getByTestId('note-enhanced')).toHaveAttribute('data-status', 'done', { timeout: 60_000 })

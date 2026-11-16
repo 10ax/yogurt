@@ -57,7 +57,7 @@ export function TrashToast({ go }: { go: (route: string) => void }) {
     const update = (state: SetupState) => {
       current = state
       if (notice.current!(state, document.visibilityState === 'visible', Date.now())) {
-        toasts.add({ title: t("Yogurt's AI is ready. Summaries and Ask now work."), data: { testId: 'notes-ready-toast' } })
+        toasts.add({ title: t("Summaries and Ask are ready."), data: { testId: 'notes-ready-toast' } })
       }
     }
     const off = window.yogurt.setup.onState(update)

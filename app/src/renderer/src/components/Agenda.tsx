@@ -146,7 +146,7 @@ export function Agenda({ revision, recording, onStart, onOpen, jumpTo }: Actions
         <button className="workspace-button" onClick={calendar.status === 'error' ? () => void load() : connect}>{calendar.status === 'error' ? t('Try again') : calendar.status === 'denied' ? t('Open System Settings') : t('Connect calendar')}</button>
       </section>
       : <div data-testid="coming-up" className="agenda-events">
-        {calendar.events.length === 0 ? <div className="agenda-status"><CalendarDays size={18} strokeWidth={1.75} aria-hidden="true" /><h3>{t('No meetings')}</h3><p>{t('Your calendar is clear.')}</p></div>
+        {calendar.events.length === 0 ? <div className="agenda-status"><CalendarDays size={18} strokeWidth={1.75} aria-hidden="true" /><h3>{t('No meetings')}</h3></div>
           : calendar.events.map((event) => <Event key={event.id} event={event} me={me} now={now} near={event.id === primary} initial={event.id === defaultEvent?.id} selected={event.id === detail?.id} onInspect={(button, pointer) => { opener.current = button; setInspected({ at: selected, id: event.id, pointer }) }} recording={recording} />)}
       </div>)}
     </LoadingContent></div></ScrollFade>

@@ -392,7 +392,7 @@ export function Note({ id, onTitleChange, at, folderSuggestion, onSource, onResu
           <div ref={panels} className="note-panels">
           <NoteReadingPane active={primary === 'notes'} summary={shown === 'enhanced'} hasSummary={notes.enhanced != null} generating={shown === 'enhanced' && ['waiting', 'streaming'].includes(summaryState)} writing={shown === 'enhanced' && summaryState === 'streaming'} scroll={readingScroll}>
                 {shown === 'mine' ? <Editor
-                  focus={primary === 'notes' && at?.ms === null ? at : undefined} testId="note-mine" label={t('My notes')} className="min-h-[40vh]" markdown={notes.mine} placeholder={t('Write notes here. Yogurt fills in the rest after the meeting.')}
+                  focus={primary === 'notes' && at?.ms === null ? at : undefined} testId="note-mine" label={t('My notes')} className="min-h-[40vh]" markdown={notes.mine} placeholder={t('You can add notes here to guide the summary.')}
                   onChange={(md) => { typing.current = true; const next = { ...current.current!, mine: md }; current.current = next; setNotes(next); mineSave.change(md) }}
                   onBlur={() => { typing.current = false; mineSave.flush() }}
                 /> : <Enhanced key={id} presentation={summaryState} focus={primary === 'notes' && at?.ms === null ? at : undefined} notes={notes} disabled={starting} onChange={(md) => { setEditedHere(true); const next = { ...current.current!, enhanced: md }; current.current = next; setNotes(next); enhancedSave.change(md) }} onBlur={enhancedSave.flush} onRetry={writeAgain} />}
@@ -417,7 +417,7 @@ export function Note({ id, onTitleChange, at, folderSuggestion, onSource, onResu
             )}
           {primary === 'notes' && shown === 'enhanced' && notes.status === 'done' && notes.peopleChanged && !confirming && (
             <div data-testid="note-people-changed" className="pointer-events-auto mx-auto mt-3 flex w-fit max-w-[calc(100%-32px)] flex-wrap items-center gap-3 rounded-xl border border-line bg-float px-4 py-2 text-[13px] shadow-[var(--shadow)]">
-              <span>{t('People changed. Regenerate summary?')}</span>
+              <span>{t('The attendee list has changed.')}</span>
               <button data-testid="note-people-write-again" onClick={writeAgain} className="workspace-button primary">{t('Regenerate summary')}</button>
             </div>
           )}
@@ -425,7 +425,7 @@ export function Note({ id, onTitleChange, at, folderSuggestion, onSource, onResu
             <div data-testid="note-confirm" role="alertdialog" aria-label={t('Regenerate summary?')} aria-describedby="note-rewrite-description"
               onKeyDown={(e) => { if (e.key === 'Escape') { e.preventDefault(); e.stopPropagation(); dismissRewrite() } }}
               className="pointer-events-auto mx-auto mt-3 flex w-fit max-w-[calc(100%-32px)] flex-wrap items-center gap-3 rounded-xl border border-line bg-float px-4 py-2.5 text-sm shadow-[var(--shadow)]">
-              <span id="note-rewrite-description">{t('Regenerate summary? Your edits to the summary will be replaced.')}</span>
+              <span id="note-rewrite-description">{t('Your edits to the summary will be replaced.')}</span>
               <button data-testid="note-write-again-cancel" autoFocus onClick={dismissRewrite} className="workspace-button">{t('Cancel')}</button>
               <button data-testid="note-write-again-confirm" onClick={writeAgain} className="workspace-button primary">{t('Regenerate summary')}</button>
             </div>
@@ -512,11 +512,11 @@ function Enhanced({ notes, presentation, disabled, onChange, onBlur, onRetry, fo
       </InlineError>
     )
   }
-  if (presentation === 'empty') return <p data-testid="note-enhanced-empty" className="text-[15px] text-muted">{t('Nothing was said or written in this meeting.')}</p>
+  if (presentation === 'empty') return <p data-testid="note-enhanced-empty" className="text-[15px] text-muted">{t('There is no transcript or typed note to summarize.')}</p>
   if (presentation === 'waiting') {
     return (
       <NotesModelWait downloading={(percent) => (
-        <p data-testid="note-enhanced-model-download" role="status" className="text-[15px] text-muted">{percent ? t('Yogurt is still downloading its AI model. Your notes will be ready in a few minutes. ({percent})', { percent }) : t('Yogurt is still downloading its AI model. Your notes will be ready in a few minutes.')}</p>
+        <p data-testid="note-enhanced-model-download" role="status" className="text-[15px] text-muted">{t("Your summary is waiting for Yogurt's AI to download.")} {percent && <span className="whitespace-nowrap">{percent}</span>}</p>
       )}>
         <SummaryWaiting part={status === 'writing' ? notes.part : undefined} />
       </NotesModelWait>
@@ -525,7 +525,7 @@ function Enhanced({ notes, presentation, disabled, onChange, onBlur, onRetry, fo
   return (
     <div data-testid="note-enhanced" data-status={status} className={presentation === 'streaming' ? 'streaming' : ''}>
       {status === 'failed' && <InlineError testId="note-enhanced-rewrite-failed" className="mb-6">
-        <span>{t("Couldn't regenerate the summary. Your previous version is below.")}</span>
+        <span>{t("Yogurt couldn't regenerate the summary, so your previous version is still shown.")}</span>
         <button onClick={onRetry} className="inline-error-action">{t('Try again')}</button>
       </InlineError>}
       {(rewriting || handoff) && <SummaryWaiting outline={false} writing={handoff} part={status === 'writing' ? notes.part : undefined} />}

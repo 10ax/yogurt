@@ -20,14 +20,14 @@ it('shows only a current or later-today meeting-shaped event, with optional Join
   expect(trayItems(null, event).slice(0, 2).map(i => i.id)).toEqual(['next', 'join'])
   expect(trayItems(null, event)[0].label).toBe('Launch planning · 2:00 PM')
   const live = { ...event, start: now - 1000, url: null, attendees: [{ name: 'Dana', email: 'dana@example.com' }] }
-  expect(trayItems(null, live)[0].label).toBe('Now: Launch planning')
+  expect(trayItems(null, live)[0].label).toBe('Now · Launch planning')
   expect(trayItems(null, live).some(i => i.id === 'join')).toBe(false)
 })
 it('recording has pause and Finish; paused has Resume; neither shows next meeting or Start', () => {
   for (const paused of [false, true]) {
     const items = trayItems({ title: 'Standup', paused }, event)
     expect(items.map(i => i.id)).toEqual(['status', 'pause', 'stop', 'sep', 'ask', 'open', 'recent', 'settings', 'sep', 'quit'])
-    expect(items[0]).toMatchObject({ enabled: false, label: `${paused ? 'Paused' : 'Recording'}: Standup` })
+    expect(items[0]).toMatchObject({ enabled: false, label: `${paused ? 'Paused' : 'Recording'} · Standup` })
     expect(items[1].label).toBe(paused ? 'Resume recording' : 'Pause recording')
     expect(items[2].label).toBe('Finish recording')
   }

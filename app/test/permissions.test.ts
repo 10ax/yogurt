@@ -219,11 +219,11 @@ describe('menu bar menu', () => {
   it('recording: says so, and offers stop instead of new note', () => {
     const items = trayItems({ id: 'm1', title: 'Weekly sync' })
     expect(items.map((i) => i.id)).toEqual(['status', 'pause', 'stop', 'sep', 'ask', 'open', 'recent', 'settings', 'sep', 'quit'])
-    expect(items[0]).toMatchObject({ label: 'Recording: Weekly sync', enabled: false })
+    expect(items[0]).toMatchObject({ label: 'Recording · Weekly sync', enabled: false })
   })
   it('paused: describes the retained recording accurately and still offers finish', () => {
     const items = trayItems({ id: 'm1', title: 'Weekly sync', paused: true })
-    expect(items[0]).toMatchObject({ label: 'Paused: Weekly sync', enabled: false })
+    expect(items[0]).toMatchObject({ label: 'Paused · Weekly sync', enabled: false })
     expect(items.map((i) => i.id)).toEqual(['status', 'pause', 'stop', 'sep', 'ask', 'open', 'recent', 'settings', 'sep', 'quit'])
   })
 })

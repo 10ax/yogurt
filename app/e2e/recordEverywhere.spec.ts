@@ -44,7 +44,7 @@ for (const platform of platforms) {
       await expect.poll(async () => (await page.evaluate((id) => window.yogurt.transcript.get(id), id)).length, { timeout: 30_000 }).toBeGreaterThanOrEqual(1)
       await page.getByTestId('note-stop').click()
       const wait = page.getByTestId('note-enhanced-model-download')
-      await expect(wait).toContainText('Yogurt is still downloading its AI model. Your notes will be ready in a few minutes.')
+      await expect(wait).toContainText("Your summary is waiting for Yogurt's AI to download.")
       await expect(wait).toContainText('%')
       await expect(page.getByTestId('note-enhanced-waiting')).toHaveCount(0)
       await expect(page.getByTestId('note-enhanced')).toHaveAttribute('data-status', 'done', { timeout: 40_000 })
@@ -80,7 +80,7 @@ test('a Mac waiting for the notes model says it is still downloading, and how fa
     await record(page)
     await page.getByTestId('note-stop').click()
     const wait = page.getByTestId('note-enhanced-model-download')
-    await expect(wait).toHaveText(/^Yogurt is still downloading its AI model\. Your notes will be ready in a few minutes\. \(\d+%\)$/)
+    await expect(wait).toHaveText(/^Your summary is waiting for Yogurt's AI to download\. \d+%$/)
     await expect(page.getByText('Generating notes')).toHaveCount(0)
   } finally { await app.close() }
 })

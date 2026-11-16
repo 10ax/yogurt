@@ -477,7 +477,7 @@ test('agenda date navigation keeps the column width and the selected date stays 
     await expect(page.getByTestId('event').filter({ hasText: 'Design review' })).toBeVisible()
     await selectUpcomingAgendaDay(page, 2)
     await expect(agenda.getByRole('heading', { name: 'No meetings', exact: true })).toBeVisible()
-    await expect(agenda).toContainText('Your calendar is clear.')
+    await expect(agenda).not.toContainText('Your calendar is clear.')
     const empty = await agenda.boundingBox()
     expect(empty?.x).toBe(before?.x)
     expect(empty?.width).toBe(before?.width)

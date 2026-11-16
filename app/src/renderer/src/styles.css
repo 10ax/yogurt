@@ -324,12 +324,12 @@ html.widget { --pill:#232326;--pill-ink:#F7F7FA;--accent:#B780FF;--pill-accent:v
 .follow-arrow { transition:transform var(--dur-base) var(--ease-soft); }
 .follow-arrow[data-up=true] { transform:rotate(180deg); }
 @media (prefers-reduced-motion:reduce) { .swap>* { transition:opacity var(--dur-micro) var(--ease-out);transform:none!important;filter:none!important; } .swap-in { animation:motion-fade var(--dur-micro) var(--ease-out); } .follow-arrow { transition:none; } }
-/* Expanding sections (Settings → Calendars): the panel grows to its height while the content softens in, and closes a little quicker */
+/* Expanding sections (Settings → Calendars): the panel grows to its height while the content fades in, and closes a little quicker */
 .accordion { display:grid;grid-template-rows:0fr;transition:grid-template-rows var(--dur-base) var(--ease-out); }
 .accordion[data-open=true] { grid-template-rows:1fr;transition-duration:var(--dur-surface); }
-.accordion>* { min-height:0;overflow:hidden;opacity:0;filter:blur(2px);visibility:hidden;transition:opacity var(--dur-micro) var(--ease-out),filter var(--dur-micro) var(--ease-out),visibility var(--dur-base); }
-.accordion[data-open=true]>* { opacity:1;filter:blur(0);visibility:visible;transition:opacity var(--dur-base) var(--ease-out) 40ms,filter var(--dur-base) var(--ease-out) 40ms,visibility 0s; }
-@media (prefers-reduced-motion:reduce) { .accordion { transition:none; } .accordion>*,.accordion[data-open=true]>* { filter:none;transition:opacity var(--dur-micro) var(--ease-out),visibility var(--dur-micro); } .accordion[data-open=true]>* { transition-delay:0s; } }
+.accordion>* { min-height:0;overflow:hidden;opacity:0;visibility:hidden;transition:opacity var(--dur-micro) var(--ease-out),visibility var(--dur-base); }
+.accordion[data-open=true]>* { opacity:1;visibility:visible;transition:opacity var(--dur-base) var(--ease-out) 40ms,visibility 0s; }
+@media (prefers-reduced-motion:reduce) { .accordion { transition:none; } .accordion>*,.accordion[data-open=true]>* { transition:opacity var(--dur-micro) var(--ease-out),visibility var(--dur-micro); } .accordion[data-open=true]>* { transition-delay:0s; } }
 /* before the first word the summary is one empty paragraph, whose placeholder line break would push the dot down a line */
 .streaming .note-prose > :last-child > br.ProseMirror-trailingBreak:only-child { display: none; }
 .summary-surface { position: relative; }
@@ -757,8 +757,8 @@ html:not(.widget) button:focus-visible, html:not(.widget) input:focus-visible { 
 .note-date-linked { display:flex;flex-direction:column; }
 .note-date-picker-space { padding-top:8px; }
 .note-date-motion,.note-date-motion[data-open=true] { transition:grid-template-rows var(--note-date-ms) var(--note-date-ease),margin-top var(--note-date-ms) var(--note-date-ease); }
-.note-date-motion>* { filter:none;transition:opacity var(--note-date-ms) var(--note-date-ease),visibility 0s var(--note-date-ms); }
-.note-date-motion[data-open=true]>* { filter:none;transition:opacity var(--note-date-ms) var(--note-date-ease),visibility 0s; }
+.note-date-motion>* { transition:opacity var(--note-date-ms) var(--note-date-ease),visibility 0s var(--note-date-ms); }
+.note-date-motion[data-open=true]>* { transition:opacity var(--note-date-ms) var(--note-date-ease),visibility 0s; }
 /* Cancel the parent's row gap as the compact switcher replaces the details. */
 .note-date-details-motion[data-open=false] { margin-top:-16px; }
 .note-date-linked .note-date-picker { border:1px solid var(--line);border-radius:6px;padding:4px;background:var(--card); }

@@ -133,11 +133,11 @@
 .ob-guide-help summary::after { content:"";flex:none;width:6px;height:6px;margin-inline-end:3px;border-inline-end:1.5px solid currentColor;border-block-end:1.5px solid currentColor;transform:rotate(-45deg);transition:transform var(--dur-base) var(--ease-out); }
 .ob-guide-help summary:dir(rtl)::after { transform:rotate(45deg); }
 .ob-guide-help[open] summary::after { transform:rotate(45deg); }
-/* it opens like the other expanding sections: the height grows while the content softens in */
+/* it opens like the other expanding sections: the height grows while the content fades in */
 .ob-guide-help { interpolate-size:allow-keywords; }
-.ob-guide-help::details-content { height:0;overflow:hidden;opacity:0;filter:blur(2px);transition:height var(--dur-base) var(--ease-out),opacity var(--dur-micro) var(--ease-out),filter var(--dur-micro) var(--ease-out),content-visibility var(--dur-base) allow-discrete; }
-.ob-guide-help[open]::details-content { height:auto;opacity:1;filter:blur(0);transition:height var(--dur-surface) var(--ease-out),opacity var(--dur-base) var(--ease-out) 40ms,filter var(--dur-base) var(--ease-out) 40ms,content-visibility var(--dur-surface) allow-discrete; }
-@media (prefers-reduced-motion:reduce) { .ob-guide-help::details-content,.ob-guide-help[open]::details-content { filter:none;transition:opacity var(--dur-micro) var(--ease-out),content-visibility var(--dur-micro) allow-discrete; } .ob-guide-help summary::after { transition:none; } }
+.ob-guide-help::details-content { height:0;overflow:hidden;opacity:0;transition:height var(--dur-base) var(--ease-out),opacity var(--dur-micro) var(--ease-out),content-visibility var(--dur-base) allow-discrete; }
+.ob-guide-help[open]::details-content { height:auto;opacity:1;transition:height var(--dur-surface) var(--ease-out),opacity var(--dur-base) var(--ease-out) 40ms,content-visibility var(--dur-surface) allow-discrete; }
+@media (prefers-reduced-motion:reduce) { .ob-guide-help::details-content,.ob-guide-help[open]::details-content { transition:opacity var(--dur-micro) var(--ease-out),content-visibility var(--dur-micro) allow-discrete; } .ob-guide-help summary::after { transition:none; } }
 .ob-guide-help summary:focus-visible { outline:2px solid var(--focus);outline-offset:3px;border-radius:2px; }
 .ob-guide-help-content { display:grid;justify-items:start;gap:12px;padding-top:12px; }
 .ob-note:has(>.ob-guide-help) { gap:12px; }

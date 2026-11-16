@@ -212,7 +212,7 @@ test('the recorder hides when the main window is foregrounded and returns when i
   } finally { await app.close() }
 })
 
-test('a helper that dies once is restarted with a hiccup note; dying again stops the meeting and keeps the notes', async () => {
+test('a helper that dies is restarted with a hiccup note; a crash loop (a third crash within two minutes) stops the meeting and keeps the notes', async () => {
   const { app, page } = await launch()
   try {
     const w = await record(app, page)
@@ -225,6 +225,9 @@ test('a helper that dies once is restarted with a hiccup note; dying again stops
     expect(preview.isClosed()).toBe(false)
     // levels flow again from the new helper
     await expect.poll(async () => Number(await w.getByTestId('widget-wave').getAttribute('data-level')), { timeout: 15_000 }).toBeGreaterThan(0.05)
+    // a second crash is restarted too (a long meeting can see a few unrelated ones); a third this soon is a loop
+    await fake(app, 'crashCapture')
+    await expect(page.getByTestId('note-state')).toHaveAttribute('data-state', 'recording')
     await fake(app, 'crashCapture')
     await expect.poll(() => w.isClosed()).toBe(true)
     expect((await snap(app)).visible).toBe(false)

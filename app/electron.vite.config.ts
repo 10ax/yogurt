@@ -17,7 +17,8 @@ export default defineConfig({
   },
   renderer: {
     root: 'src/renderer',
-    build: { license: { fileName: 'LICENSES.txt' }, rollupOptions: { input: resolve('src/renderer/index.html') } },
+    // minified: every window loads this bundle, about 23% smaller (Eric's audit: 5.2 MB → 4.0 MB)
+    build: { minify: 'esbuild', license: { fileName: 'LICENSES.txt' }, rollupOptions: { input: resolve('src/renderer/index.html') } },
     plugins: [
       react(),
       tailwindcss(),

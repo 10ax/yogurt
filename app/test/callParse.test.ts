@@ -61,6 +61,13 @@ describe('Zoom', () => {
     expect(readCall('zoom', [win(tree)])).toEqual({ speaking: ['Ana Ruiz', 'Ann Lee'], participants: ['Ana Ruiz', 'Alex Morgan'], me: 'Alex Morgan' })
   })
 
+  it('reads a tile whose words are its name (UI Automation on Windows has no separate description)', () => {
+    const tree = node('frame', { t: 'Zoom Meeting' },
+      node('page tab', { t: 'Ana Ruiz, Computer audio unmuted, Active speaker' }),
+      node('page tab', { t: 'Chat' }))
+    expect(readCall('zoom', [win(tree)])).toEqual({ speaking: ['Ana Ruiz'], participants: ['Ana Ruiz'], me: null })
+  })
+
   it('reads the Linux Zoom Workplace tile: a push button named "video item <name>"', () => {
     expect(zoomLinuxTile('video item Ana Ruiz Active Speaker')).toEqual({ name: 'Ana Ruiz', talking: true })
     expect(zoomLinuxTile('video item Ana Ruiz')).toEqual({ name: 'Ana Ruiz', talking: false })

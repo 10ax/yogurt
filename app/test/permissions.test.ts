@@ -95,7 +95,7 @@ describe('permissions on Windows and Linux', () => {
         systemAudio: 'granted',
         calendar: 'unknown',
         // Linux reads call names through AT-SPI, which has no permission prompt; Windows has no such permission
-        accessibility: platform === 'linux' ? 'granted' : 'unknown',
+        accessibility: 'granted',
         notifications: 'granted',
       })
       expect(await p.request('mic')).toBe('granted')

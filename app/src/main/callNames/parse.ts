@@ -12,7 +12,8 @@ export type CallKind = 'zoom' | 'teams' | 'meet' | 'webex'
 export type CallReading = { speaking: string[]; participants: string[]; me: string | null }
 
 // A role has two names: macOS Accessibility says AXTabGroup, AXStaticText, AXRow, AXOutline; AT-SPI (Linux) says
-// page tab, label/static/text, table row/list item, tree table/table/list. The rules below know both.
+// page tab, label/static/text, table row/list item, tree table/table/list. The rules below know both. Windows's helper
+// gives UI Automation's control types the AT-SPI names (yogurt-system parse.rs uia_role), so it reads as Linux does.
 const TAB_GROUP = new Set(['AXTabGroup', 'page tab'])
 const STATIC_TEXT = new Set(['AXStaticText', 'static', 'label', 'text', 'paragraph', 'heading', 'caption'])
 const ROW = new Set(['AXRow', 'table row', 'list item', 'row'])
@@ -107,8 +108,10 @@ function readZoom(windows: AxWindow[]): CallReading {
   let me: string | null = null
   for (const w of windows) {
     walk(w.tree, (n, up) => {
-      if (TAB_GROUP.has(n.r) && n.d) {
-        const tile = zoomTile(n.d)
+      // the words are the description on a Mac and Linux, the name under UI Automation (Windows)
+      const tileWords = n.d ?? n.t
+      if (TAB_GROUP.has(n.r) && tileWords) {
+        const tile = zoomTile(tileWords)
         if (tile) { participants.push(tile.name); if (tile.talking) speaking.push(tile.name) }
       }
       // the Linux Zoom Workplace tile is a push button named "video item <name> [Active Speaker]"

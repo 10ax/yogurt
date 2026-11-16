@@ -1,5 +1,5 @@
 //! Windows: who records from a microphone (Core Audio sessions, then the privacy ConsentStore), running programs
-//! (Toolhelp) and window titles (EnumWindows). None of these need a permission.
+//! (Toolhelp) and window titles (EnumWindows). None of these need a permission. Call windows are read in wincalls.rs.
 
 use crate::parse::{self, MicApp, Proc};
 use std::collections::HashMap;
@@ -23,7 +23,7 @@ fn utf16(buf: &[u16]) -> String {
     String::from_utf16_lossy(&buf[..len])
 }
 
-fn processes() -> HashMap<u32, Proc> {
+pub fn processes() -> HashMap<u32, Proc> {
     let mut map = HashMap::new();
     unsafe {
         let Ok(snap) = CreateToolhelp32Snapshot(TH32CS_SNAPPROCESS, 0) else { return map };
@@ -161,14 +161,20 @@ unsafe extern "system" fn each_window(hwnd: HWND, data: LPARAM) -> BOOL {
     BOOL(1)
 }
 
-/** The app's foreground window title, else its topmost visible one. EnumWindows lists top-level windows top first. */
-pub fn window_title(id: &str) -> Option<String> {
-    let id = id.to_lowercase();
-    let procs = processes();
+/** Every visible top-level window with a title: (handle, process id, title), top first */
+pub fn top_windows() -> Vec<(u64, u32, String)> {
     let mut found: Vec<(u64, u32, String)> = Vec::new();
     unsafe {
         let _ = EnumWindows(Some(each_window), LPARAM(&mut found as *mut _ as isize));
     }
+    found
+}
+
+/** The app's foreground window title, else its topmost visible one. EnumWindows lists top-level windows top first. */
+pub fn window_title(id: &str) -> Option<String> {
+    let id = id.to_lowercase();
+    let procs = processes();
+    let found = top_windows();
     let active = unsafe { GetForegroundWindow() }.0 as usize as u64;
     let windows: Vec<(u64, bool, String)> =
         found.into_iter().map(|(h, pid, title)| (h, procs.get(&pid).is_some_and(|p| parse::exe_id(&p.exe) == id), title)).collect();

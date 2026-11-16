@@ -53,6 +53,38 @@ try {
 } finally { Stop-Process -Id $p.Id -Force }
 Check 'no window for an app that is not open' { param($v) $null -eq $v.title } (& $Bin browser-title notrunninghere.exe)
 
+# call-watch: a window shaped like a Meet call (its title has the word Meet) with a person's name in it, read through
+# UI Automation; the watch ends when its stdin closes
+$form = "Add-Type -AssemblyName System.Windows.Forms; `$f = New-Object System.Windows.Forms.Form; `$f.Text = '$title'; `$l = New-Object System.Windows.Forms.Label; `$l.Text = 'Ana Ruiz'; `$f.Controls.Add(`$l); [System.Windows.Forms.Application]::Run(`$f)"
+$p = Start-Process powershell.exe -ArgumentList '-NoProfile', '-WindowStyle', 'Hidden', '-Command', $form -PassThru
+try {
+  $psi = New-Object System.Diagnostics.ProcessStartInfo $Bin
+  $psi.Arguments = 'call-watch 400 notrunninghere.exe powershell.exe'
+  $psi.UseShellExecute = $false
+  $psi.RedirectStandardOutput = $true
+  $psi.RedirectStandardInput = $true
+  $w = [System.Diagnostics.Process]::Start($psi)
+  $raw = $null
+  for ($i = 0; $i -lt 60 -and -not $raw; $i++) {
+    $line = $w.StandardOutput.ReadLine()
+    if ($line -match '"app":"powershell.exe"' -and $line -match 'Ana Ruiz') { $raw = $line }
+  }
+  if (-not $raw) { throw "failed: call-watch never read the window; last line: $line" }
+  Write-Host "call-watch: $($raw.Substring(0, [Math]::Min(600, $raw.Length)))"
+  function Find($n, $role, $text) {
+    if ($n.r -eq $role -and $n.t -eq $text) { return $true }
+    foreach ($k in @($n.k)) { if ($k -and (Find $k $role $text)) { return $true } }
+    return $false
+  }
+  Check 'call-watch reads the call window' { param($v) $v.app -eq 'powershell.exe' -and $v.windows[0].title -eq $title -and $v.t -gt 0 } $raw
+  Check 'the name is a label, as AT-SPI calls it' { param($v) Find $v.windows[0].tree 'label' 'Ana Ruiz' } $raw
+  $w.StandardInput.Close()
+  if (-not $w.WaitForExit(5000)) { $w.Kill(); throw 'failed: call-watch did not end when its stdin closed' }
+  Write-Host 'ok: call-watch ends when its stdin closes'
+} finally { Stop-Process -Id $p.Id -Force }
+$raw = & $Bin call-watch 2>$null
+if ($LASTEXITCODE -eq 0) { throw 'call-watch with no ids should fail' }
+
 & $Bin browser-title 2>$null
 if ($LASTEXITCODE -eq 0) { throw 'browser-title with no id should fail' }
 Write-Host 'all Windows smoke checks passed'

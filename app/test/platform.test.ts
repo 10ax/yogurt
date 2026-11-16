@@ -6,8 +6,8 @@ describe('what each computer can do', () => {
   it('a Mac has every feature, exactly as before', () => {
     expect(capabilities('darwin')).toEqual({ calendar: true, callNames: true, permissionPrompts: true, mediaPause: true })
   })
-  it('Windows has no calendar and no names from calls; Linux reads names through AT-SPI', () => {
-    expect(capabilities('win32')).toEqual({ calendar: false, callNames: false, permissionPrompts: false, mediaPause: false })
+  it('Windows and Linux have no calendar; both read names from calls (UI Automation, AT-SPI)', () => {
+    expect(capabilities('win32')).toEqual({ calendar: false, callNames: true, permissionPrompts: false, mediaPause: false })
     expect(capabilities('linux')).toEqual({ calendar: false, callNames: true, permissionPrompts: false, mediaPause: false })
   })
   it('only fake mode can pretend to be another computer, so the Mac CI can try the Windows and Linux screens', () => {
@@ -39,10 +39,10 @@ describe('permissions to ask for', () => {
   it('a Mac asks for every one, in the same order', () => {
     expect(supportedKinds(capabilities('darwin'))).toEqual(PERMISSION_KINDS)
   })
-  it('without a calendar or names from calls, those are never asked', () => {
-    expect(supportedKinds(capabilities('win32'))).toEqual(['mic', 'systemAudio', 'notifications'])
+  it('without a calendar, it is never asked', () => {
+    expect(supportedKinds(capabilities('win32'))).toEqual(['mic', 'systemAudio', 'notifications', 'accessibility'])
   })
-  it('Linux keeps accessibility in the list (it has no prompt for it)', () => {
+  it('Windows and Linux keep accessibility in the list (they have no prompt for it)', () => {
     expect(supportedKinds(capabilities('linux'))).toEqual(['mic', 'systemAudio', 'notifications', 'accessibility'])
   })
 })

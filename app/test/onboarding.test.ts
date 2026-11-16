@@ -99,14 +99,14 @@ describe('the launch screen', () => {
   })
 })
 
-describe('a computer without a calendar or names from calls (Windows)', () => {
+describe('a computer without a calendar (Windows)', () => {
   const kinds = supportedKinds(capabilities('win32'))
-  it('the first run never asks for them', () => {
-    const plan = firstRunPlan({ ask: true, welcomed: false, introSeen: false, status: all('unknown'), kinds })
+  it('the first run never asks for it, nor for names from calls (UI Automation needs no permission, so it reads as on)', () => {
+    const plan = firstRunPlan({ ask: true, welcomed: false, introSeen: false, status: { ...all('unknown'), accessibility: 'granted' }, kinds })
     expect(screensOf(plan.steps).map((s) => s.id)).toEqual(['record', 'notifications'])
   })
-  it('Finish setup leaves them out of the list and the progress', () => {
-    const st: PermissionStatus = { ...all('granted'), accessibility: 'unknown', calendar: 'unknown' }
+  it('Finish setup leaves it out of the list and the progress', () => {
+    const st: PermissionStatus = { ...all('granted'), calendar: 'unknown' }
     expect(missing(st, kinds)).toEqual([])
     expect(nudge(st, [], kinds)).toEqual([])
     expect(finishSetupPercent(st, kinds)).toBe(100)

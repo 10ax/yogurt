@@ -179,6 +179,39 @@ pub fn argv0_base(cmdline: &[u8]) -> Option<String> {
     (!base.is_empty()).then_some(base)
 }
 
+/// A UI Automation control type (UIA_ButtonControlTypeId = 50000 ...) by the role AT-SPI gives the same thing, so
+/// src/main/callNames/parse.ts reads a Windows call window with the rules it has for Linux
+pub fn uia_role(control_type: i32) -> &'static str {
+    match control_type {
+        50000 | 50031 => "push button",
+        50002 => "check box",
+        50003 => "combo box",
+        50004 => "entry",
+        50005 => "link",
+        50006 => "image",
+        50007 => "list item",
+        50008 => "list",
+        50009 => "menu",
+        50010 => "menu bar",
+        50011 => "menu item",
+        50013 => "radio button",
+        50018 => "page tab list",
+        50019 => "page tab",
+        50020 => "label",
+        50021 => "tool bar",
+        50023 => "tree",
+        50024 => "tree item",
+        50026 | 50033 => "panel",
+        50028 | 50036 => "table",
+        50029 => "table row",
+        50030 => "document web",
+        50032 => "frame",
+        50034 => "header",
+        50037 => "title bar",
+        _ => "unknown",
+    }
+}
+
 #[cfg(test)]
 mod tests {
     use super::*;
@@ -311,5 +344,17 @@ mod tests {
         assert_eq!(exe_base("/usr/bin/zoom"), "zoom");
         assert_eq!(argv0_base(b"/usr/lib/firefox/firefox\0-contentproc\0").as_deref(), Some("firefox"));
         assert_eq!(argv0_base(b""), None);
+    }
+
+    #[test]
+    fn ui_automation_types_get_at_spi_roles() {
+        assert_eq!(uia_role(50019), "page tab");
+        assert_eq!(uia_role(50020), "label");
+        assert_eq!(uia_role(50024), "tree item");
+        assert_eq!(uia_role(50023), "tree");
+        assert_eq!(uia_role(50000), "push button");
+        assert_eq!(uia_role(50029), "table row");
+        assert_eq!(uia_role(50008), "list");
+        assert_eq!(uia_role(12345), "unknown");
     }
 }

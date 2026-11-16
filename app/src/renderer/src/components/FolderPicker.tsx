@@ -17,8 +17,9 @@ export function FolderPicker({ meetingId, meetingIds, memberships, suggestedId, 
   const all = useFolders()
   const list = useRef<HTMLDivElement>(null)
   const loaded = all !== undefined
+  // the suggested folder keeps its place in the list (only tagged); the keyboard starts on it, so Enter takes it
   useEffect(() => {
-    if (autoFocus && loaded) list.current?.querySelector<HTMLElement>('[role="menuitemcheckbox"], [role="menuitem"]')?.focus()
+    if (autoFocus && loaded) (list.current?.querySelector<HTMLElement>('[data-suggested]') ?? list.current?.querySelector<HTMLElement>('[role="menuitemcheckbox"], [role="menuitem"]'))?.focus()
   }, [autoFocus, loaded])
   const mine = useFolders(memberships ? null : meetingId)
   const ids = useMemo(() => meetingIds ?? (meetingId ? [meetingId] : []), [meetingIds, meetingId])
@@ -42,9 +43,8 @@ export function FolderPicker({ meetingId, meetingIds, memberships, suggestedId, 
     } finally { saving.current = false }
   }
   const row = 'flex w-full items-center gap-2.5 rounded-xl px-3 py-2 text-start text-sm hover:bg-[var(--line)] focus-visible:bg-[var(--line)] focus-visible:outline-none'
-  const ordered = suggestedId ? all?.filter(s => s.id === suggestedId).concat(all.filter(s => s.id !== suggestedId)) : all
   return <div ref={list} data-testid={testId} role="group" aria-label={t('Folders')}>
-    {ordered?.map((s) => <button key={s.id} role="menuitemcheckbox" aria-checked={inIt(s.id)} aria-disabled={busy || (!memberships && !mine)} data-testid="folder-option" onClick={() => void toggle(s.id)} className={row}>
+    {all?.map((s) => <button key={s.id} data-suggested={s.id === suggestedId || undefined} role="menuitemcheckbox" aria-checked={inIt(s.id)} aria-disabled={busy || (!memberships && !mine)} data-testid="folder-option" onClick={() => void toggle(s.id)} className={row}>
       <FolderGlyph appearance={s} size={15} />
       <span className="min-w-0 flex-1 truncate">{s.name}</span>
       {s.id === suggestedId && <span className="shrink-0 text-[10px] text-muted">{t('Suggested')}</span>}

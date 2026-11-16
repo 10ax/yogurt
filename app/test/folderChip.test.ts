@@ -89,10 +89,10 @@ it('switches the note straight from the suggestion to its normal folder chip', (
   expect(filed).not.toContain('Add to folder</span>')
 })
 
-it('puts the suggested folder first without selecting it or changing the normal picker order', () => {
+it('tags the suggested folder where it already sits in the list, without moving or selecting it', () => {
   const picker = (suggestedId?: string) => renderToStaticMarkup(createElement(FolderPicker, { meetingId: 'meeting', suggestedId, testId: 'picker', onNew() {} }))
   const html = picker(suggested.id)
-  expect(html.indexOf(suggested.name)).toBeLessThan(html.indexOf('Alpha'))
+  expect(html.indexOf('Alpha')).toBeLessThan(html.indexOf(suggested.name))
   expect(html).toContain('>Suggested</span>')
   expect(html.match(/aria-checked="false"/g)).toHaveLength(2)
   const normal = picker()

@@ -2,14 +2,14 @@
 export const timing = { notes:8, type:9.5, typed:14, finish:15.5, summaryStart:18, summary:20, ask:24, askFocus:24.85, question:25, send:27.4, answer:29.8, answered:31.3, close:34.6, resume:36.2, transcript:37.4 }
 export const duration = 39
 export const beats = [['arrival',0],['live',3.3],['notes',12],['finish',15.45],['writing',18],['summary',22.5],['question',26.5],['thinking',28],['answer',33]]
-export const mine = '- Leave 30 minutes for a quiet QA pass.\n- Ask design for the square crop after this call.'
+export const mine = '- Leave 30 minutes for a quiet QA pass.'
 export const bullet = 'Note to self: send Ray the asset list by Friday.'
 // Fixed, slightly uneven keystrokes keep exports repeatable without a mechanical cadence.
 const keyWeights=[...bullet].map((_,index)=>1+(index%4)*.12+(bullet[index-1]===' '?.18:bullet[index-1]===':'?.65:0))
 const keyTotal=keyWeights.reduce((sum,weight)=>sum+weight,0)
 let keyElapsed=0
 const keyTimes=keyWeights.map(weight=>timing.type+(keyElapsed+=weight)/keyTotal*(timing.typed-timing.type))
-export const summary = '## Launch plan\nPublish the page Tuesday. Send the announcement Wednesday morning, after checking the links.\n## Next steps\n- **Kara:** Share the release notes draft Friday.\n- **Lincoln:** Send the announcement Wednesday.\n- **You:** Send Ray the asset list by Friday.\n## My reminders\n- Leave 30 minutes for a quiet QA pass.\n- Ask design for the square crop after this call.'
+export const summary = '## Launch plan\nPublish the page Tuesday. Send the announcement Wednesday morning, after checking the links.\n## Next steps\n- **Kara:** Share the release notes draft Friday.\n- **Lincoln:** Send the announcement Wednesday.\n- **You:** Send Ray the asset list by Friday.\n## My reminders\n- Leave 30 minutes for a quiet QA pass.'
 export const question = 'When are we launching?'
 export const answer = 'The page goes live Tuesday.\n\nLincoln announces it Wednesday.'
 const line = (id, speaker, text, startMs, endMs) => ({ id, meetingId: 'sample-meeting', track: 'them', speaker, speakerColor: ['Kara Moore', 'Ray Mones', 'Lincoln Park'].indexOf(speaker), text, startMs, endMs, hidden: false })

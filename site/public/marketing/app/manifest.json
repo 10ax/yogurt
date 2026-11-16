@@ -1,10 +1,7 @@
 {
-  "appCommit": "86854aa0f96371978d42eae435b5681c0638787d",
-  "sourceOverrides": {
-    "app/src/renderer/src/components/Logo.tsx": "bd3d73de6e1c5ffba88d83042c2cf7510b8c47b4",
-    "app/src/renderer/src/workspace.css": "1e1c0d07eec486691d71844446c3f73700ac5ef4"
-  },
-  "generatedAt": "2026-11-14T16:33:43.337Z",
+  "appCommit": "0d26a16cf00781d2b0d0c557cd1bdd3fc730cc0d",
+  "sourceOverrides": {},
+  "generatedAt": "2026-11-16T17:01:24.988Z",
   "source": "app/src/renderer",
   "fixture": "site/renderer/bridge.mjs",
   "nativeCode": false,
@@ -15,6 +12,7 @@
     "non-English locale tables"
   ],
   "sourceFiles": [
+    "app/src/renderer/src/askTracer.ts",
     "app/src/renderer/src/components/AnswerText.tsx",
     "app/src/renderer/src/components/AskContext.tsx",
     "app/src/renderer/src/components/AskConversation.tsx",
@@ -51,6 +49,7 @@
     "app/src/renderer/src/components/ShareMenu.tsx",
     "app/src/renderer/src/components/SourceCitation.tsx",
     "app/src/renderer/src/components/SpokenMenu.tsx",
+    "app/src/renderer/src/components/SummaryWaiting.tsx",
     "app/src/renderer/src/components/Swap.tsx",
     "app/src/renderer/src/components/ThinkingDots.tsx",
     "app/src/renderer/src/components/Transcript.tsx",
@@ -64,6 +63,7 @@
     "app/src/renderer/src/i18n.tsx",
     "app/src/renderer/src/keys.ts",
     "app/src/renderer/src/meetingSelection.ts",
+    "app/src/renderer/src/mentionPlacement.ts",
     "app/src/renderer/src/motion.ts",
     "app/src/renderer/src/noteAutosave.ts",
     "app/src/renderer/src/noteMerge.ts",
@@ -71,6 +71,7 @@
     "app/src/renderer/src/screens/Note.tsx",
     "app/src/renderer/src/streamingInk.ts",
     "app/src/renderer/src/styles.css",
+    "app/src/renderer/src/summaryPresentation.ts",
     "app/src/renderer/src/trashMeetings.ts",
     "app/src/renderer/src/useFollowLatest.ts",
     "app/src/renderer/src/useLoadingState.ts",
@@ -80,6 +81,7 @@
     "app/src/renderer/src/workspace.css",
     "app/src/shared/askContext.ts",
     "app/src/shared/askStep.ts",
+    "app/src/shared/askTracer.ts",
     "app/src/shared/calendarPicker.ts",
     "app/src/shared/citationCard.ts",
     "app/src/shared/citations.ts",
@@ -96,6 +98,8 @@
     "app/src/shared/markdown.ts",
     "app/src/shared/people.ts",
     "app/src/shared/platform.ts",
+    "app/src/shared/searchPeople.ts",
+    "app/src/shared/searchQuery.ts",
     "app/src/shared/smoothText.ts",
     "app/src/shared/softPair.ts",
     "app/src/shared/speakerColors.ts",
@@ -105,9 +109,9 @@
   ],
   "files": {
     "LICENSES.txt": {
-      "bytes": 64141,
-      "gzipBytes": 3071,
-      "sha256": "a34e46d4b5df127f284f6d926c052f50020c74164226bbb0b3c60b8f0b361129"
+      "bytes": 65259,
+      "gzipBytes": 3128,
+      "sha256": "8508a6a42c3205ac2389750ea285063847af9708041e886ecf83057c688b38d5"
     },
     "frame.html": {
       "bytes": 617,
@@ -115,15 +119,15 @@
       "sha256": "45e4eb19dcb4fc8ce3825d6cfeeb1d8f8d7a16e09ee4583a005518c880f028e4"
     },
     "renderer.css": {
-      "bytes": 255346,
-      "gzipBytes": 84416,
-      "sha256": "76f09d60ce9d5a1511ae8014e11b20c221f93588002741dc8e6bdcb245463ed7"
+      "bytes": 259636,
+      "gzipBytes": 85081,
+      "sha256": "8fcf68ee28496ea66fbc7a4f0229cd64fe5f87213299d40902bd2870cdee28c3"
     },
     "renderer.js": {
-      "bytes": 1249458,
-      "gzipBytes": 396189,
-      "sha256": "cdb40b1141c8cdafc906bc5382279bab584a6522cd5396d2ac233cfa204d69d6"
+      "bytes": 1474360,
+      "gzipBytes": 453619,
+      "sha256": "0b209ac67984776ecac7ff5c310faf77df0f3c7e7342b0df344168f898f00920"
     }
   },
-  "totalGzipBytes": 480969
+  "totalGzipBytes": 539064
 }

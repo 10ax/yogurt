@@ -21,15 +21,7 @@ const source = fs.realpathSync(fs.mkdtempSync(path.join(os.tmpdir(), 'yogurt-mar
 process.on('exit', () => fs.rmSync(source, { recursive: true, force: true }))
 const archive = execFileSync('git', ['archive', appCommit, 'app/src/renderer', 'app/src/shared'], { cwd: repo, maxBuffer: 32*1024*1024 })
 execFileSync('tar', ['-xf', '-', '-C', source], { input: archive })
-// Apply approved UI changes without replacing newer source on main.
-const sourceOverrides = {
-  'app/src/renderer/src/components/Logo.tsx': 'bd3d73de6e1c5ffba88d83042c2cf7510b8c47b4',
-  'app/src/renderer/src/workspace.css': '1e1c0d07eec486691d71844446c3f73700ac5ef4',
-}
-for (const [file, commit] of Object.entries(sourceOverrides)) {
-  const patch = execFileSync('git', ['diff', `${commit}^`, commit, '--', file], { cwd: repo })
-  execFileSync('git', ['apply', '-'], { cwd: source, input: patch })
-}
+const sourceOverrides = {}
 const sourceFiles = new Set()
 await build({
   configFile: false, root: path.join(site, 'renderer'), publicDir: false, base: '/marketing/app/',

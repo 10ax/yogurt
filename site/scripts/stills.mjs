@@ -43,15 +43,38 @@ try {
   await call('Page.enable'); await call('Runtime.enable')
   const {createRequire}=await import('node:module')
   const require=createRequire(await fs.realpath(path.join(site,'node_modules/next/package.json'))),sharp=require('sharp')
+  const {beats,timing}=await import('../renderer/timeline.mjs')
+  // Check the write-in itself, so a final reset cannot conceal a scroll jolt.
+  await call('Emulation.setDeviceMetricsOverride',{width:1000,height:608,deviceScaleFactor:2,mobile:false})
+  await call('Emulation.setEmulatedMedia',{features:[{name:'prefers-reduced-motion',value:'no-preference'}]})
+  await call('Page.navigate',{url:origin+'/marketing/app/frame.html'})
+  await pause(1000)
+  assert.equal(await evaluate('document.documentElement.dataset.ready'),'true')
+  for(let tick=308;tick<=420;tick++) {
+    await evaluate(`window.postMessage({type:'yogurt-hero-time',seconds:${tick/20}},location.origin)`)
+    await pause(50)
+    if(tick/20>=timing.summaryStart) {
+      const top=await evaluate("document.querySelector('#note-notes-panel[aria-labelledby=note-summary-tab]')?.scrollTop")
+      assert.equal(top,0,`live Summary must not scroll while writing (${tick/20}s)`)
+    }
+  }
+  for(const seconds of [21,27]) {
+    await evaluate(`window.postMessage({type:'yogurt-hero-time',seconds:${seconds}},location.origin)`)
+    await pause(300)
+    const resting=await evaluate(`(()=>{const editor=document.querySelector('[data-testid=note-enhanced-editor]'),pane=editor.closest('.note-notes-pane'),heading=editor.querySelector('h2');return {top:pane.scrollTop,headingVisible:heading.getBoundingClientRect().top>=pane.getBoundingClientRect().top,generating:pane.closest('.note-reading-frame').dataset.generating}})()`)
+    assert.equal(resting.generating,'false')
+    assert.equal(resting.top,0,'completed live Summary rests at the top, including during Ask')
+    assert(resting.headingVisible,'the complete Summary heading stays below the tab bar')
+  }
+  assert.deepEqual(errors,[],'live Summary and Ask have no runtime errors')
   await call('Emulation.setEmulatedMedia',{features:[{name:'prefers-color-scheme',value:'light'},{name:'prefers-reduced-motion',value:'reduce'}]})
-  const {beats}=await import('../renderer/timeline.mjs')
   const images={}
   const {createHash}=await import('node:crypto')
   for (const [name,width,height] of [['desktop',1000,608],['phone',600,912]]) {
     const phone=name==='phone'
     await call('Emulation.setDeviceMetricsOverride',{width,height,deviceScaleFactor:2,mobile:false})
     for (const [beat,time] of beats) {
-      if(!['arrival','answer'].includes(beat)||phone&&beat!=='answer')continue
+      if(!['arrival','writing','answer'].includes(beat)||phone&&beat!=='answer')continue
       await call('Page.navigate',{url:origin+`/marketing/app/frame.html?still=${time}`})
       await pause(1000)
       const info=await evaluate(`({ready:document.documentElement.dataset.ready,text:document.body.innerText,overflow:document.documentElement.scrollWidth>innerWidth,bg:getComputedStyle(document.documentElement).getPropertyValue('--bg').trim(),loader:!!document.querySelector('.bubble .live-dots'),names:[...document.querySelectorAll('[data-testid="transcript-who"]')].map(e=>e.textContent),selected:document.querySelector('[role=tab][aria-selected=true]')?.textContent,questionSent:document.documentElement.dataset.questionSent,panelHeight:document.querySelector('[data-testid=chat-panel]')?.getBoundingClientRect().height,level:document.querySelector('[data-testid=note-wave]')?.dataset.level})`)
@@ -63,7 +86,13 @@ try {
       assert(!info.text.includes('Let the others'),'no recording reminder in the demonstration')
       if (beat==='arrival') assert.equal(new Set(info.names).size,1)
       if(beat==='arrival')assert(info.level!==undefined,'native recording indicator is mounted in its reduced-motion still')
+      if(beat==='writing') {
+        assert(info.text.includes('Reading the transcript…'),'Summary shows the native reading state before text arrives')
+        assert(await evaluate("!!document.querySelector('.summary-outline') && !document.querySelector('.ask-border')"),'Summary uses its faint outline without the old ring')
+        continue
+      }
       if(beat==='answer') {
+        assert(await evaluate("!!document.querySelector('[data-testid=ask-scope]') && !!document.querySelector('[data-testid=chat-copy-answer]') && document.querySelector('.chat-answer-scope')?.textContent==='Searched Launch planning'"),'Ask shows its scope pill, Copy action and searched scope')
         const fits=await evaluate(`(()=>{const h=document.querySelector('.chat-history'),r=h.getBoundingClientRect();return h.scrollHeight<=h.clientHeight+1&&['chat-question','chat-answer','source-citation'].every(id=>{const a=document.querySelector('[data-testid='+id+']').getBoundingClientRect();return a.top>=r.top&&a.bottom<=r.bottom})})()`)
         assert(fits,'question, complete answer and citation must fit with no thread scroll')
       }

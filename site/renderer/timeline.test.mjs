@@ -1,5 +1,6 @@
 import assert from 'node:assert/strict'
-import { sceneAt, timing, duration, mine, bullet } from './timeline.mjs'
+import { sceneAt, timing, duration, mine, bullet, summary } from './timeline.mjs'
+assert.equal(summary.split('## My reminders\n')[1],mine,'Summary reminders match the original notes')
 assert.equal(sceneAt(0).transcript.filter(line=>!line.hidden).length,1)
 assert.equal(sceneAt(3).transcript.filter(line=>!line.hidden).length,1)
 assert(sceneAt(3).partial.length>0)
@@ -52,6 +53,11 @@ console.log('Step circle fill, rebound and release timing passed.')
 assert.equal(timing.typed-timing.type,4.5)
 assert(Math.abs(timing.finish-1.3-timing.typed-.2)<1e-9,'cursor returns 200 ms after typing')
 assert.equal(timing.summaryStart-timing.finish,2.5,'preserve the Finish pending beat')
+assert.equal(sceneAt(timing.finish).status,'writing')
+assert.equal(sceneAt(timing.finish).draft,'','Finish leaves time for the native Summary outline and reading label')
+assert.equal(sceneAt(timing.summaryStart).draft,'')
+assert(sceneAt(timing.summaryStart+.5).draft.length>0,'Summary streams after the reading beat')
+assert.equal(sceneAt(timing.summary).status,'done')
 let count=0,last=timing.type
 const intervals=[]
 for(let t=timing.type;t<=timing.typed+.001;t+=.001){

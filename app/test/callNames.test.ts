@@ -1,4 +1,4 @@
-import { afterEach, describe, expect, it } from 'vitest'
+import { afterEach, describe, expect, it, vi } from 'vitest'
 import { EventEmitter } from 'node:events'
 import { mkdtempSync, rmSync } from 'node:fs'
 import { tmpdir } from 'node:os'
@@ -104,6 +104,20 @@ describe('Webex accessibility roster', () => {
 })
 
 describe('hookCallNames', () => {
+  it('says what it read in main.log (info, which the log file keeps; console.log never reaches it)', () => {
+    const root = mkdtempSync(join(tmpdir(), 'yogurt-callnames-')); dirs.push(root)
+    const store = openStore(join(root, 'yogurt.db')); stores.push(store)
+    const m = store.createMeeting({ title: 'Sync', startedAt: 1_000_000, endedAt: null, eventId: null, app: 'FaceTime', attendees: [], state: 'recording' })
+    const info = vi.spyOn(console, 'info').mockImplementation(() => {})
+    const starts: Array<(m: Meeting) => void> = []
+    try {
+      hookCallNames({ store, myNames: () => [], transcribed: async () => {}, changed: () => {}, watch: () => ({ stop() {} }),
+        onStart: (fn) => starts.push(fn), onStop: () => {}, onCapture: () => {} })
+      starts.forEach((f) => f(m))
+      expect(info.mock.calls.flat().join('\n')).toContain("call names: FaceTime can't be read")
+    } finally { info.mockRestore() }
+  })
+
   it('a resumed session names only new lines and preserves previous speaker labels', async () => {
     const s = setup()
     s.store.addSegments([{ meetingId: s.m.id, track: 'them', startMs: 1000, endMs: 3000, text: 'Prior session.', speaker: 'Ann Lee' }])

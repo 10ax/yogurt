@@ -58,7 +58,8 @@ export function hookCallNames(p: {
   log?: (msg: string) => void
   now?: () => number
 }) {
-  const log = p.log ?? ((s: string) => console.log(s))
+  // info, not log: main.log keeps info, warn and error, and these lines are how a call that stayed Them gets explained
+  const log = p.log ?? ((s: string) => console.info(s))
   const now = p.now ?? Date.now
   const sessions = new Map<string, Session>()
   const finals = new Map<string, Promise<void>>()

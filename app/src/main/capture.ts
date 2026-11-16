@@ -7,6 +7,7 @@ import { isFake } from './paths'
 import { fakeAudioDuration, fakeCaptureProc, joinFakeParts } from './fakeCapture'
 import type { RecordingStart } from './meeting'
 import { createCrashPolicy } from './crashPolicy'
+import { createLevelLog } from './levelLog'
 import { helperFile } from '../shared/platform'
 
 /**
@@ -375,10 +376,16 @@ export function hookCapture(p: {
       hiccup: () => tell({ t: 'hiccup' }),
       giveUp: () => { tell({ t: 'gave-up' }); void finish(); p.stopMeeting(m.id) },
     })
+    // how loud each side got, once a minute in main.log (levelLog.ts)
+    const levels = createLevelLog()
     const attach = (c: Capture) => {
       active = c
       c.on('warn', (code) => { console.warn('capture warning', code); tell({ t: 'warn', code }) })
-      c.on('level', (lv) => tell({ t: 'level', me: s.paused ? 0 : lv.me, them: s.paused ? 0 : lv.them }))
+      c.on('level', (lv) => {
+        tell({ t: 'level', me: s.paused ? 0 : lv.me, them: s.paused ? 0 : lv.them })
+        const line = s.paused ? undefined : levels(lv, Date.now())
+        if (line) console.info(line)
+      })
       c.on('ended', (e) => {
         // a capture that was stopped on purpose or replaced is not ours to judge
         if (active !== c) return

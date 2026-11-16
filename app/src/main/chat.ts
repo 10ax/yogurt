@@ -1,3 +1,4 @@
+import { withoutPreamble } from '../shared/answerPreamble'
 import type { Meeting, Notes, Segment, Store } from './store'
 import type { NotesModel } from './notes/model'
 import type { Queue } from './notes/queue'
@@ -307,9 +308,9 @@ export function hookChat(p: Deps & {
           onStart: () => { turn.status = 'answering'; later() },
           onRestart: () => { written = ''; completed = undefined; turn.answer = ''; turn.status = 'waiting'; later() },
           onComplete: (answer) => { completed = answer },
-        })) { written += t; turn.answer = written; later() }
+        })) { written += t; turn.answer = withoutPreamble(written, { streaming: true }); later() }
         // Final cleanup may remove text already streamed; stopped answers keep only what arrived before Stop.
-        turn.answer = (completed ?? written).trim()
+        turn.answer = withoutPreamble((completed ?? written).trim())
         turn.status = ac.signal.aborted ? 'stopped' : 'done'
         p.store.setChatAnswer(turn.id, turn.answer, turn.status === 'stopped')
       } catch (e) {

@@ -8,6 +8,7 @@ import type { Library } from './store'
 import type { Indexer } from './indexer'
 import type { Embedder } from './embedder'
 import { retrieve, type Item } from './retrieve'
+import { withoutPreamble } from '../../shared/answerPreamble'
 import { byMeeting, libraryPrompt, type History } from './prompt'
 import { citedIn, tidyCitations } from '../../shared/citations'
 import { attachContext } from '../../shared/askContext'
@@ -136,7 +137,7 @@ export function hookConversations(p: Deps) {
         onStep: (step) => { turn.step = step; later() },
         onRestart: () => { written = ''; completed = undefined; turn.answer = ''; turn.status = 'waiting'; turn.step = undefined; later() },
         onComplete: answer => { completed = answer },
-      })) { written += text; turn.answer = written; later() }
+      })) { written += text; turn.answer = withoutPreamble(written, { streaming: true }); later() }
     })() : p.queue.enqueue(async (stop) => {
       if (ac.signal.aborted) return
       const signal = AbortSignal.any([stop, ac.signal])
@@ -170,7 +171,7 @@ export function hookConversations(p: Deps) {
         if (signal.aborted) return
         const answer = await llm.chat(libraryPrompt({ items, question, history: recent, now: now(), spelling }), (t) => {
           if (signal.aborted) return
-          written += t; turn.answer = written; later()
+          written += t; turn.answer = withoutPreamble(written, { streaming: true }); later()
         }, { maxTokens: ANSWER_TOKENS })
         if (!signal.aborted) completed = answer
       } finally {
@@ -184,7 +185,8 @@ export function hookConversations(p: Deps) {
     const finished = (async () => {
       try {
         await Promise.race([job, stopped])
-        turn.answer = single ? (completed ?? written).trim() : tidyCitations((completed ?? written).trim(), turn.sources)
+        const answer = withoutPreamble((completed ?? written).trim())
+        turn.answer = single ? answer : tidyCitations(answer, turn.sources)
         turn.status = ac.signal.aborted ? 'stopped' : 'done'
         turn.step = undefined
         const cited = new Set(citedIn(turn.answer))

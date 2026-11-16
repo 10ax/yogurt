@@ -665,5 +665,8 @@
   "Show Yogurt in": "Yogurt’u göster",
   "Menu bar and Dock": "Menü çubuğu ve Dock",
   "Menu bar only": "Yalnızca menü çubuğu",
-  "Dock only": "Yalnızca Dock"
+  "Dock only": "Yalnızca Dock",
+  "Summary language": "Özet dili",
+  "Same as the meeting": "Toplantıyla aynı",
+  "Used for new summaries and when you write them again.": "Yeni özetlerde ve özetleri yeniden yazarken kullanılır."
 }

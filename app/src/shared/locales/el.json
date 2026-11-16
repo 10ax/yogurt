@@ -680,5 +680,8 @@
   "Show Yogurt in": "Εμφάνιση Yogurt σε",
   "Menu bar and Dock": "Γραμμή μενού και Dock",
   "Menu bar only": "Μόνο γραμμή μενού",
-  "Dock only": "Μόνο Dock"
+  "Dock only": "Μόνο Dock",
+  "Summary language": "Γλώσσα σύνοψης",
+  "Same as the meeting": "Ίδια με τη συνάντηση",
+  "Used for new summaries and when you write them again.": "Χρησιμοποιείται για νέες συνόψεις και όταν τις ξαναγράφετε."
 }

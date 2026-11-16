@@ -266,3 +266,14 @@ it('translates the searched scope line in every locale', () => {
     }
   }
 })
+
+it('translates the summary language setting in every locale', () => {
+  for (const key of ['Summary language', 'Same as the meeting', 'Used for new summaries and when you write them again.']) {
+    expect(keys).toContain(key)
+    for (const { id } of LOCALES) {
+      expect(load(id)[key]).toBeTypeOf('string')
+      expect(load(id)[key]).not.toBe('')
+      if (id !== 'en') expect(load(id)[key]).not.toBe(key)
+    }
+  }
+})

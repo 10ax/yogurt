@@ -16,7 +16,7 @@ afterEach(() => {
 })
 const wait = (ms = 5) => new Promise((r) => setTimeout(r, ms))
 
-function setup(o: { me?: string; named?: () => Promise<void>; namesWaitMs?: number; reply?: string | ((prompt: string) => string); during?: () => void; load?: Promise<void>; title?: string; recording?: () => boolean; smallMac?: boolean; showLoading?: boolean } = {}) {
+function setup(o: { summaryLanguage?: () => string; me?: string; named?: () => Promise<void>; namesWaitMs?: number; reply?: string | ((prompt: string) => string); during?: () => void; load?: Promise<void>; title?: string; recording?: () => boolean; smallMac?: boolean; showLoading?: boolean } = {}) {
   const d = mkdtempSync(join(tmpdir(), 'yogurt-notes-'))
   dirs.push(d)
   const store = openStore(join(d, 'yogurt.db'))
@@ -37,7 +37,7 @@ function setup(o: { me?: string; named?: () => Promise<void>; namesWaitMs?: numb
   const queue = createQueue({ recording: o.recording ?? (() => false), smallMac: o.smallMac ?? false })
   const notes = hookNotes({
     store, queue, model: { llm: async () => { await o.load; return llm }, needsLoad: () => true }, showLoading: o.showLoading,
-    transcribed: () => transcript, named: o.named, namesWaitMs: o.namesWaitMs, language: () => 'spanish',
+    transcribed: () => transcript, named: o.named, namesWaitMs: o.namesWaitMs, language: () => 'spanish', summaryLanguage: o.summaryLanguage,
     onStop: (fn) => stops.push(fn), send: (v) => sent.push(v), changed: (id) => changed.push(id), peopleRewriteMs: 30, me: () => o.me ?? '',
   })
   return { store, m, notes, sent, prompts, changed, queue, stop: () => stops.forEach((f) => f(m)), transcribed }
@@ -474,4 +474,36 @@ it('still refreshes the auto title when an editor keeps changes over an attendee
   expect(s.store.notes(s.m.id).enhanced).toBe('My retained edit')
   expect(s.store.meeting(s.m.id)!.title).toBe('Planning with Guest')
   expect(s.prompts.filter(p => p.startsWith('Now give this meeting a title'))).toHaveLength(1)
+})
+
+it('reads the summary default for each new write without changing saved notes or the meeting language', async () => {
+  let language = 'fr'
+  const s = setup({ summaryLanguage: () => language, reply: '## Plan\n- **You:** Send the plan.' })
+  s.store.updateMeeting(s.m.id, { language: 'es' })
+  s.stop(); s.transcribed(); await s.notes.written(s.m.id)
+  expect(s.prompts[0]).toContain('By default, write in French')
+  const saved = s.store.notes(s.m.id)
+  language = 'de'
+  expect(s.notes.view(s.m.id).enhanced).toBe(saved.enhanced)
+  expect(s.prompts).toHaveLength(1)
+  await s.notes.writeAgain(s.m.id)
+  expect(s.prompts.at(-1)).toContain('By default, write in German')
+  language = ''
+  await s.notes.writeAgain(s.m.id)
+  expect(s.prompts.at(-1)).toContain('Write in Spanish')
+  expect(s.prompts.at(-1)).not.toContain('By default')
+  expect(s.store.meeting(s.m.id)?.language).toBe('es')
+})
+
+it('a title-only refresh follows the retained summary language when a default is selected', async () => {
+  const s = setup({ summaryLanguage: () => 'fr', reply: 'Plan de lancement' })
+  s.store.updateMeeting(s.m.id, { titleSource: 'auto', state: 'done', language: 'es' })
+  s.notes.setEnhanced(s.m.id, '## Plan\n- Envoyer le plan.')
+  s.notes.applyPeople(s.m.id)
+  await vi.waitFor(() => expect(s.store.meeting(s.m.id)?.title).toBe('Plan de lancement'))
+  expect(s.prompts).toHaveLength(1)
+  expect(s.prompts[0]).toContain('title, in the same language as the notes')
+  expect(s.prompts[0]).toContain('Envoyer le plan.')
+  expect(s.prompts[0]).not.toContain('Spanish')
+  expect(s.store.notes(s.m.id).enhanced).toBe('## Plan\n- Envoyer le plan.')
 })

@@ -693,5 +693,8 @@
   "Show Yogurt in": "Afficher Yogurt dans",
   "Menu bar and Dock": "Barre des menus et Dock",
   "Menu bar only": "Barre des menus uniquement",
-  "Dock only": "Dock uniquement"
+  "Dock only": "Dock uniquement",
+  "Summary language": "Langue des résumés",
+  "Same as the meeting": "Celle de la réunion",
+  "Used for new summaries and when you write them again.": "Utilisée pour les nouveaux résumés et leur réécriture."
 }

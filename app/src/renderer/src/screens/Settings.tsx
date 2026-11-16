@@ -1,6 +1,6 @@
 import { LoadingContent } from '../components/LoadingContent'
 import { useCallback, useEffect, useRef, useState } from 'react'
-import { Check, ChevronDown, Copy, Download, ExternalLink, Globe, Lock, Upload } from 'lucide-react'
+import { Check, ChevronDown, Copy, Download, ExternalLink, Globe, Lock, Upload, FileText } from 'lucide-react'
 import type { Access, AppVisibility, McpStatus, PermissionKind, PermissionStatus, SetupState, Theme, UpdateStatus } from '../../../shared/types'
 import { notesDownloadText, notesUpgradeSize } from '../notesSetup'
 import { permissionCopy } from '../permissionCopy'
@@ -157,6 +157,7 @@ export function Settings({ revision = 0, focus }: { revision?: number; focus?: s
           <h2 className="settings-section-heading">{t('Language')}</h2>
           <div data-testid="settings-language" className="settings-group">
             <AppLanguage />
+            <SummaryLanguage />
             <SpokenSetting />
             <Jargon />
           </div>
@@ -244,6 +245,31 @@ function AppLanguage() {
         {LOCALES.map((l) => <option key={l.id} value={l.id} lang={l.id}>{l.name}</option>)}
       </select>
       <ChevronDown size={14} aria-hidden="true" />
+      </span>
+    </div></LoadingContent>
+  )
+}
+
+function SummaryLanguage() {
+  const [language, setLanguage] = useState<string>()
+  useEffect(() => { void window.yogurt.settings.get().then((s) => setLanguage(s.summaryLanguage)) }, [])
+  const pick = (value: string) => {
+    setLanguage(value)
+    void window.yogurt.settings.setSummaryLanguage(value)
+  }
+  return (
+    <LoadingContent pending={language === undefined}><div className="settings-row">
+      <span className="settings-permission-icon"><FileText size={17} strokeWidth={1.75} aria-hidden="true" /></span>
+      <div className="settings-row-copy">
+        <label htmlFor="settings-summary-language" className="settings-label">{t('Summary language')}</label>
+        <p id="settings-summary-language-description" className="settings-description">{t('Used for new summaries and when you write them again.')}</p>
+      </div>
+      <span className="settings-select-wrap">
+        <select id="settings-summary-language" data-testid="settings-summary-language" aria-describedby="settings-summary-language-description" value={language ?? ''} disabled={language === undefined} onChange={(e) => pick(e.target.value)} className="settings-select">
+          <option value="">{t('Same as the meeting')}</option>
+          {LOCALES.map((l) => <option key={l.id} value={l.id} lang={l.id}>{l.name}</option>)}
+        </select>
+        <ChevronDown size={14} aria-hidden="true" />
       </span>
     </div></LoadingContent>
   )

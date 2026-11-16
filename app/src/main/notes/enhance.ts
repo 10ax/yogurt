@@ -1,4 +1,5 @@
 import type { Person, Segment } from '../store'
+import { LOCALES } from '../../shared/i18n'
 import { respell, spellingLine, type MeetingWords } from '../vocab'
 
 /**
@@ -54,6 +55,7 @@ export function transcriptText(segments: Segment[]): string {
 
 type PromptInput = {
   title: string; attendees: Person[]; mine: string; transcript: string; language: string
+  summaryLanguage?: string
   /** the person who recorded it, so the invite's other person is known */
   me?: string
   /** how long the meeting was */
@@ -88,7 +90,7 @@ function onlyOther(attendees: Person[], me = ''): string | undefined {
  * (names, title, the person's notes), then how to write.
  */
 export function enhancePrompt(i: PromptInput): string {
-  const lang = i.language || 'the language most of the transcript is in'
+  const lang = i.summaryLanguage || i.language || 'the language most of the transcript is in'
   const people = i.attendees.map((a) => a.name).filter(Boolean)
   const other = onlyOther(i.attendees, i.me)
   const mine = i.mine.trim()
@@ -108,7 +110,9 @@ export function enhancePrompt(i: PromptInput): string {
     '',
     ...(mine ? ['Notes they typed, before or during the meeting. They show what they care about and flagged, and facts they know that may not have been said. They are hints for writing the notes, not text to copy:', '<notes>', mine, '</notes>', ''] : []),
     'How to write them, so they read at a glance:',
-    `- Write in ${lang}, headings too.`,
+    i.summaryLanguage
+      ? `- By default, write in ${lang}, headings too. A rewrite note asking for another language takes precedence over this default.`
+      : `- Write in ${lang}, headings too.`,
     peopleRule,
     ...(i.spelling ? [i.spelling] : []),
     '- Markdown only. Start right away with the first "## " topic: no title, no introduction, nothing after the last bullet.',
@@ -124,7 +128,7 @@ export function enhancePrompt(i: PromptInput): string {
       '- Their notes can be a plan or a script made before the meeting: a question or step in it goes in only if the transcript shows it was asked or done, with what came of it.',
     ] : []),
     '- Use only what was said or typed. Never make anything up.',
-    `- Last, "## Next steps" (in ${lang}) only if someone said they would do something after the meeting: one bullet each, as "- **Name:** what they will do, by when" (when only if it was said), "**You:**" for the person these notes are for, plain words for someone without a name, like "**The designer:**". Leave out jokes and personal errands. Otherwise leave the section out.`,
+    `- Last, "## Next steps" (in ${i.summaryLanguage ? 'the same language as the rest of the notes' : lang}) only if someone said they would do something after the meeting: one bullet each, as "- **Name:** what they will do, by when" (when only if it was said), "**You:**" for the person these notes are for, plain words for someone without a name, like "**The designer:**". Leave out jokes and personal errands. Otherwise leave the section out.`,
     '',
     'The shape, with made-up placeholders:',
     '## <topic>',
@@ -284,6 +288,8 @@ const nextStepsPrompt = (language: string) =>
 
 export type EnhanceInput = {
   meeting: { title: string; attendees: Person[] }; mine: string; segments: Segment[]; language: string | null
+  /** a locale from Settings; a rewrite note may override it */
+  summaryLanguage?: string
   /** the person who recorded it */
   me?: string
   /** the meeting's names and companies: the transcript is respelled with them, and the model told how they are spelled */
@@ -354,10 +360,11 @@ function oneMic(segments: Segment[]): boolean {
  */
 export async function enhance(input: EnhanceInput, llm: Llm, onToken: (text: string) => void, onPart?: (part: number, of: number) => void, earlier: PartSummary[] = []): Promise<string> {
   const language = languageName(input.language)
+  const summaryLanguage = LOCALES.find((l) => l.id === input.summaryLanguage)?.english
   let first = Infinity, last = -Infinity
   for (const s of input.segments) { first = Math.min(first, s.startMs); last = Math.max(last, s.endMs) }
   const minutes = input.segments.length ? (last - first) / 60_000 : undefined
-  const base = { title: input.meeting.title, attendees: input.meeting.attendees, mine: input.mine, language, minutes, me: input.me, spelling: input.words && spellingLine(input.words), oneMic: oneMic(input.segments) }
+  const base = { title: input.meeting.title, attendees: input.meeting.attendees, mine: input.mine, language, summaryLanguage, minutes, me: input.me, spelling: input.words && spellingLine(input.words), oneMic: oneMic(input.segments) }
   const segments = input.words ? input.segments.map((x) => ({ ...x, text: respell(x.text, input.words!) })) : input.segments
   let transcript = transcriptText(segments)
   let parts = false
@@ -400,12 +407,12 @@ export async function enhance(input: EnhanceInput, llm: Llm, onToken: (text: str
       held += t
       if (held.trimStart().startsWith('#')) { showing = true; onToken(`\n${held.trimStart()}`) }
     }
-    const more = tidyNotes(await llm.chat(nextStepsPrompt(language), show, { maxTokens: 400, before: [prompt, md] }))
+    const more = tidyNotes(await llm.chat(nextStepsPrompt(summaryLanguage ? 'the same language as the notes; write the bullets in that language too' : language), show, { maxTokens: 400, before: [prompt, md] }))
     // only a real next-steps list is kept; anything else it said is dropped
     if (OWNER.test(more)) md = `${md}\n${more}`
   }
   // a title is nice to have: one that fails or comes out empty leaves the meeting's as it is
-  if (written) input.titleLater?.((model) => model.chat(titlePrompt(language, input.me, input.meeting.attendees), () => {}, { maxTokens: 40, before: [prompt, written], temperature: 0.3 })
+  if (written) input.titleLater?.((model) => model.chat(titlePrompt(summaryLanguage ? '' : language, input.me, input.meeting.attendees), () => {}, { maxTokens: 40, before: [prompt, written], temperature: 0.3 })
     .then((raw) => cleanTitle(raw, input.me), (e) => { console.error('a title from the notes failed', e); return '' }))
   return markMine(withoutCopies(md, input.mine), input.mine)
 }

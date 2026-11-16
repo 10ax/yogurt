@@ -683,5 +683,8 @@
   "Show Yogurt in": "Yogurtin sijainti",
   "Menu bar and Dock": "Valikkorivi ja Dock",
   "Menu bar only": "Vain valikkorivi",
-  "Dock only": "Vain Dock"
+  "Dock only": "Vain Dock",
+  "Summary language": "Yhteenvedon kieli",
+  "Same as the meeting": "Sama kuin kokouksessa",
+  "Used for new summaries and when you write them again.": "Käytetään uusissa ja uudelleen kirjoitetuissa yhteenvedoissa."
 }

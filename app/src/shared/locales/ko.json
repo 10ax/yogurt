@@ -635,5 +635,8 @@
   "Show Yogurt in": "Yogurt 표시 위치",
   "Menu bar and Dock": "메뉴 막대 및 Dock",
   "Menu bar only": "메뉴 막대만",
-  "Dock only": "Dock만"
+  "Dock only": "Dock만",
+  "Summary language": "요약 언어",
+  "Same as the meeting": "회의와 동일",
+  "Used for new summaries and when you write them again.": "새 요약과 다시 작성하는 요약에 사용됩니다."
 }

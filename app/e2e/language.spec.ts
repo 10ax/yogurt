@@ -72,3 +72,26 @@ test('picking a language in Settings changes everything at once, menus too, and 
     await expect.poll(() => tray(app)).toContain('Open Yogurt')
   } finally { await app.close() }
 })
+
+test('summary language defaults to the meeting and persists independently of app and spoken languages', async () => {
+  const a = await launch('en-US')
+  let { app, page } = a
+  try {
+    await page.getByTestId('settings-open').click()
+    const picker = page.getByTestId('settings-summary-language')
+    await expect(picker).toHaveValue('')
+    await expect(picker.locator('option').first()).toHaveText('Same as the meeting')
+    await expect(picker.locator('option')).toHaveCount(33)
+    await picker.selectOption('fr')
+    await expect(page.getByTestId('settings-app-language')).toHaveValue('')
+    await expect(page.getByTestId('settings-spoken-en')).toHaveAttribute('aria-checked', 'true')
+    await expect.poll(() => page.evaluate(() => window.yogurt.settings.get().then(s => s.summaryLanguage))).toBe('fr')
+    await app.close()
+    ;({ app, page } = await launch('en-US', a.userData))
+    await page.getByTestId('settings-open').click()
+    await expect(page.getByTestId('settings-summary-language')).toHaveValue('fr')
+    await page.getByTestId('settings-summary-language').selectOption('')
+    await expect.poll(() => page.evaluate(() => window.yogurt.settings.get().then(s => s.summaryLanguage))).toBe('')
+    await expect(page.getByTestId('settings-heading')).toHaveText('Settings')
+  } finally { await app.close() }
+})

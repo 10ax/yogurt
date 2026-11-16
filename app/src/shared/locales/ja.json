@@ -635,5 +635,8 @@
   "Show Yogurt in": "Yogurtの表示場所",
   "Menu bar and Dock": "メニューバーとDock",
   "Menu bar only": "メニューバーのみ",
-  "Dock only": "Dockのみ"
+  "Dock only": "Dockのみ",
+  "Summary language": "要約の言語",
+  "Same as the meeting": "会議と同じ",
+  "Used for new summaries and when you write them again.": "新しい要約と書き直す要約に使用します。"
 }

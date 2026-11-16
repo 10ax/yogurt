@@ -733,5 +733,8 @@
   "Show Yogurt in": "إظهار Yogurt في",
   "Menu bar and Dock": "شريط القوائم وDock",
   "Menu bar only": "شريط القوائم فقط",
-  "Dock only": "Dock فقط"
+  "Dock only": "Dock فقط",
+  "Summary language": "لغة الملخص",
+  "Same as the meeting": "نفس لغة الاجتماع",
+  "Used for new summaries and when you write them again.": "تُستخدم للملخصات الجديدة وعند إعادة كتابتها."
 }

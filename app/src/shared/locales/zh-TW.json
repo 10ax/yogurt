@@ -635,5 +635,8 @@
   "Show Yogurt in": "Yogurt 顯示位置",
   "Menu bar and Dock": "選單列與 Dock",
   "Menu bar only": "僅選單列",
-  "Dock only": "僅 Dock"
+  "Dock only": "僅 Dock",
+  "Summary language": "摘要語言",
+  "Same as the meeting": "與會議相同",
+  "Used for new summaries and when you write them again.": "用於新摘要和重新產生的摘要。"
 }

@@ -708,5 +708,8 @@
   "Show Yogurt in": "Zobrazovat Yogurt v",
   "Menu bar and Dock": "Řádek nabídek a Dock",
   "Menu bar only": "Pouze řádek nabídek",
-  "Dock only": "Pouze Dock"
+  "Dock only": "Pouze Dock",
+  "Summary language": "Jazyk shrnutí",
+  "Same as the meeting": "Stejný jako na schůzce",
+  "Used for new summaries and when you write them again.": "Použije se pro nová i znovu vytvořená shrnutí."
 }

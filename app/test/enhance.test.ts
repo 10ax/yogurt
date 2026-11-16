@@ -386,3 +386,55 @@ it('excludes the owner in the shared title prompt and rejects names despite mode
     segments: [seg('me', 0, 'Plan the release')], language: 'en', titleLater: a => { ask = a } }, llm, () => {})
   expect(await ask(llm)).toBe('')
 })
+
+describe('summary language preference', () => {
+  it.each([
+    { language: 'es', summaryLanguage: undefined, expected: 'Spanish' },
+    { language: null, summaryLanguage: '', expected: 'the language most of the transcript is in' },
+    { language: 'es', summaryLanguage: 'fr', expected: 'French' },
+    { language: null, summaryLanguage: 'zh-TW', expected: 'Chinese (Traditional)' },
+    { language: 'es', summaryLanguage: 'unknown', expected: 'Spanish' },
+  ])('uses $expected for notes, next steps and the deferred title', async ({ language, summaryLanguage, expected }) => {
+    const calls: Array<{ prompt: string; before?: string[] }> = []
+    const selected = summaryLanguage === 'fr' || summaryLanguage === 'zh-TW'
+    const llm: Llm = {
+      contextSize: 100_000, count: async (xs) => xs.map(words),
+      chat: async (prompt, onToken, o) => {
+        calls.push({ prompt, before: o?.before })
+        const reply = calls.length === 1 ? '## Plan\n- Ship Tuesday.' : calls.length === 2 ? '## Next steps\n- **You:** Send the plan.' : 'Shipping plan'
+        onToken(reply); return reply
+      },
+    }
+    let title!: (model: Llm) => Promise<string>
+    await enhance({ meeting: { title: '', attendees: [] }, mine: '', segments: [seg('me', 0, 'Send the plan.')], language, summaryLanguage, titleLater: (ask) => { title = ask } }, llm, () => {})
+    await title(llm)
+    expect(calls).toHaveLength(3)
+    expect(calls[0].prompt).toContain(selected ? `By default, write in ${expected}, headings too.` : `Write in ${expected}, headings too.`)
+    expect(calls[0].prompt).toContain(`"## Next steps" (in ${selected ? 'the same language as the rest of the notes' : expected})`)
+    if (selected) {
+      expect(calls[0].prompt).toContain('A rewrite note asking for another language takes precedence over this default.')
+      expect(calls[1].prompt).toContain('heading in the same language as the notes; write the bullets in that language too')
+      expect(calls[2].prompt).toContain('title, in the same language as the notes')
+      for (const call of calls.slice(1)) expect(call.prompt).not.toContain(expected)
+    } else {
+      expect(calls[0].prompt).not.toContain('By default')
+      expect(calls[1].prompt).toContain(`heading in ${language ? expected : 'the same language'}`)
+      expect(calls[2].prompt).toContain(`title, in ${language ? expected : 'the same language as the notes'}`)
+    }
+    for (const call of calls.slice(1)) expect(call.before).toEqual([calls[0].prompt, '## Plan\n- Ship Tuesday.'])
+  })
+
+  it('uses the selected language for final notes even when reusing meeting-language part summaries', async () => {
+    const segments = [seg('me', 0, 'Send the plan.')]
+    const prompts: string[] = []
+    const llm: Llm = {
+      contextSize: 100_000, count: async (xs) => xs.map(words),
+      chat: async (prompt) => { prompts.push(prompt); return '## Plan\n- **You:** Send it.' },
+    }
+    await enhance({ meeting: { title: '', attendees: [] }, mine: '', segments, language: 'es', summaryLanguage: 'de' }, llm, () => {}, undefined,
+      [{ lines: transcriptText(segments).split('\n'), summary: '### Plan\n- Enviar el plan.' }])
+    expect(prompts).toHaveLength(1)
+    expect(prompts[0]).toContain('Enviar el plan.')
+    expect(prompts[0]).toContain('By default, write in German')
+  })
+})

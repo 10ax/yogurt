@@ -705,5 +705,8 @@
   "Show Yogurt in": "Показувати Yogurt у",
   "Menu bar and Dock": "Рядок меню та Dock",
   "Menu bar only": "Лише рядок меню",
-  "Dock only": "Лише Dock"
+  "Dock only": "Лише Dock",
+  "Summary language": "Мова підсумку",
+  "Same as the meeting": "Як на зустрічі",
+  "Used for new summaries and when you write them again.": "Використовується для нових і повторно створених підсумків."
 }

@@ -31,6 +31,8 @@ export function hookNotes(p: {
   named?: (id: string) => Promise<void>
   /** the language most of the meeting was in, when the transcription knows it */
   language: (id: string) => string | null
+  /** read when writing, so regenerations use the current default */
+  summaryLanguage?: () => string
   onStop: (fn: (m: Meeting) => void) => unknown
   /** a meeting's notes changed: status, draft or saved text */
   send: (v: NoteView) => void
@@ -137,7 +139,7 @@ export function hookNotes(p: {
       // a generic title (or one made from earlier notes) gets one from these notes; theirs or the calendar's never
       const retitle = (x: Meeting) => x.titleSource === 'generic' || x.titleSource === 'auto'
       let askTitle: ((llm: Llm) => Promise<string>) | undefined
-      const md = await enhance({ meeting: m, mine, segments, language, me: p.me?.(), words: meetingWords(m), ...(retitle(m) ? { titleLater: (ask) => { askTitle = ask } } : {}) }, llm, (t) => {
+      const md = await enhance({ meeting: m, mine, segments, language, summaryLanguage: p.summaryLanguage?.(), me: p.me?.(), words: meetingWords(m), ...(retitle(m) ? { titleLater: (ask) => { askTitle = ask } } : {}) }, llm, (t) => {
         if (quiet) return
         draft += t
         if (timer) return
@@ -194,7 +196,7 @@ export function hookNotes(p: {
       const n = currentNotes(id)
       // shortcut: title-only refreshes read the first 6000 characters; expand if long notes need later context.
       const context = (n.enhanced ?? n.mine).slice(0, 6000)
-      const t = cleanTitle(await (ask ? ask(llm) : llm.chat(`${titlePrompt(languageName(m.language ?? p.language(id)), me, m.attendees)}\n\nNotes:\n${context}`,
+      const t = cleanTitle(await (ask ? ask(llm) : llm.chat(`${titlePrompt(p.summaryLanguage?.() ? '' : languageName(m.language ?? p.language(id)), me, m.attendees)}\n\nNotes:\n${context}`,
         () => {}, { maxTokens: 40, temperature: 0.3 })), me)
       // renamed or people changed while it was asked for: discard the obsolete answer.
       if (!t || signal.aborted || !current()) return

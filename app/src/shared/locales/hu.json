@@ -665,5 +665,8 @@
   "Show Yogurt in": "Yogurt megjelenítése",
   "Menu bar and Dock": "Menüsáv és Dock",
   "Menu bar only": "Csak a menüsáv",
-  "Dock only": "Csak a Dock"
+  "Dock only": "Csak a Dock",
+  "Summary language": "Összefoglaló nyelve",
+  "Same as the meeting": "A megbeszélés nyelve",
+  "Used for new summaries and when you write them again.": "Új és újraírt összefoglalókhoz használjuk."
 }

@@ -635,5 +635,8 @@
   "Show Yogurt in": "แสดง Yogurt ใน",
   "Menu bar and Dock": "แถบเมนูและ Dock",
   "Menu bar only": "แถบเมนูเท่านั้น",
-  "Dock only": "Dock เท่านั้น"
+  "Dock only": "Dock เท่านั้น",
+  "Summary language": "ภาษาสรุป",
+  "Same as the meeting": "ภาษาเดียวกับการประชุม",
+  "Used for new summaries and when you write them again.": "ใช้สำหรับสรุปใหม่และเมื่อเขียนสรุปอีกครั้ง"
 }

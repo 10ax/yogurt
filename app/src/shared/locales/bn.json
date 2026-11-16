@@ -665,5 +665,8 @@
   "Show Yogurt in": "Yogurt দেখানোর স্থান",
   "Menu bar and Dock": "মেনু বার এবং Dock",
   "Menu bar only": "শুধু মেনু বার",
-  "Dock only": "শুধু Dock"
+  "Dock only": "শুধু Dock",
+  "Summary language": "সারাংশের ভাষা",
+  "Same as the meeting": "মিটিংয়ের ভাষা",
+  "Used for new summaries and when you write them again.": "নতুন সারাংশ ও সারাংশ আবার লেখার সময় ব্যবহৃত হয়।"
 }

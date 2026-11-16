@@ -201,7 +201,8 @@ test('the dock icon and a second launch bring back a closed main window with the
       await expect.poll(mainCount).toBe(0)
       // the recording widget is still up, so the app has windows
       expect(await app.evaluate(({ BrowserWindow }) => BrowserWindow.getAllWindows().length)).toBeGreaterThan(0)
-      await app.evaluate(({ app }, e) => { app.emit(e as 'activate') }, event)
+      // a real second launch always passes its arguments, and the handler reads them on every platform
+      await app.evaluate(({ app }, e) => { app.emit(e as 'activate', {}, []) }, event)
       await expect.poll(mainCount).toBe(1)
     }
     // Also cover no retained main window (e.g. first opened from a login-only launch).

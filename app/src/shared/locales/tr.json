@@ -267,7 +267,6 @@
   "Open System Settings": "Sistem Ayarları’nı aç",
   "Open Yogurt": "Yogurt’u aç",
   "Open Yogurt at login": "Oturum açıldığında Yogurt’u aç",
-  "Show Yogurt in the menu bar": "Yogurt’u menü çubuğunda göster",
   "Show Yogurt in the notification area": "Yogurt’u bildirim alanında göster",
   "Show Yogurt in the tray": "Yogurt’u sistem tepsisinde göster",
   "Open Yogurt when your Mac starts": "Mac açıldığında Yogurt’u aç",
@@ -662,5 +661,9 @@
   "Yogurt couldn't delete this folder.": "Yogurt bu klasörü silemedi.",
   "Yogurt couldn't finish deleting this note.": "Yogurt bu notu silmeyi bitiremedi.",
   "Yogurt couldn't save this folder.": "Yogurt bu klasörü kaydedemedi.",
-  "Your edits to the summary will be replaced.": "Özette yaptığınız düzenlemeler değiştirilecek."
+  "Your edits to the summary will be replaced.": "Özette yaptığınız düzenlemeler değiştirilecek.",
+  "Show Yogurt in": "Yogurt’u göster",
+  "Menu bar and Dock": "Menü çubuğu ve Dock",
+  "Menu bar only": "Yalnızca menü çubuğu",
+  "Dock only": "Yalnızca Dock"
 }

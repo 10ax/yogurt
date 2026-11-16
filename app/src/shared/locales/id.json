@@ -258,7 +258,6 @@
   "Open System Settings": "Buka Pengaturan Sistem",
   "Open Yogurt": "Buka Yogurt",
   "Open Yogurt at login": "Buka Yogurt saat masuk",
-  "Show Yogurt in the menu bar": "Tampilkan Yogurt di bar menu",
   "Show Yogurt in the notification area": "Tampilkan Yogurt di area notifikasi",
   "Show Yogurt in the tray": "Tampilkan Yogurt di baki sistem",
   "Open Yogurt when your Mac starts": "Buka Yogurt saat Mac menyala",
@@ -632,5 +631,9 @@
   "Yogurt couldn't delete this folder.": "Yogurt tidak bisa menghapus folder ini.",
   "Yogurt couldn't finish deleting this note.": "Yogurt tidak bisa menyelesaikan penghapusan catatan ini.",
   "Yogurt couldn't save this folder.": "Yogurt tidak bisa menyimpan folder ini.",
-  "Your edits to the summary will be replaced.": "Suntingan Anda pada ringkasan akan diganti."
+  "Your edits to the summary will be replaced.": "Suntingan Anda pada ringkasan akan diganti.",
+  "Show Yogurt in": "Tampilkan Yogurt di",
+  "Menu bar and Dock": "Bar menu dan Dock",
+  "Menu bar only": "Hanya bar menu",
+  "Dock only": "Hanya Dock"
 }

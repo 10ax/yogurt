@@ -1,11 +1,11 @@
 import { LoadingContent } from '../components/LoadingContent'
 import { useCallback, useEffect, useRef, useState } from 'react'
 import { Check, ChevronDown, Copy, Download, ExternalLink, Globe, Lock, Upload } from 'lucide-react'
-import type { Access, McpStatus, PermissionKind, PermissionStatus, SetupState, Theme, UpdateStatus } from '../../../shared/types'
+import type { Access, AppVisibility, McpStatus, PermissionKind, PermissionStatus, SetupState, Theme, UpdateStatus } from '../../../shared/types'
 import { notesDownloadText, notesUpgradeSize } from '../notesSetup'
 import { permissionCopy } from '../permissionCopy'
 import { LOCALES, t } from '../../../shared/i18n'
-import { osWords } from '../keys'
+import { onMac, osWords } from '../keys'
 import { applyLanguage } from '../i18n'
 import { flushOpenNotes } from '../noteAutosave'
 import { Jargon } from '../components/Jargon'
@@ -19,13 +19,13 @@ import { Swap, SwapText } from '../components/Swap'
 const THEMES = () => [['system', osWords({ mac: t('Match my Mac'), windows: t('Match Windows'), linux: t('Match my system') })], ['light', t('Light')], ['dark', t('Dark')]] as const
 // each computer's own words for starting at login and its icon's place: the menu bar, the notification area, the tray
 const loginLabel = () => osWords({ mac: t('Open Yogurt when your Mac starts'), windows: t('Open Yogurt when Windows starts'), linux: t('Open Yogurt when you log in') })
-const trayLabel = () => osWords({ mac: t('Show Yogurt in the menu bar'), windows: t('Show Yogurt in the notification area'), linux: t('Show Yogurt in the tray') })
+const trayLabel = () => window.yogurt.os === 'win32' ? t('Show Yogurt in the notification area') : t('Show Yogurt in the tray')
 
 /** Settings, kept small: what Yogurt may use, your name, open at login, stop when the call ends, light or dark, a backup and updates. Nothing technical. */
 /** focus: the setting a toast's Settings button opens, recordings or notes-model */
 export function Settings({ revision = 0, focus }: { revision?: number; focus?: string }) {
   const [perms, setPerms] = useState<PermissionStatus>()
-  const [prefs, setPrefs] = useState<{ theme: Theme; openAtLogin: boolean; showInMenuBar: boolean; myName: string; macName: string; stopWhenCallEnds: boolean; recordingReminder: boolean; keepRecordings: boolean }>()
+  const [prefs, setPrefs] = useState<{ theme: Theme; openAtLogin: boolean; showInMenuBar: boolean; appVisibility: AppVisibility; myName: string; macName: string; stopWhenCallEnds: boolean; recordingReminder: boolean; keepRecordings: boolean }>()
   const [name, setName] = useState('')
   const [generalReady, setGeneralReady] = useState(false)
   const scroll = useScrollMemory<HTMLDivElement>('settings', !!prefs && !!perms)
@@ -56,6 +56,15 @@ export function Settings({ revision = 0, focus }: { revision?: number; focus?: s
     if (!prefs) return
     const on = !prefs.stopWhenCallEnds
     setPrefs({ ...prefs, stopWhenCallEnds: on }); void window.yogurt.settings.setStopWhenCallEnds(on)
+  }
+  const menuBar = async () => {
+    if (!prefs) return
+    await window.yogurt.settings.setShowInMenuBar(!prefs.showInMenuBar)
+    setPrefs(await window.yogurt.settings.get())
+  }
+  const visibility = async (choice: AppVisibility) => {
+    await window.yogurt.settings.setAppVisibility(choice)
+    setPrefs(await window.yogurt.settings.get())
   }
 
   return (
@@ -96,12 +105,22 @@ export function Settings({ revision = 0, focus }: { revision?: number; focus?: s
                 <span className="settings-toggle-knob" />
               </button>
             </div>
-            <div className="settings-row">
-              <p className="settings-label settings-row-copy">{trayLabel()}</p>
-              <button data-testid="menu-bar-toggle" role="switch" aria-checked={!!prefs?.showInMenuBar} aria-label={trayLabel()}
-                onClick={() => { if (!prefs) return; const on = !prefs.showInMenuBar; setPrefs({ ...prefs, showInMenuBar: on }); void window.yogurt.settings.setShowInMenuBar(on) }}
+            {onMac() ? <div className="settings-row">
+              <label htmlFor="settings-visibility" className="settings-label settings-row-copy truncate">{t('Show Yogurt in')}</label>
+              <span className="settings-select-wrap">
+                <select id="settings-visibility" data-testid="settings-visibility" value={prefs?.appVisibility ?? 'both'} disabled={!prefs}
+                  onChange={(e) => void visibility(e.target.value as AppVisibility)} className="settings-select">
+                  <option value="both">{t('Menu bar and Dock')}</option>
+                  <option value="menu-bar">{t('Menu bar only')}</option>
+                  <option value="dock">{t('Dock only')}</option>
+                </select>
+                <ChevronDown size={14} aria-hidden="true" />
+              </span>
+            </div> : <div className="settings-row">
+              <p className="settings-label settings-row-copy truncate">{trayLabel()}</p>
+              <button data-testid="menu-bar-toggle" role="switch" aria-checked={!!prefs?.showInMenuBar} aria-label={trayLabel()} onClick={menuBar}
                 className="settings-toggle"><span className="settings-toggle-knob" /></button>
-            </div>
+            </div>}
             <div className="settings-row">
               <div className="settings-row-copy">
                 <p className="settings-label">{t('Finish recording when the call ends')}</p>

@@ -267,7 +267,6 @@
   "Open System Settings": "সিস্টেম সেটিংস খুলুন",
   "Open Yogurt": "Yogurt খুলুন",
   "Open Yogurt at login": "লগইনের সময় Yogurt খুলুন",
-  "Show Yogurt in the menu bar": "মেনু বারে Yogurt দেখান",
   "Show Yogurt in the notification area": "বিজ্ঞপ্তি এলাকায় Yogurt দেখান",
   "Show Yogurt in the tray": "সিস্টেম ট্রেতে Yogurt দেখান",
   "Open Yogurt when your Mac starts": "Mac চালু হলে Yogurt খুলুন",
@@ -662,5 +661,9 @@
   "Yogurt couldn't delete this folder.": "Yogurt এই ফোল্ডার মুছতে পারেনি।",
   "Yogurt couldn't finish deleting this note.": "Yogurt এই নোট মোছা শেষ করতে পারেনি।",
   "Yogurt couldn't save this folder.": "Yogurt এই ফোল্ডার সেভ করতে পারেনি।",
-  "Your edits to the summary will be replaced.": "সারাংশে আপনার সম্পাদনা বদলে যাবে।"
+  "Your edits to the summary will be replaced.": "সারাংশে আপনার সম্পাদনা বদলে যাবে।",
+  "Show Yogurt in": "Yogurt দেখানোর স্থান",
+  "Menu bar and Dock": "মেনু বার এবং Dock",
+  "Menu bar only": "শুধু মেনু বার",
+  "Dock only": "শুধু Dock"
 }

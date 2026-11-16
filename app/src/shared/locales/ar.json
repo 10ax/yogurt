@@ -279,7 +279,6 @@
   "Open System Settings": "فتح إعدادات النظام",
   "Open Yogurt": "فتح Yogurt",
   "Open Yogurt at login": "فتح Yogurt عند تسجيل الدخول",
-  "Show Yogurt in the menu bar": "إظهار Yogurt في شريط القوائم",
   "Show Yogurt in the notification area": "إظهار Yogurt في منطقة الإعلامات",
   "Show Yogurt in the tray": "إظهار Yogurt في علبة النظام",
   "Open Yogurt when your Mac starts": "فتح Yogurt عند تشغيل الـMac",
@@ -730,5 +729,9 @@
   "Yogurt couldn't delete this folder.": "تعذّر على Yogurt حذف هذا المجلد.",
   "Yogurt couldn't finish deleting this note.": "تعذّر على Yogurt إكمال حذف هذه الملاحظة.",
   "Yogurt couldn't save this folder.": "تعذّر على Yogurt حفظ هذا المجلد.",
-  "Your edits to the summary will be replaced.": "سيتم استبدال تعديلاتك على الملخص."
+  "Your edits to the summary will be replaced.": "سيتم استبدال تعديلاتك على الملخص.",
+  "Show Yogurt in": "إظهار Yogurt في",
+  "Menu bar and Dock": "شريط القوائم وDock",
+  "Menu bar only": "شريط القوائم فقط",
+  "Dock only": "Dock فقط"
 }

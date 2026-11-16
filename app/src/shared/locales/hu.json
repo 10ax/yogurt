@@ -267,7 +267,6 @@
   "Open System Settings": "Rendszerbeállítások megnyitása",
   "Open Yogurt": "Yogurt megnyitása",
   "Open Yogurt at login": "Yogurt megnyitása bejelentkezéskor",
-  "Show Yogurt in the menu bar": "Yogurt megjelenítése a menüsávban",
   "Show Yogurt in the notification area": "Yogurt megjelenítése az értesítési területen",
   "Show Yogurt in the tray": "Yogurt megjelenítése a rendszertálcán",
   "Open Yogurt when your Mac starts": "A Yogurt megnyitása a Mac indulásakor",
@@ -662,5 +661,9 @@
   "Yogurt couldn't delete this folder.": "A Yogurt nem tudta törölni ezt a mappát.",
   "Yogurt couldn't finish deleting this note.": "A Yogurt nem tudta befejezni a jegyzet törlését.",
   "Yogurt couldn't save this folder.": "A Yogurt nem tudta menteni ezt a mappát.",
-  "Your edits to the summary will be replaced.": "Az összefoglalón végzett módosításaid lecserélődnek."
+  "Your edits to the summary will be replaced.": "Az összefoglalón végzett módosításaid lecserélődnek.",
+  "Show Yogurt in": "Yogurt megjelenítése",
+  "Menu bar and Dock": "Menüsáv és Dock",
+  "Menu bar only": "Csak a menüsáv",
+  "Dock only": "Csak a Dock"
 }

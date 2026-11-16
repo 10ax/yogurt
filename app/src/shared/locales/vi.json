@@ -258,7 +258,6 @@
   "Open System Settings": "Mở Cài đặt hệ thống",
   "Open Yogurt": "Mở Yogurt",
   "Open Yogurt at login": "Mở Yogurt khi đăng nhập",
-  "Show Yogurt in the menu bar": "Hiển thị Yogurt trên thanh menu",
   "Show Yogurt in the notification area": "Hiển thị Yogurt trong vùng thông báo",
   "Show Yogurt in the tray": "Hiển thị Yogurt trong khay hệ thống",
   "Open Yogurt when your Mac starts": "Mở Yogurt khi máy Mac khởi động",
@@ -632,5 +631,9 @@
   "Yogurt couldn't delete this folder.": "Yogurt không xóa được thư mục này.",
   "Yogurt couldn't finish deleting this note.": "Yogurt không xóa xong ghi chú này.",
   "Yogurt couldn't save this folder.": "Yogurt không lưu được thư mục này.",
-  "Your edits to the summary will be replaced.": "Những chỉnh sửa của bạn trong tóm tắt sẽ bị thay thế."
+  "Your edits to the summary will be replaced.": "Những chỉnh sửa của bạn trong tóm tắt sẽ bị thay thế.",
+  "Show Yogurt in": "Hiển thị Yogurt trong",
+  "Menu bar and Dock": "Thanh menu và Dock",
+  "Menu bar only": "Chỉ thanh menu",
+  "Dock only": "Chỉ Dock"
 }

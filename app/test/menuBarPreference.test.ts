@@ -10,16 +10,16 @@ import { loadSettings, updateSettings } from '../src/main/settings'
 
 const dirs: string[] = []
 afterEach(() => { dirs.splice(0).forEach((dir) => rmSync(dir, { recursive: true, force: true })); handlers.clear(); vi.restoreAllMocks() })
-it('defaults on, persists off across reloads, rejects non-booleans and applies changes immediately', () => {
+it.each(['win32', 'linux'])('%s tray defaults on, persists changes and rejects non-booleans without changing the Dock preference', (os) => {
   const dir = mkdtempSync(join(tmpdir(), 'yogurt-menu-pref-')); dirs.push(dir)
   const file = join(dir, 'settings.json')
   const setTrayVisible = vi.fn()
-  const deps = { file, permissions: {} as Parameters<typeof hookPreferences>[0]['permissions'], ask: false, setLogin: vi.fn(), loginOn: () => false, macName: () => 'Dana', relaunch: () => false, setTrayVisible }
+  const deps = { file, os, permissions: {} as Parameters<typeof hookPreferences>[0]['permissions'], ask: false, setLogin: vi.fn(), loginOn: () => false, macName: () => '', relaunch: () => false, setTrayVisible, setDockVisible: vi.fn() }
   hookPreferences(deps)
   const get = () => handlers.get('settings:get')!()
   const set = (value: unknown) => handlers.get('settings:menu-bar')!(null, value)
   expect(get().showInMenuBar).toBe(true)
-  updateSettings(file, { openAtLogin: true })
+  updateSettings(file, { openAtLogin: true, showInDock: false })
   set(false)
   expect(loadSettings(file)).toMatchObject({ showInMenuBar: false, openAtLogin: true })
   expect(setTrayVisible).toHaveBeenLastCalledWith(false)
@@ -31,13 +31,15 @@ it('defaults on, persists off across reloads, rejects non-booleans and applies c
   expect(get().showInMenuBar).toBe(true)
   expect(loadSettings(file).showInMenuBar).toBeUndefined()
   expect(setTrayVisible).toHaveBeenLastCalledWith(true)
+  expect(loadSettings(file).showInDock).toBe(false)
+  expect(deps.setDockVisible).not.toHaveBeenCalled()
 })
 
 
 it('keeps recordings by default and persists only a valid retention preference', () => {
   const dir = mkdtempSync(join(tmpdir(), 'yogurt-audio-pref-')); dirs.push(dir)
   const file = join(dir, 'settings.json')
-  const deps = { file, permissions: {} as Parameters<typeof hookPreferences>[0]['permissions'], ask: false, setLogin: vi.fn(), loginOn: () => false, macName: () => 'Dana', relaunch: () => false, setTrayVisible: vi.fn() }
+  const deps = { file, permissions: {} as Parameters<typeof hookPreferences>[0]['permissions'], ask: false, setLogin: vi.fn(), loginOn: () => false, macName: () => 'Dana', relaunch: () => false, setTrayVisible: vi.fn(), setDockVisible: vi.fn() }
   hookPreferences(deps)
   const get = () => handlers.get('settings:get')!().keepRecordings
   const set = (on: unknown) => handlers.get('settings:keep-recordings')!(null, on)

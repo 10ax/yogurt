@@ -267,7 +267,6 @@
   "Open System Settings": "Buksan ang System Settings",
   "Open Yogurt": "Buksan ang Yogurt",
   "Open Yogurt at login": "Buksan ang Yogurt sa pag-login",
-  "Show Yogurt in the menu bar": "Ipakita ang Yogurt sa menu bar",
   "Show Yogurt in the notification area": "Ipakita ang Yogurt sa notification area",
   "Show Yogurt in the tray": "Ipakita ang Yogurt sa system tray",
   "Open Yogurt when your Mac starts": "Buksan ang Yogurt pagbukas ng Mac mo",
@@ -674,5 +673,9 @@
   "Yogurt couldn't delete this folder.": "Hindi ma-delete ng Yogurt ang folder na ito.",
   "Yogurt couldn't finish deleting this note.": "Hindi natapos ng Yogurt ang pag-delete sa note na ito.",
   "Yogurt couldn't save this folder.": "Hindi ma-save ng Yogurt ang folder na ito.",
-  "Your edits to the summary will be replaced.": "Papalitan ang mga edit mo sa buod."
+  "Your edits to the summary will be replaced.": "Papalitan ang mga edit mo sa buod.",
+  "Show Yogurt in": "Ipakita ang Yogurt sa",
+  "Menu bar and Dock": "Menu bar at Dock",
+  "Menu bar only": "Menu bar lang",
+  "Dock only": "Dock lang"
 }

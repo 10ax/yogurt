@@ -273,7 +273,6 @@
   "Open System Settings": "Открыть Системные настройки",
   "Open Yogurt": "Открыть Yogurt",
   "Open Yogurt at login": "Открывать Yogurt при входе",
-  "Show Yogurt in the menu bar": "Показывать Yogurt в строке меню",
   "Show Yogurt in the notification area": "Показывать Yogurt в области уведомлений",
   "Show Yogurt in the tray": "Показывать Yogurt в системном трее",
   "Open Yogurt when your Mac starts": "Открывать Yogurt при запуске Mac",
@@ -702,5 +701,9 @@
   "Yogurt couldn't delete this folder.": "Yogurt не смог удалить эту папку.",
   "Yogurt couldn't finish deleting this note.": "Yogurt не смог до конца удалить эту заметку.",
   "Yogurt couldn't save this folder.": "Yogurt не смог сохранить эту папку.",
-  "Your edits to the summary will be replaced.": "Ваши правки в сводке будут заменены."
+  "Your edits to the summary will be replaced.": "Ваши правки в сводке будут заменены.",
+  "Show Yogurt in": "Показывать Yogurt в",
+  "Menu bar and Dock": "Строка меню и Dock",
+  "Menu bar only": "Только строка меню",
+  "Dock only": "Только Dock"
 }

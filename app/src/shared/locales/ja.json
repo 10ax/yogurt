@@ -258,7 +258,6 @@
   "Open System Settings": "システム設定を開く",
   "Open Yogurt": "Yogurtを開く",
   "Open Yogurt at login": "ログイン時にYogurtを開く",
-  "Show Yogurt in the menu bar": "メニューバーにYogurtを表示",
   "Show Yogurt in the notification area": "通知領域にYogurtを表示",
   "Show Yogurt in the tray": "システムトレイにYogurtを表示",
   "Open Yogurt when your Mac starts": "Mac起動時にYogurtを開く",
@@ -632,5 +631,9 @@
   "Yogurt couldn't delete this folder.": "Yogurtはこのフォルダを削除できませんでした。",
   "Yogurt couldn't finish deleting this note.": "Yogurtはこのノートの削除を完了できませんでした。",
   "Yogurt couldn't save this folder.": "Yogurtはこのフォルダを保存できませんでした。",
-  "Your edits to the summary will be replaced.": "要約に加えた編集は置き換えられます。"
+  "Your edits to the summary will be replaced.": "要約に加えた編集は置き換えられます。",
+  "Show Yogurt in": "Yogurtの表示場所",
+  "Menu bar and Dock": "メニューバーとDock",
+  "Menu bar only": "メニューバーのみ",
+  "Dock only": "Dockのみ"
 }

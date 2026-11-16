@@ -267,7 +267,6 @@
   "Open System Settings": "Άνοιγμα Ρυθμίσεων συστήματος",
   "Open Yogurt": "Άνοιγμα Yogurt",
   "Open Yogurt at login": "Άνοιγμα του Yogurt κατά τη σύνδεση",
-  "Show Yogurt in the menu bar": "Εμφάνιση του Yogurt στη γραμμή μενού",
   "Show Yogurt in the notification area": "Εμφάνιση του Yogurt στην περιοχή ειδοποιήσεων",
   "Show Yogurt in the tray": "Εμφάνιση του Yogurt στη γραμμή συστήματος",
   "Open Yogurt when your Mac starts": "Άνοιγμα του Yogurt με την εκκίνηση του Mac",
@@ -677,5 +676,9 @@
   "Yogurt couldn't delete this folder.": "Το Yogurt δεν μπόρεσε να διαγράψει αυτόν τον φάκελο.",
   "Yogurt couldn't finish deleting this note.": "Το Yogurt δεν μπόρεσε να ολοκληρώσει τη διαγραφή αυτής της σημείωσης.",
   "Yogurt couldn't save this folder.": "Το Yogurt δεν μπόρεσε να αποθηκεύσει αυτόν τον φάκελο.",
-  "Your edits to the summary will be replaced.": "Οι αλλαγές σας στη σύνοψη θα αντικατασταθούν."
+  "Your edits to the summary will be replaced.": "Οι αλλαγές σας στη σύνοψη θα αντικατασταθούν.",
+  "Show Yogurt in": "Εμφάνιση Yogurt σε",
+  "Menu bar and Dock": "Γραμμή μενού και Dock",
+  "Menu bar only": "Μόνο γραμμή μενού",
+  "Dock only": "Μόνο Dock"
 }

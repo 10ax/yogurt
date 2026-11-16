@@ -273,7 +273,6 @@
   "Open System Settings": "Otevřít Nastavení systému",
   "Open Yogurt": "Otevřít Yogurt",
   "Open Yogurt at login": "Otevřít Yogurt při přihlášení",
-  "Show Yogurt in the menu bar": "Zobrazovat Yogurt v řádku nabídek",
   "Show Yogurt in the notification area": "Zobrazovat Yogurt v oznamovací oblasti",
   "Show Yogurt in the tray": "Zobrazovat Yogurt v systémové liště",
   "Open Yogurt when your Mac starts": "Otevřít Yogurt po spuštění Macu",
@@ -705,5 +704,9 @@
   "Yogurt couldn't delete this folder.": "Yogurt nemohl smazat tuto složku.",
   "Yogurt couldn't finish deleting this note.": "Yogurt nemohl dokončit mazání této poznámky.",
   "Yogurt couldn't save this folder.": "Yogurt nemohl uložit tuto složku.",
-  "Your edits to the summary will be replaced.": "Vaše úpravy souhrnu budou nahrazeny."
+  "Your edits to the summary will be replaced.": "Vaše úpravy souhrnu budou nahrazeny.",
+  "Show Yogurt in": "Zobrazovat Yogurt v",
+  "Menu bar and Dock": "Řádek nabídek a Dock",
+  "Menu bar only": "Pouze řádek nabídek",
+  "Dock only": "Pouze Dock"
 }

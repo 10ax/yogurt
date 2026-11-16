@@ -1,5 +1,5 @@
 import { BrowserWindow, ipcMain, nativeTheme } from 'electron'
-import { loadSettings, localeOf, recordingReminderOn, spokenSetting, stopsWhenCallEnds, updateSettings } from './settings'
+import { loadSettings, localeOf, recordingReminderOn, spokenSetting, stopsWhenCallEnds, updateSettings, visibilityOf } from './settings'
 import { systemLocale } from './locale'
 import { PERMISSION_KINDS, type PermissionKind, type Permissions } from './permissions'
 import { firstRunPlan, missing, nudge } from '../shared/onboarding'
@@ -14,7 +14,7 @@ const isKind = (k: unknown): k is PermissionKind => PERMISSION_KINDS.includes(k 
  * Settings, the first run (intro and permissions) and home's Finish setup: permissions (read, asked, or their System Settings pane), open at login, theme.
  * ask: whether this run may show the first run at all (fake mode only when a test sets the permissions).
  */
-export function hookPreferences(d: { file: string; permissions: Permissions; ask: boolean; setLogin(on: boolean): void; setTrayVisible(on: boolean): void; loginOn(saved: boolean | undefined): boolean; /** the Mac's full name */ macName(): string
+export function hookPreferences(d: { file: string; permissions: Permissions; ask: boolean; setLogin(on: boolean): void; setTrayVisible(on: boolean): void; setDockVisible(on: boolean): void; loginOn(saved: boolean | undefined): boolean; /** the Mac's full name */ macName(): string
   /** quit and open again, for a permission the Mac applies only then; false when it can't now (recording) */
   relaunch(): boolean
   /** fake mode: a slow start, so tests see the launch screen */
@@ -22,8 +22,9 @@ export function hookPreferences(d: { file: string; permissions: Permissions; ask
   /** the spoken language changed: the meeting being recorded follows it where it can */
   onSpoken?: (v: Spoken) => void
   /** the permissions this computer has (supportedKinds in platform.ts); a Mac has them all */
-  kinds?: readonly PermissionKind[] }) {
+  kinds?: readonly PermissionKind[]; os?: string }) {
   const kinds = d.kinds ?? PERMISSION_KINDS
+  const os = d.os ?? process.platform
   let plan: Promise<OnboardingPlan> | undefined
   // asked once per launch, so the list doesn't shrink under the person as they answer
   ipcMain.handle('onboarding:plan', () => (plan ??= (async () => {
@@ -46,10 +47,11 @@ export function hookPreferences(d: { file: string; permissions: Permissions; ask
   ipcMain.handle('permissions:open', (_e, k: unknown) => { if (isKind(k)) return d.permissions.openSettings(k) })
   ipcMain.handle('settings:get', () => {
     const s = loadSettings(d.file)
+    const visible = visibilityOf(s)
     // what the Mac says, so a change in System Settings shows here
     // locale: every window (main, card, widget) shows the interface language
     // language: the one picked ('' is the Mac's); locale: the one in use; systemLocale: the Mac's, for the picker
-    return { theme: s.theme ?? 'system', openAtLogin: d.loginOn(s.openAtLogin), showInMenuBar: s.showInMenuBar !== false, language: isLocale(s.language) ? s.language : '', locale: localeOf(s, systemLocale()), systemLocale: systemLocale(), myName: s.myName?.trim() || d.macName(), macName: d.macName(), stopWhenCallEnds: stopsWhenCallEnds(s), recordingReminder: recordingReminderOn(s), keepRecordings: s.keepRecordings !== false, jargon: cleanJargon(s.jargon), spoken: spokenSetting(s) }
+    return { theme: s.theme ?? 'system', openAtLogin: d.loginOn(s.openAtLogin), showInMenuBar: s.showInMenuBar !== false, appVisibility: !visible.showInMenuBar ? 'dock' : visible.showInDock ? 'both' : 'menu-bar', language: isLocale(s.language) ? s.language : '', locale: localeOf(s, systemLocale()), systemLocale: systemLocale(), myName: s.myName?.trim() || d.macName(), macName: d.macName(), stopWhenCallEnds: stopsWhenCallEnds(s), recordingReminder: recordingReminderOn(s), keepRecordings: s.keepRecordings !== false, jargon: cleanJargon(s.jargon), spoken: spokenSetting(s) }
   })
   // what the person is called in meetings (who "You" is when naming voices); blank: the Mac's full name again
   ipcMain.handle('settings:name', (_e, v: unknown) => {
@@ -98,9 +100,19 @@ export function hookPreferences(d: { file: string; permissions: Permissions; ask
     d.onSpoken?.(v as Spoken)
   })
   ipcMain.handle('settings:menu-bar', (_e, on: unknown) => {
-    if (typeof on !== 'boolean') return
+    if (os === 'darwin' || typeof on !== 'boolean') return
     updateSettings(d.file, { showInMenuBar: on ? undefined : false })
     d.setTrayVisible(on)
+  })
+  ipcMain.handle('settings:visibility', (_e, choice: unknown) => {
+    if (os !== 'darwin' || (choice !== 'both' && choice !== 'menu-bar' && choice !== 'dock')) return
+    const menuBar = choice !== 'dock', dock = choice !== 'menu-bar'
+    // Show the kept entry points before saving or hiding either one.
+    if (menuBar) d.setTrayVisible(true)
+    if (dock) d.setDockVisible(true)
+    updateSettings(d.file, { showInMenuBar: menuBar ? undefined : false, showInDock: dock ? undefined : false })
+    if (!menuBar) d.setTrayVisible(false)
+    if (!dock) d.setDockVisible(false)
   })
   ipcMain.handle('settings:login', (_e, on: unknown) => {
     const yes = on === true

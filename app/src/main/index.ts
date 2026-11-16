@@ -5,6 +5,7 @@ import { speakerColor } from '../shared/speakerColors'
 import { createNotificationPermission } from './notificationPermission'
 import { createRecordingReminder } from './recordingReminder'
 import { closeAction, keepMainWindow } from './mainWindow'
+import { setDockVisible } from './dock'
 import { titleBarOverlay, windowChrome } from './windowChrome'
 import { x11Relaunch } from './display'
 import { isAppRoute } from '../shared/routes'
@@ -18,7 +19,7 @@ import { basename, join } from 'node:path'
 import { pathToFileURL } from 'node:url'
 import { isFake, userDataDir } from './paths'
 import { logToFile } from './log'
-import { loadSettings, localeOf, keepsRecording, recordingReminderOn, spokenSetting, stopsWhenCallEnds, updateSettings } from './settings'
+import { loadSettings, localeOf, keepsRecording, recordingReminderOn, spokenSetting, stopsWhenCallEnds, updateSettings, visibilityOf } from './settings'
 import { CALL_GONE_MS, useCallApps } from './detect'
 import { systemLocale } from './locale'
 import { language as uiLanguage, onLanguage, setLanguage, t } from '../shared/i18n'
@@ -456,6 +457,10 @@ app.whenReady().then(() => {
   // Local Electron launches need the same Dock icon as the packaged application.
   if (!app.isPackaged && process.platform === 'darwin') app.dock?.setIcon(join(__dirname, '../../build/icon.png'))
   const settings = loadSettings(join(userDataDir(), 'settings.json'))
+  // a settings file edited by hand can leave no visible entry point: heal it before the window shows
+  const visible = visibilityOf(settings)
+  if (visible.showInDock && settings.showInDock === false) updateSettings(join(userDataDir(), 'settings.json'), { showInDock: undefined })
+  setDockVisible(visible.showInDock)
   // the theme picked in Settings; the system's when none
   nativeTheme.themeSource = settings.theme ?? 'system'
   setLanguage(localeOf(settings, systemLocale()))
@@ -468,11 +473,12 @@ app.whenReady().then(() => {
   // a moved or reinstalled Yogurt loses its login item: put it back if the person wanted it
   if (!isFake()) syncLoginItem(settings.openAtLogin)
   hookPreferences({
-    file: join(userDataDir(), 'settings.json'), permissions, kinds: supportedKinds(caps),
+    file: join(userDataDir(), 'settings.json'), permissions, kinds: supportedKinds(caps), os: platform,
     // fake mode asks the first-run questions only when a test sets the permissions
     ask: !isFake() || !!process.env.YOGURT_FAKE_PERMISSIONS,
     setLogin: (on) => { if (!isFake()) setLoginItem(on) },
     setTrayVisible: (on) => setTrayVisible(on),
+    setDockVisible: (on) => setDockVisible(on, win),
     loginOn: (saved) => (isFake() ? !!saved : loginItemOn(saved)),
     macName,
     // never mid-meeting: quitting would end the recording

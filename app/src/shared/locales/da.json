@@ -267,7 +267,6 @@
   "Open System Settings": "Åbn Systemindstillinger",
   "Open Yogurt": "Åbn Yogurt",
   "Open Yogurt at login": "Åbn Yogurt ved login",
-  "Show Yogurt in the menu bar": "Vis Yogurt i menulinjen",
   "Show Yogurt in the notification area": "Vis Yogurt i meddelelsesområdet",
   "Show Yogurt in the tray": "Vis Yogurt i systembakken",
   "Open Yogurt when your Mac starts": "Åbn Yogurt, når din Mac starter",
@@ -674,5 +673,9 @@
   "Yogurt couldn't delete this folder.": "Yogurt kunne ikke slette denne mappe.",
   "Yogurt couldn't finish deleting this note.": "Yogurt kunne ikke slette denne note færdig.",
   "Yogurt couldn't save this folder.": "Yogurt kunne ikke gemme denne mappe.",
-  "Your edits to the summary will be replaced.": "Dine ændringer i resuméet bliver erstattet."
+  "Your edits to the summary will be replaced.": "Dine ændringer i resuméet bliver erstattet.",
+  "Show Yogurt in": "Vis Yogurt i",
+  "Menu bar and Dock": "Menulinje og Dock",
+  "Menu bar only": "Kun menulinjen",
+  "Dock only": "Kun Dock"
 }

@@ -168,8 +168,16 @@ export function App() {
       if (e.code === 'BracketLeft') { e.preventDefault(); back() }
       if (e.code === 'BracketRight') { e.preventDefault(); forward() }
     }
+    // a mouse's side buttons (a Logitech's back and forward) are buttons 3 and 4, and do what ⌘[ and ⌘] do
+    const onMouse = (e: MouseEvent) => {
+      if (e.button !== 3 && e.button !== 4) return
+      e.preventDefault()
+      if (document.querySelector('dialog:modal, [aria-modal="true"]')) return
+      if (e.button === 3) back(); else forward()
+    }
     window.addEventListener('keydown', onKey, true)
-    return () => window.removeEventListener('keydown', onKey, true)
+    window.addEventListener('mouseup', onMouse, true)
+    return () => { window.removeEventListener('keydown', onKey, true); window.removeEventListener('mouseup', onMouse, true) }
   }, [ready, holding])
   const open = (id: string) => { setSearching(false); go(`/note/${id}`) }
   /** A citation opens its matching notes paragraph or transcript segment. */

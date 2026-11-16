@@ -586,3 +586,20 @@ test('returning to a note keeps its reading tab and scroll position', async () =
     await expect(page.getByTestId('note-mine')).toContainText('Discussion point 70.')
   } finally { await app.close() }
 })
+
+test("a mouse's back and forward buttons move through pages like ⌘[ and ⌘]", async () => {
+  const { app, page } = await launch()
+  try {
+    await page.keyboard.press('Meta+2')
+    await expect(page.getByTestId('chat-page')).toBeVisible()
+    // the side buttons as Chromium gets them from the mouse (a Logitech's back and forward)
+    const cdp = await page.context().newCDPSession(page)
+    const side = async (button: 'back' | 'forward') => {
+      for (const type of ['mousePressed', 'mouseReleased'] as const) await cdp.send('Input.dispatchMouseEvent', { type, x: 400, y: 300, button, clickCount: 1 })
+    }
+    await side('back')
+    await expect(page.getByTestId('home')).toBeVisible()
+    await side('forward')
+    await expect(page.getByTestId('chat-page')).toBeVisible()
+  } finally { await app.close() }
+})

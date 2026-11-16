@@ -89,14 +89,16 @@ jobs:
           $p = Start-Process powershell -PassThru -WindowStyle Hidden -ArgumentList '-NoProfile', '-Command', "(New-Object Media.SoundPlayer '$env:RUNNER_TEMP/tone.wav').PlaySync()"
           Start-Sleep 2
           try { node smoke/smoke.mjs target/release/yogurt-audio.exe live } finally { Stop-Process -Id $p.Id -ErrorAction SilentlyContinue }
-      - name: Smoke test, the whole-output fallback (Windows before 10 2004)
+      - name: Smoke test, process loopback when asked for (every app except Yogurt)
         env:
-          YOGURT_AUDIO_LOOPBACK: endpoint
+          YOGURT_AUDIO_LOOPBACK: process
         run: |
           $p = Start-Process powershell -PassThru -WindowStyle Hidden -ArgumentList '-NoProfile', '-Command', "(New-Object Media.SoundPlayer '$env:RUNNER_TEMP/tone.wav').PlaySync()"
           Start-Sleep 2
           try { node smoke/smoke.mjs target/release/yogurt-audio.exe live } finally { Stop-Process -Id $p.Id -ErrorAction SilentlyContinue }
-      - name: Smoke test, Yogurt's own sound left out
+      - name: Smoke test, Yogurt's own sound left out (process loopback)
+        env:
+          YOGURT_AUDIO_LOOPBACK: process
         run: node smoke/smoke.mjs target/release/yogurt-audio.exe excluded
       - name: Smoke test, devices present
         run: node smoke/smoke.mjs target/release/yogurt-audio.exe basic

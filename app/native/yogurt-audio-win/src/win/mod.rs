@@ -341,16 +341,19 @@ pub fn start_mic(uid: Option<String>, tx: Sender<Ev>) -> Result<Stream, StartErr
     )
 }
 
-/// The computer's sound. Process loopback (Windows 10 2004 and newer) records every app except Yogurt: the app that
-/// started this helper and everything it started. Where that can't start, the whole output is recorded, Yogurt included.
+/// The computer's sound: the whole default output, Yogurt's own sound included (Yogurt plays nothing while recording
+/// unless asked). Process loopback, every app except Yogurt (Windows 10 2004 and newer), only on YOGURT_AUDIO_LOOPBACK=process:
+/// it heard nothing of Teams on some computers (#35).
 pub fn start_system(tx: Sender<Ev>, clock: Clock) -> Result<Stream, StartError> {
     let lost_tx = tx.clone();
     let mut gap = GapFiller::new(clock.now_ms());
     spawn(
         move || {
             let parent = parent_pid();
-            // YOGURT_AUDIO_LOOPBACK=endpoint: the fallback on purpose (CI tests it)
-            if parent != 0 && std::env::var("YOGURT_AUDIO_LOOPBACK").as_deref() != Ok("endpoint") {
+            // The whole output by default: process loopback ("every app except Yogurt") heard nothing of the new Teams
+            // on the very device it played to (#35, a Jabra headset as the default output). YOGURT_AUDIO_LOOPBACK=process
+            // still asks for it (CI tests both).
+            if parent != 0 && std::env::var("YOGURT_AUDIO_LOOPBACK").as_deref() == Ok("process") {
                 match process_loopback(parent) {
                     Ok(client) => match initialize(&client, true) {
                         Ok(ch) => {

@@ -1,6 +1,6 @@
 // Yogurt's recorder on Windows, speaking the same protocol as the Mac's (native/yogurt-audio/main.swift): the microphone
 // (WASAPI shared mode, no communications role, so the call app keeps its mic as it was) and the computer's sound
-// (process loopback on every app except Yogurt, Windows 10 2004+; the whole output where that can't start).
+// (the whole default output; process loopback, every app except Yogurt, on YOGURT_AUDIO_LOOPBACK=process: it missed Teams, #35).
 //   yogurt-audio record --dir DIR [--part N --start-ms X] [--mic ID] [--speech LOCALE]
 //   yogurt-audio join --dir DIR | inspect --dir DIR | mic-devices | speech-locales | speech-install LOCALE
 // Writes DIR/me.ogg and DIR/them.ogg (Opus 20 kb/s mono, 48 kHz), a page a second so a crash keeps what was recorded.

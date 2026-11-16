@@ -176,8 +176,8 @@ async function live(excluded) {
   const loud = (track) => res.frames.filter((f) => f.t === 'pcm' && f.track === track && f.rms > 0.02).length
   const processLoopback = /every app except Yogurt/.test(res.stderr)
   console.log(`system audio mode: ${processLoopback ? 'process loopback' : 'whole output'}; loud frames me ${loud('me')}, them ${loud('them')}`)
-  if (process.env.YOGURT_AUDIO_LOOPBACK === 'endpoint') check(/the whole output/.test(res.stderr), 'the fallback records the whole output')
-  else check(processLoopback, 'process loopback starts on this Windows')
+  if (process.env.YOGURT_AUDIO_LOOPBACK === 'process') check(processLoopback, 'process loopback starts when asked for')
+  else check(/the whole output/.test(res.stderr), 'the whole output is recorded by default (#35)')
   if (excluded && processLoopback) check(loud('them') <= 2, "Yogurt's own sound is left out of them", `${loud('them')} loud frames`)
   else check(loud('them') >= 30, 'them hears the computer\'s sound', `${loud('them')} loud frames`)
   check(res.frames.some((f) => f.t === 'level' && f.them > 0.3) === !(excluded && processLoopback), 'them levels follow the sound')

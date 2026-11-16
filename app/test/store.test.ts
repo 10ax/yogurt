@@ -500,14 +500,16 @@ describe('meetings recorded before transcripts were tracked (#30)', () => {
     const dir = mkdtempSync(join(tmpdir(), 'yogurt-store-30-')), file = join(dir, 'y.db')
     let s = openStore(file)
     const silent = s.createMeeting({ title: 'old call', startedAt: 1, endedAt: 2, eventId: null, app: null, attendees: [], state: 'stopped' })
+    // its empty notes were "written", which made it done: the #30 meeting
+    const finished = s.createMeeting({ title: 'notes came out empty', startedAt: 5, endedAt: 6, eventId: null, app: null, attendees: [], state: 'done' })
     const heard = s.createMeeting({ title: 'had words', startedAt: 3, endedAt: 4, eventId: null, app: null, attendees: [], state: 'stopped' })
     s.addSegments([{ meetingId: heard.id, track: 'them', startMs: 0, endMs: 900, text: 'hello', speaker: null }])
     // as an older Yogurt left it: nothing marked, and the store never looked
     ;(s as unknown as { db: { exec(q: string): void } }).db.exec('PRAGMA user_version = 0')
     s.close()
     s = openStore(file)
-    expect(s.untranscribedMeetings().map((m) => m.id)).toEqual([silent.id])
-    s.updateMeeting(silent.id, { transcriptionPending: false })
+    expect(s.untranscribedMeetings().map((m) => m.id)).toEqual([silent.id, finished.id])
+    s.updateMeeting(silent.id, { transcriptionPending: false }); s.updateMeeting(finished.id, { transcriptionPending: false })
     s.close()
     s = openStore(file)
     // only once: a meeting that really had nothing to transcribe is not tried on every launch
@@ -515,4 +517,16 @@ describe('meetings recorded before transcripts were tracked (#30)', () => {
     s.close()
     rmSync(dir, { recursive: true, force: true })
   })
+})
+
+it('a store already marked by 0.3.31 (only stopped meetings) is marked again for done ones, once', () => {
+  const dir = mkdtempSync(join(tmpdir(), 'yogurt-store-30b-')), file = join(dir, 'y.db')
+  let s = openStore(file)
+  const done = s.createMeeting({ title: 'empty notes', startedAt: 1, endedAt: 2, eventId: null, app: null, attendees: [], state: 'done' })
+  ;(s as unknown as { db: { exec(q: string): void } }).db.exec('PRAGMA user_version = 1')
+  s.close()
+  s = openStore(file)
+  expect(s.untranscribedMeetings().map((m) => m.id)).toEqual([done.id])
+  s.close()
+  rmSync(dir, { recursive: true, force: true })
 })

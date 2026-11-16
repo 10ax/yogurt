@@ -770,7 +770,7 @@ app.whenReady().then(() => {
         const done = await transcribeRecorded(m.id, tracks, () => !!activeMeeting())
         win?.webContents.send('meetings:changed'); win?.webContents.send('transcript:speakers', m.id)
         // notes that came out empty (no transcript then) are written now
-        if (done && store.notes(m.id).enhanced == null) void notes.writeAgain(m.id)
+        if (done && !store.notes(m.id).enhanced?.trim()) void notes.writeAgain(m.id)
       }
     } catch (e) { console.error('transcribing waiting meetings failed', e) } finally { backfilling = false }
   }

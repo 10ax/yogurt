@@ -38,8 +38,8 @@
 - **Answers with sources.** Yogurt answers questions across meetings and links to the source.
 - **Folders and search.** You can find meetings by folder, title, notes or transcript.
 - **Copy and export.** You can copy notes or transcripts, or save both as Markdown.
-- **Local MCP server.** Your chosen assistant app can read your notes when you allow access.
-- **Automatic stop.** Yogurt stops recording when the call ends.
+- **Local MCP server.** When you turn this on, apps on your computer can read your notes, transcripts and saved audio.
+- **Automatic stop.** By default, Yogurt stops recording when it detects that your call has ended.
 
 ## Watch the demo
 
@@ -91,7 +91,7 @@ Meeting data stays local; Yogurt goes online for model downloads and update chec
 
 <br>
 
-> Yes. Your recordings, transcripts, and notes are saved locally on your computer.
+> Audio is saved by default, and you can turn this off for future meetings in Settings.
 
 </details>
 
@@ -115,7 +115,7 @@ Meeting data stays local; Yogurt goes online for model downloads and update chec
 
 <br>
 
-> It depends on your computer. Yogurt downloads a smaller notes model first, about 5 GB, then the best one your computer can run well, which can be 14 GB or more. Recording works once setup finishes, and notes and questions work offline once the notes model is in.
+> It depends on your computer. Yogurt sets up transcription first, then downloads the notes models selected for your computer. Recording works once setup finishes, and notes and questions work offline once the notes model is in.
 
 </details>
 

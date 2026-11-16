@@ -49,6 +49,13 @@ describe('the prompt read back as a speaker label', () => {
     expect(withoutPromptLabel('Christian Mathiesen: okay', prompt)).toBe('okay')
     expect(withoutPromptLabel('Eric: yeah, let me check', prompt)).toBe('yeah, let me check')
   })
+  it('also when whisper shuffles the prompt\'s names and drops its little words (#30)', () => {
+    const p = 'Weekly sync. With Corinna Weber and Jonas Braun of Acme GmbH.'
+    expect(withoutPromptLabel('GmbH, Corinna Weber Jonas Braun: Okay.', p)).toBe('Okay.')
+    expect(withoutPromptLabel('Jonas Braun, Corinna Weber: sounds good', p)).toBe('sounds good')
+    // one word of its own and it is speech
+    expect(withoutPromptLabel('Corinna Weber said: sounds good', p)).toBe('Corinna Weber said: sounds good')
+  })
   it('leaves speech alone: a colon that follows words of its own, or names nobody gave it', () => {
     expect(withoutPromptLabel('Here is the plan: ship Friday', prompt)).toBe('Here is the plan: ship Friday')
     expect(withoutPromptLabel('Note: the product board is late', prompt)).toBe('Note: the product board is late')

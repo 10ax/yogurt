@@ -47,6 +47,9 @@ export function withoutPromptLabel(text: string, prompt: string): string {
   if (!m) return text
   const label = tokens(m[1]), p = tokens(prompt)
   if (!label.length || !p.length) return text
-  const inPrompt = p.some((_, i) => label.every((w, k) => p[i + k] === w))
+  // in order, or shuffled with its little words dropped ("GmbH, Corinna Weber Jonas Braun:" from "With Corinna Weber and
+  // Jonas Braun of Acme GmbH", #30): every word of the label is the prompt's, none of its own
+  const words = new Set(p)
+  const inPrompt = p.some((_, i) => label.every((w, k) => p[i + k] === w)) || label.every((w) => words.has(w))
   return inPrompt ? m[2] : text
 }

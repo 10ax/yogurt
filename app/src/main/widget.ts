@@ -110,7 +110,11 @@ export function createWidget(d: { open(meetingId: string): void; stop(meetingId:
     shown = view?.kind === 'recording' && !view.paused && !d.foreground()
     if (!shown) { clearTimeout(pointerTimer); pressed = false; win?.webContents.send('widget:reset') }
     hitTest(); poll()
-    if (!win || win.isDestroyed() || BACKGROUND) return
+    if (!win || win.isDestroyed()) return
+    // hidden, it is throttled like any hidden window (its clock, meter and preview pause); floating over other apps it
+    // runs freely, which is why the window is made with throttling off
+    win.webContents.setBackgroundThrottling(!shown)
+    if (BACKGROUND) return
     if (!shown) win.hide()
     else if (sized && !win.isVisible()) win.showInactive()
   }

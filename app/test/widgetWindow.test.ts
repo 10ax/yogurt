@@ -20,7 +20,7 @@ vi.mock('electron', () => ({
   BrowserWindow: class {
     static getAllWindows() { return state.windows }
     bounds: any; options: any; dead = false
-    webContents = { send: vi.fn(), once: (_name: string, fn: () => void) => fn() }
+    webContents = { send: vi.fn(), once: (_name: string, fn: () => void) => fn(), setBackgroundThrottling: vi.fn() }
     constructor(options: any) { this.options = options; this.bounds = { x: options.x, y: options.y, width: options.width, height: options.height }; state.windows.push(this) }
     getBounds() { return { ...this.bounds } }
     setBounds(bounds: any) { this.bounds = bounds }
@@ -352,5 +352,21 @@ describe('finished meeting notifications', () => {
     finish(); await Promise.resolve()
     expect(widget.snapshot().notice).toBeNull()
     expect(state.notifications).toHaveLength(0)
+  })
+})
+
+describe('hidden, the recorder does no work (the audit: its 4/s clock and meter kept running behind the main window)', () => {
+  it('is throttled like any hidden window while Yogurt is in front, and runs freely while it floats', async () => {
+    let front = true
+    const { createWidget } = await import('../src/main/widget')
+    const w = createWidget({ open, stop: vi.fn(), foreground: () => front })
+    state.start!({ id: 'meeting3', title: 'Review', startedAt: 0 })
+    const win3 = state.windows.at(-1)
+    send('widget:size', 127, 42)
+    w.visibilityChanged()
+    expect(win3.webContents.setBackgroundThrottling).toHaveBeenLastCalledWith(true)
+    front = false
+    w.visibilityChanged()
+    expect(win3.webContents.setBackgroundThrottling).toHaveBeenLastCalledWith(false)
   })
 })

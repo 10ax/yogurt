@@ -680,5 +680,6 @@
   "When off, new meetings' audio is deleted once the summary is saved.": "Pois päältä uusien kokousten ääni poistetaan yhteenvedon tallennuttua.",
   "New recording": "Uusi tallennus",
   "Hide events without a call link": "Piilota tapahtumat ilman puhelulinkkiä",
-  "Keep your agenda and reminders focused on calls.": "Keskity puheluihin päiväohjelmassa ja muistutuksissa."
+  "Keep your agenda and reminders focused on calls.": "Keskity puheluihin päiväohjelmassa ja muistutuksissa.",
+  "Show earlier lines": "Näytä aiemmat rivit"
 }

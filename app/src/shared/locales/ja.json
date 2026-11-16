@@ -632,5 +632,6 @@
   "When off, new meetings' audio is deleted once the summary is saved.": "オフにすると、新しい会議の音声は要約の保存後に削除されます。",
   "New recording": "新規録音",
   "Hide events without a call link": "通話リンクのない予定を非表示",
-  "Keep your agenda and reminders focused on calls.": "予定とリマインダーを通話中心に整理します。"
+  "Keep your agenda and reminders focused on calls.": "予定とリマインダーを通話中心に整理します。",
+  "Show earlier lines": "前の行を表示"
 }

@@ -680,5 +680,6 @@
   "When off, new meetings' audio is deleted once the summary is saved.": "När avstängt raderas nya mötens ljud när sammanfattningen har sparats.",
   "New recording": "Ny inspelning",
   "Hide events without a call link": "Dölj händelser utan samtalslänk",
-  "Keep your agenda and reminders focused on calls.": "Fokusera din agenda och dina påminnelser på samtal."
+  "Keep your agenda and reminders focused on calls.": "Fokusera din agenda och dina påminnelser på samtal.",
+  "Show earlier lines": "Visa tidigare rader"
 }

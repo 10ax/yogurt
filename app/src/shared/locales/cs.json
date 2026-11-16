@@ -711,5 +711,6 @@
   "When off, new meetings' audio is deleted once the summary is saved.": "Při vypnutí se zvuk nových schůzek smaže po uložení shrnutí.",
   "New recording": "Nová nahrávka",
   "Hide events without a call link": "Skrýt události bez odkazu na hovor",
-  "Keep your agenda and reminders focused on calls.": "Zaměřte svůj program a připomínky na hovory."
+  "Keep your agenda and reminders focused on calls.": "Zaměřte svůj program a připomínky na hovory.",
+  "Show earlier lines": "Zobrazit starší řádky"
 }

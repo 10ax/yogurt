@@ -677,5 +677,6 @@
   "When off, new meetings' audio is deleted once the summary is saved.": "Når slået fra, slettes nye møders lyd, når resuméet er gemt.",
   "New recording": "Ny optagelse",
   "Hide events without a call link": "Skjul begivenheder uden opkaldslink",
-  "Keep your agenda and reminders focused on calls.": "Hold fokus på opkald i din dagsorden og dine påmindelser."
+  "Keep your agenda and reminders focused on calls.": "Hold fokus på opkald i din dagsorden og dine påmindelser.",
+  "Show earlier lines": "Vis tidligere linjer"
 }

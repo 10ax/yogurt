@@ -101,3 +101,25 @@ export function stableKeys(prev: string[], prevKeys: number[], next: string[], n
   const keys = next.map((_, i) => (at + i < prevKeys.length ? prevKeys[at + i] : n++))
   return { keys, next: n }
 }
+
+/**
+ * A long recording draws only its latest lines: a transcript keeps every line on the page, and over hours the window
+ * grew past a gigabyte (the 3 h test). Every line stays saved and searchable; the earlier ones show on request or once
+ * the meeting ends. Trimmed in steps, so the top of the list changes once every `step` lines and nothing jumps.
+ * Words still being said (live) are never counted or dropped.
+ */
+export function recentRuns<L extends object, R extends { lines: L[] }>(runs: R[], cap: number, step: number): { runs: R[]; earlier: number } {
+  const final = (l: L) => !('live' in l)
+  const total = runs.reduce((n, r) => n + r.lines.filter(final).length, 0)
+  const earlier = total <= cap ? 0 : Math.floor((total - cap) / step) * step
+  if (!earlier) return { runs, earlier: 0 }
+  let skip = earlier
+  const out: R[] = []
+  for (const r of runs) {
+    if (!skip) { out.push(r); continue }
+    let i = 0
+    while (i < r.lines.length && skip > 0) { if (final(r.lines[i])) skip--; i++ }
+    if (i < r.lines.length) out.push({ ...r, lines: r.lines.slice(i) })
+  }
+  return { runs: out, earlier }
+}

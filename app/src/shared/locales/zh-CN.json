@@ -632,5 +632,6 @@
   "When off, new meetings' audio is deleted once the summary is saved.": "关闭后，新会议的音频将在摘要保存后删除。",
   "New recording": "新建录音",
   "Hide events without a call link": "隐藏没有通话链接的日程",
-  "Keep your agenda and reminders focused on calls.": "让日程和提醒专注于通话。"
+  "Keep your agenda and reminders focused on calls.": "让日程和提醒专注于通话。",
+  "Show earlier lines": "显示更早的内容"
 }

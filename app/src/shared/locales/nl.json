@@ -677,5 +677,6 @@
   "When off, new meetings' audio is deleted once the summary is saved.": "Indien uit, wordt audio van nieuwe vergaderingen gewist zodra de samenvatting is opgeslagen.",
   "New recording": "Nieuwe opname",
   "Hide events without a call link": "Afspraken zonder gesprekslink verbergen",
-  "Keep your agenda and reminders focused on calls.": "Richt je agenda en herinneringen op gesprekken."
+  "Keep your agenda and reminders focused on calls.": "Richt je agenda en herinneringen op gesprekken.",
+  "Show earlier lines": "Eerdere regels tonen"
 }

@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest'
-import { bubbles, clock, filterLines, lineAt, stableKeys, turns, withLive } from '../src/shared/transcript'
+import { bubbles, clock, filterLines, lineAt, recentRuns, stableKeys, turns, withLive } from '../src/shared/transcript'
 
 const l = (track: 'me' | 'them', startMs: number, speaker: string | null = null, endMs = startMs + 2000) => ({ track, startMs, endMs, speaker, text: '' })
 
@@ -100,5 +100,27 @@ describe('stableKeys', () => {
   it('a word read again differently keeps its place and key; what follows it does too', () => {
     const a = stableKeys(['the', 'same', 'bump'], [0, 1, 2], ['the', 'same', 'bubble', 'as'], 3)
     expect(a.keys).toEqual([0, 1, 2, 3])
+  })
+})
+
+describe('a long recording draws only its latest lines (all of them stay saved)', () => {
+  const run = (n: number, from = 0) => ({ echo: false, lines: Array.from({ length: n }, (_, i) => ({ id: from + i })) })
+  it('a short meeting draws everything', () => {
+    expect(recentRuns([run(120)], 300, 50)).toEqual({ runs: [run(120)], earlier: 0 })
+  })
+  it('a long one keeps the last lines, trimmed in steps so the top changes rarely', () => {
+    const r = recentRuns([run(400)], 300, 50)
+    expect(r.earlier).toBe(100)
+    expect(r.runs[0].lines[0]).toEqual({ id: 100 })
+    expect(r.runs[0].lines.at(-1)).toEqual({ id: 399 })
+    // ten more lines: the same top line, nothing moves up there
+    expect(recentRuns([run(410)], 300, 50).runs[0].lines[0]).toEqual({ id: 100 })
+    expect(recentRuns([run(451)], 300, 50).earlier).toBe(150)
+  })
+  it('cuts across runs, and never counts the words being said (live) as lines to drop', () => {
+    const live = { live: true }
+    const r = recentRuns([run(250), run(150, 250), { echo: false, lines: [live] }] as never, 300, 50)
+    expect(r.earlier).toBe(100)
+    expect(r.runs.map((x: { lines: unknown[] }) => x.lines.length)).toEqual([150, 150, 1])
   })
 })

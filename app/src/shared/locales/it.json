@@ -695,5 +695,6 @@
   "When off, new meetings' audio is deleted once the summary is saved.": "Se disattivato, l’audio delle nuove riunioni si elimina dopo aver salvato il riepilogo.",
   "New recording": "Nuova registrazione",
   "Hide events without a call link": "Nascondi eventi senza link alla chiamata",
-  "Keep your agenda and reminders focused on calls.": "Concentra agenda e promemoria sulle chiamate."
+  "Keep your agenda and reminders focused on calls.": "Concentra agenda e promemoria sulle chiamate.",
+  "Show earlier lines": "Mostra righe precedenti"
 }

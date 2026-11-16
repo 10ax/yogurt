@@ -632,5 +632,6 @@
   "When off, new meetings' audio is deleted once the summary is saved.": "끄면 새 회의의 오디오가 요약 저장 후 삭제됩니다.",
   "New recording": "새 녹음",
   "Hide events without a call link": "통화 링크가 없는 일정 숨기기",
-  "Keep your agenda and reminders focused on calls.": "일정과 알림을 통화 중심으로 정리하세요."
+  "Keep your agenda and reminders focused on calls.": "일정과 알림을 통화 중심으로 정리하세요.",
+  "Show earlier lines": "이전 줄 보기"
 }

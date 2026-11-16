@@ -632,5 +632,6 @@
   "When off, new meetings' audio is deleted once the summary is saved.": "เมื่อปิด เสียงของการประชุมใหม่จะถูกลบหลังบันทึกสรุปแล้ว",
   "New recording": "การบันทึกใหม่",
   "Hide events without a call link": "ซ่อนกิจกรรมที่ไม่มีลิงก์การโทร",
-  "Keep your agenda and reminders focused on calls.": "เน้นการโทรในกำหนดการและการแจ้งเตือนของคุณ"
+  "Keep your agenda and reminders focused on calls.": "เน้นการโทรในกำหนดการและการแจ้งเตือนของคุณ",
+  "Show earlier lines": "แสดงบรรทัดก่อนหน้า"
 }

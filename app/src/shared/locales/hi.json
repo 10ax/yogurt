@@ -668,5 +668,6 @@
   "When off, new meetings' audio is deleted once the summary is saved.": "बंद होने पर नई मीटिंग का ऑडियो सारांश सेव होने के बाद मिटेगा।",
   "New recording": "नई रिकॉर्डिंग",
   "Hide events without a call link": "कॉल लिंक के बिना इवेंट छिपाएँ",
-  "Keep your agenda and reminders focused on calls.": "अपने एजेंडा और रिमाइंडर को कॉल पर केंद्रित रखें।"
+  "Keep your agenda and reminders focused on calls.": "अपने एजेंडा और रिमाइंडर को कॉल पर केंद्रित रखें।",
+  "Show earlier lines": "पिछली पंक्तियाँ दिखाएँ"
 }

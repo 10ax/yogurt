@@ -680,5 +680,6 @@
   "When off, new meetings' audio is deleted once the summary is saved.": "Αν κλείσει, ο ήχος νέων συναντήσεων διαγράφεται μόλις σωθεί η σύνοψη.",
   "New recording": "Νέα ηχογράφηση",
   "Hide events without a call link": "Απόκρυψη συμβάντων χωρίς σύνδεσμο κλήσης",
-  "Keep your agenda and reminders focused on calls.": "Εστιάστε το πρόγραμμά σας και τις υπενθυμίσεις στις κλήσεις."
+  "Keep your agenda and reminders focused on calls.": "Εστιάστε το πρόγραμμά σας και τις υπενθυμίσεις στις κλήσεις.",
+  "Show earlier lines": "Εμφάνιση προηγούμενων γραμμών"
 }

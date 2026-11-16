@@ -9,7 +9,7 @@ import { AudioLines, ArrowDown, ChevronDown, Search as SearchIcon } from 'lucide
 import type { Segment, TranscriptPartial } from '../../../shared/types'
 import { t } from '../../../shared/i18n'
 import { useLanguage } from '../i18n'
-import { bubbles, clock, echoRuns, filterLines, lineAt, stableKeys, turns, withLive, type LiveSaid } from '../../../shared/transcript'
+import { bubbles, clock, echoRuns, filterLines, lineAt, recentRuns, stableKeys, turns, withLive, type LiveSaid } from '../../../shared/transcript'
 import { markWords } from '../../../shared/highlight'
 import { Player, type PlayerHandle } from './Player'
 import { rememberedScroll, useScrollMemory } from '../useScrollMemory'
@@ -62,6 +62,10 @@ function useLines(id: string) {
  * arrives takes its own words off at once (shared/liveWords), in the same render that shows it, so nothing shows twice.
  * `previewed` tells a final line that took the place of live words (it settles in place instead of fading in).
  */
+/** a recording draws this many of its latest lines, trimmed in steps of LIVE_STEP (recentRuns) */
+const LIVE_LINES = 300
+const LIVE_STEP = 50
+
 function useLive(id: string, recording: boolean) {
   const [parts, setParts] = useState<Partial<Record<'me' | 'them', LiveSaid>>>({})
   /** how far each side's live words have reached */
@@ -157,7 +161,9 @@ export function Transcript({ id, recording, inline = false, active = true, onClo
   const timeline = useMemo(() => echoRuns(withLive(allLines, liveSaid)).filter(run => !run.echo), [allLines, liveSaid])
   const lines = useMemo(() => timeline.flatMap(run => run.lines.filter((l): l is Line => !('live' in l))), [timeline])
   const [query, setQuery] = useState('')
-  useEffect(() => { setQuery('') }, [id])
+  // a long recording draws its latest lines; the earlier ones on request (recentRuns)
+  const [showAll, setShowAll] = useState(false)
+  useEffect(() => { setQuery(''); setShowAll(false) }, [id])
 
   // the recording is only playable once it is finished
   const [tracks, setTracks] = useState<Array<'me' | 'them'>>([])
@@ -305,6 +311,7 @@ export function Transcript({ id, recording, inline = false, active = true, onClo
     if (!l) return
     focusDone.current = focus.seq
     stick.current = false
+    setShowAll(true)
     setFocusedKey(key(l)); setFocusKey(key(l))
     requestAnimationFrame(() => rowOf(key(l))?.scrollIntoView({ block: 'center' }))
   }, [focus?.seq, lines, active])
@@ -331,7 +338,9 @@ export function Transcript({ id, recording, inline = false, active = true, onClo
 
   const typed = query.trim()
   // what is being said joins the bubble it carries on; not while searching
-  const grouped = useMemo(() => timeline.map(run => ({ ...run, lines: typed ? run.lines.filter(l => !('live' in l) && filterLines([l], typed).length) : run.lines })).filter(run => run.lines.length), [timeline, typed])
+  const grouped = useMemo(() => timeline.map(run => ({ ...run, k: key(run.lines[0]), lines: typed ? run.lines.filter(l => !('live' in l) && filterLines([l], typed).length) : run.lines })).filter(run => run.lines.length), [timeline, typed])
+  // while recording (not searching), the latest lines only: over hours every line on the page grew the window past a GB
+  const drawn = useMemo(() => (recording && !typed && !showAll ? recentRuns(grouped, LIVE_LINES, LIVE_STEP) : { runs: grouped, earlier: 0 }), [grouped, recording, typed, showAll])
   /** the line being played is on screen, not left out by the search */
   const playingShown = useMemo(() => !!shownKey && shownLines.some((l) => key(l) === shownKey), [shownKey, shownLines])
   const Surface = inline ? 'section' : 'aside'
@@ -355,7 +364,8 @@ export function Transcript({ id, recording, inline = false, active = true, onClo
           {loadingPhase !== 'ready' && <li className="loading-placeholder"><Loading layout="transcript" /></li>}
           {loaded && allLines.length === 0 && liveSaid.length === 0 && <li data-testid="transcript-empty" className="note-empty empty-state"><div className="empty-state-content"><div className="empty-tile"><AudioLines size={28} strokeWidth={1.5} aria-hidden="true" /></div>{t('Nothing heard yet.')}</div></li>}
           {allLines.length > 0 && grouped.length === 0 && <li data-testid="transcript-none" className="note-empty">{t('Nothing found for “{query}”.', { query: typed })}</li>}
-          {grouped.map(run => <Fragment key={key(run.lines[0])}>
+          {drawn.earlier > 0 && <li className="flex justify-center"><button data-testid="transcript-earlier" onClick={() => { stick.current = false; setShowAll(true) }} className="ghost-btn !px-2 !py-1 text-xs text-muted">{t('Show earlier lines')}</button></li>}
+          {drawn.runs.map(run => <Fragment key={run.k}>
             {turns(run.lines).map((turn) => {
             const me = turn[0].track === 'me', first = turn[0]
             const color = me || !('speakerColor' in first) ? undefined : first.speakerColor

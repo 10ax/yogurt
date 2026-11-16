@@ -710,5 +710,6 @@
   "When off, new meetings' audio is deleted once the summary is saved.": "Po wyłączeniu dźwięk nowych spotkań znika po zapisaniu podsumowania.",
   "New recording": "Nowe nagranie",
   "Hide events without a call link": "Ukryj wydarzenia bez linku do rozmowy",
-  "Keep your agenda and reminders focused on calls.": "Skup plan dnia i przypomnienia na rozmowach."
+  "Keep your agenda and reminders focused on calls.": "Skup plan dnia i przypomnienia na rozmowach.",
+  "Show earlier lines": "Pokaż wcześniejsze wiersze"
 }

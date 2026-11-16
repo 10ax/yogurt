@@ -792,7 +792,7 @@ html:not(.widget) button:focus-visible, html:not(.widget) input:focus-visible { 
 .transcript-loading-content[data-loading-phase=revealing]>li:not(.loading-placeholder) { animation:loading-in var(--dur-micro) var(--ease-out) both; }
 .transcript-loading-content[data-loaded=true]>.loading-placeholder { position:absolute;inset:8px 16px auto; }
 .loading-mask .ask-field { position:relative; }
-.loading-mask .ask-field::after { content:"";position:absolute;inset:16px auto auto 16px;width:160px;height:12px;border-radius:4px;background:var(--control); }
+.loading-mask .ask-field::after { content:"";position:absolute;inset:16px auto auto 12px;width:160px;height:12px;border-radius:4px;background:var(--control); }
 .loading-mask .ask-field textarea { color:transparent; }
 .loading-mask .ask-field textarea::placeholder { color:transparent; }
 .loading-mask .ask-toolbar { visibility:hidden; }

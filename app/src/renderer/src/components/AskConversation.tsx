@@ -18,6 +18,7 @@ import { rememberedScroll, useScrollMemory } from '../useScrollMemory'
 import { AskContext, chipTitle } from './AskContext'
 import { useFollowLatest } from '../useFollowLatest'
 import { Swap, SwapText } from './Swap'
+import { attachAskTracer } from '../askTracer'
 
 const drafts = new Map<string, string>()
 const starters = (chips: ContextTarget[], recording: boolean) => chips.length === 1 && chips[0].kind === 'meeting'
@@ -42,6 +43,16 @@ export function AskConversation({ id, pendingDraftKey, initial, loadError = fals
   const targets = targetResults?.items ?? []
   const [selected, setSelected] = useState(0)
   const input = useRef<HTMLTextAreaElement>(null)
+  const composer = useRef<HTMLFormElement>(null)
+  const tracer = useRef<ReturnType<typeof attachAskTracer>>(undefined)
+  // the page's composer mounts once the conversation loads; the panel's is there from the start
+  const composerReady = panel || !!chat || !!error
+  useEffect(() => {
+    if (!composerReady || !composer.current) return
+    tracer.current = attachAskTracer(composer.current)
+    return () => { tracer.current?.dispose(); tracer.current = undefined }
+  }, [composerReady])
+  useEffect(() => { tracer.current?.update() }, [text])
   const focusAfterRemove = useRef(false)
   const scrollKey = `conversation/${id}`
   const scroll = useScrollMemory<HTMLDivElement>(scrollKey, !!chat)
@@ -203,8 +214,7 @@ export function AskConversation({ id, pendingDraftKey, initial, loadError = fals
     </div>
     <div className={`ask-composer${panel ? ' chat-composer' : ''}`}>
       {error && <p data-testid={panel ? "chat-send-error" : "chat-page-error"} role="alert" className="chat-error">{t("Couldn't save your changes")}</p>}
-      <LoadingContent pending={!panel && !chat && !error} onReady={() => { if (chat) input.current?.focus({ preventScroll: true }) }} testId={landing ? "chat-loading" : undefined}><form className="ask-box" data-busy={busy || undefined} data-testid={`${prefix}-box`} onSubmit={e => { e.preventDefault(); send(text) }} onBlur={e => { if (!e.currentTarget.contains(e.relatedTarget)) setMention(undefined) }}>
-        <span className="ask-border" aria-hidden="true" />
+      <LoadingContent pending={!panel && !chat && !error} onReady={() => { if (chat) input.current?.focus({ preventScroll: true }) }} testId={landing ? "chat-loading" : undefined}><form ref={composer} className="ask-box" data-busy={busy || undefined} data-testid={`${prefix}-box`} onSubmit={e => { e.preventDefault(); send(text) }} onBlur={e => { if (!e.currentTarget.contains(e.relatedTarget)) setMention(undefined) }}>
         <AskContext chips={chips} disabled={busy} onRemove={remove} />
         <div className="ask-field">
         <textarea autoFocus={panel} ref={input} id={panel ? 'meeting-question' : 'library-question'} data-testid={`${prefix}-input`} rows={1} maxLength={4000}

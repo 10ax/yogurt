@@ -26,7 +26,7 @@ it('keeps both composers busy through thinking and streaming, then releases on e
     expect(form).toBeTruthy()
     expect(form!.includes('data-busy="true"')).toBe(busy)
     expect(form).not.toContain('data-thinking')
-    expect(html).toContain('class="ask-border" aria-hidden="true"')
+    expect(html).not.toContain('ask-border')
     expect(html).toContain('A follow-up')
   }
 })

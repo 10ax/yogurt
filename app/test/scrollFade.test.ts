@@ -4,7 +4,7 @@ import { expect, it } from 'vitest'
 it('uses the same fade for notes and transcript with no vertical space outside the note scroll viewport', () => {
   const read = (path: string) => readFileSync(new URL(`../src/renderer/src/${path}`, import.meta.url), 'utf8')
   const css = read('workspace.css')
-  const frame = css.match(/^\.note-reading-frame \{([^}]+)\}/m)![1]
+  const frame = css.match(/^\.note-reading-frame \{ (position[^}]+)\}/m)![1]
   expect(frame).toContain('margin:0 calc(')
   expect(frame).toContain('padding:0 2px')
   expect(css).toContain('.note-reading-clip { height:100%;overflow:hidden;border-radius:10px; }')

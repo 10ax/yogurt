@@ -142,5 +142,7 @@
     "one": "{count} more",
     "other": "{count} more"
   },
-  "Clear": "Clear"
+  "Clear": "Clear",
+  "Searched {name}": "Searched {name}",
+  "Searched all meetings": "Searched all meetings"
 }

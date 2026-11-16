@@ -17,7 +17,7 @@ import { ThinkingDots } from './ThinkingDots'
 import { ConversationActions } from './ConversationActions'
 import { ScrollFade } from './ScrollFade'
 import { rememberedScroll, useScrollMemory } from '../useScrollMemory'
-import { AskContext, chipTitle } from './AskContext'
+import { AnswerScope, AskContext, chipTitle } from './AskContext'
 import { useFollowLatest } from '../useFollowLatest'
 import { Swap, SwapText } from './Swap'
 import { attachAskTracer } from '../askTracer'
@@ -294,7 +294,7 @@ export function AskConversation({ id, pendingDraftKey, initial, loadError = fals
       <ScrollFade><div className={`ask-thread${panel ? " chat-history" : ""}${unsent ? ' ask-thread-empty' : ''}`} ref={scroll}>
         <div ref={content} className="ask-thread-content">
         <LoadingContent pending={!chat && !error} skeleton={<Loading layout="chat" testId="chat-thread-loading" />}>
-        {!landing && turns.map(turn => <Turn key={turn.id} turn={turn} chat={chat!} panel={panel} onSource={onSource} onRetry={() => send(turn.question)} />)}
+        {!landing && turns.map(turn => <Turn key={turn.id} showCopy={turn === last} turn={turn} chat={chat!} panel={panel} onSource={onSource} onRetry={() => send(turn.question)} />)}
         {panel && suggestions}</LoadingContent>
         </div>
       </div></ScrollFade>
@@ -348,12 +348,12 @@ export function AskConversation({ id, pendingDraftKey, initial, loadError = fals
     <p data-testid={`${prefix}-announce`} className="sr-only" aria-live="polite">{last?.status === 'done' ? last.answer : ''}</p>
   </div>
 }
-function Turn({ turn, chat, panel, onSource, onRetry }: { turn: ConversationTurn; chat: ConversationView; panel: boolean; onSource: (s: LibrarySource, match?: string) => void; onRetry: () => void }) {
+function Turn({ turn, chat, panel, showCopy, onSource, onRetry }: { showCopy: boolean; turn: ConversationTurn; chat: ConversationView; panel: boolean; onSource: (s: LibrarySource, match?: string) => void; onRetry: () => void }) {
   const live = turn.status === 'answering', answer = useSmoothText(turn.answer, live)
   const [copied, setCopied] = useState(false), [failed, setFailed] = useState(false)
   const prefix = panel ? 'chat' : 'chat-page'
   useEffect(() => { if (!copied) return; const timer = setTimeout(() => setCopied(false), 1800); return () => clearTimeout(timer) }, [copied])
-  return <div data-testid={`${prefix}-turn`} data-status={turn.status} className="ask-turn">
+  return <div data-testid={`${prefix}-turn`} data-status={turn.status} data-show-copy={showCopy || undefined} className="ask-turn">
     <p className="ask-question" data-testid={`${prefix}-question`}>{turn.question}</p>
     {(turn.status === 'waiting' || live && !answer) && (chat.waitsForModel && turn.status === 'waiting'
       ? <NotesModelWait downloading={percent => <p role="status" className="text-sm text-muted">{t("Waiting for Yogurt's AI to finish downloading ({percent}). Your answer comes as soon as it's ready.", { percent })}</p>}><p role="status" className="text-sm text-muted">{t('Getting ready to answer. Yogurt is still setting up.')}</p></NotesModelWait>
@@ -361,7 +361,7 @@ function Turn({ turn, chat, panel, onSource, onRetry }: { turn: ConversationTurn
     {answer && <div data-testid={`${prefix}-answer`} dir="auto" data-streaming={live || undefined} className={`note-prose chat-answer${live ? ' stream-caret' : ''}`}><AnswerText md={answer} live={live} sources={turn.sources} onSource={onSource} /></div>}
     {answer && !live && <div className="chat-answer-actions"><button className="chat-copy-action" data-testid="chat-copy-answer" aria-label={copied ? t('Copied') : t('Copy answer')} onClick={() => {
       void navigator.clipboard.writeText(turn.answer).then(() => { setCopied(true); setFailed(false) }).catch(() => setFailed(true))
-    }}><Swap show={copied ? 'done' : 'copy'} options={{ copy: <Copy size={13} />, done: <Check size={13} /> }} /><SwapText text={copied ? t('Copied') : t('Copy')} widest={t('Copied')} /></button><span role="status" className={failed ? 'text-danger' : 'sr-only'}>{failed ? t("Couldn't copy. Try again.") : copied ? t('Copied') : ''}</span></div>}
+    }}><Swap show={copied ? 'done' : 'copy'} options={{ copy: <Copy size={13} />, done: <Check size={13} /> }} /><SwapText text={copied ? t('Copied') : t('Copy')} widest={t('Copied')} /></button>{turn.scope && <AnswerScope chips={turn.scope} />}<span role="status" className={failed ? 'text-danger' : 'sr-only'}>{failed ? t("Couldn't copy. Try again.") : copied ? t('Copied') : ''}</span></div>}
     {turn.status === 'stopped' && <p className="text-xs text-muted">{answer ? t('Stopped') : t('Stopped before answering')}</p>}
     {turn.status === 'failed' && <p role="alert">{t("Yogurt couldn't answer that.")} <button className="ghost-btn" onClick={onRetry}>{t('Try again')}</button></p>}
   </div>

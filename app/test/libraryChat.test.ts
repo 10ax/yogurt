@@ -211,6 +211,9 @@ it('an empty chip scope never reads unrelated meetings, while folder and meeting
   expect(t.chats.view(id)).toMatchObject({ chips: [{ kind: 'folder', id: folder.id }, { kind: 'meeting', id: prepared.id }], draftChips: [] })
   expect(t.prompts.at(-1)).toContain('Twenty dollars a seat')
   expect(t.prompts.at(-1)).toContain('October budget')
+  const scopes = [[{ kind: 'folder', id: folder.id, title: 'Project' }], [{ kind: 'folder', id: folder.id, title: 'Project' }, { kind: 'meeting', id: prepared.id, title: 'Prep' }]]
+  expect(t.chats.view(id)!.turns.map(turn => turn.scope)).toEqual(scopes)
+  expect(hookConversations(t.deps).view(id)!.turns.map(turn => turn.scope)).toEqual(scopes)
 })
 
 it('does not acknowledge and discard a draft when its conversation is deleted or already answering', async () => {

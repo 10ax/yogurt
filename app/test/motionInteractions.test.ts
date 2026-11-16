@@ -760,3 +760,20 @@ it('checks an inline match already in scope and consumes its mention without add
   expect(c.input().value).toBe('')
   expect(c.input()['aria-expanded']).toBe(false)
 })
+
+it.each([false, true])('keeps Copy on the current answer without revealing older controls during streaming (panel: %s)', panel => {
+  vi.stubGlobal('document', { body: {} })
+  vi.stubGlobal('window', { yogurt: { conversations: {} } })
+  const initial: ConversationView = { id: 'copy-visibility', title: '', draft: '', chips: [], draftChips: [], firstChips: [], waitsForMeeting: false, waitsForModel: false,
+    turns: [1, 2, 3].map(id => ({ id, question: 'What changed?', answer: 'The release is ready.', status: 'done', sources: [], createdAt: id })) }
+  const render = renderer(() => AskConversation({ id: initial.id, initial, panel, onSelect() {}, onDeleted() {}, onSource() {} }))
+  const turns = () => find(render(), 'ask-thread-content').props.children.props.children[0] as ReactElement<any>[]
+  expect(turns().map(turn => turn.props.showCopy)).toEqual([false, false, true])
+  initial.turns[2].status = 'answering'
+  expect(turns().map(turn => turn.props.showCopy)).toEqual([false, false, true])
+  initial.turns[2].status = 'waiting'
+  expect(turns().map(turn => turn.props.showCopy)).toEqual([false, false, true])
+  initial.turns[2].status = 'failed'
+  initial.turns[2].answer = ''
+  expect(turns().map(turn => turn.props.showCopy)).toEqual([false, false, true])
+})

@@ -682,5 +682,7 @@
   "and {count} others": "en {count} andere",
   "{count} more": "Nog {count}",
   "Clear": "Wissen",
-  "Reading {title} {others}…": "{title} {others} lezen…"
+  "Reading {title} {others}…": "{title} {others} lezen…",
+  "Searched {name}": "Gezocht in {name}",
+  "Searched all meetings": "Gezocht in alle vergaderingen"
 }

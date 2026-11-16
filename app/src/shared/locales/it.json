@@ -701,5 +701,7 @@
   },
   "{count} more": "Altri {count}",
   "Clear": "Cancella",
-  "Reading {title} {others}…": "Lettura di «{title}» {others}…"
+  "Reading {title} {others}…": "Lettura di «{title}» {others}…",
+  "Searched {name}": "Ricerca in {name}",
+  "Searched all meetings": "Ricerca in tutte le riunioni"
 }

@@ -698,5 +698,7 @@
   },
   "{count} more": "Mais {count}",
   "Clear": "Limpar",
-  "Reading {title} {others}…": "Lendo {title} {others}…"
+  "Reading {title} {others}…": "Lendo {title} {others}…",
+  "Searched {name}": "Pesquisa em {name}",
+  "Searched all meetings": "Pesquisa em todas as reuniões"
 }

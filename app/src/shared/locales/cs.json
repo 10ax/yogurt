@@ -713,5 +713,7 @@
   "and {count} others": "a {count} další",
   "{count} more": "{count} další",
   "Clear": "Vymazat",
-  "Reading {title} {others}…": "Čtení {title} {others}…"
+  "Reading {title} {others}…": "Čtení {title} {others}…",
+  "Searched {name}": "Prohledáno {name}",
+  "Searched all meetings": "Prohledány všechny schůzky"
 }

@@ -682,5 +682,7 @@
   "and {count} others": "och {count} till",
   "{count} more": "{count} till",
   "Clear": "Rensa",
-  "Reading {title} {others}…": "Läser {title} {others}…"
+  "Reading {title} {others}…": "Läser {title} {others}…",
+  "Searched {name}": "Sökte i {name}",
+  "Searched all meetings": "Sökte i alla möten"
 }

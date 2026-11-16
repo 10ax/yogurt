@@ -640,5 +640,7 @@
   "and {count} others": "及其他 {count} 項",
   "{count} more": "還有 {count} 項",
   "Clear": "清除",
-  "Reading {title} {others}…": "正在讀取「{title}」{others}…"
+  "Reading {title} {others}…": "正在讀取「{title}」{others}…",
+  "Searched {name}": "已搜尋{name}",
+  "Searched all meetings": "已搜尋所有會議"
 }

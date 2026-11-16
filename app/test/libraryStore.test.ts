@@ -96,7 +96,7 @@ describe('conversations', () => {
     lib.setTurn(t, 'It is 20 dollars [1].', false, [{ n: 1, meetingId: 'm1', title: 'Pricing', startedAt: 5, atMs: 6000 }])
     // asking moves a conversation to the top
     expect(lib.conversations().map((c) => c.id)).toEqual([a, b])
-    expect(lib.turns(a)).toEqual([{ id: t, question: 'what about pricing?', answer: 'It is 20 dollars [1].', stopped: false, waitingModel: false, sources: [{ n: 1, meetingId: 'm1', title: 'Pricing', startedAt: 5, atMs: 6000 }] }])
+    expect(lib.turns(a)).toEqual([{ id: t, question: 'what about pricing?', answer: 'It is 20 dollars [1].', stopped: false, waitingModel: false, scope: [], sources: [{ n: 1, meetingId: 'm1', title: 'Pricing', startedAt: 5, atMs: 6000 }] }])
     lib.renameConversation(a, 'Pricing questions')
     expect(lib.conversation(a)?.title).toBe('Pricing questions')
     lib.deleteConversation(a)

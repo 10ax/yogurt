@@ -3,7 +3,7 @@ import { mkdtempSync, rmSync } from 'node:fs'
 import { join } from 'node:path'
 import { tmpdir } from 'node:os'
 import { openStore, type Store } from '../src/main/store'
-import { Library, migrateMeetingChats } from '../src/main/library/store'
+import { Library, libraryTables, migrateMeetingChats } from '../src/main/library/store'
 import { mergeBackup } from '../src/main/backup'
 import { askDestination, attachContext, chipScope, contextKey, mentionAt } from '../src/shared/askContext'
 
@@ -242,4 +242,28 @@ it('limits matching targets to 40 of each kind before renderer caps', () => {
     expect(targets.filter(c => c.kind === 'folder')).toHaveLength(40)
   }
   expect(library.targets('no match')).toEqual([])
+})
+
+
+it('snapshots the merged scope and names per turn, retaining all-meetings and legacy distinctions through backup', () => {
+  const { store: s, library: l, file } = fresh()
+  const m = meeting(s, 'Release review'), f = s.createFolder('Planning')
+  const a = { kind: 'meeting' as const, id: m.id }, b = { kind: 'folder' as const, id: f.id }
+  const id = l.current([a])
+  l.addTurn(id, 'Earlier question')
+  s.db.exec('ALTER TABLE conversation_turns DROP COLUMN scope')
+  libraryTables(s.db)
+  expect(l.turns(id)[0].scope).toBeUndefined()
+  l.setContext(id, [b])
+  l.addTurn(id, 'Search both')
+  const scope = [{ ...a, title: 'Release review' }, { ...b, title: 'Planning' }]
+  expect(l.turns(id)[1].scope).toEqual(scope)
+  s.updateMeeting(m.id, { title: 'Renamed review' })
+  l.removeContext(id, a); l.removeContext(id, b)
+  l.addTurn(id, 'Search everything')
+  expect(l.turns(id).map(turn => turn.scope)).toEqual([undefined, scope, []])
+  const reopened = openStore(file); stores.push(reopened)
+  expect(new Library(reopened.db).turns(id).map(turn => turn.scope)).toEqual([undefined, scope, []])
+  const target = fresh(); mergeBackup(target.store.db, s.db)
+  expect(target.library.turns(id).map(turn => turn.scope)).toEqual([undefined, scope, []])
 })

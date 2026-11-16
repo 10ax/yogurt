@@ -682,5 +682,7 @@
   "and {count} others": "at {count} pa",
   "{count} more": "{count} pa",
   "Clear": "I-clear",
-  "Reading {title} {others}…": "Binabasa ang {title} {others}…"
+  "Reading {title} {others}…": "Binabasa ang {title} {others}…",
+  "Searched {name}": "Hinanap sa {name}",
+  "Searched all meetings": "Hinanap sa lahat ng pulong"
 }

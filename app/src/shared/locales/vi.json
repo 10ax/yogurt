@@ -640,5 +640,7 @@
   "and {count} others": "và {count} mục khác",
   "{count} more": "Thêm {count} mục",
   "Clear": "Xóa",
-  "Reading {title} {others}…": "Đang đọc {title} {others}…"
+  "Reading {title} {others}…": "Đang đọc {title} {others}…",
+  "Searched {name}": "Đã tìm trong {name}",
+  "Searched all meetings": "Đã tìm trong tất cả cuộc họp"
 }

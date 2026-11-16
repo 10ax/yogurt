@@ -670,5 +670,7 @@
   "and {count} others": "és {count} további",
   "{count} more": "Még {count}",
   "Clear": "Törlés",
-  "Reading {title} {others}…": "„{title}” {others} olvasása…"
+  "Reading {title} {others}…": "„{title}” {others} olvasása…",
+  "Searched {name}": "{name} átvizsgálva",
+  "Searched all meetings": "Összes megbeszélés átvizsgálva"
 }

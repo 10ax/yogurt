@@ -695,5 +695,7 @@
   "and {count} others": "y {count} más",
   "{count} more": "{count} más",
   "Clear": "Borrar",
-  "Reading {title} {others}…": "Leyendo {title} {others}…"
+  "Reading {title} {others}…": "Leyendo {title} {others}…",
+  "Searched {name}": "Se buscó en {name}",
+  "Searched all meetings": "Se buscó en todas las reuniones"
 }

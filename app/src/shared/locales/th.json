@@ -640,5 +640,7 @@
   "and {count} others": "และอีก {count} รายการ",
   "{count} more": "อีก {count} รายการ",
   "Clear": "ล้าง",
-  "Reading {title} {others}…": "กำลังอ่าน {title} {others}…"
+  "Reading {title} {others}…": "กำลังอ่าน {title} {others}…",
+  "Searched {name}": "ค้นหาใน {name} แล้ว",
+  "Searched all meetings": "ค้นหาในการประชุมทั้งหมดแล้ว"
 }

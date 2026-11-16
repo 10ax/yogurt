@@ -670,5 +670,7 @@
   "and {count} others": "ও আরও {count}টি",
   "{count} more": "আরও {count}টি",
   "Clear": "মুছুন",
-  "Reading {title} {others}…": "{title} {others} পড়া হচ্ছে…"
+  "Reading {title} {others}…": "{title} {others} পড়া হচ্ছে…",
+  "Searched {name}": "{name}-এ খোঁজা হয়েছে",
+  "Searched all meetings": "সব মিটিংয়ে খোঁজা হয়েছে"
 }

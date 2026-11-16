@@ -688,5 +688,7 @@
   },
   "{count} more": "{count} lisää",
   "Clear": "Tyhjennä",
-  "Reading {title} {others}…": "Luetaan {title} {others}…"
+  "Reading {title} {others}…": "Luetaan {title} {others}…",
+  "Searched {name}": "Haettu kohteesta {name}",
+  "Searched all meetings": "Haettu kaikista kokouksista"
 }

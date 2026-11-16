@@ -640,5 +640,7 @@
   "and {count} others": "외 {count}개",
   "{count} more": "{count}개 더",
   "Clear": "지우기",
-  "Reading {title} {others}…": "‘{title}’ {others} 읽는 중…"
+  "Reading {title} {others}…": "‘{title}’ {others} 읽는 중…",
+  "Searched {name}": "{name}에서 검색함",
+  "Searched all meetings": "모든 회의에서 검색함"
 }

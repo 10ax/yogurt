@@ -228,3 +228,15 @@ it('translates the closest matching meeting and count in every locale', () => {
     expect(load(id)[key]).toContain('{others}')
   }
 })
+
+
+it('translates the searched scope line in every locale', () => {
+  for (const key of ['Searched all meetings', 'Searched {name}']) {
+    expect(keys).toContain(key)
+    for (const { id } of LOCALES) {
+      expect(load(id)[key]).toBeTypeOf('string')
+      expect(load(id)[key]).not.toBe('')
+      if (id !== 'en') expect(load(id)[key]).not.toBe(key)
+    }
+  }
+})

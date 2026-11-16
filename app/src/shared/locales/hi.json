@@ -670,5 +670,7 @@
   "and {count} others": "और {count} अन्य",
   "{count} more": "{count} और",
   "Clear": "साफ़ करें",
-  "Reading {title} {others}…": "{title} {others} पढ़ी जा रही हैं…"
+  "Reading {title} {others}…": "{title} {others} पढ़ी जा रही हैं…",
+  "Searched {name}": "{name} में खोजा गया",
+  "Searched all meetings": "सभी मीटिंग में खोजा गया"
 }

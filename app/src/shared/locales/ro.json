@@ -699,5 +699,7 @@
   "and {count} others": "și încă {count}",
   "{count} more": "Încă {count}",
   "Clear": "Șterge",
-  "Reading {title} {others}…": "Se citesc „{title}” {others}…"
+  "Reading {title} {others}…": "Se citesc „{title}” {others}…",
+  "Searched {name}": "Căutat în {name}",
+  "Searched all meetings": "Căutat în toate întâlnirile"
 }

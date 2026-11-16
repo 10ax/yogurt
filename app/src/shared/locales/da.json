@@ -682,5 +682,7 @@
   "and {count} others": "og {count} andre",
   "{count} more": "{count} flere",
   "Clear": "Ryd",
-  "Reading {title} {others}…": "Læser {title} {others}…"
+  "Reading {title} {others}…": "Læser {title} {others}…",
+  "Searched {name}": "Søgte i {name}",
+  "Searched all meetings": "Søgte i alle møder"
 }

@@ -718,5 +718,7 @@
   },
   "{count} more": "Jeszcze {count}",
   "Clear": "Wyczyść",
-  "Reading {title} {others}…": "Czytanie spotkań „{title}” {others}…"
+  "Reading {title} {others}…": "Czytanie spotkań „{title}” {others}…",
+  "Searched {name}": "Przeszukano {name}",
+  "Searched all meetings": "Przeszukano wszystkie spotkania"
 }

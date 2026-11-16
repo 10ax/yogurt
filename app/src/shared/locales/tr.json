@@ -670,5 +670,7 @@
   "and {count} others": "ve {count} diğer",
   "{count} more": "{count} tane daha",
   "Clear": "Temizle",
-  "Reading {title} {others}…": "“{title}” {others} okunuyor…"
+  "Reading {title} {others}…": "“{title}” {others} okunuyor…",
+  "Searched {name}": "{name} içinde arandı",
+  "Searched all meetings": "Tüm toplantılarda arandı"
 }

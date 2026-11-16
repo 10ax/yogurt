@@ -698,5 +698,7 @@
   },
   "{count} more": "{count} de plus",
   "Clear": "Effacer",
-  "Reading {title} {others}…": "Lecture de « {title} » {others}…"
+  "Reading {title} {others}…": "Lecture de « {title} » {others}…",
+  "Searched {name}": "Recherche dans {name}",
+  "Searched all meetings": "Recherche dans toutes les réunions"
 }

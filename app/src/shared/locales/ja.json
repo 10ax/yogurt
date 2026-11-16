@@ -640,5 +640,7 @@
   "and {count} others": "と他 {count} 件",
   "{count} more": "他 {count} 件",
   "Clear": "クリア",
-  "Reading {title} {others}…": "「{title}」{others}を読んでいます…"
+  "Reading {title} {others}…": "「{title}」{others}を読んでいます…",
+  "Searched {name}": "{name}を検索",
+  "Searched all meetings": "すべての会議を検索"
 }

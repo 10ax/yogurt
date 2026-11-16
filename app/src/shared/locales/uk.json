@@ -710,5 +710,7 @@
   "and {count} others": "і ще {count}",
   "{count} more": "Ще {count}",
   "Clear": "Очистити",
-  "Reading {title} {others}…": "Читаємо «{title}» {others}…"
+  "Reading {title} {others}…": "Читаємо «{title}» {others}…",
+  "Searched {name}": "Пошук у {name}",
+  "Searched all meetings": "Пошук у всіх зустрічах"
 }

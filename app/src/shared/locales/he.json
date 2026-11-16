@@ -692,5 +692,7 @@
   "and {count} others": "ועוד {count}",
   "{count} more": "עוד {count}",
   "Clear": "נקה",
-  "Reading {title} {others}…": "קורא את {title} {others}…"
+  "Reading {title} {others}…": "קורא את {title} {others}…",
+  "Searched {name}": "בוצע חיפוש ב־{name}",
+  "Searched all meetings": "בוצע חיפוש בכל הפגישות"
 }

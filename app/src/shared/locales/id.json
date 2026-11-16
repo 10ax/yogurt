@@ -640,5 +640,7 @@
   "and {count} others": "dan {count} lainnya",
   "{count} more": "{count} lagi",
   "Clear": "Hapus",
-  "Reading {title} {others}…": "Membaca {title} {others}…"
+  "Reading {title} {others}…": "Membaca {title} {others}…",
+  "Searched {name}": "Dicari di {name}",
+  "Searched all meetings": "Dicari di semua rapat"
 }

@@ -738,5 +738,7 @@
   "and {count} others": "و{count} إضافية",
   "{count} more": "{count} إضافية",
   "Clear": "مسح",
-  "Reading {title} {others}…": "جارٍ قراءة {title} {others}…"
+  "Reading {title} {others}…": "جارٍ قراءة {title} {others}…",
+  "Searched {name}": "تم البحث في {name}",
+  "Searched all meetings": "تم البحث في كل الاجتماعات"
 }

@@ -19,9 +19,8 @@ export function MeetingRow({ id, recording, children, selected, targets, members
 }) {
   const row = useRef<HTMLLIElement>(null), button = useRef<HTMLButtonElement>(null), menu = useRef<HTMLDivElement>(null)
   const [open, setOpen] = useState<'button' | { x: number; y: number } | null>(null)
-  const [pointer, setPointer] = useState(false)
   // Context menus stay instant; anchored button menus share the popover motion.
-  const presence = usePopoverPresence(open, pointer && open === 'button')
+  const presence = usePopoverPresence(open, open === 'button')
   const [inFolders, setInFolders] = useState(false), [namingFolder, setNamingFolder] = useState(false)
   const [suggestedId, setSuggestedId] = useState<string>()
   const folderTargets = suggestedId ? [id] : targets
@@ -64,9 +63,9 @@ export function MeetingRow({ id, recording, children, selected, targets, members
       if (e.key === 'ContextMenu' || (e.shiftKey && e.key === 'F10')) { e.preventDefault(); const box = row.current!.getBoundingClientRect(); show({ x: box.left + 20, y: box.bottom }); return }
       deleteMeetingFromKey(e, e.target === row.current?.querySelector('.native-meeting-link'), busy || (recording && !selected), () => onTrash(targets))
     }}>
-    {children(folderId => { setPointer(!document.activeElement?.matches(':focus-visible')); setSuggestedId(folderId); setInFolders(true); setOpen('button') },
+    {children(folderId => { setSuggestedId(folderId); setInFolders(true); setOpen('button') },
     <button ref={button} data-testid="past-note-more" className="workspace-icon meeting-more row-swap-actions" aria-label={t('More')} title={t('More')} aria-haspopup="menu" aria-expanded={!!open} aria-controls={open ? menuId : undefined}
-      onClick={e => { setPointer(e.detail > 0); if (open) close(); else show('button') }}><Ellipsis size={14} aria-hidden="true" /></button>)}
+      onClick={() => { if (open) close(); else show('button') }}><Ellipsis size={14} aria-hidden="true" /></button>)}
     {presence.value && createPortal(<div {...presence.props} ref={menu} id={menuId} data-testid="meeting-row-menu" role="menu" aria-label={t('More')} onKeyDown={menuKey}
       className="menu-entry meeting-row-menu" style={{ visibility: 'hidden' }}>
       {inFolders ? <FolderPicker key={folderTargets.join(',')} meetingIds={folderTargets} memberships={memberships} suggestedId={memberships[id]?.length ? undefined : suggestedId} testId="meeting-row-folders" onNew={() => { close(); setNamingFolder(true) }} /> : <>

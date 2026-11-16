@@ -14,7 +14,7 @@ export const spokenName = (s: Spoken): string => (s === 'en' ? t('English') : t(
 export function SpokenMenu() {
   const [spoken, setSpoken] = useState<Spoken>()
   const [open, setOpen] = useState<false | 'pointer' | 'keyboard'>(false)
-  const presence = usePopoverPresence(open, open === 'pointer')
+  const presence = usePopoverPresence(open)
   const root = useRef<HTMLDivElement>(null)
   const button = useRef<HTMLButtonElement>(null)
 

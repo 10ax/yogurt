@@ -13,16 +13,15 @@ export function ConversationActions({ id, title, onNew, onDeleted, onEdit, class
   const button = useRef<HTMLButtonElement>(null)
   const container = useRef<HTMLElement | null>(null)
   const mountButton = useCallback((node: HTMLButtonElement | null) => { button.current = node; container.current = node?.closest('dialog') ?? null }, [])
-  const [pointer, setPointer] = useState(false)
   const [dialog, setDialog] = useState<Edit>()
   const edit = (kind: Edit) => { button.current?.focus(); setDialog(kind); onEdit?.(kind) }
   const cancel = () => { setDialog(undefined); button.current?.focus({ preventScroll: true }) }
   return <>
-    <Menu.Root modal={false} onOpenChange={(open, details) => { if (open) setPointer(details.event instanceof MouseEvent && details.event.detail > 0) }}>
+    <Menu.Root modal={false}>
       <Menu.Trigger ref={mountButton} data-testid="chat-menu" className={`chat-icon ask-menu-trigger ${className}`} aria-label={t('More')} title={t('More')}><Ellipsis size={17} aria-hidden="true" /></Menu.Trigger>
       <Menu.Portal container={container}>
         <Menu.Positioner side="bottom" align="end" sideOffset={6} className="ask-menu-positioner">
-          <Menu.Popup data-pointer={pointer} className="menu-entry ask-actions-menu" aria-label={t('More')} finalFocus={dialog ? false : button} onKeyDown={e => { if (e.key === 'Escape') e.stopPropagation() }}>
+          <Menu.Popup className="menu-entry ask-actions-menu" aria-label={t('More')} finalFocus={dialog ? false : button} onKeyDown={e => { if (e.key === 'Escape') e.stopPropagation() }}>
             <Menu.Item data-testid="chat-rename" onClick={() => edit('rename')}><Pencil size={14} aria-hidden="true" />{t('Rename')}</Menu.Item>
             {onNew && <Menu.Item data-testid="chat-new" onClick={onNew}><Plus size={14} aria-hidden="true" />{t('New chat')}</Menu.Item>}
             <Menu.Item data-testid="chat-delete" className="text-danger" onClick={() => edit('delete')}><Trash2 size={14} aria-hidden="true" />{t('Delete')}</Menu.Item>

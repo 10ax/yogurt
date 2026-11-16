@@ -15,7 +15,7 @@ export function SummaryActions({ hasSummary, canWriteAgain, onWriteAgain, menuBu
 }) {
   const action = hasSummary ? t('Regenerate summary') : t('Generate summary')
   const [open, setOpen] = useState<false | 'pointer' | 'keyboard'>(false)
-  const presence = usePopoverPresence(open, open === 'pointer')
+  const presence = usePopoverPresence(open)
   const root = useRef<HTMLDivElement>(null)
   const item = useRef<HTMLButtonElement>(null)
   useEffect(() => {

@@ -27,12 +27,12 @@ it('keeps CSS and JS timing in sync and bounds the shared rebound below two perc
 
 // Exercise retained presence and effect cleanup without launching a browser.
 function popover() {
-  let last = { value: false, pointer: false }, cleanup: (() => void) | void
+  let last = { value: false, animate: false }, cleanup: (() => void) | void
   const set = (next: unknown) => { last = next as typeof last }
-  return (open: boolean, pointer: boolean) => {
+  return (open: boolean, animate = true) => {
     cleanup?.()
     vi.mocked(useState).mockReturnValue([last, set])
-    const result = usePopoverPresence(open, pointer)
+    const result = usePopoverPresence(open, animate)
     cleanup = vi.mocked(useLayoutEffect).mock.lastCall![0]()
     return result
   }
@@ -42,23 +42,27 @@ it('makes closing controls inert immediately and cancels their removal on a fast
   vi.useFakeTimers()
   const render = popover()
   expect(render(true, true).props.inert).toBe(false)
-  const closing = render(false, false)
+  const closing = render(false)
   expect(closing.value).toBe(true)
-  expect(closing.props).toMatchObject({ inert: true, 'data-pointer': true, 'data-ending-style': '' })
+  expect(closing.props).toMatchObject({ inert: true, 'data-motion': undefined, 'data-ending-style': '' })
   vi.advanceTimersByTime(motion.micro / 2)
   const reopened = render(true, true)
   expect(reopened.props['data-ending-style']).toBeUndefined()
   vi.advanceTimersByTime(motion.micro)
   expect(render(true, true).value).toBe(true)
-  render(false, false)
+  render(false)
   vi.advanceTimersByTime(motion.micro)
-  expect(render(false, false).value).toBeUndefined()
+  expect(render(false).value).toBeUndefined()
 })
 
-it('does not retain keyboard popovers for an exit animation', () => {
+it('retains keyboard popovers for the same exit and keeps context menus instant', () => {
   vi.useFakeTimers()
   const render = popover()
-  expect(render(true, false).props['data-pointer']).toBe(false)
+  expect(render(true).props['data-motion']).toBeUndefined()
+  expect(render(false).value).toBe(true)
+  vi.advanceTimersByTime(motion.micro)
+  expect(render(false).value).toBeUndefined()
+  expect(render(true, false).props['data-motion']).toBe('instant')
   expect(render(false, false).value).toBeUndefined()
 })
 

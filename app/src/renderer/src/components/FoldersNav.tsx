@@ -83,8 +83,8 @@ function FolderItem({ folder, collapsed, sidebarMotion, current, go, onRename, o
   const dragged = useRef(false)
   const [moving, setMoving] = useState(false)
   const [drop, setDrop] = useState(false)
-  const [menu, setMenu] = useState<{ style: CSSProperties; pointer: boolean }>()
-  const presence = usePopoverPresence(menu, !!menu?.pointer)
+  const [menu, setMenu] = useState<{ style: CSSProperties; animate: boolean }>()
+  const presence = usePopoverPresence(menu, menu?.animate ?? true)
   const row = useRef<HTMLDivElement>(null)
   const more = useRef<HTMLButtonElement>(null)
   const open = useRef<HTMLButtonElement>(null)
@@ -97,10 +97,10 @@ function FolderItem({ folder, collapsed, sidebarMotion, current, go, onRename, o
     return () => document.removeEventListener('mousedown', away)
   }, [menu])
   // fixed under the row, so the sidebar's scrolling never cuts it off
-  const openMenu = (pointer: boolean) => {
+  const openMenu = (animate: boolean) => {
     const box = row.current!.getBoundingClientRect()
     const rtl = getComputedStyle(row.current!).direction === 'rtl'
-    setMenu({ pointer, style: { position: 'fixed', top: box.bottom + 4, width: Math.max(180, box.width), insetInlineStart: rtl ? window.innerWidth - box.right : box.left } })
+    setMenu({ animate, style: { position: 'fixed', top: box.bottom + 4, width: Math.max(180, box.width), insetInlineStart: rtl ? window.innerWidth - box.right : box.left } })
   }
   const key = (e: KeyboardEvent) => {
     const items = Array.from(list.current?.querySelectorAll<HTMLElement>('[role="menuitem"]:not(:disabled)') ?? [])
@@ -138,7 +138,7 @@ function FolderItem({ folder, collapsed, sidebarMotion, current, go, onRename, o
       <small data-testid="sidebar-folder-count" aria-label={t('{count} meetings', { count: folder.count })}>{folder.count}</small>
     </button>
     <button ref={more} data-testid="sidebar-folder-more" className="workspace-icon workspace-folder-more" aria-haspopup="menu" aria-expanded={!!menu}
-      aria-label={t('More for “{name}”', { name: folder.name })} title={t('More')} onClick={(e) => (menu ? setMenu(undefined) : openMenu(e.detail > 0))}>
+      aria-label={t('More for “{name}”', { name: folder.name })} title={t('More')} onClick={() => (menu ? setMenu(undefined) : openMenu(true))}>
       <Ellipsis size={15} aria-hidden="true" />
     </button>
     {presence.value && <div ref={list} data-testid="sidebar-folder-menu" role="menu" aria-label={folder.name} {...presence.props} data-anchor="start" onKeyDown={key} style={presence.value.style}

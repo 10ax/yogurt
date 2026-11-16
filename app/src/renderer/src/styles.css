@@ -252,15 +252,15 @@ html.widget { --pill:#232326;--pill-ink:#F7F7FA;--accent:#B780FF;--pill-accent:v
 /* the mic menu opens upward from the status line under the note's bar */
 .menu-entry[data-anchor="bottom-start"] { transform-origin: bottom left; }
 [dir="rtl"] .menu-entry[data-anchor="bottom-start"] { transform-origin: bottom right; }
-.menu-entry[data-pointer=true] { transition:opacity var(--dur-base) var(--ease-out),transform var(--dur-base) var(--ease-out); }
-.menu-entry[data-pointer=true][data-starting-style] { opacity:0;transform:scale(.97); }
-@starting-style { .menu-entry[data-pointer=true] { opacity:0;transform:scale(.97); } }
-.menu-entry[data-pointer=true][data-ending-style] { opacity:0;transform:none;transition:opacity var(--dur-micro) var(--ease-out);pointer-events:none; }
+.menu-entry:not([data-motion=instant]) { transition:opacity var(--dur-base) var(--ease-out),transform var(--dur-base) var(--ease-out); }
+.menu-entry:not([data-motion=instant])[data-starting-style] { opacity:0;transform:scale(.97); }
+@starting-style { .menu-entry:not([data-motion=instant]) { opacity:0;transform:scale(.97); } }
+.menu-entry:not([data-motion=instant])[data-ending-style] { opacity:0;transform:none;transition:opacity var(--dur-micro) var(--ease-out);pointer-events:none; }
 @media (prefers-reduced-motion:reduce) {
   .note-chip,.share-btn,.person-remove { transition:opacity var(--dur-micro) var(--ease-out); }
-  .menu-entry[data-pointer=true] { transition:opacity var(--dur-micro) var(--ease-out); }
-  .menu-entry[data-pointer=true][data-starting-style] { transform:none; }
-  @starting-style { .menu-entry[data-pointer=true] { transform:none; } }
+  .menu-entry:not([data-motion=instant]) { transition:opacity var(--dur-micro) var(--ease-out); }
+  .menu-entry:not([data-motion=instant])[data-starting-style] { transform:none; }
+  @starting-style { .menu-entry:not([data-motion=instant]) { transform:none; } }
 }
 
 .ghost-btn { display: inline-flex; align-items: center; gap: 5px; border-radius: 6px; padding: 4px 8px; color: var(--muted); transition: color var(--dur-micro) ease, background-color var(--dur-micro) ease; }

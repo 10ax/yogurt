@@ -16,8 +16,7 @@ export function MeetingSelectionBar({ ids, memberships, list, busy, clear, trash
 }) {
   const bar = useRef<HTMLDivElement>(null), trigger = useRef<HTMLButtonElement>(null), menu = useRef<HTMLDivElement>(null)
   const [open, setOpen] = useState(false), [naming, setNaming] = useState(false)
-  const [pointer, setPointer] = useState(false)
-  const presence = usePopoverPresence(open, pointer)
+  const presence = usePopoverPresence(open)
   useLayoutEffect(() => {
     const pane = list.current?.closest<HTMLElement>('.native-library'), el = bar.current
     if (!pane || !el) return
@@ -51,7 +50,7 @@ export function MeetingSelectionBar({ ids, memberships, list, busy, clear, trash
         {ids.length === 1 && <small>{t('Click meetings to add more')}</small>}
       </span>
       <div className="meeting-selection-folder">
-        <button ref={trigger} className="workspace-button" disabled={busy} aria-haspopup="menu" aria-expanded={open} onClick={e => { setPointer(e.detail > 0); setOpen(!open) }}><Folder size={14} aria-hidden="true" />{t('Add to folder')}</button>
+        <button ref={trigger} className="workspace-button" disabled={busy} aria-haspopup="menu" aria-expanded={open} onClick={() => setOpen(!open)}><Folder size={14} aria-hidden="true" />{t('Add to folder')}</button>
         {presence.value && <div {...presence.props} data-anchor="bottom-start" ref={menu} role="menu" aria-label={t('Add to folder')} className="menu-entry meeting-selection-menu" style={{ visibility: 'hidden' }} onKeyDown={e => {
           const items = Array.from(menu.current?.querySelectorAll<HTMLElement>('[role="menuitem"]:not(:disabled), [role="menuitemcheckbox"]:not(:disabled)') ?? [])
           const at = items.indexOf(document.activeElement as HTMLElement)

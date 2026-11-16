@@ -81,7 +81,7 @@ export function FolderChip({ meetingId, onNew, suggestion: manualSuggestion, row
   const [transition, setTransition] = useState<{ folder: Folder; phase: 'saving' | 'accepted' | 'dismissed' | 'settled' } | null>(null)
   const [adding, setAdding] = useState(false)
   const [open, setOpen] = useState<false | 'pointer' | 'keyboard'>(false)
-  const presence = usePopoverPresence(open, open === 'pointer')
+  const presence = usePopoverPresence(open)
   const root = useRef<HTMLDivElement>(null)
   const chip = useRef<HTMLButtonElement>(null)
   useEffect(() => {

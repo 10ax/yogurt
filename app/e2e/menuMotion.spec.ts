@@ -29,7 +29,7 @@ const motion = (surface: Locator) => surface.evaluate((el) => {
   return { transition: style.transitionProperty, duration: style.transitionDuration, x: origin[0], y: origin[1], width: (el as HTMLElement).offsetWidth }
 })
 
-test('keyboard menus open without animation, focus immediately and dismiss back to their triggers', async () => {
+test('keyboard menus open with the same quick motion as a click, focus immediately and dismiss back to their triggers', async () => {
   const { app, page } = await launch()
   try {
     await page.emulateMedia({ reducedMotion: 'no-preference' })
@@ -38,7 +38,7 @@ test('keyboard menus open without animation, focus immediately and dismiss back 
       await trigger.focus()
       await page.keyboard.press(key)
       await expect(surface).toBeVisible()
-      expect((await motion(surface)).duration).toBe('0s')
+      expect((await motion(surface)).duration).toBe('0.18s, 0.18s')
       await expect(page.getByTestId(menu.first)).toBeFocused()
       await page.keyboard.press('Escape')
       await expect(surface).toHaveCount(0)

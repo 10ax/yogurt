@@ -12,7 +12,7 @@ import { peopleSummary, useMyName } from './People'
 
 export function NoteDate({ m }: { m: Meeting }) {
   const [open, setOpen] = useState<false | 'pointer' | 'keyboard'>(false)
-  const presence = usePopoverPresence(open, open === 'pointer')
+  const presence = usePopoverPresence(open)
   const chip = useRef<HTMLButtonElement>(null)
   const close = useCallback(() => { setOpen(false); chip.current?.focus({ preventScroll: true }) }, [])
   return <div className="relative">

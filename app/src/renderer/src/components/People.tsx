@@ -51,7 +51,7 @@ export function useMyName() {
 /** Attendee membership and inline person editing, separate from the calendar details. */
 export function People({ m }: { m: Meeting }) {
   const [open, setOpen] = useState<false | 'pointer' | 'keyboard'>(false)
-  const presence = usePopoverPresence(open, open === 'pointer')
+  const presence = usePopoverPresence(open)
   const me = useMyName()
   const chip = useRef<HTMLButtonElement>(null)
   const close = useCallback((restore = true) => { setOpen(false); if (restore) chip.current?.focus({ preventScroll: true }) }, [])

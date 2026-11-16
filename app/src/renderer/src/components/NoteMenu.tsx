@@ -9,7 +9,7 @@ import { t } from '../../../shared/i18n'
  */
 export function NoteMenu({ recording, savePending, onRename, onDelete, folders, trashed }: { recording: boolean; savePending?: boolean; onRename: () => void; onDelete: () => void; folders?: (close: () => void) => ReactNode; /** in the Trash already: Delete is for good */ trashed?: boolean }) {
   const [open, setOpen] = useState<false | 'pointer' | 'keyboard'>(false)
-  const presence = usePopoverPresence(open, open === 'pointer')
+  const presence = usePopoverPresence(open)
   const [inFolders, setInFolders] = useState(false)
   const root = useRef<HTMLDivElement>(null)
   const button = useRef<HTMLButtonElement>(null)

@@ -100,7 +100,7 @@ export function Agenda({ revision, recording, onStart, onOpen, jumpTo }: Actions
   const primary = pickNext(events, now)
   const defaultEvent = relativeDay === 0 ? events.find(e => e.id === primary) ?? events.find(e => e.start > now) ?? events.at(-1) : events[0]
   const detail = inspected?.at === selected ? events.find(e => e.id === inspected.id) : undefined
-  const presence = usePopoverPresence(detail, !!inspected?.pointer)
+  const presence = usePopoverPresence(detail)
   const shownDetail = presence.value
   useLayoutEffect(() => {
     if (!defaultEvent || !scroll.current) return

@@ -672,5 +672,7 @@
   "Regenerate": "Újragenerálás",
   "Note for the summary": "Utasítás az összefoglalóhoz",
   "Add a note, like shorter or in Spanish": "Adjon meg kérést, például rövidebben vagy spanyolul",
-  "Waiting for Yogurt AI to download": "Várakozás a Yogurt AI letöltésére"
+  "Waiting for Yogurt AI to download": "Várakozás a Yogurt AI letöltésére",
+  "Stop summary": "Összefoglalás leállítása",
+  "Summary stopped.": "Az összefoglalás leállt."
 }

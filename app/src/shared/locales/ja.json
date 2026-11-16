@@ -642,5 +642,7 @@
   "Regenerate": "再生成",
   "Note for the summary": "要約への指示",
   "Add a note, like shorter or in Spanish": "短めに、スペイン語で、などの指示を追加",
-  "Waiting for Yogurt AI to download": "Yogurt AIのダウンロードを待機中"
+  "Waiting for Yogurt AI to download": "Yogurt AIのダウンロードを待機中",
+  "Stop summary": "要約を停止",
+  "Summary stopped.": "要約を停止しました。"
 }

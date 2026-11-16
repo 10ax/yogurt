@@ -2,7 +2,7 @@ import { appendFileSync, mkdirSync, writeFileSync } from 'node:fs'
 import { userDataDir } from './paths'
 import { basename, dirname, join } from 'node:path'
 import type { Hardware } from '@yogurt/picker'
-import type { DownloadDeps } from './downloader'
+import { DiskSpaceError, type DownloadDeps } from './downloader'
 import type { Helper } from './calendar'
 import type { Reading } from './detectSignals'
 import type { Store } from './store'
@@ -22,19 +22,23 @@ export const fakeHardware = async (platform = 'darwin'): Promise<Hardware> => ({
 })
 
 /** Fake mode: files appear after four quick progress steps (a notes model takes notesMs longer); the hash always matches */
-export const fakeDownloadDeps = (opts: { freeDiskGB?: number; stepMs?: number; notesMs?: number } = {}): DownloadDeps => ({
-  async download(_url, dir, fileName, onProgress, signal) {
-    const step = (opts.stepMs ?? 20) + (basename(dir) === 'llm' ? (opts.notesMs ?? 0) / 4 : 0)
-    for (const f of [0.25, 0.5, 0.75, 1]) {
-      if (signal?.aborted) throw Object.assign(new Error('Download stopped'), { name: 'AbortError' })
-      onProgress({ fraction: f, etaSec: 0 }); await new Promise((r) => setTimeout(r, step))
-    }
-    mkdirSync(dirname(join(dir, fileName)), { recursive: true })
-    writeFileSync(join(dir, fileName), 'fake')
-  },
-  async hashFile() { return 'FAKE' },
-  async freeDiskGB() { return opts.freeDiskGB ?? 1000 },
-})
+export const fakeDownloadDeps = (opts: { freeDiskGB?: number; stepMs?: number; notesMs?: number; notesFailOnce?: boolean } = {}): DownloadDeps => {
+  let failNotes = opts.notesFailOnce
+  return {
+    async download(_url, dir, fileName, onProgress, signal) {
+      if (basename(dir) === 'llm' && failNotes) { failNotes = false; throw new DiskSpaceError(4) }
+      const step = (opts.stepMs ?? 20) + (basename(dir) === 'llm' ? (opts.notesMs ?? 0) / 4 : 0)
+      for (const f of [0.25, 0.5, 0.75, 1]) {
+        if (signal?.aborted) throw Object.assign(new Error('Download stopped'), { name: 'AbortError' })
+        onProgress({ fraction: f, etaSec: 0 }); await new Promise((r) => setTimeout(r, step))
+      }
+      mkdirSync(dirname(join(dir, fileName)), { recursive: true })
+      writeFileSync(join(dir, fileName), 'fake')
+    },
+    async hashFile() { return 'FAKE' },
+    async freeDiskGB() { return opts.freeDiskGB ?? 1000 },
+  }
+}
 
 // ---- calendar and meeting detection (fake mode only) ----
 

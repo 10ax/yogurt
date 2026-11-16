@@ -6,25 +6,22 @@ import { join } from 'node:path'
 test('a failed notes-model download explains waiting notes and answers, and retry leaves recording usable', async () => {
   const app = await electron.launch({ args: [join(import.meta.dirname, '../out/main/index.js')], env: {
     ...process.env, YOGURT_FAKE: '1', YOGURT_USER_DATA: mkdtempSync(join(tmpdir(), 'yogurt-model-recovery-')),
-    YOGURT_FAKE_NOTES_MODEL_MS: '30000',
+    YOGURT_FAKE_NOTES_MODEL_FAIL_ONCE: '1', YOGURT_FAKE_NOTES_MODEL_MS: '4000',
   } })
   try {
     const page = await app.firstWindow()
     await expect(page.getByTestId('home')).toBeVisible()
-    // Controller download/retry/concurrency is covered in setup.test.ts. Exercise the
-    // real renderer's existing IPC boundary while fake model work waits in its queue.
-    await app.evaluate(({ ipcMain, BrowserWindow }) => {
-      let state = { phase: 'ready', fraction: 1, notesError: 'The download needs 4 GB more free space.' } as { phase: string; fraction: number; notesError?: string }
+    // The actual setup controller owns the failed download and all progress events.
+    // Reject one Retry transport request, then let the real handler recover it.
+    await app.evaluate(({ ipcMain }) => {
+      const handlers = (ipcMain as typeof ipcMain & { _invokeHandlers: Map<string, (...args: unknown[]) => unknown> })._invokeHandlers
+      const retry = handlers.get('setup:retry')!
       let rejectOnce = true
-      ipcMain.removeHandler('setup:state')
-      ipcMain.handle('setup:state', () => state)
       ipcMain.removeHandler('setup:retry')
-      ipcMain.handle('setup:retry', () => {
+      ipcMain.handle('setup:retry', (...args) => {
         if (rejectOnce) { rejectOnce = false; throw new Error('retry transport failed') }
-        state = { phase: 'ready', fraction: 1 }
-        for (const win of BrowserWindow.getAllWindows()) win.webContents.send('setup:state', state)
+        return retry(...args)
       })
-      for (const win of BrowserWindow.getAllWindows()) win.webContents.send('setup:state', state)
     })
     await page.getByTestId('new-note').or(page.getByTestId('past-empty').getByRole('button')).first().click()
     await expect(page.getByTestId('note-state')).toHaveAttribute('data-state', 'recording')
@@ -60,6 +57,8 @@ test('a failed notes-model download explains waiting notes and answers, and retr
     await page.getByTestId('note-stop').click()
     await page.getByTestId('note-summary-tab').click()
     await page.getByTestId('chat-close').click()
+    await expect(page.getByTestId('chat-panel')).toHaveCount(0)
+    await expect.poll(() => page.evaluate(id => window.yogurt.notes.get(id).then(notes => notes.status), id)).toBe('waiting')
     await expect(page.getByTestId('notes-model-error')).toHaveCount(1)
     await expect(page.getByTestId('notes-model-error')).toContainText('needs 4 GB more free space')
     await expect(page.getByTestId('notes-model-retry')).toHaveCSS('text-decoration-line', 'underline')

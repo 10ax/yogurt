@@ -11,6 +11,7 @@ export function summaryPresentation(notes: Pick<NoteView, 'status' | 'enhanced' 
   if (notes.enhanced != null) return 'saved'
   if (notes.status === 'failed') return 'failed'
   if (notes.status === 'empty') return 'empty'
+  if (notes.status === 'stopped') return 'stopped'
   return 'saved'
 }
 
@@ -18,15 +19,19 @@ export function summaryPresentation(notes: Pick<NoteView, 'status' | 'enhanced' 
 export function useSummaryPresentation(notes: NoteView | undefined, reduced: boolean) {
   const presentation = notes ? summaryPresentation(notes) : 'saved'
   const id = notes?.meetingId
-  const [last, setLast] = useState({ id, presentation, fading: false })
+  const [last, setLast] = useState({ id, presentation, fading: false, resetting: false })
   if (last.id !== id || last.presentation !== presentation) {
-    setLast({ id, presentation, fading: !reduced && last.id === id && last.presentation === 'rewriting' && presentation === 'streaming' })
+    setLast({ id, presentation, resetting: reduced && last.id === id && last.presentation === 'rewriting' && presentation === 'streaming', fading: !reduced && last.id === id && last.presentation === 'rewriting' && presentation === 'streaming' })
   }
   useEffect(() => {
+    if (last.resetting) {
+      const frame = requestAnimationFrame(() => setLast(s => ({ ...s, resetting: false })))
+      return () => cancelAnimationFrame(frame)
+    }
     if (!last.fading) return
-    if (reduced) { setLast(s => ({ ...s, fading: false })); return }
-    const timer = setTimeout(() => setLast(s => ({ ...s, fading: false })), motion.micro)
+    if (reduced) { setLast(s => ({ ...s, fading: false, resetting: true })); return }
+    const timer = setTimeout(() => setLast(s => ({ ...s, fading: false, resetting: true })), motion.micro)
     return () => clearTimeout(timer)
-  }, [last.fading, reduced, id])
-  return last.fading && !reduced ? 'handoff' : presentation
+  }, [last.fading, last.resetting, reduced, id])
+  return last.resetting || last.fading && reduced ? 'reset' : last.fading ? 'handoff' : presentation
 }

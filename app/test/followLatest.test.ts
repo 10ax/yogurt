@@ -67,6 +67,18 @@ it('Latest reuses the finite glide, retargets arrivals and yields to user input'
   pane.scrollHeight = 1600; Resize.current.change(); expect(pane.scrollTop).toBe(150)
   follow.dispose()
 })
+it('clears Latest when a rounded final glide position emits no scroll event', () => {
+  let done!: () => void
+  const glide = { to: vi.fn(), stop: vi.fn(), active: true }
+  vi.mocked(followGlide).mockImplementation((_el, complete) => { done = complete; return glide })
+  const { pane, behind, follow } = setup(false)
+  follow.latest()
+  pane.scrollHeight = 1400; Resize.current.change()
+  expect(behind).toHaveBeenLastCalledWith(true)
+  pane.scrollTop = 1000; done()
+  expect(behind).toHaveBeenLastCalledWith(false)
+  follow.dispose()
+})
 it('stops on hiding or completion cleanup, with no polling or work after disposal', () => {
   const glide = { to: vi.fn(), stop: vi.fn(), active: true }
   vi.mocked(followGlide).mockReturnValue(glide)
@@ -81,6 +93,17 @@ it('does not move a collapsed pane', () => {
   const { pane, follow } = setup()
   pane.clientHeight = 0; pane.scrollHeight = 2000; Resize.current.change()
   expect(pane.scrollTop).toBe(800)
+  follow.dispose()
+})
+it('does not write a scroll position until the new text overflows', () => {
+  const pane = new Pane(), state = { current: true }
+  pane.scrollHeight = pane.clientHeight
+  const writes = vi.spyOn(pane, 'scrollTop', 'set')
+  const follow = attachFollowLatest(pane as unknown as HTMLElement, new Pane() as unknown as HTMLElement, state, vi.fn())
+  Resize.current.change()
+  expect(writes).not.toHaveBeenCalled()
+  pane.scrollHeight += 20; Resize.current.change()
+  expect(pane.scrollTop).toBe(20)
   follow.dispose()
 })
 it('keeps following when the body grows again before the scroll from the last follow lands', () => {

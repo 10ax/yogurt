@@ -51,6 +51,23 @@ const turboUrl = catalog.asr[0].url
 const smallUrl = catalog.asr[1].url
 
 describe('SetupController', () => {
+  it('keeps a failed fake notes download in the real retry state while recording remains ready', async () => {
+    const { c, states } = setup({ download: fakeDownloadDeps({ stepMs: 0, notesFailOnce: true }) })
+    await c.start()
+    try {
+      await vi.waitFor(() => expect(c.state.notesError).toBe('The download needs 4 GB more free space.'))
+      expect(c.state.phase).toBe('ready')
+      expect(c.installed()?.asr).toBeTruthy()
+      expect(c.notesPath()).toBeUndefined()
+      const failed = states.length
+      await c.retry()
+      await c.idle()
+      expect(c.state.notesError).toBeUndefined()
+      expect(c.notesPath()).toBeTruthy()
+      expect(states.slice(failed)).toContainEqual(expect.objectContaining({ notesDownloading: true }))
+    } finally { await c.retry(); await c.idle() }
+  })
+
   it('goes checking, downloading, ready; the fraction only goes up and ends at 1', async () => {
     const { c, states } = setup()
     expect(c.state.phase).toBe('checking')

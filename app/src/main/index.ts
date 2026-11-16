@@ -172,7 +172,7 @@ function createSetup(): SetupController {
     getHardware: isFake() ? () => fakeHardware(platform) : async () => toHardware(await readSysInfo(userDataDir()), process.platform === 'darwin' ? undefined : await probeGpu()),
     // the one in this build: new models come with app updates
     getCatalog: async () => loadCatalog({ bundled: bundledCatalog, licenses }),
-    download: isFake() ? fakeDownloadDeps({ stepMs: Number(process.env.YOGURT_FAKE_STEP_MS ?? 5), notesMs: Number(process.env.YOGURT_FAKE_NOTES_MODEL_MS ?? 0) }) : realDeps,
+    download: isFake() ? fakeDownloadDeps({ stepMs: Number(process.env.YOGURT_FAKE_STEP_MS ?? 5), notesMs: Number(process.env.YOGURT_FAKE_NOTES_MODEL_MS ?? 0), notesFailOnce: process.env.YOGURT_FAKE_NOTES_MODEL_FAIL_ONCE === '1' }) : realDeps,
     ...(isFake() ? { sha256Override: 'FAKE' } : {}),
     // Windows and Linux: speech models timed on this computer (asr/speedCheck.ts); a Mac never is
     ...(platform === 'darwin' ? {} : { speed: { ...speedStore(speedFile()), measure: isFake() ? fakeMeasure() : (model: string) => measureSpeed(model, { binary: whisperServerPath(), vadModel: vadModelPath(), clip: speedClipPath() ?? '' }) } }),
@@ -741,6 +741,7 @@ app.whenReady().then(() => {
   ipcMain.handle('notes:set-enhanced', (_e, id: unknown, md: unknown, revision: unknown) => saveEdit(id, 'enhanced', md, revision))
   ipcMain.on('notes:flush-sync', (e, id: unknown, side: unknown, md: unknown, revision: unknown) => { e.returnValue = saveEdit(id, side, md, revision) })
   ipcMain.on('notes:kept-edits', (_e, id: unknown) => { if (known(id)) notes.keptEdits(id) })
+  ipcMain.handle('notes:stop', (_e, id: unknown) => { if (known(id)) return notes.stop(id) })
   ipcMain.handle('notes:write-again', (_e, id: unknown, note: unknown) => {
     const instruction = rewriteNote(note)
     if (known(id) && instruction !== undefined) void notes.writeAgain(id, instruction)

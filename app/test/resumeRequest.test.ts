@@ -26,7 +26,7 @@ vi.mock('../src/renderer/src/motion', async original => ({ ...await original<typ
 let meeting: MeetingView, notes: NoteView
 let meetingChanged: () => void, notesChanged: (notes: NoteView) => void
 const resume = vi.fn(), consumed = vi.fn(), title = vi.fn(), source = vi.fn()
-const transcriptGet = vi.fn()
+const transcriptGet = vi.fn(), stopSummary = vi.fn()
 let segmentChanged: (line: { meetingId: string; text: string }) => void, transcriptChanged: (id: string) => void, setupChanged: (state: SetupState) => void
 let requested: (() => void) | undefined
 let tree: ReactNode
@@ -53,9 +53,10 @@ beforeEach(() => {
   requested = () => { consumed(); requested = undefined }
   transcriptGet.mockResolvedValue([])
   resume.mockResolvedValue({ id: meeting.id })
+  stopSummary.mockResolvedValue(undefined)
   vi.stubGlobal('window', { matchMedia: () => ({ matches: true }), yogurt: {
     meetings: { get: async () => meeting, onChange: (cb: typeof meetingChanged) => { meetingChanged = cb; return vi.fn() }, resume, stop: vi.fn() },
-    notes: { setMine: async (_id: string, _text: string, revision: number) => ({ revision, status: 'saved' }), get: async () => notes, onChange: (cb: typeof notesChanged) => { notesChanged = cb; return vi.fn() } },
+    notes: { stop: stopSummary, setMine: async (_id: string, _text: string, revision: number) => ({ revision, status: 'saved' }), get: async () => notes, onChange: (cb: typeof notesChanged) => { notesChanged = cb; return vi.fn() } },
     transcript: { get: transcriptGet, onSegment: (cb: typeof segmentChanged) => { segmentChanged = cb; return vi.fn() }, onSpeakers: (cb: typeof transcriptChanged) => { transcriptChanged = cb; return vi.fn() } },
     setup: { state: async () => ({ phase: 'ready', fraction: 1 }), onState: (cb: typeof setupChanged) => { setupChanged = cb; return vi.fn() } },
     widget: { state: async () => null, onState: () => vi.fn() },
@@ -149,4 +150,26 @@ it('waits for the first notes model but allows generation during an optional upg
   expect(find(tree, NoteMenu)?.props.generation).toMatchObject({ reason: undefined })
   setupChanged({ phase: 'ready', fraction: 1, notesError: 'Download failed' }); await render()
   expect(find(tree, NoteMenu)?.props.generation).toMatchObject({ reason: 'Waiting for Yogurt AI to download' })
+})
+
+
+it.each(['waiting', 'writing', 'failed', 'empty', 'stopped', 'done'] as const)('the header action for %s stops a summary or resumes recording without confusing the two', async status => {
+  notes.status = status; requested = undefined
+  await render(); await render()
+  const busy = status === 'waiting' || status === 'writing'
+  const button = find(tree, 'note-resume')!
+  expect(button.props.disabled).toBe(false)
+  expect(button.props['aria-label']).toBe(busy ? 'Stop summary' : 'Resume recording')
+  expect(button.props['aria-busy']).toBe(busy)
+  ;(button.props.onClick as () => void)()
+  await render(); await render()
+  if (busy) {
+    expect(stopSummary).toHaveBeenCalledExactlyOnceWith(meeting.id)
+    expect(resume).not.toHaveBeenCalled()
+    notesChanged({ ...notes, status: 'stopped' }); await render()
+    expect(find(tree, 'note-resume')!.props['aria-label']).toBe('Resume recording')
+  } else {
+    expect(resume).toHaveBeenCalledExactlyOnceWith(meeting.id)
+    expect(stopSummary).not.toHaveBeenCalled()
+  }
 })

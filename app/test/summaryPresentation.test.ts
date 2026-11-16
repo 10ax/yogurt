@@ -8,6 +8,7 @@ it('keeps first summaries waiting, then streaming, then editable', () => {
   expect(summaryPresentation({ status: 'done', enhanced: 'Complete', draft: '' })).toBe('saved')
   expect(summaryPresentation({ status: 'empty', enhanced: null, draft: '' })).toBe('empty')
   expect(summaryPresentation({ status: 'failed', enhanced: null, draft: '' })).toBe('failed')
+  expect(summaryPresentation({ status: 'stopped', enhanced: null, draft: 'Abandoned draft' })).toBe('stopped')
 })
 
 it.each(['Previous summary', ''])('retains a saved summary through reading, then hands partial drafts to the normal stream (%j)', enhanced => {
@@ -21,7 +22,7 @@ it.each(['Previous summary', ''])('retains a saved summary through reading, then
 })
 
 it('restores the saved editor after failure or stopping, discards abandoned partial drafts', () => {
-  for (const status of ['failed', 'done', 'idle', 'empty'] as const) {
+  for (const status of ['failed', 'done', 'idle', 'empty', 'stopped'] as const) {
     expect(summaryPresentation({ status, enhanced: 'Previous summary', draft: 'Abandoned draft' })).toBe('saved')
   }
   expect(summaryPresentation({ status: 'done', enhanced: 'New saved summary', draft: '' })).toBe('saved')

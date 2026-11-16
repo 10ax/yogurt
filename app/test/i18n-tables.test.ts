@@ -11,6 +11,16 @@ const load = (id: string): Record<string, Entry> => JSON.parse(readFileSync(join
 const blanks = (s: string) => [...new Set(s.match(/\{\w+\}/g) ?? [])].sort()
 const forms = (e: Entry) => (typeof e === 'string' ? [e] : Object.values(e))
 
+it('translates summary cancellation and its restart state in every locale', () => {
+  for (const { id } of LOCALES) for (const key of ['Stop summary', 'Summary stopped.', 'Generate summary']) {
+    expect(keys).toContain(key)
+    if (id === 'en' && key === 'Generate summary') continue
+    expect(load(id)[key]).toBeTypeOf('string')
+    expect(load(id)[key]).not.toBe('')
+    if (id !== 'en') expect(load(id)[key]).not.toBe(key)
+  }
+})
+
 it('translates the app location choice and removes the old Mac toggle labels', () => {
   for (const { id } of LOCALES) {
     const table = load(id)

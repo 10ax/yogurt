@@ -30,20 +30,109 @@ function setup(o: { summaryLanguage?: () => string; me?: string; named?: () => P
   const sent: NoteView[] = []
   const prompts: string[] = []
   const changed: string[] = []
+  const signals: AbortSignal[] = []
   const llm: Llm = {
     contextSize: 32_000, count: async (xs) => xs.map((x) => x.length),
     chat: async (prompt, onToken) => { prompts.push(prompt); o.during?.(); const r = typeof o.reply === 'function' ? o.reply(prompt) : o.reply ?? '## Plan\n- We ship Tuesday\n## Next steps\n- **Ann:** Send it.'; onToken(r); return r },
   }
   const queue = createQueue({ recording: o.recording ?? (() => false), smallMac: o.smallMac ?? false })
   const notes = hookNotes({
-    store, queue, model: { llm: async () => { await o.load; return llm }, needsLoad: () => true }, showLoading: o.showLoading,
+    store, queue, model: { llm: async (signal) => { if (signal) signals.push(signal); await o.load; return llm }, needsLoad: () => true }, showLoading: o.showLoading,
     transcribed: () => transcript, named: o.named, namesWaitMs: o.namesWaitMs, language: () => 'spanish', summaryLanguage: o.summaryLanguage,
     onStop: (fn) => stops.push(fn), send: (v) => sent.push(v), changed: (id) => changed.push(id), peopleRewriteMs: 30, me: () => o.me ?? '',
   })
-  return { store, m, notes, sent, prompts, changed, queue, stop: () => stops.forEach((f) => f(m)), transcribed }
+  return { store, m, notes, sent, prompts, changed, queue, llm, signals, stop: () => stops.forEach((f) => f(m)), transcribed }
 }
 
 describe('hookNotes', () => {
+  it('a manual stop invalidates a pending transcript without restarting on recovery', async () => {
+    const s = setup()
+    s.stop()
+    const pending = s.notes.written(s.m.id)
+    await s.notes.stop(s.m.id)
+    expect(s.notes.view(s.m.id)).toMatchObject({ status: 'stopped', draft: '', enhanced: null })
+    s.transcribed(); await pending
+    s.notes.recover(); await wait()
+    expect(s.prompts).toEqual([])
+    expect(s.store.meeting(s.m.id)?.state).toBe('done')
+    await s.notes.writeAgain(s.m.id)
+    expect(s.notes.view(s.m.id).status).toBe('done')
+  })
+
+  it('stops a queued summary without deleting the meeting or preventing a later retry', async () => {
+    let recording = true
+    const s = setup({ recording: () => recording, smallMac: true })
+    const run = s.notes.writeAgain(s.m.id)
+    await s.notes.stop(s.m.id); await run
+    recording = false; s.queue.recordingChanged()
+    expect(s.prompts).toEqual([])
+    expect(s.notes.view(s.m.id).status).toBe('stopped')
+    await s.notes.writeAgain(s.m.id)
+    expect(s.notes.view(s.m.id).status).toBe('done')
+  })
+
+  it('aborts model loading and never starts generation after the load settles', async () => {
+    let release!: () => void
+    const s = setup({ load: new Promise<void>(resolve => { release = resolve }) })
+    const run = s.notes.writeAgain(s.m.id)
+    expect(s.signals).toHaveLength(1)
+    const stopped = s.notes.stop(s.m.id)
+    expect(s.signals[0].aborted).toBe(true)
+    release(); await stopped; await run
+    expect(s.prompts).toEqual([])
+    expect(s.notes.view(s.m.id)).toMatchObject({ status: 'stopped', enhanced: null, draft: '' })
+  })
+
+  it('a retry waits for the stopped generation to release the model', async () => {
+    const s = setup()
+    let finish!: () => void
+    const chat = vi.spyOn(s.llm, 'chat').mockImplementationOnce(async (_prompt, token) => {
+      token('Partial')
+      await new Promise<void>(resolve => { finish = resolve })
+      return 'Abandoned text'
+    })
+    const run = s.notes.writeAgain(s.m.id)
+    await vi.waitFor(() => expect(s.notes.view(s.m.id).status).toBe('writing'))
+    const stopped = s.notes.stop(s.m.id), retry = s.notes.writeAgain(s.m.id)
+    await wait()
+    expect(chat).toHaveBeenCalledTimes(1)
+    expect(s.notes.view(s.m.id).status).toBe('stopped')
+    finish(); await Promise.all([run, stopped, retry])
+    expect(s.notes.view(s.m.id).status).toBe('done')
+    expect(s.store.notes(s.m.id).enhanced).not.toContain('Abandoned')
+  })
+
+  it.each([false, true])('stops streaming with no partial save and allows retry, previous summary %s', async previous => {
+    const s = setup()
+    if (previous) {
+      s.store.setNotes(s.m.id, { enhanced: 'Keep this exact summary.\n', edited: true })
+      s.store.setWrittenWith(s.m.id, 'previous people')
+    }
+    const before = s.store.notes(s.m.id), people = s.store.writtenWith(s.m.id)
+    let finish!: () => void
+    const chat = vi.spyOn(s.llm, 'chat').mockImplementationOnce(async (_prompt, token) => {
+      token('## Partial summary\n')
+      await new Promise<void>(resolve => { finish = resolve })
+      // Engines may deliver a final queued token after receiving abort.
+      token('Late token')
+      return '## Partial summary\nLate token'
+    })
+    const run = s.notes.writeAgain(s.m.id)
+    await vi.waitFor(() => expect(s.notes.view(s.m.id).status).toBe('writing'))
+    const stopped = s.notes.stop(s.m.id)
+    expect(s.signals[0].aborted).toBe(true)
+    expect(chat).toHaveBeenCalledTimes(1)
+    const afterStop = s.sent.length
+    finish(); await stopped; await run
+    expect(s.store.notes(s.m.id)).toEqual(before)
+    expect(s.store.writtenWith(s.m.id)).toBe(people)
+    expect(s.sent.slice(afterStop).some(v => v.draft.includes('Late token'))).toBe(false)
+    await s.notes.writeAgain(s.m.id)
+    expect(s.notes.view(s.m.id).status).toBe('done')
+    expect(s.store.notes(s.m.id).enhanced).not.toContain('Late token')
+    expect(s.store.notes(s.m.id).mine).toBe(before.mine)
+  })
+
   it('keeps a rewrite note only in its queued job, never the next regeneration or saved notes', async () => {
     const s = setup()
     await s.notes.writeAgain(s.m.id, 'Use a concise formal tone')

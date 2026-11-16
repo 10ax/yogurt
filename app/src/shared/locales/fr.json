@@ -700,5 +700,7 @@
   "Regenerate": "Régénérer",
   "Note for the summary": "Consigne pour le résumé",
   "Add a note, like shorter or in Spanish": "Ajoutez une consigne, comme plus court ou en espagnol",
-  "Waiting for Yogurt AI to download": "En attente du téléchargement de l’IA Yogurt"
+  "Waiting for Yogurt AI to download": "En attente du téléchargement de l’IA Yogurt",
+  "Stop summary": "Arrêter le résumé",
+  "Summary stopped.": "Résumé arrêté."
 }

@@ -22,6 +22,7 @@ it('keeps note text and footer controls at their existing insets', () => {
   expect(css).not.toContain('.note-summary-rim')
   expect(css).not.toContain('.ask-border')
   expect(css).not.toContain('.note-reading-frame::before')
-  expect(css).toMatch(/\.note-summary-status \{[^}]*bottom:18px;/)
+  expect(css).not.toContain('.note-summary-status')
+  expect(css).not.toContain('data-has-summary')
   expect(css).toMatch(/\.note-latest \{[^}]*bottom:18px;/)
 })

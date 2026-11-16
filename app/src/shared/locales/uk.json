@@ -712,5 +712,7 @@
   "Regenerate": "Створити знову",
   "Note for the summary": "Побажання до підсумку",
   "Add a note, like shorter or in Spanish": "Додайте побажання, як-от коротше чи іспанською",
-  "Waiting for Yogurt AI to download": "Очікування завантаження Yogurt AI"
+  "Waiting for Yogurt AI to download": "Очікування завантаження Yogurt AI",
+  "Stop summary": "Зупинити підсумок",
+  "Summary stopped.": "Створення підсумку зупинено."
 }

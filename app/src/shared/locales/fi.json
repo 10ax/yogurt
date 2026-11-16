@@ -690,5 +690,7 @@
   "Regenerate": "Luo uudelleen",
   "Note for the summary": "Ohje yhteenvedolle",
   "Add a note, like shorter or in Spanish": "Lisää ohje, kuten lyhyemmin tai espanjaksi",
-  "Waiting for Yogurt AI to download": "Odotetaan Yogurt AI:n latausta"
+  "Waiting for Yogurt AI to download": "Odotetaan Yogurt AI:n latausta",
+  "Stop summary": "Pysäytä yhteenveto",
+  "Summary stopped.": "Yhteenvedon luonti pysäytetty."
 }

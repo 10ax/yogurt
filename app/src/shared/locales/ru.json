@@ -712,5 +712,7 @@
   "Regenerate": "Создать заново",
   "Note for the summary": "Пожелание к сводке",
   "Add a note, like shorter or in Spanish": "Добавьте пожелание, например короче или на испанском",
-  "Waiting for Yogurt AI to download": "Ожидание загрузки Yogurt AI"
+  "Waiting for Yogurt AI to download": "Ожидание загрузки Yogurt AI",
+  "Stop summary": "Остановить сводку",
+  "Summary stopped.": "Создание сводки остановлено."
 }

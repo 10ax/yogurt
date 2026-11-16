@@ -46,6 +46,8 @@ export function hookNotes(p: {
   /** the person's own name, so the invite's other person is known */
   me?: () => string
 }) {
+  const stopped = new Set<string>()
+  const stopping = new Map<string, Promise<void>>()
   const resuming = new Map<string, object>()
   const live = new Map<string, { status: NoteStatus; draft: string; part?: { part: number; of: number }; step?: 'loading' }>()
   /** a rewrite for new people, waiting for the changes to settle */
@@ -135,12 +137,13 @@ export function hookNotes(p: {
       console.info('NOTES', `writing the notes of ${id}`)
       if (!quiet && p.showLoading && p.model.needsLoad?.()) set(id, 'waiting', '', undefined, 'loading')
       const llm = await p.model.llm(signal)
+      signal.throwIfAborted()
       if (!quiet && live.get(id)?.step) set(id, 'waiting')
       // a generic title (or one made from earlier notes) gets one from these notes; theirs or the calendar's never
       const retitle = (x: Meeting) => x.titleSource === 'generic' || x.titleSource === 'auto'
       let askTitle: ((llm: Llm) => Promise<string>) | undefined
-      const md = await enhance({ meeting: m, mine, segments, language, note, summaryLanguage: p.summaryLanguage?.(), me: p.me?.(), words: meetingWords(m), ...(retitle(m) ? { titleLater: (ask) => { askTitle = ask } } : {}) }, llm, (t) => {
-        if (quiet) return
+      const md = await enhance({ signal, meeting: m, mine, segments, language, note, summaryLanguage: p.summaryLanguage?.(), me: p.me?.(), words: meetingWords(m), ...(retitle(m) ? { titleLater: (ask) => { askTitle = ask } } : {}) }, llm, (t) => {
+        if (quiet || signal.aborted) return
         draft += t
         if (timer) return
         const wait = DRAFT_EVERY_MS - (Date.now() - last)
@@ -160,7 +163,7 @@ export function hookNotes(p: {
         p.summarized?.(id)
         return
       }
-      if (signal.aborted) { set(id, 'waiting'); return }
+      signal.throwIfAborted()
       // the person's own notes stay as they typed them, even if they typed on while this was written
       p.store.setNotes(id, { enhanced: md, edited: false })
       p.store.setWrittenWith(id, used.stamp)
@@ -171,7 +174,7 @@ export function hookNotes(p: {
       if (timer) clearTimeout(timer)
       if (quiet) { if (!signal.aborted) console.error('writing the notes again for new people failed', id, e); throw e }
       // stopped for a recording: it runs again after
-      if (signal.aborted) { set(id, 'waiting'); throw e }
+      if (signal.aborted) { if (!stopped.has(id)) set(id, 'waiting'); throw e }
       console.error('writing the notes failed', id, e)
       set(id, 'failed')
       throw e
@@ -221,6 +224,7 @@ export function hookNotes(p: {
 
   const queueWrite = (id: string, note?: string) => {
     console.info('NOTES', `queued the notes of ${id}`)
+    stopped.delete(id)
     set(id, 'waiting')
     return p.queue.enqueue((signal) => write(id, signal, false, note), 'enhance', id).catch(() => {})
   }
@@ -228,18 +232,33 @@ export function hookNotes(p: {
   /** each meeting's notes after it stopped, until they are written */
   const afterStop = new Map<string, Promise<void>>()
   p.onStop((m) => {
+    stopped.delete(m.id)
     set(m.id, 'waiting')
-    const done = (async () => {
+    const done = Promise.resolve().then(async () => {
       await p.transcribed(m.id)
       // the names from the call are quick; a stuck pass never holds the notes back for long
       if (p.named) await upTo(p.named(m.id), p.namesWaitMs ?? NAMES_WAIT_MS)
-      if (!resuming.has(m.id)) await queueWrite(m.id)
-    })().catch((e) => console.error('notes after the meeting failed', e)).finally(() => afterStop.delete(m.id))
+      if (!resuming.has(m.id) && afterStop.get(m.id) === done) await queueWrite(m.id)
+    }).catch((e) => console.error('notes after the meeting failed', e)).finally(() => { if (afterStop.get(m.id) === done) afterStop.delete(m.id) })
     afterStop.set(m.id, done)
   })
 
   const notes = {
     view,
+    /** A user stop is final; queue preemption for a recording still resumes later. */
+    stop(id: string): Promise<void> {
+      const pending = stopping.get(id)
+      if (pending) return pending
+      if (!['waiting', 'writing'].includes(live.get(id)?.status ?? '')) return Promise.resolve()
+      stopped.add(id)
+      afterStop.delete(id)
+      const m = p.store.meeting(id)
+      if (m?.state === 'stopped') { p.store.updateMeeting(id, { state: 'done' }); p.changed(id) }
+      set(id, 'stopped')
+      const settled = p.queue.cancelAnalysis(id, 'enhance').finally(() => { stopping.delete(id) })
+      stopping.set(id, settled)
+      return settled
+    },
     /** Hold obsolete analysis while a finished note is prepared for another recording session. */
     suspendForResume(id: string) {
       const token = {}, restore = afterStop.has(id) || live.get(id)?.status === 'waiting' || live.get(id)?.status === 'writing' || rewriteTimers.has(id) || rewriting.has(id)
@@ -300,7 +319,9 @@ export function hookNotes(p: {
     pendingDraftId: () => [...edits].find(([, sides]) => Object.values(sides).some((v) => v.text !== undefined))?.[0],
     forgetDrafts: (id: string) => { edits.delete(id) },
     /** "Write again": the same job, now (after anything already waiting) */
-    writeAgain(id: string, note?: string) {
+    async writeAgain(id: string, note?: string) {
+      const pending = stopping.get(id)
+      if (pending) await pending
       if (resuming.has(id) || p.store.meeting(id)?.state === 'recording') return Promise.resolve()
       if (!retryDrafts(id)) return Promise.resolve()
       const s = live.get(id)?.status

@@ -6,7 +6,7 @@ export function attachFollowLatest(el: HTMLElement, body: HTMLElement, stuck: { 
   const stop = () => { glide?.stop(); glide = undefined }
   const report = () => behind(el.scrollHeight - el.scrollTop - el.clientHeight >= 24)
   const follow = () => {
-    if (document.hidden || !el.clientHeight) return
+    if (document.hidden || !el.clientHeight || el.scrollHeight <= el.clientHeight) return
     if (stuck.current) {
       if (glide?.active) glide.to(Math.max(0, el.scrollHeight - el.clientHeight))
       else { el.scrollTop = el.scrollHeight; last = el.scrollTop }
@@ -41,9 +41,9 @@ export function attachFollowLatest(el: HTMLElement, body: HTMLElement, stuck: { 
   return {
     latest() {
       stuck.current = true; behind(false)
-      if (document.hidden || !el.clientHeight) return
+      if (document.hidden || !el.clientHeight || el.scrollHeight <= el.clientHeight) return
       stop()
-      glide = followGlide(el, () => {})
+      glide = followGlide(el, () => { last = el.scrollTop; report() })
       glide.to(Math.max(0, el.scrollHeight - el.clientHeight))
     },
     dispose() {

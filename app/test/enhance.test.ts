@@ -1,4 +1,4 @@
-import { describe, expect, it } from 'vitest'
+import { describe, expect, it, vi } from 'vitest'
 import { cleanTitle, enhance, enhancePrompt, guessLanguage, languageName, peopleRule, summaryPrompt, titlePrompt, transcriptHead, type Llm, markMine, splitForContext, tidyNotes, transcriptText } from '../src/main/notes/enhance'
 import type { Segment } from '../src/main/store'
 
@@ -6,6 +6,24 @@ const seg = (track: 'me' | 'them', startMs: number, text: string, speaker: strin
   ({ id: startMs, meetingId: 'm', track, startMs, endMs: startMs + 1000, text, speaker })
 /** a word is a token: close enough for tests */
 const words = (s: string) => s.split(/\s+/).filter(Boolean).length
+
+it.each(['count', 'summary', 'next steps'] as const)('stops after %s without starting more requests or accepting late tokens', async stage => {
+  const abort = new AbortController(), token = vi.fn(), titleLater = vi.fn()
+  let calls = 0
+  const llm: Llm = {
+    contextSize: 32000,
+    count: async xs => { if (stage === 'count') abort.abort(); return xs.map(words) },
+    chat: async (_prompt, onToken) => {
+      calls++
+      if (stage === 'summary' || stage === 'next steps' && calls === 2) { abort.abort(); onToken('Late token') }
+      return '## Plan\n- Release on Thursday.'
+    },
+  }
+  await expect(enhance({ signal: abort.signal, meeting: { title: 'Review', attendees: [] }, mine: '', segments: [], language: 'en', titleLater }, llm, token)).rejects.toMatchObject({ name: 'AbortError' })
+  expect(calls).toBe(stage === 'count' ? 0 : stage === 'summary' ? 1 : 2)
+  expect(token).not.toHaveBeenCalled()
+  expect(titleLater).not.toHaveBeenCalled()
+})
 
 describe('enhancePrompt', () => {
   const base = { title: 'Launch sync', attendees: [{ name: 'Maya Chen', email: null }], mine: '- ship Tuesday\n- pricing?', transcript: 'You: Hi.\nMaya Chen: Hello.', language: 'Spanish' }
@@ -226,6 +244,16 @@ describe('enhance', () => {
   const meeting = { title: 'Sync', attendees: [] }
   // 400 turns of 22 words: about 9,000 words, more than an 8k context holds
   const segs = Array.from({ length: 400 }, (_, i) => seg(i % 2 ? 'me' : 'them', i * 1000, `topic${i} ${'blah '.repeat(20)}`, i % 2 ? 'me' : 'A'))
+  it('stops a long meeting between parts without asking for the remaining parts', async () => {
+    const abort = new AbortController(), part = vi.fn(), token = vi.fn()
+    const chat = vi.fn(async () => { abort.abort(); return 'Abandoned part' })
+    await expect(enhance({ signal: abort.signal, meeting, mine: '', segments: segs, language: 'en' }, {
+      contextSize: 8192, count: async xs => xs.map(words), chat,
+    }, token, part)).rejects.toMatchObject({ name: 'AbortError' })
+    expect(part).toHaveBeenCalledOnce()
+    expect(chat).toHaveBeenCalledOnce()
+    expect(token).not.toHaveBeenCalled()
+  })
   it("writes the transcript with the meeting's spellings, and tells the model how to spell them", async () => {
     const prompts: string[] = []
     const spell = { title: '', names: ['Tarun Shah'], companies: ['Zentrik'] }

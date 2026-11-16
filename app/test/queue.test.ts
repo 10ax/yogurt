@@ -4,6 +4,17 @@ import { createQueue, isSmallMac } from '../src/main/notes/queue'
 const tick = () => new Promise((r) => setTimeout(r, 0))
 
 describe('notes queue', () => {
+  it('stopping a summary leaves Ask and other meetings queued', async () => {
+    let ready = false
+    const q = createQueue({ recording: () => false, smallMac: false, modelReady: () => ready })
+    const summary = vi.fn(async () => {}), ask = vi.fn(async () => {}), other = vi.fn(async () => {})
+    const jobs = [q.enqueue(summary, 'enhance', 'note'), q.enqueue(ask, 'chat', 'note'), q.enqueue(other, 'enhance', 'other')]
+    await q.cancelAnalysis('note', 'enhance')
+    ready = true; q.modelArrived(); await Promise.all(jobs)
+    expect(summary).not.toHaveBeenCalled()
+    expect(ask).toHaveBeenCalledOnce()
+    expect(other).toHaveBeenCalledOnce()
+  })
   it('cancelling obsolete summary work waits for the running job and allows future jobs for the same note', async () => {
     const q = createQueue({ recording: () => false, smallMac: false })
     let release!: () => void, aborted = false

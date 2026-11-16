@@ -25,10 +25,10 @@ describe('mergeNoteView: a note open on screen when it is written again for new 
   it('the first view is taken as it is', () => {
     expect(mergeNoteView(undefined, view({})).view.enhanced).toBe('## A\n- Someone ships')
   })
-  it('an older failed-rewrite view cannot replace newer edits, including an emptied previous result', () => {
-    for (const enhanced of ['new text typed after failure', '']) {
-      const cur = view({ status: 'failed', enhanced, edited: true })
-      expect(mergeNoteView(cur, view({ status: 'failed', enhanced: 'older saved text' })).view.enhanced).toBe(enhanced)
+  it.each(['failed', 'stopped'] as const)('an older %s rewrite view cannot replace newer edits, including an emptied result', status => {
+    for (const enhanced of ['new text typed after a rewrite', '']) {
+      const cur = view({ status, enhanced, edited: true })
+      expect(mergeNoteView(cur, view({ status, enhanced: 'older saved text' })).view.enhanced).toBe(enhanced)
     }
     expect(mergeNoteView(view({ status: 'writing', enhanced: 'old text' }), view({ enhanced: 'successful replacement' })).view.enhanced).toBe('successful replacement')
   })

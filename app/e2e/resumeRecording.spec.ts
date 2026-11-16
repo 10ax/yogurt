@@ -12,6 +12,35 @@ async function launch(profile: string, env: Record<string, string> = {}) {
   return { app, page }
 }
 
+test('Stop summary preserves a saved rewrite and the header label stays still on hover and focus', async () => {
+  const { app, page } = await launch(mkdtempSync(join(tmpdir(), 'yogurt-summary-stop-')), { YOGURT_FAKE_LLM_MS: '120' })
+  try {
+    const id = await app.evaluate(async () => (await (globalThis as unknown as { __fake__: { chatMeetings(): Promise<string[]> } }).__fake__.chatMeetings())[0])
+    await page.evaluate(id => window.yogurt.nav.go(`/note/${id}`), id)
+    await page.getByTestId('note-summary-tab').click()
+    const before = await page.evaluate(id => window.yogurt.notes.get(id), id)
+    await page.evaluate(id => window.yogurt.notes.writeAgain(id), id)
+    const button = page.getByTestId('note-resume')
+    await expect(button).toHaveText('Summarizing…')
+    const width = (await button.boundingBox())!.width
+    await button.hover()
+    await expect(button).toHaveAccessibleName('Stop summary')
+    await expect(button).toHaveText('Summarizing…')
+    expect((await button.boundingBox())!.width).toBe(width)
+    await button.focus()
+    await expect(page.locator('.summary-stop-square')).toHaveCSS('opacity', '1')
+    await button.press('Enter')
+    await expect.poll(async () => (await page.evaluate(id => window.yogurt.notes.get(id), id)).status).toBe('stopped')
+    const after = await page.evaluate(id => window.yogurt.notes.get(id), id)
+    expect(after.enhanced).toBe(before.enhanced)
+    expect(after.edited).toBe(before.edited)
+    expect(after.mine).toBe(before.mine)
+    expect(after.draft).toBe('')
+    await expect(page.locator('.summary-stopped')).toHaveCount(0)
+    await expect(page.getByTestId('note-enhanced-editor')).toBeVisible()
+  } finally { await app.close() }
+})
+
 test('a finished note resumes after reopening, preserves original data, confirms edited Summary, and appends audio', async () => {
   test.setTimeout(90_000)
   const profile = mkdtempSync(join(tmpdir(), 'yogurt-resume-'))
@@ -75,7 +104,7 @@ test('a finished note resumes after reopening, preserves original data, confirms
   } finally { await app.close() }
 })
 
-test('Finish blocks Resume while Summary is processing, then recording can resume', async () => {
+test('Finish offers Stop summary and Generate summary before recording resumes', async () => {
   const profile = mkdtempSync(join(tmpdir(), 'yogurt-resume-writing-'))
   const { app, page } = await launch(profile, { YOGURT_FAKE_LLM_MS: '120' })
   try {
@@ -86,13 +115,22 @@ test('Finish blocks Resume while Summary is processing, then recording can resum
     await page.waitForTimeout(800)
     await page.getByTestId('note-stop').click()
     await expect.poll(async () => (await page.evaluate((id) => window.yogurt.notes.get(id), id)).status).toBe('writing')
-    await expect(page.getByTestId('note-resume')).toBeDisabled()
+    await expect(page.getByTestId('note-resume')).toBeEnabled()
+    await expect(page.getByTestId('note-resume')).toHaveAccessibleName('Stop summary')
     await expect(page.getByTestId('note-resume')).toHaveText('Summarizing…')
     await page.getByTestId('nav-chat').click()
     await page.evaluate((id) => window.yogurt.nav.go(`/note/${id}`), id)
-    await expect(page.getByTestId('note-resume')).toBeDisabled()
-    await expect(page.getByTestId('note-resume')).toBeEnabled({ timeout: 30_000 })
-    await expect(page.getByTestId('note-resume')).toHaveText('Resume recording')
+    await expect(page.getByTestId('note-resume')).toBeEnabled()
+    await page.getByTestId('note-resume').hover()
+    await expect(page.getByTestId('note-resume')).toHaveText('Summarizing…')
+    await expect(page.locator('.summary-stop-square')).toHaveCSS('opacity', '1')
+    await page.getByTestId('note-resume').click()
+    await page.getByTestId('note-summary-tab').click()
+    await expect(page.getByText('Summary stopped.', { exact: true })).toBeVisible()
+    expect((await page.evaluate(id => window.yogurt.notes.get(id), id)).enhanced).toBeNull()
+    await page.locator('.summary-generate').click()
+    await expect(page.getByTestId('note-resume')).toHaveAccessibleName('Stop summary')
+    await expect(page.getByTestId('note-resume')).toHaveText('Resume recording', { timeout: 30_000 })
     await page.getByTestId('note-resume').click()
     await expect(page.getByTestId('note-state')).toHaveAttribute('data-state', 'recording')
     await expect(page.getByTestId('note-notes-tab')).toHaveAttribute('aria-selected', 'true')
@@ -107,18 +145,21 @@ test('Finish blocks Resume while Summary is processing, then recording can resum
 })
 
 
-test('queued summaries block Resume and unsuccessful or empty summaries release it', async () => {
+test('queued summaries offer Stop and completed, unsuccessful or empty summaries offer Resume', async () => {
   const { app, page } = await launch(mkdtempSync(join(tmpdir(), 'yogurt-summary-states-')))
   try {
     const id = await app.evaluate(() => (globalThis as unknown as { __fake__: { bigMeeting(n: number): string } }).__fake__.bigMeeting(10))
     await page.evaluate((id) => window.yogurt.nav.go(`/note/${id}`), id)
     const notes = await page.evaluate((id) => window.yogurt.notes.get(id), id)
-    for (const status of ['waiting', 'failed', 'writing', 'empty'] as const) {
+    for (const status of ['waiting', 'failed', 'writing', 'empty', 'stopped', 'done'] as const) {
       await app.evaluate(({ BrowserWindow }, view) => {
         BrowserWindow.getAllWindows().find((win) => !win.webContents.getURL().includes('#'))!.webContents.send('notes:changed', view)
       }, { ...notes, status })
-      if (status === 'waiting' || status === 'writing') await expect(page.getByTestId('note-resume')).toBeDisabled()
-      else await expect(page.getByTestId('note-resume')).toBeEnabled()
+      const busy = status === 'waiting' || status === 'writing'
+      await expect(page.getByTestId('note-resume')).toBeEnabled()
+      await expect(page.getByTestId('note-resume')).toHaveAccessibleName(busy ? 'Stop summary' : 'Resume recording')
+      await expect(page.getByTestId('note-resume')).toHaveAttribute('aria-busy', String(busy))
+      await expect(page.getByTestId('note-state')).not.toHaveAttribute('data-state', 'recording')
     }
   } finally { await app.close() }
 })

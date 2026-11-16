@@ -133,6 +133,7 @@ export type YogurtApi = {
     keptEdits(meetingId: string): void
     /** writes the enhanced notes again */
     writeAgain(meetingId: string, note?: string): Promise<void>
+    stop(meetingId: string): Promise<void>
     /** status, the draft as it is written, and the saved notes; returns the way to stop listening */
     onChange(cb: (v: NoteView) => void): () => void
   }
@@ -352,7 +353,7 @@ export type SearchResult = { meetingId: string; title: string; startedAt: number
  * Where a meeting's enhanced notes are: idle (none yet, the meeting may still be on), waiting (for the transcript or
  * the model), writing (draft streaming in), done (enhanced saved), failed, or empty (nothing was said or typed)
  */
-export type NoteStatus = 'idle' | 'waiting' | 'writing' | 'done' | 'failed' | 'empty'
+export type NoteStatus = 'idle' | 'waiting' | 'writing' | 'done' | 'failed' | 'empty' | 'stopped'
 export type NoteSide = 'mine' | 'enhanced'
 export type NoteSaveResult = { revision: number; status: 'saved' | 'failed'; retained?: boolean; reason?: 'too-long' }
 export type NoteView = {

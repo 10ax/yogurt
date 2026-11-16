@@ -687,5 +687,7 @@
   "Regenerate": "Νέα δημιουργία",
   "Note for the summary": "Οδηγία για τη σύνοψη",
   "Add a note, like shorter or in Spanish": "Προσθέστε οδηγία, π.χ. πιο σύντομα ή στα ισπανικά",
-  "Waiting for Yogurt AI to download": "Αναμονή λήψης του Yogurt AI"
+  "Waiting for Yogurt AI to download": "Αναμονή λήψης του Yogurt AI",
+  "Stop summary": "Διακοπή σύνοψης",
+  "Summary stopped.": "Η σύνοψη διακόπηκε."
 }

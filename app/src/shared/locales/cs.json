@@ -715,5 +715,7 @@
   "Regenerate": "Vygenerovat znovu",
   "Note for the summary": "Pokyn pro shrnutí",
   "Add a note, like shorter or in Spanish": "Přidejte pokyn, třeba kratší nebo španělsky",
-  "Waiting for Yogurt AI to download": "Čekání na stažení Yogurt AI"
+  "Waiting for Yogurt AI to download": "Čekání na stažení Yogurt AI",
+  "Stop summary": "Zastavit shrnutí",
+  "Summary stopped.": "Vytváření shrnutí zastaveno."
 }

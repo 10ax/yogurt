@@ -8,8 +8,8 @@ import type { NoteView } from '../../shared/types'
  */
 export function mergeNoteView(cur: NoteView | undefined, v: NoteView): { view: NoteView; /** a rewrite was turned down for edits on screen */ keptEdits?: true } {
   if (!cur) return { view: v }
-  // A failed rewrite's previous result is still editable, including when the person clears its text.
-  const finished = cur.status === v.status && (cur.status === 'done' || (cur.status === 'failed' && cur.enhanced != null))
+  // A failed or stopped rewrite's previous result is still editable, including when the person clears its text.
+  const finished = cur.status === v.status && (cur.status === 'done' || ((cur.status === 'failed' || cur.status === 'stopped') && cur.enhanced != null))
   if (!finished) return { view: { ...v, mine: cur.mine } }
   if (v.rewrittenFrom !== undefined && (cur.enhanced ?? '') === v.rewrittenFrom) return { view: { ...v, mine: cur.mine } }
   return { view: { ...v, mine: cur.mine, enhanced: cur.enhanced }, ...(v.rewrittenFrom !== undefined ? { keptEdits: true as const } : {}) }

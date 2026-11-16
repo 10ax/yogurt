@@ -25,8 +25,7 @@ export function NoteReadingPane({ active, summary, generating, writing, scroll, 
         <div ref={content} className="note-page-width note-notes-body">{children}</div>
       </section></ScrollFade>
     </div>
-    <span className="ask-border note-summary-rim" data-testid="note-summary-rim" aria-hidden="true" />
-    {writing && !follow.behind && <span className="note-summary-status" aria-hidden="true">{t('Generating notes…')}</span>}
+    {writing && !follow.behind && <span className="note-summary-status" aria-hidden="true"><span className="summary-status-text">{t('Generating notes…')}</span></span>}
     {follow.behind && <button type="button" className="note-latest" data-testid="note-summary-latest" onClick={follow.latest}><ArrowDown size={12} aria-hidden="true" />{t('Latest')}</button>}
   </div>
 }

@@ -332,7 +332,7 @@ html.widget { --pill:#232326;--pill-ink:#F7F7FA;--accent:#B780FF;--pill-accent:v
 @media (prefers-reduced-motion:reduce) { .accordion { transition:none; } .accordion>*,.accordion[data-open=true]>* { filter:none;transition:opacity var(--dur-micro) var(--ease-out),visibility var(--dur-micro); } .accordion[data-open=true]>* { transition-delay:0s; } }
 /* before the first word the summary is one empty paragraph, whose placeholder line break would push the dot down a line */
 .streaming .note-prose > :last-child > br.ProseMirror-trailingBreak:only-child { display: none; }
-.summary-surface, .summary-waiting { position: relative; }
+.summary-surface { position: relative; }
 .summary-surface[data-streaming=true] { isolation: isolate; }
 .summary-surface[data-streaming=true] .note-prose { position: relative; z-index: 1; }
 .summary-ink-layer { position: absolute; inset: 0; width: 100%; height: 100%; overflow: hidden; pointer-events: none; fill: var(--accent); }
@@ -342,13 +342,23 @@ html.widget { --pill:#232326;--pill-ink:#F7F7FA;--accent:#B780FF;--pill-accent:v
 .enhanced :is(h1,h2,h3) { --ink-target: var(--heading); }
 .enhanced :is(strong,.mine) { --ink-target: var(--ink); }
 .enhanced a { --ink-target: var(--accent); }
-.summary-waiting { min-height: 22px; }
+.summary-outline { padding-top: 5px; font-size: 15px; pointer-events: none; }
+.summary-outline-bar { height: 8px; border-radius: 3px; background: linear-gradient(90deg,var(--line) 0%,color-mix(in srgb,var(--line) 40%,var(--card)) 50%,var(--line) 100%); background-size: 200% 100%; animation: shimmer 1.6s ease-in-out infinite; }
+.summary-outline-heading { width: 30%; height: 11px; margin-bottom: 16px; }
+.summary-outline-block + .summary-outline-block { margin-top: 29px; }
+/* dot and bar start where the list marker and bullet text will land */
+.summary-outline-bullet { display: flex; align-items: center; gap: calc(1.3em - 4px); margin-bottom: 14px; }
+.summary-outline-bullet::before { content: ""; width: 4px; height: 4px; border-radius: 50%; background: var(--line); flex: none; }
+.summary-outline-bullet .summary-outline-bar { width: 80%; }
+.summary-outline-bullet:nth-child(3) .summary-outline-bar { width: 58%; }
+.summary-outline-block + .summary-outline-block .summary-outline-bullet:nth-child(2) .summary-outline-bar { width: 70%; }
 .summary-heading-bar { position: absolute; inset-inline-start: 0; top: 5px; width: 142px; max-width: 100%; height: 12px; border-radius: 4px; background: linear-gradient(90deg, var(--line) 0%, color-mix(in srgb, var(--line) 40%, var(--card)) 50%, var(--line) 100%); background-size: 200% 100%; pointer-events: none; transform-origin: left center; }
 /* the same soft shimmer as the app's other skeletons */
-.summary-waiting > .summary-heading-bar, .summary-surface[data-waiting=true] > .summary-heading-bar { animation: shimmer 1.6s ease-in-out infinite; }
+.summary-surface[data-waiting=true] > .summary-heading-bar { animation: shimmer 1.6s ease-in-out infinite; }
 .summary-surface[data-waiting=true] .note-prose::after, .summary-surface[data-waiting=true] .note-prose *::after { content: none; }
 @media (prefers-reduced-motion: reduce) {
   .summary-heading-bar { animation: none !important; }
+  .summary-outline-bar, .summary-outline-block { animation: none; opacity: .75; }
   .summary-ink { color: inherit; }
   .summary-ink-layer { display: none; }
 }
@@ -858,3 +868,7 @@ html:not(.widget) button:focus-visible, html:not(.widget) input:focus-visible { 
   .search-panel.dialog-motion[data-starting-style],.search-panel.dialog-motion[data-ending-style] { transform:none; }
   @starting-style { .search-panel.dialog-motion { transform:none; } }
 }
+
+/* the summary's status line shimmers like Ask's thinking line */
+.summary-status-text { background:linear-gradient(100deg,var(--muted) 35%,var(--ink) 50%,var(--muted) 65%) 0 0 / 250% 100%;-webkit-background-clip:text;background-clip:text;color:transparent;animation:step-shimmer 2.2s linear infinite; }
+@media (prefers-reduced-motion: reduce) { .summary-status-text { animation:none;background:none;color:inherit; } }

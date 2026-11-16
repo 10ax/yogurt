@@ -11,6 +11,16 @@ const load = (id: string): Record<string, Entry> => JSON.parse(readFileSync(join
 const blanks = (s: string) => [...new Set(s.match(/\{\w+\}/g) ?? [])].sort()
 const forms = (e: Entry) => (typeof e === 'string' ? [e] : Object.values(e))
 
+it('translates the summary waiting label in every locale', () => {
+  const key = 'Reading the transcript…'
+  expect(keys).toContain(key)
+  for (const { id } of LOCALES) {
+    expect(load(id)[key]).toBeTypeOf('string')
+    expect(load(id)[key]).not.toBe('')
+    if (id !== 'en') expect(load(id)[key]).not.toBe(key)
+  }
+})
+
 it('translates the agenda date command in every locale', () => {
   const key = 'Go to {date}'
   expect(keys).toContain(key)

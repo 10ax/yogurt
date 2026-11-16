@@ -13,6 +13,7 @@ import { t } from '../../../shared/i18n'
 import { osWords } from '../keys'
 import { Modal, ModalClose } from '../components/Modal'
 import { NotesModelWait } from '../components/NotesModelWait'
+import { SummaryWaiting } from '../components/SummaryWaiting'
 import { Editor } from '../components/Editor'
 import { mergeNoteView } from '../noteMerge'
 import { Transcript } from '../components/Transcript'
@@ -505,11 +506,7 @@ function Enhanced({ notes, disabled, onChange, onBlur, onRetry, focus }: { focus
       <NotesModelWait downloading={(percent) => (
         <p data-testid="note-enhanced-model-download" role="status" className="text-[15px] text-muted">{percent ? t('Yogurt is still downloading its AI model. Your notes will be ready in a few minutes. ({percent})', { percent }) : t('Yogurt is still downloading its AI model. Your notes will be ready in a few minutes.')}</p>
       )}>
-        <div data-testid="note-enhanced-waiting" className="summary-waiting" aria-live="polite">
-          <i className="summary-heading-bar" aria-hidden="true" />
-          {/* the shimmering bar says it's working; words only for a wait worth explaining (a long meeting read in parts) */}
-          <p className={status === 'writing' && notes.part ? 'pt-9 text-[15px] text-muted' : 'sr-only'}>{status === 'writing' && notes.part ? t('Reading a long meeting, part {part} of {of}…', { part: notes.part.part, of: notes.part.of }) : t('Generating notes…')}</p>
-        </div>
+        <SummaryWaiting part={status === 'writing' ? notes.part : undefined} />
       </NotesModelWait>
     )
   }

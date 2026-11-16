@@ -236,6 +236,7 @@ test('edits to the enhanced notes are saved; Write again asks first, then writes
     await expect(page.getByTestId('note-confirm')).toBeVisible()
     await page.getByTestId('note-write-again-confirm').click()
     await expect(page.getByTestId('note-enhanced')).toHaveAttribute('data-status', 'writing', { timeout: 30_000 })
+    await expect(page.getByTestId('note-summary-rim')).toHaveCount(0)
     await expect(page.getByTestId('note-enhanced')).toHaveAttribute('data-status', 'done', { timeout: 30_000 })
     await expect(editor.locator('h2').first()).toHaveText('Launch plan')
     expect((await notesOf(page, id)).edited).toBe(false)

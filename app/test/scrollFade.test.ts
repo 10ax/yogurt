@@ -15,12 +15,13 @@ it('uses the same fade for notes and transcript with no vertical space outside t
   expect(read('components/ScrollFade.tsx')).toContain('size = 20')
 })
 
-it('keeps note text, generation rim and footer controls at their existing insets', () => {
+it('keeps note text and footer controls at their existing insets', () => {
   const css = readFileSync(new URL('../src/renderer/src/workspace.css', import.meta.url), 'utf8')
   // Moving 8px margin + 2px padding inside the scroller keeps the original 22px/40px text offsets.
   expect(css).toContain('.note-reading-frame .note-notes-body { max-width:none;padding-block:22px 40px;padding-inline:12px 8px; }')
-  expect(css).toContain('.note-summary-rim { inset:8px 0;')
-  expect(css).toContain('.note-reading-frame::before { inset:8px 0; }')
+  expect(css).not.toContain('.note-summary-rim')
+  expect(css).not.toContain('.ask-border')
+  expect(css).not.toContain('.note-reading-frame::before')
   expect(css).toMatch(/\.note-summary-status \{[^}]*bottom:18px;/)
   expect(css).toMatch(/\.note-latest \{[^}]*bottom:18px;/)
 })

@@ -224,8 +224,7 @@ test('the suggestions can be reached and picked with the keyboard', async () => 
     await page.getByTestId('chat-open').click()
     await expect(page.locator('[data-testid=chat-suggestion]:visible')).toHaveCount(3)
     await expect(page.getByTestId('chat-input')).toBeFocused()
-    // Suggestions sit above the context strip and composer.
-    await page.keyboard.press('Shift+Tab') // remove context
+    // Suggestions sit above the composer; the scope pill comes after the text.
     await page.keyboard.press('Shift+Tab') // third suggestion
     await page.keyboard.press('Shift+Tab') // second suggestion
     await page.keyboard.press('Shift+Tab') // first suggestion

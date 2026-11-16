@@ -1104,7 +1104,8 @@ body[data-demo=transcript] .hero-listening-widget{top:-52px;right:22px;bottom:au
 .mobile-download{position:relative;display:inline-block;text-align:left}
 .mobile-download>summary{list-style:none;cursor:pointer}
 .mobile-download>summary::-webkit-details-marker{display:none}
-.mobile-download>summary::after{content:"⌄";margin-left:4px}
+.mobile-download>summary::after{content:"";flex:none;width:6px;height:6px;margin:-3px 2px 0;border-right:1.5px solid currentColor;border-bottom:1.5px solid currentColor;transform:rotate(45deg);transition:transform 150ms ease}
+.mobile-download[open]>summary::after{margin-top:3px;transform:rotate(-135deg)}
 .mobile-download-list{position:absolute;top:calc(100% + 8px);left:0;z-index:10;width:280px;max-width:calc(100vw - 48px);padding:6px;background:#fff;color:var(--ink);border:1px solid #e5e3e9;border-radius:12px;box-shadow:0 8px 28px #26242b24}
 .mobile-download-list>a{display:flex;flex-direction:column;gap:3px;padding:10px;border-radius:7px;color:var(--ink);text-decoration:none;font-size:13px;line-height:18px}
 .mobile-download-list strong{font-weight:600}

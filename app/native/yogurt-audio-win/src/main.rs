@@ -40,7 +40,7 @@ fn testing() -> bool {
     std::env::var("YOGURT_AUDIO_TEST").as_deref() == Ok("1")
 }
 
-const USAGE: &str = "usage: yogurt-audio record --dir DIR [--part N --start-ms X] [--mic ID] [--speech LOCALE] | join --dir DIR | inspect --dir DIR | compact --dir DIR --out STAGING | mic-devices | speech-locales | speech-install LOCALE";
+const USAGE: &str = "usage: yogurt-audio record --dir DIR [--part N --start-ms X] [--mic ID] [--speech LOCALE] | join --dir DIR | inspect --dir DIR | compact --dir DIR --out STAGING | decode FILE | mic-devices | speech-locales | speech-install LOCALE";
 
 fn main() {
     let args: Vec<String> = std::env::args().collect();
@@ -51,6 +51,7 @@ fn main() {
         "speech-install" => println!("{{\"installed\":false}}"),
         "mic-devices" => mic_devices(),
         "writer-probe" => writer_probe(&args),
+        "decode" if args.len() >= 3 => decode(&args[2]),
         "record" | "join" | "inspect" | "compact" if args.len() >= 4 => {
             let Some(dir) = arg_value(&args, "--dir") else { fail(USAGE) };
             let dir = PathBuf::from(dir);
@@ -69,6 +70,26 @@ fn main() {
             }
         }
         _ => fail(USAGE),
+    }
+}
+
+/// A recording made before the speech model was in, transcribed later (#30): the file as 16 kHz mono f32
+/// (little-endian) on stdout, nothing else
+fn decode(path: &str) {
+    use std::io::Write;
+    let mut out = std::io::BufWriter::new(std::io::stdout().lock());
+    let mut down = resample::Down3::default();
+    let mut buf: Vec<f32> = Vec::new();
+    let mut ok = true;
+    let read = oggopus::decode(Path::new(path), |s| {
+        buf.clear();
+        down.process(s, &mut buf);
+        let bytes: Vec<u8> = buf.iter().flat_map(|x| x.to_le_bytes()).collect();
+        ok = out.write_all(&bytes).is_ok();
+        ok
+    });
+    if read.is_none() || !ok || out.flush().is_err() {
+        fail(&format!("can't decode {path}"))
     }
 }
 

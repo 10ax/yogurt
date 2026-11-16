@@ -1128,6 +1128,19 @@ if args.count >= 3, args[1] == "speech-clock", let rate = Double(args[2]) {
   exit(0)
 }
 // Local measurement only: a 16 kHz mono wav through Apple's speech in LOCALE, final lines as speech frames on stdout
+// A recording made before the speech model was in, transcribed later (#30): the file as 16 kHz mono float32
+// (little-endian) on stdout, nothing else. One converter for the whole file, so its filter carries across buffers.
+if args.count >= 3, args[1] == "decode" {
+  guard let f = try? AVAudioFile(forReading: URL(fileURLWithPath: args[2])), let conv = AVAudioConverter(from: f.processingFormat, to: mono16) else { fail("can't read \(args[2])") }
+  let out = FileHandle.standardOutput
+  while let b = AVAudioPCMBuffer(pcmFormat: f.processingFormat, frameCapacity: 48000), (try? f.read(into: b)) != nil, b.frameLength > 0 {
+    autoreleasepool {
+      // the reader gone (Yogurt quit or gave up): stop quietly
+      if let m = convert(conv, b), m.frameLength > 0, (try? out.write(contentsOf: Data(bytes: m.floatChannelData![0], count: Int(m.frameLength) * MemoryLayout<Float>.size))) == nil { exit(0) }
+    }
+  }
+  exit(0)
+}
 if args.count >= 4, args[1] == "speech-file" {
   #if compiler(>=6.2)
   guard #available(macOS 26, *) else { fail("speech-file needs macOS 26") }

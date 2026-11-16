@@ -49,7 +49,7 @@ import { isId, text } from './ipcArgs'
 import { hookMics } from './mics'
 import { activeCapture, audioHelperPath, hookCapture, joinParts, onCaptureStart, onRecordingEvent, prepareAppend, recordingFinished, recordingPaused, recordingSettled, rejoinInterrupted, setRecordingPaused, settleRecording, tell, type WarnCode } from './capture'
 import { createWidget } from './widget'
-import { hookTranscription, onWhisperGpuOff, meetingLanguage, settleTranscription, speechLocaleFor, spokenChanged, transcriptionBacklogMs, stopTranscriptionServer, transcriptFinished, transcriptPartials } from './asr'
+import { hookTranscription, transcribeRecorded, onWhisperGpuOff, meetingLanguage, settleTranscription, speechLocaleFor, spokenChanged, transcriptionBacklogMs, stopTranscriptionServer, transcriptFinished, transcriptPartials } from './asr'
 import { hookCallNames, type Watch } from './callNames'
 import { helperWatch, killAllWatches } from './callNames/watch'
 import { macFullName } from './user'
@@ -75,6 +75,7 @@ import { hookMcp } from './mcp'
 import { startedHidden } from './mcp/paths'
 import { deleteRecording } from './deleteRecording'
 import { AUDIO_SCHEME, audioExts, createAudioHandler, trackFile, type AudioExt } from './audio'
+import { helperDecode, wavDecode } from './asr/backfill'
 import { finishQuit, hookUpdates, isPreviewBuild, updateOfferChanged, updatesOn } from './updates'
 import type { NoteSaveResult, StartResult } from '../shared/types'
 
@@ -746,6 +747,40 @@ app.whenReady().then(() => {
   // and meetings not in the library yet (or changed since) are indexed, once nothing else is waiting
   const catchUp = () => { if (!caughtUp && setup.state.phase === 'ready') { caughtUp = true; void rejoined.catch(e => console.warn('audio startup repair retained its files', e)).finally(() => { notes.recover(); folderSuggestions.refresh(); void indexer.schedule() }) } }
   setup.onState(catchUp)
+  // meetings recorded before the speech model was in (#30): transcribed from their saved recording once it is, one at
+  // a time and never while recording (a new recording pauses it; it carries on after)
+  const ownAudio = isFake() ? '.wav' : process.platform === 'darwin' ? '.m4a' : '.ogg'
+  let backfilling = false
+  const transcribeWaiting = async () => {
+    if (backfilling || !setup.installed()?.asr || activeMeeting()) return
+    backfilling = true
+    try {
+      await rejoined.catch(() => {})
+      for (const m of store.untranscribedMeetings()) {
+        if (activeMeeting()) break
+        // the recorder may still be closing its files (the model came in during this very meeting)
+        await recordingSettled(m.id)
+        const tracks: Partial<Record<'me' | 'them', AsyncIterable<Float32Array>>> = {}
+        for (const t of ['me', 'them'] as const) {
+          const file = trackFile(meetingDir(m.id), t, audioKinds)
+          if (file?.endsWith(ownAudio)) tracks[t] = isFake() ? wavDecode(file) : helperDecode(audioHelperPath(), file)
+        }
+        if (!Object.keys(tracks).length) continue
+        console.info('ASR', `transcribing ${m.id} from its recording: it was recorded before the speech model was in`)
+        const done = await transcribeRecorded(m.id, tracks, () => !!activeMeeting())
+        win?.webContents.send('meetings:changed'); win?.webContents.send('transcript:speakers', m.id)
+        // notes that came out empty (no transcript then) are written now
+        if (done && store.notes(m.id).enhanced == null) void notes.writeAgain(m.id)
+      }
+    } catch (e) { console.error('transcribing waiting meetings failed', e) } finally { backfilling = false }
+  }
+  setup.onState(() => void transcribeWaiting())
+  // tests: a recorded meeting back to "recorded before the speech model was in", and the catch-up run now
+  if (isFake()) Object.assign(((globalThis as Record<string, unknown>).__fake__ ??= {}) as object, {
+    untranscribe: () => { const id = store.meetings({ limit: 1 })[0].id; store.deleteSegments(store.segments(id).map((x) => x.id)); store.updateMeeting(id, { transcriptionPending: true }); return id },
+    transcribeWaiting: () => transcribeWaiting(),
+  })
+  onMeetingStopSaved(() => void transcribeWaiting())
   app.on('will-quit', killAllWatches)
   app.on('will-quit', killAllHelpers)
   let flushToken = 0

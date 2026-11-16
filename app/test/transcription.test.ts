@@ -2,7 +2,7 @@ import { EventEmitter } from 'node:events'
 import { PassThrough } from 'node:stream'
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest'
 import { Capture, encodeFrame, hookCapture, recordingFinished, type CaptureProc } from '../src/main/capture'
-import { hookTranscription, settleTranscription, speechLocaleFor, spokenChanged, stopTranscriptionServer, transcribing } from '../src/main/asr'
+import { hookTranscription, transcribeRecorded, settleTranscription, speechLocaleFor, spokenChanged, stopTranscriptionServer, transcribing } from '../src/main/asr'
 import type { Spoken } from '../src/shared/spoken'
 import type { TranscriptPartial } from '../src/shared/types'
 import { openStore, type Meeting, type Store } from '../src/main/store'
@@ -338,4 +338,45 @@ it('refreshes saved live echoes with their IDs before recording ends', async () 
   expect(store.segments(m.id, { hidden: true }).some(s => s.hidden && Number.isInteger(s.id))).toBe(true)
   expect(store.segments(m.id).every(s => !s.hidden)).toBe(true)
   await r.stop(m)
+})
+
+describe('a meeting recorded before the speech model was in (#30)', () => {
+  async function* track(...phrases: number[]): AsyncGenerator<Float32Array> {
+    // a phrase (1 s of tone, 1 s of quiet) at each given second
+    let at = 0
+    for (const sec of phrases) {
+      yield new Float32Array(Math.round((sec - at) * RATE))
+      yield Float32Array.from([...tone(1), ...new Float32Array(RATE)])
+      at = sec + 2
+    }
+  }
+  it('once the model is in, is transcribed from its saved recording and no longer waits', async () => {
+    rig('transcription-first')
+    // as a meeting recorded with no speech model ends up: stopped, waiting, not one line
+    const m = meeting()
+    store.updateMeeting(m.id, { state: 'stopped', transcriptionPending: true })
+    expect(store.untranscribedMeetings().map((x) => x.id)).toEqual([m.id])
+    expect(await transcribeRecorded(m.id, { them: track(1, 4), me: track(7) })).toBe(true)
+    const lines = store.segments(m.id).map((x) => `${x.track}@${Math.round(x.startMs / 1000)}`)
+    expect(lines).toEqual(expect.arrayContaining(['them@1', 'them@4', 'me@7']))
+    expect(store.meeting(m.id)?.transcriptionPending).not.toBe(true)
+    expect(store.untranscribedMeetings()).toEqual([])
+  })
+  it('a meeting with some transcript is never transcribed again (no lines twice)', async () => {
+    const r = rig('transcription-first', { transcriber: async () => { throw new Error('whisper fell over') } })
+    const m = meeting()
+    r.begin(m); r.procs[0].say('them', 500)
+    await r.stop(m)
+    store.updateMeeting(m.id, { state: 'stopped' })
+    store.addSegments([{ meetingId: m.id, track: 'them', startMs: 0, endMs: 900, text: 'one line made it', speaker: null }])
+    expect(store.meeting(m.id)?.transcriptionPending).toBe(true)
+    expect(store.untranscribedMeetings()).toEqual([])
+  })
+  it('without the model yet, nothing happens and the meeting keeps waiting', async () => {
+    rig('transcription-first', { modelPath: () => undefined })
+    const m = meeting()
+    store.updateMeeting(m.id, { state: 'stopped', transcriptionPending: true })
+    expect(await transcribeRecorded(m.id, { them: track(1) })).toBe(false)
+    expect(store.meeting(m.id)?.transcriptionPending).toBe(true)
+  })
 })

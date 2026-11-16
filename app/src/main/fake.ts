@@ -157,7 +157,9 @@ export const fakeNow = () => Date.now() + skew
  *   prompts()                     what whisper and the notes model were given so far
  */
 export function installFakeHooks(h: { signals(r: Reading): Promise<void>; advance(ms: number): Promise<void>; widget(): unknown; main(): unknown; go(route: string): void; crashCapture(): void; warn(code: string): void; bigMeeting(n: number): string; manyMeetings(o: number | { n: number; clean?: boolean }): void; calendarChanged(): void; tray(): string[]; trayClick(id: string): void; trayAccelerators(): Record<string, string | undefined>; permissions(): Promise<unknown>; notice(): unknown; noticeClick(): void; chatMeetings(): Promise<string[]> }) {
+  // kept: hooks other modules added before these
   ;(globalThis as Record<string, unknown>).__fake__ = {
+    ...((globalThis as Record<string, unknown>).__fake__ as object | undefined),
     audioMetadataRelease: () => { audioMetadataReleased = true; releaseAudioMetadata?.() },
     signals: h.signals,
     advance: async (ms: number) => { skew += ms; await h.advance(ms) },

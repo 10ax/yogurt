@@ -473,6 +473,15 @@ export class Store {
     this.db.prepare('UPDATE notes SET written_with = ? WHERE meeting_id = ?').run(people, meetingId)
   }
 
+  /**
+   * Stopped meetings still waiting for their transcript with not one line of it: recorded before the speech model was in
+   * (#30), oldest first. One with some lines (whisper fell over partway) is left alone, so no line is transcribed twice.
+   */
+  untranscribedMeetings(): Meeting[] {
+    return (this.db.prepare(`SELECT * FROM meetings m WHERE state = 'stopped' AND trashed_at IS NULL AND transcription_pending = 1
+      AND NOT EXISTS (SELECT 1 FROM segments s WHERE s.meeting_id = m.id) ORDER BY started_at`).all() as Row[]).map(r => this.readMeeting(r))
+  }
+
   /** Stopped meetings with no enhanced notes: a quit or crash came before they were written */
   unenhancedMeetings(): Meeting[] {
     return (this.db.prepare(`SELECT * FROM meetings m WHERE state = 'stopped' AND trashed_at IS NULL

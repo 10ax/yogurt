@@ -42,6 +42,21 @@ pub fn uuid() -> String {
 
 fn fail(msg: &str) -> ! { eprintln!("{msg}"); std::process::exit(1) }
 
+/// A recording made before the speech model was in, transcribed later (#30): the file as 16 kHz mono f32
+/// (little-endian) on stdout, nothing else
+fn decode(path: &str) {
+    let mut out = std::io::BufWriter::new(std::io::stdout().lock());
+    let mut down = resample::Down3::new();
+    let mut buf: Vec<f32> = Vec::new();
+    let read = ogg_opus::decode(Path::new(path), |s| {
+        buf.clear();
+        down.process(s, &mut buf);
+        let bytes: Vec<u8> = buf.iter().flat_map(|x| x.to_le_bytes()).collect();
+        out.write_all(&bytes)
+    });
+    if let Err(e) = read.and_then(|_| out.flush()) { fail(&format!("can't decode {path}: {e}")) }
+}
+
 fn arg_value(args: &[String], name: &str) -> Option<String> {
     let i = args.iter().position(|a| a == name)?;
     args.get(i + 1).cloned()
@@ -282,11 +297,12 @@ fn main() {
         "speech-locales" => { println!(r#"{{"available":false,"supported":[],"installed":[]}}"#); return }
         "speech-install" => { println!(r#"{{"installed":false}}"#); return }
         "mic-devices" => { mic_devices(); return }
+        "decode" if args.len() >= 3 => { decode(&args[2]); return }
         _ => {}
     }
     let dir_arg = arg_value(&args, "--dir");
     if args.len() < 4 || !matches!(sub, "record" | "join" | "inspect" | "compact") || dir_arg.is_none() {
-        fail("usage: yogurt-audio record --dir DIR [--part N --start-ms X] [--mic UID] [--speech LOCALE] | join --dir DIR | inspect --dir DIR | compact --dir DIR --out STAGING | speech-locales | speech-install LOCALE | mic-devices");
+        fail("usage: yogurt-audio record --dir DIR [--part N --start-ms X] [--mic UID] [--speech LOCALE] | join --dir DIR | inspect --dir DIR | compact --dir DIR --out STAGING | decode FILE | speech-locales | speech-install LOCALE | mic-devices");
     }
     let dir = PathBuf::from(dir_arg.unwrap());
     match sub {

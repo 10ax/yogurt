@@ -27,3 +27,14 @@ it('uses the actual long-meeting part and localizes both labels', () => {
   expect(html).toContain('Lecture d’une longue réunion, partie 2 sur 4…')
   expect(html).not.toContain('Lecture de la transcription…')
 })
+
+it('shows the same working line without an outline during a rewrite', () => {
+  const reading = renderToStaticMarkup(createElement(SummaryWaiting, { outline: false, part: { part: 2, of: 4 } }))
+  expect(reading).toContain('Reading a long meeting, part 2 of 4…')
+  expect(reading).toContain('aria-live="polite"')
+  expect(reading).not.toContain('summary-outline')
+  const writing = renderToStaticMarkup(createElement(SummaryWaiting, { outline: false, writing: true }))
+  expect(writing).toContain('Generating notes…')
+  expect(writing).not.toContain('Reading the transcript')
+  expect(writing).not.toContain('summary-outline')
+})

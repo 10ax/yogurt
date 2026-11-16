@@ -113,7 +113,7 @@ test('My notes and Summary tabs switch versions; summary actions regenerate', as
     await expect(page.getByTestId('note-notes-tab')).toHaveAttribute('data-version', 'mine')
     await page.getByTestId('note-view-menu').click()
     await page.getByTestId('note-write-again').click()
-    // written again from My notes: the enhanced notes are shown as they come
+    // The previous summary stays dimmed while reading, then the replacement writes in.
     await expect(page.getByTestId('note-notes-tab')).toHaveAttribute('data-version', 'enhanced')
     await expect(page.getByTestId('note-enhanced')).toHaveAttribute('data-status', 'writing', { timeout: 30_000 })
     await expect(page.getByTestId('note-enhanced')).toHaveAttribute('data-status', 'done', { timeout: 30_000 })

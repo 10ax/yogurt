@@ -60,7 +60,11 @@ for (const theme of ['light', 'dark'] as const) for (const width of [420, 860]) 
       await push('done', text(22))
       await expect(rim).toHaveCount(0)
       await expect(latest).toBeHidden()
-      expect(await pane.boundingBox()).toEqual(before)
+      const after = (await pane.boundingBox())!
+      expect(after.y).toBe(before!.y)
+      expect(after.width).toBe(before!.width)
+      // Saved summaries reserve the same status lane for the next regeneration.
+      expect(after.height).toBe(before!.height - 44)
       expect(await pane.evaluate(el => el.scrollTop)).toBeCloseTo(scrollTop, 0)
       await page.emulateMedia({ reducedMotion: 'no-preference' })
       await expect(page.locator('.note-reading-frame')).toHaveAttribute('data-active', 'false')

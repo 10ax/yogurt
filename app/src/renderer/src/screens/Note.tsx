@@ -25,6 +25,7 @@ import { ShareMenu } from '../components/ShareMenu'
 import { NoteMenu } from '../components/NoteMenu'
 import { DeleteNote } from '../components/DeleteNote'
 import { moveToTrash } from '../components/TrashToast'
+import { useSummaryPresentation } from '../summaryPresentation'
 import { useSmoothText } from '../useSmoothText'
 import { NoteAutosave, registerAutosave } from '../noteAutosave'
 import { People } from '../components/People'
@@ -85,6 +86,7 @@ export function Note({ id, onTitleChange, at, folderSuggestion, onSource, onResu
   const [viewState, setView] = useState<'mine' | 'enhanced'>(() => readingViews.get(id)?.view ?? 'mine')
   const [finishRequested, requestFinish] = useState(false)
   const reducedMotion = useReducedMotion()
+  const summaryState = useSummaryPresentation(notes, reducedMotion)
   const hasEnhanced = m?.id === id && m.state !== 'prepared' && m.state !== 'recording' && !!notes && notes.status !== 'idle'
   // Reduced motion selects Summary in the very render that first exposes its tab.
   const instantSummary = finishRequested && hasEnhanced && reducedMotion
@@ -388,12 +390,12 @@ export function Note({ id, onTitleChange, at, folderSuggestion, onSource, onResu
         </header>
         <div ref={setChatAnchor} className="note-reading-area">
           <div ref={panels} className="note-panels">
-          <NoteReadingPane active={primary === 'notes'} summary={shown === 'enhanced'} generating={shown === 'enhanced' && (notes.status === 'waiting' || notes.status === 'writing')} writing={shown === 'enhanced' && notes.status === 'writing' && !!notes.draft} scroll={readingScroll}>
+          <NoteReadingPane active={primary === 'notes'} summary={shown === 'enhanced'} hasSummary={notes.enhanced != null} generating={shown === 'enhanced' && ['waiting', 'streaming'].includes(summaryState)} writing={shown === 'enhanced' && summaryState === 'streaming'} scroll={readingScroll}>
                 {shown === 'mine' ? <Editor
                   focus={primary === 'notes' && at?.ms === null ? at : undefined} testId="note-mine" label={t('My notes')} className="min-h-[40vh]" markdown={notes.mine} placeholder={t('Write notes here. Yogurt fills in the rest after the meeting.')}
                   onChange={(md) => { typing.current = true; const next = { ...current.current!, mine: md }; current.current = next; setNotes(next); mineSave.change(md) }}
                   onBlur={() => { typing.current = false; mineSave.flush() }}
-                /> : <Enhanced focus={primary === 'notes' && at?.ms === null ? at : undefined} notes={notes} disabled={starting} onChange={(md) => { setEditedHere(true); const next = { ...current.current!, enhanced: md }; current.current = next; setNotes(next); enhancedSave.change(md) }} onBlur={enhancedSave.flush} onRetry={writeAgain} />}
+                /> : <Enhanced key={id} presentation={summaryState} focus={primary === 'notes' && at?.ms === null ? at : undefined} notes={notes} disabled={starting} onChange={(md) => { setEditedHere(true); const next = { ...current.current!, enhanced: md }; current.current = next; setNotes(next); enhancedSave.change(md) }} onBlur={enhancedSave.flush} onRetry={writeAgain} />}
           </NoteReadingPane>
           {(primary === 'transcript' || transcriptVisited) && <section hidden={primary !== 'transcript'} id="note-transcript-panel" role="tabpanel" aria-labelledby="note-transcript-tab" className="note-content note-transcript-pane">
             <Transcript id={id} recording={recording} active={primary === 'transcript'} inline toolbar={transcriptToolbar} focus={at?.ms != null ? { ...at, ms: at.ms } : undefined} />
@@ -487,12 +489,22 @@ function Title({ id, title, editing, onEdit }: { id: string; title: string; edit
 }
 
 /** The enhanced side: waiting, the draft as it is written, the saved notes (editable), or what went wrong */
-function Enhanced({ notes, disabled, onChange, onBlur, onRetry, focus }: { focus?: { match?: string; seq: number }; notes: NoteView; disabled?: boolean; onChange: (md: string) => void; onBlur: () => void; onRetry: () => void }) {
+function Enhanced({ notes, presentation, disabled, onChange, onBlur, onRetry, focus }: { presentation: ReturnType<typeof useSummaryPresentation>; focus?: { match?: string; seq: number }; notes: NoteView; disabled?: boolean; onChange: (md: string) => void; onBlur: () => void; onRetry: () => void }) {
   const { status } = notes
-  const writing = status === 'waiting' || status === 'writing'
-  // the summary unrolls smoothly as it is written; the editor redraws at most every other frame
-  const draft = useSmoothText(notes.draft ?? '', writing, { minCommitMs: 32 })
-  if (status === 'failed' && notes.enhanced == null) {
+  const handoff = presentation === 'handoff'
+  const writing = presentation === 'waiting' || presentation === 'streaming' || handoff
+  const rewriting = presentation === 'rewriting'
+  const surface = useRef<HTMLDivElement>(null), height = useRef(0)
+  const previous = useRef(presentation)
+  useLayoutEffect(() => {
+    const pane = surface.current?.closest<HTMLElement>('.note-notes-pane')
+    if (status === 'failed' && previous.current === 'streaming' && pane) pane.scrollTop = 0
+    previous.current = presentation
+  }, [presentation, status])
+  useLayoutEffect(() => { if (!handoff) height.current = surface.current?.offsetHeight ?? 0 }, [handoff, rewriting, notes.enhanced])
+  // Warm the normal unroll and ink during the fade, so the first words are ready at the handoff.
+  const draft = useSmoothText(writing ? notes.draft : '', writing, { minCommitMs: 32 })
+  if (presentation === 'failed') {
     return (
       <InlineError testId="note-enhanced-failed">
         <span>{t("Yogurt couldn't generate this summary.")}</span>
@@ -500,8 +512,8 @@ function Enhanced({ notes, disabled, onChange, onBlur, onRetry, focus }: { focus
       </InlineError>
     )
   }
-  if (status === 'empty') return <p data-testid="note-enhanced-empty" className="text-[15px] text-muted">{t('Nothing was said or written in this meeting.')}</p>
-  if (writing && !notes.draft) {
+  if (presentation === 'empty') return <p data-testid="note-enhanced-empty" className="text-[15px] text-muted">{t('Nothing was said or written in this meeting.')}</p>
+  if (presentation === 'waiting') {
     return (
       <NotesModelWait downloading={(percent) => (
         <p data-testid="note-enhanced-model-download" role="status" className="text-[15px] text-muted">{percent ? t('Yogurt is still downloading its AI model. Your notes will be ready in a few minutes. ({percent})', { percent }) : t('Yogurt is still downloading its AI model. Your notes will be ready in a few minutes.')}</p>
@@ -511,12 +523,20 @@ function Enhanced({ notes, disabled, onChange, onBlur, onRetry, focus }: { focus
     )
   }
   return (
-    <div data-testid="note-enhanced" data-status={status} className={writing ? 'streaming' : ''}>
+    <div data-testid="note-enhanced" data-status={status} className={presentation === 'streaming' ? 'streaming' : ''}>
       {status === 'failed' && <InlineError testId="note-enhanced-rewrite-failed" className="mb-6">
         <span>{t("Couldn't regenerate the summary. Your previous version is below.")}</span>
         <button onClick={onRetry} className="inline-error-action">{t('Try again')}</button>
       </InlineError>}
-      <Editor focus={focus} testId="note-enhanced-editor" label={t('Summary')} className="enhanced" markdown={writing ? draft : notes.enhanced ?? ''} streaming={writing} editable={!writing && !disabled} onChange={onChange} onBlur={onBlur} />
+      {(rewriting || handoff) && <SummaryWaiting outline={false} writing={handoff} part={status === 'writing' ? notes.part : undefined} />}
+      <div ref={surface} className="summary-rewrite" data-rewriting={rewriting} data-handoff={handoff} style={handoff ? { minHeight: height.current } : undefined}>
+        <div className="summary-result">
+          <Editor focus={focus} testId="note-enhanced-editor" label={t('Summary')} className="enhanced" markdown={writing ? draft : notes.enhanced ?? ''} streaming={writing} editable={!writing && !rewriting && !disabled} onChange={onChange} onBlur={onBlur} />
+        </div>
+        {handoff && <div className="summary-previous" aria-hidden="true" inert>
+          <Editor testId="note-enhanced-previous" label={t('Summary')} className="enhanced" markdown={notes.enhanced ?? ''} editable={false} />
+        </div>}
+      </div>
       {/* the caret dot and the Summarizing pill show progress; a visible label here would ride the end of the text up and down */}
       {writing && <p className="sr-only" aria-live="polite">{t('Generating notes…')}</p>}
     </div>

@@ -5,6 +5,7 @@ import { t } from '../../../shared/i18n'
 import type { SetupState, UpdateStatus } from '../../../shared/types'
 import { motion, useReducedMotion } from '../motion'
 import { notesReadyNotice } from '../notesSetup'
+import { changeMeetingRows } from '../meetingRowMotion'
 import { trashMeetings, restoreMeetings } from '../trashMeetings'
 
 let toastHost: HTMLDivElement | undefined
@@ -39,7 +40,7 @@ export async function moveToTrash(id: string, from?: string): Promise<boolean> {
 }
 
 export async function moveMeetingsToTrash(ids: string[], from?: string, bulk = true): Promise<string[]> {
-  const result = await trashMeetings(ids, id => window.yogurt.meetings.trash(id))
+  const result = await changeMeetingRows('trash', ids, () => trashMeetings(ids, id => window.yogurt.meetings.trash(id)), result => result.done)
   const error = result.error === 'recording' ? t('Stop the recording first, then try again.')
     : result.error === 'save-pending' ? t('Open this note and finish saving before deleting it.')
     : result.error ? t("Yogurt couldn't move this note to the Trash. Try again.") : undefined
@@ -117,7 +118,7 @@ export function TrashToast({ go }: { go: (route: string) => void }) {
           if (restoring) return
           restoring = true
           try {
-            remaining = await restoreMeetings(remaining, id => window.yogurt.meetings.restore(id))
+            remaining = await changeMeetingRows('restore', remaining, () => restoreMeetings(remaining, id => window.yogurt.meetings.restore(id)), failed => remaining.filter(id => !failed.includes(id)))
             if (remaining.length) { toasts.update(id, { title: t("Yogurt couldn't make that change. Try again."), timeout: 0 }); return }
             toasts.close(id)
             if (s.from) go(s.from)

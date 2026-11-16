@@ -1,3 +1,4 @@
+import { changeMeetingRows } from '../meetingRowMotion'
 import { useState } from 'react'
 import { t } from '../../../shared/i18n'
 import { osWords } from '../keys'
@@ -14,7 +15,7 @@ export function DeleteNote({ id, title, onDone }: { id: string; title: string; o
   const cancel = () => onDone(false)
   const yes = async () => {
     setBusy(true); setFailed(null)
-    const r = await window.yogurt.meetings.delete(id).catch(() => 'failed' as const)
+    const r = await changeMeetingRows('delete', [id], () => window.yogurt.meetings.delete(id), result => result === 'deleted' || result === 'missing' ? [id] : []).catch(() => 'failed' as const)
     setBusy(false)
     if (r === 'deleted' || r === 'missing') onDone(true)
     else setFailed(r)

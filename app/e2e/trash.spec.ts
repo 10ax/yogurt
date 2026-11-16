@@ -30,6 +30,45 @@ const del = async (page: Page, title: string) => {
   await expect(page.getByTestId('trash-toast')).toContainText('Moved to the Trash')
 }
 
+for (const reducedMotion of ['no-preference', 'reduce'] as const) test(`a moving row keeps its click target (${reducedMotion})`, async () => {
+  const { app, page } = await launch()
+  try {
+    await page.emulateMedia({ reducedMotion })
+    await withMeetings(app, page)
+    await page.evaluate(() => {
+      const animate = Element.prototype.animate
+      Element.prototype.animate = function (frames, options) {
+        const animation = animate.call(this, frames, options)
+        if (this.matches('[data-row-id], .meeting-row-exit')) {
+          animation.pause()
+          animation.currentTime = Number(animation.effect!.getTiming().duration) / 2
+        }
+        return animation
+      }
+    })
+    await row(page, 'Budget review').hover()
+    await row(page, 'Budget review').getByTestId('past-note-more').click()
+    await page.getByTestId('past-note-trash').click()
+    await expect(page.getByTestId('past-note')).toHaveCount(3)
+    await expect(page.getByTestId('trash-undo')).toBeVisible()
+    const moving = page.locator('[data-row-id]').filter({ hasText: 'Weekly sync' })
+    if (reducedMotion === 'reduce') {
+      await expect(page.locator('.meeting-row-exit')).toHaveCount(0)
+      expect(await moving.evaluate(el => el.getAnimations().length)).toBe(0)
+    } else {
+      const copy = page.locator('.meeting-row-exit.native-meeting-row')
+      await expect(copy).toHaveCount(1)
+      await expect(copy).toHaveAttribute('inert', '')
+      await expect(copy).toHaveAttribute('aria-hidden', 'true')
+      await expect(copy.locator('[data-testid], [data-meeting-id], [id]')).toHaveCount(0)
+      expect(await moving.evaluate(el => el.getAnimations().length)).toBe(1)
+    }
+    const box = await moving.locator('.native-meeting-link').boundingBox()
+    await page.mouse.click(box!.x + 90, box!.y + box!.height / 2)
+    await expect(page.getByTestId('note-title')).toHaveText('Weekly sync')
+  } finally { await app.close() }
+})
+
 test('meeting rows swap metadata for More without shifting content and share pointer and keyboard actions', async () => {
   const { app, page } = await launch()
   try {

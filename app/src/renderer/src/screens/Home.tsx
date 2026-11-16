@@ -10,6 +10,7 @@ import { t } from '../../../shared/i18n'
 import { dayLabel, timeOf, useDay } from '../dates'
 import { useLanguage } from '../i18n'
 import { moveMeetingsToTrash, toasts } from '../components/TrashToast'
+import { readMeetingRows, useMeetingRowMotion } from '../meetingRowMotion'
 import { MeetingRow } from '../components/MeetingRow'
 import { FolderChip } from '../components/FolderPicker'
 import { Agenda } from '../components/Agenda'
@@ -62,6 +63,7 @@ export function usePastNotes(folder?: string) {
   const [sentinel, setSentinel] = useState<HTMLDivElement | null>(null)
   const memoryKey = folder ? `folder/${folder}` : 'meetings'
   const scroll = useScrollMemory<HTMLDivElement>(memoryKey, !!cards)
+  const animateRows = useMeetingRowMotion(scroll, memoryKey)
   const attachRoot = useCallback((el: HTMLDivElement | null) => { scroll.current = el; setRoot(el) }, [scroll])
   const shown = useRef(loadedCounts.get(memoryKey) ?? 0)
   const loading = useRef(false)
@@ -70,11 +72,12 @@ export function usePastNotes(folder?: string) {
   const reload = useCallback(() => {
     const mine = ++seq.current
     // however far down the person scrolled, in steps (one call to main is capped)
-    void loadUpTo((o) => window.yogurt.meetings.cards({ ...o, ...(folder ? { folder } : {}) }), shown.current, PAGE).then(({ cards: list, more }) => {
+    void readMeetingRows(() => loadUpTo((o) => window.yogurt.meetings.cards({ ...o, ...(folder ? { folder } : {}) }), shown.current, PAGE)).then(({ cards: list, more }) => {
       if (mine !== seq.current) return
+      animateRows(list)
       shown.current = list.length; loadedCounts.set(memoryKey, list.length); setCards(list); setMore(more)
     })
-  }, [folder])
+  }, [folder, animateRows])
   useEffect(() => {
     reload()
     let timer: ReturnType<typeof setTimeout> | undefined
@@ -162,7 +165,7 @@ export function PastNotes({ cards, day, more, sentinel, onOpen, openFolder, show
     else if (e.key === 'Escape') { e.preventDefault(); select({ type: 'clear' }) }
   }}>
     {days.map((group) => <div className="native-meeting-day" key={group.key}>
-      <h2 data-testid={loading ? undefined : "past-day"}>{loading ? <span className="loading-bar" style={{ width: 48 }} /> : group.label}</h2>
+      <h2 data-row-heading={loading ? undefined : group.key} data-testid={loading ? undefined : "past-day"}>{loading ? <span className="loading-bar" style={{ width: 48 }} /> : group.label}</h2>
       <ul>{group.cards.map((meeting) => loading ? <li className="native-meeting-row" key={meeting.id}><PastCard c={meeting} onOpen={onOpen} me="" showFolders={showFolders} loading /></li> : <MeetingRow key={meeting.id} id={meeting.id} recording={meeting.state === 'recording'} selected={selected.includes(meeting.id)} targets={meetingTargets(selected, meeting.id)} memberships={memberships} busy={busy}
         onSelect={() => select({ type: 'select', id: meeting.id, visible })} onTrash={ids => void trash(ids)}
         onClick={e => {

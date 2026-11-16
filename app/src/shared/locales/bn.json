@@ -314,7 +314,6 @@
   "Recording {title}": "{title} রেকর্ড হচ্ছে",
   "Redo": "আবার করুন",
   "Regenerate summary": "সারাংশ আবার তৈরি করুন",
-  "Regenerate summary?": "সারাংশ আবার তৈরি করবেন?",
   "Reload": "আবার লোড করুন",
   "Remove": "সরান",
   "Remove {name}": "{name} সরান",
@@ -381,7 +380,6 @@
   "Sum up the meeting so far": "এখন পর্যন্ত মিটিংয়ের সারাংশ দাও",
   "Summarizing…": "সারাংশ তৈরি হচ্ছে…",
   "Summary": "সারাংশ",
-  "Summary actions": "সারাংশের কাজ",
   "Sure. The site goes live on Tuesday.": "অবশ্যই। সাইট মঙ্গলবার লাইভ হবে।",
   "System Audio Recording Only": "শুধু সিস্টেম অডিও রেকর্ডিং",
   "System Settings is open at {pane}.": "সিস্টেম সেটিংস {pane}-এ খোলা আছে।",
@@ -668,5 +666,11 @@
   "Dock only": "শুধু Dock",
   "Summary language": "সারাংশের ভাষা",
   "Same as the meeting": "মিটিংয়ের ভাষা",
-  "Used for new summaries and when you write them again.": "নতুন সারাংশ ও সারাংশ আবার লেখার সময় ব্যবহৃত হয়।"
+  "Used for new summaries and when you write them again.": "নতুন সারাংশ ও সারাংশ আবার লেখার সময় ব্যবহৃত হয়।",
+  "Available after recording": "রেকর্ডিংয়ের পরে উপলব্ধ",
+  "Writing the summary": "সারাংশ লেখা হচ্ছে",
+  "Regenerate": "আবার তৈরি করুন",
+  "Note for the summary": "সারাংশের নির্দেশনা",
+  "Add a note, like shorter or in Spanish": "নির্দেশ দিন, যেমন ছোট বা স্প্যানিশে",
+  "Waiting for Yogurt AI to download": "Yogurt AI ডাউনলোডের অপেক্ষায়"
 }

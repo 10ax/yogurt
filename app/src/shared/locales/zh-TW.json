@@ -305,7 +305,6 @@
   "Recording {title}": "正在錄製{title}",
   "Redo": "重做",
   "Regenerate summary": "重新產生摘要",
-  "Regenerate summary?": "要重新產生摘要嗎？",
   "Reload": "重新載入",
   "Remove": "移除",
   "Remove {name}": "移除 {name}",
@@ -369,7 +368,6 @@
   "Sum up the meeting so far": "總結一下到目前為止的會議",
   "Summarizing…": "正在摘要…",
   "Summary": "摘要",
-  "Summary actions": "摘要動作",
   "Sure. The site goes live on Tuesday.": "沒問題。網站週二上線。",
   "System Audio Recording Only": "僅限系統錄音",
   "System Settings is open at {pane}.": "系統設定已打開「{pane}」。",
@@ -638,5 +636,11 @@
   "Dock only": "僅 Dock",
   "Summary language": "摘要語言",
   "Same as the meeting": "與會議相同",
-  "Used for new summaries and when you write them again.": "用於新摘要和重新產生的摘要。"
+  "Used for new summaries and when you write them again.": "用於新摘要和重新產生的摘要。",
+  "Available after recording": "錄音結束後可用",
+  "Writing the summary": "正在撰寫摘要",
+  "Regenerate": "重新產生",
+  "Note for the summary": "摘要要求",
+  "Add a note, like shorter or in Spanish": "新增要求，例如更簡短或用西班牙語",
+  "Waiting for Yogurt AI to download": "等待下載 Yogurt AI"
 }

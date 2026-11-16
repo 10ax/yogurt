@@ -1,7 +1,8 @@
 import { afterEach, beforeEach, expect, it, vi } from 'vitest'
 import { isValidElement, type ReactElement, type ReactNode } from 'react'
+import { NoteMenu } from '../src/renderer/src/components/NoteMenu'
 import { Note } from '../src/renderer/src/screens/Note'
-import type { MeetingView, NoteView } from '../src/shared/types'
+import type { MeetingView, NoteView, SetupState } from '../src/shared/types'
 
 // Run the note's effects and handlers without mounting editors, a browser, or capture.
 const hooks = vi.hoisted(() => ({ values: [] as unknown[], refs: [] as { current: unknown }[],
@@ -25,6 +26,8 @@ vi.mock('../src/renderer/src/motion', async original => ({ ...await original<typ
 let meeting: MeetingView, notes: NoteView
 let meetingChanged: () => void, notesChanged: (notes: NoteView) => void
 const resume = vi.fn(), consumed = vi.fn(), title = vi.fn(), source = vi.fn()
+const transcriptGet = vi.fn()
+let segmentChanged: (line: { meetingId: string; text: string }) => void, transcriptChanged: (id: string) => void, setupChanged: (state: SetupState) => void
 let requested: (() => void) | undefined
 let tree: ReactNode
 const unmount = () => { hooks.effects.forEach(effect => effect.cleanup?.()); hooks.values = []; hooks.refs = []; hooks.memos = []; hooks.effects = [] }
@@ -38,20 +41,23 @@ async function render() {
   }
   for (let i = 0; i < 6; i++) await Promise.resolve()
 }
-function find(node: ReactNode, id: string): ReactElement<Record<string, unknown>> | undefined {
+function find(node: ReactNode, id: string | typeof NoteMenu): ReactElement<Record<string, unknown>> | undefined {
   if (Array.isArray(node)) return node.map(child => find(child, id)).find(Boolean)
   if (!isValidElement<Record<string, unknown>>(node)) return
-  return node.props['data-testid'] === id || node.props.testId === id ? node : find(node.props.children as ReactNode, id)
+  return node.type === id || node.props['data-testid'] === id || node.props.testId === id ? node : find(node.props.children as ReactNode, id)
 }
 beforeEach(() => {
   vi.clearAllMocks()
   meeting = { id: 'resume-fixture', title: 'Resume fixture', startedAt: 1, endedAt: 2, eventId: 'event', app: null, attendees: [], state: 'stopped', language: null, titleSource: 'calendar' }
   notes = { meetingId: meeting.id, mine: '', enhanced: null, edited: false, status: 'writing', draft: '', peopleChanged: false }
   requested = () => { consumed(); requested = undefined }
+  transcriptGet.mockResolvedValue([])
   resume.mockResolvedValue({ id: meeting.id })
   vi.stubGlobal('window', { matchMedia: () => ({ matches: true }), yogurt: {
     meetings: { get: async () => meeting, onChange: (cb: typeof meetingChanged) => { meetingChanged = cb; return vi.fn() }, resume, stop: vi.fn() },
-    notes: { get: async () => notes, onChange: (cb: typeof notesChanged) => { notesChanged = cb; return vi.fn() } },
+    notes: { setMine: async (_id: string, _text: string, revision: number) => ({ revision, status: 'saved' }), get: async () => notes, onChange: (cb: typeof notesChanged) => { notesChanged = cb; return vi.fn() } },
+    transcript: { get: transcriptGet, onSegment: (cb: typeof segmentChanged) => { segmentChanged = cb; return vi.fn() }, onSpeakers: (cb: typeof transcriptChanged) => { transcriptChanged = cb; return vi.fn() } },
+    setup: { state: async () => ({ phase: 'ready', fraction: 1 }), onState: (cb: typeof setupChanged) => { setupChanged = cb; return vi.fn() } },
     widget: { state: async () => null, onState: () => vi.fn() },
   } })
 })
@@ -106,4 +112,41 @@ it('waits through Finish before the summary starts and still asks before replaci
   await (find(tree, 'resume-yes')!.props.onClick as () => Promise<void>)()
   await render()
   expect(resume).toHaveBeenCalledExactlyOnceWith(meeting.id)
+})
+
+it('updates generation availability for typed notes, existing summaries, and Trash', async () => {
+  notes.status = 'empty'; requested = undefined
+  await render(); await render()
+  expect(find(tree, NoteMenu)?.props.generation).toBeUndefined()
+  ;(find(tree, 'note-notes-tab')!.props.onClick as (e: { detail: number }) => void)({ detail: 0 }); await render()
+  ;(find(tree, 'note-mine')!.props.onChange as (md: string) => void)('Keep the release small.'); await render()
+  expect(find(tree, NoteMenu)?.props.generation).toMatchObject({ label: 'Generate summary', reason: undefined })
+  notesChanged({ ...notes, enhanced: '## Plan', status: 'done' }); await render()
+  expect(find(tree, NoteMenu)?.props.generation).toMatchObject({ label: 'Regenerate summary' })
+  meeting.trashedAt = 1; meetingChanged(); await render(); await render()
+  expect(find(tree, NoteMenu)?.props.generation).toBeUndefined()
+})
+
+it('keeps a live transcript arrival over an older empty read, and refreshes after hidden lines change', async () => {
+  notes.status = 'empty'; requested = undefined
+  let resolve!: (lines: []) => void
+  transcriptGet.mockImplementationOnce(() => new Promise(r => { resolve = r }))
+  await render(); await render()
+  segmentChanged({ meetingId: meeting.id, text: 'Release on Tuesday.' })
+  resolve([]); await render(); await render()
+  expect(find(tree, NoteMenu)?.props.generation).toMatchObject({ label: 'Generate summary' })
+  expect(transcriptGet).toHaveBeenCalledWith(meeting.id, { last: 1 })
+  transcriptChanged(meeting.id); await render(); await render()
+  expect(find(tree, NoteMenu)?.props.generation).toBeUndefined()
+})
+
+it('waits for the first notes model but allows generation during an optional upgrade', async () => {
+  notes = { ...notes, status: 'done', enhanced: '## Plan' }; requested = undefined
+  await render(); await render()
+  setupChanged({ phase: 'ready', fraction: 1, notesDownloading: true }); await render()
+  expect(find(tree, NoteMenu)?.props.generation).toMatchObject({ reason: 'Waiting for Yogurt AI to download' })
+  setupChanged({ phase: 'ready', fraction: 1, notesUpgradeDownloading: true }); await render()
+  expect(find(tree, NoteMenu)?.props.generation).toMatchObject({ reason: undefined })
+  setupChanged({ phase: 'ready', fraction: 1, notesError: 'Download failed' }); await render()
+  expect(find(tree, NoteMenu)?.props.generation).toMatchObject({ reason: 'Waiting for Yogurt AI to download' })
 })

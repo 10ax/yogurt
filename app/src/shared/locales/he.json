@@ -317,7 +317,6 @@
   "Recording {title}": "מקליט את {title}",
   "Redo": "בצע שוב",
   "Regenerate summary": "יצירה מחדש של הסיכום",
-  "Regenerate summary?": "ליצור מחדש את הסיכום?",
   "Reload": "טען מחדש",
   "Remove": "הסרה",
   "Remove {name}": "הסרת {name}",
@@ -385,7 +384,6 @@
   "Sum up the meeting so far": "סכם את הפגישה עד עכשיו",
   "Summarizing…": "יצירת סיכום…",
   "Summary": "סיכום",
-  "Summary actions": "פעולות סיכום",
   "Sure. The site goes live on Tuesday.": "בטח. האתר עולה ביום שלישי.",
   "System Audio Recording Only": "הקלטת שמע מערכת בלבד",
   "System Settings is open at {pane}.": "הגדרות המערכת פתוחות בחלונית {pane}.",
@@ -690,5 +688,11 @@
   "Dock only": "Dock בלבד",
   "Summary language": "שפת הסיכום",
   "Same as the meeting": "כמו בפגישה",
-  "Used for new summaries and when you write them again.": "משמשת לסיכומים חדשים ולכתיבה מחדש שלהם."
+  "Used for new summaries and when you write them again.": "משמשת לסיכומים חדשים ולכתיבה מחדש שלהם.",
+  "Available after recording": "זמין לאחר ההקלטה",
+  "Writing the summary": "הסיכום נכתב",
+  "Regenerate": "יצירה מחדש",
+  "Note for the summary": "הנחיה לסיכום",
+  "Add a note, like shorter or in Spanish": "הוסיפו הנחיה, כמו קצר יותר או בספרדית",
+  "Waiting for Yogurt AI to download": "ממתינים להורדת Yogurt AI"
 }

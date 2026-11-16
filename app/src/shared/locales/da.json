@@ -314,7 +314,6 @@
   "Recording {title}": "Optager {title}",
   "Redo": "Gentag",
   "Regenerate summary": "Lav resumé igen",
-  "Regenerate summary?": "Lav resuméet igen?",
   "Reload": "Genindlæs",
   "Remove": "Fjern",
   "Remove {name}": "Fjern {name}",
@@ -381,7 +380,6 @@
   "Sum up the meeting so far": "Opsummer mødet indtil nu",
   "Summarizing…": "Opsummerer…",
   "Summary": "Resumé",
-  "Summary actions": "Handlinger for resumé",
   "Sure. The site goes live on Tuesday.": "Klart. Sitet går live på tirsdag.",
   "System Audio Recording Only": "Kun systemlydoptagelse",
   "System Settings is open at {pane}.": "Systemindstillinger er åbnet ved {pane}.",
@@ -680,5 +678,11 @@
   "Dock only": "Kun Dock",
   "Summary language": "Opsummeringssprog",
   "Same as the meeting": "Samme som mødet",
-  "Used for new summaries and when you write them again.": "Bruges til nye opsummeringer, og når du skriver dem igen."
+  "Used for new summaries and when you write them again.": "Bruges til nye opsummeringer, og når du skriver dem igen.",
+  "Available after recording": "Tilgængelig efter optagelsen",
+  "Writing the summary": "Skriver opsummeringen",
+  "Regenerate": "Generér igen",
+  "Note for the summary": "Note til opsummeringen",
+  "Add a note, like shorter or in Spanish": "Tilføj en note, som kortere eller på spansk",
+  "Waiting for Yogurt AI to download": "Venter på download af Yogurt AI"
 }

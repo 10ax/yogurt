@@ -305,7 +305,6 @@
   "Recording {title}": "Đang ghi {title}",
   "Redo": "Làm lại",
   "Regenerate summary": "Tạo lại tóm tắt",
-  "Regenerate summary?": "Tạo lại tóm tắt?",
   "Reload": "Tải lại",
   "Remove": "Gỡ bỏ",
   "Remove {name}": "Gỡ {name}",
@@ -369,7 +368,6 @@
   "Sum up the meeting so far": "Tóm tắt cuộc họp đến giờ",
   "Summarizing…": "Đang tóm tắt…",
   "Summary": "Tóm tắt",
-  "Summary actions": "Thao tác tóm tắt",
   "Sure. The site goes live on Tuesday.": "Được chứ. Trang web lên sóng vào thứ Ba.",
   "System Audio Recording Only": "Chỉ ghi âm thanh hệ thống",
   "System Settings is open at {pane}.": "Cài đặt hệ thống đang mở ở {pane}.",
@@ -638,5 +636,11 @@
   "Dock only": "Chỉ Dock",
   "Summary language": "Ngôn ngữ tóm tắt",
   "Same as the meeting": "Giống cuộc họp",
-  "Used for new summaries and when you write them again.": "Dùng cho bản tóm tắt mới và khi bạn viết lại."
+  "Used for new summaries and when you write them again.": "Dùng cho bản tóm tắt mới và khi bạn viết lại.",
+  "Available after recording": "Có sau khi ghi âm xong",
+  "Writing the summary": "Đang viết bản tóm tắt",
+  "Regenerate": "Tạo lại",
+  "Note for the summary": "Chỉ dẫn cho bản tóm tắt",
+  "Add a note, like shorter or in Spanish": "Thêm chỉ dẫn, như ngắn hơn hoặc bằng tiếng Tây Ban Nha",
+  "Waiting for Yogurt AI to download": "Đang chờ tải Yogurt AI"
 }

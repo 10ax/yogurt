@@ -320,7 +320,6 @@
   "Recording {title}": "Записуємо {title}",
   "Redo": "Повторити",
   "Regenerate summary": "Створити підсумок заново",
-  "Regenerate summary?": "Створити підсумок заново?",
   "Reload": "Перезавантажити",
   "Remove": "Вилучити",
   "Remove {name}": "Вилучити {name}",
@@ -389,7 +388,6 @@
   "Sum up the meeting so far": "Підсумуй зустріч на цю мить",
   "Summarizing…": "Створення підсумку…",
   "Summary": "Підсумок",
-  "Summary actions": "Дії з підсумком",
   "Sure. The site goes live on Tuesday.": "Звісно. Сайт запускається у вівторок.",
   "System Audio Recording Only": "Лише записування системного звуку",
   "System Settings is open at {pane}.": "Системні параметри відкрито на розділі «{pane}».",
@@ -708,5 +706,11 @@
   "Dock only": "Лише Dock",
   "Summary language": "Мова підсумку",
   "Same as the meeting": "Як на зустрічі",
-  "Used for new summaries and when you write them again.": "Використовується для нових і повторно створених підсумків."
+  "Used for new summaries and when you write them again.": "Використовується для нових і повторно створених підсумків.",
+  "Available after recording": "Доступно після запису",
+  "Writing the summary": "Створюється підсумок",
+  "Regenerate": "Створити знову",
+  "Note for the summary": "Побажання до підсумку",
+  "Add a note, like shorter or in Spanish": "Додайте побажання, як-от коротше чи іспанською",
+  "Waiting for Yogurt AI to download": "Очікування завантаження Yogurt AI"
 }

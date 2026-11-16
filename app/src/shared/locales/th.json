@@ -305,7 +305,6 @@
   "Recording {title}": "กำลังบันทึก {title}",
   "Redo": "ทำซ้ำ",
   "Regenerate summary": "สร้างสรุปใหม่",
-  "Regenerate summary?": "สร้างสรุปใหม่ไหม",
   "Reload": "โหลดซ้ำ",
   "Remove": "เอาออก",
   "Remove {name}": "เอา {name} ออก",
@@ -369,7 +368,6 @@
   "Sum up the meeting so far": "สรุปการประชุมจนถึงตอนนี้",
   "Summarizing…": "กำลังสรุป…",
   "Summary": "สรุป",
-  "Summary actions": "การทำงานกับสรุป",
   "Sure. The site goes live on Tuesday.": "ได้เลย เว็บไซต์จะเปิดวันอังคาร",
   "System Audio Recording Only": "การบันทึกเสียงระบบเท่านั้น",
   "System Settings is open at {pane}.": "การตั้งค่าระบบเปิดอยู่ที่ {pane}",
@@ -638,5 +636,11 @@
   "Dock only": "Dock เท่านั้น",
   "Summary language": "ภาษาสรุป",
   "Same as the meeting": "ภาษาเดียวกับการประชุม",
-  "Used for new summaries and when you write them again.": "ใช้สำหรับสรุปใหม่และเมื่อเขียนสรุปอีกครั้ง"
+  "Used for new summaries and when you write them again.": "ใช้สำหรับสรุปใหม่และเมื่อเขียนสรุปอีกครั้ง",
+  "Available after recording": "ใช้งานได้หลังบันทึกเสร็จ",
+  "Writing the summary": "กำลังเขียนสรุป",
+  "Regenerate": "สร้างใหม่",
+  "Note for the summary": "คำสั่งสำหรับสรุป",
+  "Add a note, like shorter or in Spanish": "เพิ่มคำสั่ง เช่น สั้นลงหรือเป็นภาษาสเปน",
+  "Waiting for Yogurt AI to download": "รอการดาวน์โหลด Yogurt AI"
 }

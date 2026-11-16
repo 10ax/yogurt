@@ -305,7 +305,6 @@
   "Recording {title}": "{title} 녹음 중",
   "Redo": "실행 복귀",
   "Regenerate summary": "요약 다시 만들기",
-  "Regenerate summary?": "요약을 다시 만들까요?",
   "Reload": "새로 고침",
   "Remove": "제거",
   "Remove {name}": "{name} 제거",
@@ -369,7 +368,6 @@
   "Sum up the meeting so far": "지금까지 회의 요약해 줘",
   "Summarizing…": "요약 중…",
   "Summary": "요약",
-  "Summary actions": "요약 작업",
   "Sure. The site goes live on Tuesday.": "물론이죠. 사이트는 화요일에 공개돼요.",
   "System Audio Recording Only": "시스템 오디오 녹음만",
   "System Settings is open at {pane}.": "시스템 설정에서 {pane}이(가) 열려 있어요.",
@@ -638,5 +636,11 @@
   "Dock only": "Dock만",
   "Summary language": "요약 언어",
   "Same as the meeting": "회의와 동일",
-  "Used for new summaries and when you write them again.": "새 요약과 다시 작성하는 요약에 사용됩니다."
+  "Used for new summaries and when you write them again.": "새 요약과 다시 작성하는 요약에 사용됩니다.",
+  "Available after recording": "녹음 후 사용 가능",
+  "Writing the summary": "요약 작성 중",
+  "Regenerate": "다시 생성",
+  "Note for the summary": "요약 지침",
+  "Add a note, like shorter or in Spanish": "더 짧게, 스페인어로 등 지침 추가",
+  "Waiting for Yogurt AI to download": "Yogurt AI 다운로드 대기 중"
 }

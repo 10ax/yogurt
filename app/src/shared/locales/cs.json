@@ -320,7 +320,6 @@
   "Recording {title}": "Nahrává se {title}",
   "Redo": "Znovu",
   "Regenerate summary": "Vytvořit souhrn znovu",
-  "Regenerate summary?": "Vytvořit souhrn znovu?",
   "Reload": "Znovu načíst",
   "Remove": "Odstranit",
   "Remove {name}": "Odstranit {name}",
@@ -389,7 +388,6 @@
   "Sum up the meeting so far": "Shrň dosavadní schůzku",
   "Summarizing…": "Vytváření shrnutí…",
   "Summary": "Souhrn",
-  "Summary actions": "Akce souhrnu",
   "Sure. The site goes live on Tuesday.": "Jasně. Web spouštíme v úterý.",
   "System Audio Recording Only": "Pouze nahrávání systémového zvuku",
   "System Settings is open at {pane}.": "Nastavení systému je otevřené v části {pane}.",
@@ -711,5 +709,11 @@
   "Dock only": "Pouze Dock",
   "Summary language": "Jazyk shrnutí",
   "Same as the meeting": "Stejný jako na schůzce",
-  "Used for new summaries and when you write them again.": "Použije se pro nová i znovu vytvořená shrnutí."
+  "Used for new summaries and when you write them again.": "Použije se pro nová i znovu vytvořená shrnutí.",
+  "Available after recording": "Dostupné po nahrávání",
+  "Writing the summary": "Vytváření shrnutí",
+  "Regenerate": "Vygenerovat znovu",
+  "Note for the summary": "Pokyn pro shrnutí",
+  "Add a note, like shorter or in Spanish": "Přidejte pokyn, třeba kratší nebo španělsky",
+  "Waiting for Yogurt AI to download": "Čekání na stažení Yogurt AI"
 }

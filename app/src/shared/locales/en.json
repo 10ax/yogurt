@@ -200,5 +200,11 @@
   "Dock only": "Dock only",
   "Summary language": "Summary language",
   "Same as the meeting": "Same as the meeting",
-  "Used for new summaries and when you write them again.": "Used for new summaries and when you write them again."
+  "Used for new summaries and when you write them again.": "Used for new summaries and when you write them again.",
+  "Writing the summary": "Writing the summary",
+  "Regenerate": "Regenerate",
+  "Available after recording": "Available after recording",
+  "Note for the summary": "Note for the summary",
+  "Add a note, like shorter or in Spanish": "Add a note, like shorter or in Spanish",
+  "Waiting for Yogurt AI to download": "Waiting for Yogurt AI to download"
 }

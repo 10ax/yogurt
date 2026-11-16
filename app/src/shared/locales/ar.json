@@ -326,7 +326,6 @@
   "Recording {title}": "جارٍ تسجيل {title}",
   "Redo": "إعادة",
   "Regenerate summary": "إعادة إنشاء الملخص",
-  "Regenerate summary?": "هل تريد إعادة إنشاء الملخص؟",
   "Reload": "إعادة تحميل",
   "Remove": "إزالة",
   "Remove {name}": "إزالة {name}",
@@ -397,7 +396,6 @@
   "Sum up the meeting so far": "لخّص الاجتماع حتى الآن",
   "Summarizing…": "جارٍ التلخيص…",
   "Summary": "الملخص",
-  "Summary actions": "إجراءات الملخص",
   "Sure. The site goes live on Tuesday.": "بالتأكيد. سيُطلق الموقع يوم الثلاثاء.",
   "System Audio Recording Only": "تسجيل صوت النظام فقط",
   "System Settings is open at {pane}.": "إعدادات النظام مفتوحة على «{pane}».",
@@ -736,5 +734,11 @@
   "Dock only": "Dock فقط",
   "Summary language": "لغة الملخص",
   "Same as the meeting": "نفس لغة الاجتماع",
-  "Used for new summaries and when you write them again.": "تُستخدم للملخصات الجديدة وعند إعادة كتابتها."
+  "Used for new summaries and when you write them again.": "تُستخدم للملخصات الجديدة وعند إعادة كتابتها.",
+  "Available after recording": "متاح بعد التسجيل",
+  "Writing the summary": "جارٍ كتابة الملخص",
+  "Regenerate": "إعادة الإنشاء",
+  "Note for the summary": "تعليمات للملخص",
+  "Add a note, like shorter or in Spanish": "أضف تعليمات، مثل أقصر أو بالإسبانية",
+  "Waiting for Yogurt AI to download": "بانتظار تنزيل ذكاء Yogurt الاصطناعي"
 }

@@ -111,8 +111,9 @@ test('My notes and Summary tabs switch versions; summary actions regenerate', as
     await selectNoteVersion(page, 'mine')
     await expect(page.getByTestId('note-mine')).toBeVisible()
     await expect(page.getByTestId('note-notes-tab')).toHaveAttribute('data-version', 'mine')
-    await page.getByTestId('note-view-menu').click()
+    await page.getByTestId('note-menu-button').click()
     await page.getByTestId('note-write-again').click()
+    await page.getByTestId('note-write-again-confirm').click()
     // The previous summary stays dimmed while reading, then the replacement writes in.
     await expect(page.getByTestId('note-notes-tab')).toHaveAttribute('data-version', 'enhanced')
     await expect(page.getByTestId('note-enhanced')).toHaveAttribute('data-status', 'writing', { timeout: 30_000 })

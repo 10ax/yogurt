@@ -132,7 +132,7 @@ export type YogurtApi = {
     /** the open note kept its unsaved edits over notes written again for new people */
     keptEdits(meetingId: string): void
     /** writes the enhanced notes again */
-    writeAgain(meetingId: string): Promise<void>
+    writeAgain(meetingId: string, note?: string): Promise<void>
     /** status, the draft as it is written, and the saved notes; returns the way to stop listening */
     onChange(cb: (v: NoteView) => void): () => void
   }

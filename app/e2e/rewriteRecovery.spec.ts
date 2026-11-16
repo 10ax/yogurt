@@ -36,7 +36,7 @@ test('a failed rewrite keeps the previous edited Enhanced note visible, copyable
     await page.getByTestId('note-enhanced-editor').fill(prior)
     await expect(page.getByTestId('note-save-status')).toHaveAttribute('data-state', 'saved')
     fail(db)
-    await page.getByTestId('note-view-menu').click()
+    await page.getByTestId('note-menu-button').click()
     await page.getByTestId('note-write-again').click()
     await page.getByTestId('note-write-again-confirm').click()
     await expect(page.getByTestId('note-enhanced-rewrite-failed')).toBeVisible()

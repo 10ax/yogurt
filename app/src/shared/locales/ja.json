@@ -305,7 +305,6 @@
   "Recording {title}": "{title}を録音中",
   "Redo": "やり直す",
   "Regenerate summary": "要約を作り直す",
-  "Regenerate summary?": "要約を作り直しますか？",
   "Reload": "再読み込み",
   "Remove": "削除",
   "Remove {name}": "{name} を削除",
@@ -369,7 +368,6 @@
   "Sum up the meeting so far": "ここまでのミーティングをまとめて",
   "Summarizing…": "要約中…",
   "Summary": "要約",
-  "Summary actions": "要約の操作",
   "Sure. The site goes live on Tuesday.": "はい。サイトは火曜日に公開です。",
   "System Audio Recording Only": "システムオーディオ録音のみ",
   "System Settings is open at {pane}.": "システム設定で「{pane}」が開いています。",
@@ -638,5 +636,11 @@
   "Dock only": "Dockのみ",
   "Summary language": "要約の言語",
   "Same as the meeting": "会議と同じ",
-  "Used for new summaries and when you write them again.": "新しい要約と書き直す要約に使用します。"
+  "Used for new summaries and when you write them again.": "新しい要約と書き直す要約に使用します。",
+  "Available after recording": "録音終了後に利用可能",
+  "Writing the summary": "要約を作成中",
+  "Regenerate": "再生成",
+  "Note for the summary": "要約への指示",
+  "Add a note, like shorter or in Spanish": "短めに、スペイン語で、などの指示を追加",
+  "Waiting for Yogurt AI to download": "Yogurt AIのダウンロードを待機中"
 }

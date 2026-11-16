@@ -44,6 +44,17 @@ function setup(o: { summaryLanguage?: () => string; me?: string; named?: () => P
 }
 
 describe('hookNotes', () => {
+  it('keeps a rewrite note only in its queued job, never the next regeneration or saved notes', async () => {
+    const s = setup()
+    await s.notes.writeAgain(s.m.id, 'Use a concise formal tone')
+    expect(s.prompts[0]).toContain('Use a concise formal tone')
+    expect(JSON.stringify(s.store.notes(s.m.id))).not.toContain('Use a concise formal tone')
+    s.prompts.length = 0
+    await s.notes.writeAgain(s.m.id)
+    expect(s.prompts.length).toBeGreaterThan(0)
+    expect(s.prompts.every(prompt => !prompt.includes('Use a concise formal tone'))).toBe(true)
+  })
+
   it('off a Mac, a note waiting on the model to load says so; then it writes', async () => {
     let release!: () => void
     const load = new Promise<void>((resolve) => { release = resolve })
@@ -506,4 +517,17 @@ it('a title-only refresh follows the retained summary language when a default is
   expect(s.prompts[0]).toContain('Envoyer le plan.')
   expect(s.prompts[0]).not.toContain('Spanish')
   expect(s.store.notes(s.m.id).enhanced).toBe('## Plan\n- Envoyer le plan.')
+})
+
+
+it('combines the current summary language with a one-time rewrite note', async () => {
+  const s = setup({ summaryLanguage: () => 'fr', reply: '## Plan\n- **You:** Send the plan.' })
+  s.stop(); s.transcribed(); await s.notes.written(s.m.id)
+  await s.notes.writeAgain(s.m.id, 'in Spanish')
+  expect(s.prompts.at(-1)).toContain('By default, write in French')
+  expect(s.prompts.at(-1)).toContain('"in Spanish"')
+  expect(s.prompts.at(-1)).toContain('take precedence over the defaults above')
+  await s.notes.writeAgain(s.m.id)
+  expect(s.prompts.at(-1)).toContain('By default, write in French')
+  expect(s.prompts.at(-1)).not.toContain('"in Spanish"')
 })

@@ -317,7 +317,6 @@
   "Recording {title}": "Registrazione di {title}",
   "Redo": "Ripristina",
   "Regenerate summary": "Rigenera riepilogo",
-  "Regenerate summary?": "Rigenerare il riepilogo?",
   "Reload": "Ricarica",
   "Remove": "Rimuovi",
   "Remove {name}": "Rimuovi {name}",
@@ -385,7 +384,6 @@
   "Sum up the meeting so far": "Riassumi la riunione fin qui",
   "Summarizing…": "Riepilogo in corso…",
   "Summary": "Riepilogo",
-  "Summary actions": "Azioni del riepilogo",
   "Sure. The site goes live on Tuesday.": "Certo. Il sito va online martedì.",
   "System Audio Recording Only": "Solo registrazione audio di sistema",
   "System Settings is open at {pane}.": "Impostazioni di Sistema è aperto su {pane}.",
@@ -699,5 +697,11 @@
   "Dock only": "Solo Dock",
   "Summary language": "Lingua dei riepiloghi",
   "Same as the meeting": "Quella della riunione",
-  "Used for new summaries and when you write them again.": "Usata per i nuovi riepiloghi e quando li riscrivi."
+  "Used for new summaries and when you write them again.": "Usata per i nuovi riepiloghi e quando li riscrivi.",
+  "Available after recording": "Disponibile dopo la registrazione",
+  "Writing the summary": "Scrittura del riepilogo",
+  "Regenerate": "Rigenera",
+  "Note for the summary": "Istruzione per il riepilogo",
+  "Add a note, like shorter or in Spanish": "Aggiungi una nota, come più breve o in spagnolo",
+  "Waiting for Yogurt AI to download": "In attesa del download di Yogurt AI"
 }

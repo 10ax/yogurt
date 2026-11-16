@@ -5,8 +5,7 @@ import { join } from 'node:path'
 
 const menus = [
   { trigger: 'share-button', surface: 'share-menu', first: 'share-copy-notes', logical: false },
-  { trigger: 'note-menu-button', surface: 'note-menu', first: 'note-rename', logical: false },
-  { trigger: 'note-view-menu', surface: 'note-view-menu-list', first: 'note-write-again', logical: true, end: true },
+  { trigger: 'note-menu-button', surface: 'note-menu', first: 'note-rename', logical: true, end: true },
   { trigger: 'note-date', surface: 'note-date-card', first: 'note-date-heading', logical: true },
   { trigger: 'note-attendees', surface: 'people-card', first: 'people-add', logical: true },
 ]
@@ -79,5 +78,24 @@ test('pointer menus share anchored entry in LTR and RTL; reduced motion keeps on
       await page.keyboard.press('Escape')
       await expect(surface).toHaveCount(0)
     }
+  } finally { await app.close() }
+})
+
+test('regeneration uses the top menu anchor and restores it after Escape', async () => {
+  const { app, page } = await launch()
+  try {
+    await expect(page.getByTestId('note-view-menu')).toHaveCount(0)
+    await page.getByTestId('note-menu-button').click()
+    await page.getByTestId('note-write-again').click()
+    const popup = page.getByTestId('note-regenerate')
+    await expect(popup).toBeVisible()
+    await expect(page.getByTestId('note-menu')).toHaveCount(0)
+    await expect(page.getByTestId('note-regenerate-input')).toBeFocused()
+    const anchor = await page.getByTestId('note-menu-button').boundingBox()
+    const box = await popup.boundingBox()
+    expect(box!.y).toBeCloseTo(anchor!.y + anchor!.height + 8, 0)
+    await page.keyboard.press('Escape')
+    await expect(popup).toHaveCount(0)
+    await expect(page.getByTestId('note-menu-button')).toBeFocused()
   } finally { await app.close() }
 })

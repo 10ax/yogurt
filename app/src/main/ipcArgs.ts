@@ -1,3 +1,5 @@
+import { REWRITE_NOTE_MAX } from '../shared/rewriteNote'
+
 /**
  * What the windows send is checked before it is used: a page should never be able to make main throw, or reach a
  * file outside a meeting's folder, by sending something odd.
@@ -8,3 +10,6 @@ export const isId = (x: unknown): x is string => typeof x === 'string' && /^[\w-
 
 /** text from a page, at most `max` characters; anything that isn't text is undefined */
 export const text = (x: unknown, max: number): string | undefined => (typeof x === 'string' ? x.slice(0, max) : undefined)
+
+/** Missing or blank means the usual rewrite; malformed values must not start one. */
+export const rewriteNote = (x: unknown): string | undefined => x === undefined ? '' : text(x, REWRITE_NOTE_MAX)?.trim()

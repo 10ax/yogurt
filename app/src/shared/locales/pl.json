@@ -320,7 +320,6 @@
   "Recording {title}": "Nagrywanie: {title}",
   "Redo": "Przywróć",
   "Regenerate summary": "Utwórz podsumowanie od nowa",
-  "Regenerate summary?": "Utworzyć podsumowanie od nowa?",
   "Reload": "Wczytaj ponownie",
   "Remove": "Usuń",
   "Remove {name}": "Usuń {name}",
@@ -389,7 +388,6 @@
   "Sum up the meeting so far": "Podsumuj dotychczasowe spotkanie",
   "Summarizing…": "Tworzenie podsumowania…",
   "Summary": "Podsumowanie",
-  "Summary actions": "Działania podsumowania",
   "Sure. The site goes live on Tuesday.": "Jasne. Strona rusza we wtorek.",
   "System Audio Recording Only": "Tylko nagrywanie dźwięku systemowego",
   "System Settings is open at {pane}.": "Ustawienia systemowe są otwarte w sekcji {pane}.",
@@ -716,5 +714,11 @@
   "Dock only": "Tylko Dock",
   "Summary language": "Język podsumowań",
   "Same as the meeting": "Taki jak na spotkaniu",
-  "Used for new summaries and when you write them again.": "Używany w nowych i ponownie tworzonych podsumowaniach."
+  "Used for new summaries and when you write them again.": "Używany w nowych i ponownie tworzonych podsumowaniach.",
+  "Available after recording": "Dostępne po nagraniu",
+  "Writing the summary": "Trwa pisanie podsumowania",
+  "Regenerate": "Generuj ponownie",
+  "Note for the summary": "Wskazówka do podsumowania",
+  "Add a note, like shorter or in Spanish": "Dodaj wskazówkę, np. krócej lub po hiszpańsku",
+  "Waiting for Yogurt AI to download": "Oczekiwanie na pobranie Yogurt AI"
 }

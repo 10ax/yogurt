@@ -115,7 +115,7 @@ export function hookNotes(p: {
    * quiet: written again for new people, out of sight. The notes on screen stay as they are until the new ones are done,
    * then change all at once (never if the person edited them meanwhile).
    */
-  const write = async (id: string, signal: AbortSignal, quiet = false) => {
+  const write = async (id: string, signal: AbortSignal, quiet = false, note?: string) => {
     const m = p.store.meeting(id)
     if (!m || m.state === 'recording' || resuming.has(id)) return
     const was = currentNotes(id)
@@ -139,7 +139,7 @@ export function hookNotes(p: {
       // a generic title (or one made from earlier notes) gets one from these notes; theirs or the calendar's never
       const retitle = (x: Meeting) => x.titleSource === 'generic' || x.titleSource === 'auto'
       let askTitle: ((llm: Llm) => Promise<string>) | undefined
-      const md = await enhance({ meeting: m, mine, segments, language, summaryLanguage: p.summaryLanguage?.(), me: p.me?.(), words: meetingWords(m), ...(retitle(m) ? { titleLater: (ask) => { askTitle = ask } } : {}) }, llm, (t) => {
+      const md = await enhance({ meeting: m, mine, segments, language, note, summaryLanguage: p.summaryLanguage?.(), me: p.me?.(), words: meetingWords(m), ...(retitle(m) ? { titleLater: (ask) => { askTitle = ask } } : {}) }, llm, (t) => {
         if (quiet) return
         draft += t
         if (timer) return
@@ -219,10 +219,10 @@ export function hookNotes(p: {
     p.send(view(m.id))
   }
 
-  const queueWrite = (id: string) => {
+  const queueWrite = (id: string, note?: string) => {
     console.info('NOTES', `queued the notes of ${id}`)
     set(id, 'waiting')
-    return p.queue.enqueue((signal) => write(id, signal), 'enhance', id).catch(() => {})
+    return p.queue.enqueue((signal) => write(id, signal, false, note), 'enhance', id).catch(() => {})
   }
 
   /** each meeting's notes after it stopped, until they are written */
@@ -300,12 +300,12 @@ export function hookNotes(p: {
     pendingDraftId: () => [...edits].find(([, sides]) => Object.values(sides).some((v) => v.text !== undefined))?.[0],
     forgetDrafts: (id: string) => { edits.delete(id) },
     /** "Write again": the same job, now (after anything already waiting) */
-    writeAgain(id: string) {
+    writeAgain(id: string, note?: string) {
       if (resuming.has(id) || p.store.meeting(id)?.state === 'recording') return Promise.resolve()
       if (!retryDrafts(id)) return Promise.resolve()
       const s = live.get(id)?.status
       if (s === 'waiting' || s === 'writing') return Promise.resolve()
-      return queueWrite(id)
+      return queueWrite(id, note)
     },
     /** at launch: meetings a quit or crash left without notes get them now, one at a time */
     recover() {

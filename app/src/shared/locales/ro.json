@@ -317,7 +317,6 @@
   "Recording {title}": "Se înregistrează {title}",
   "Redo": "Refă",
   "Regenerate summary": "Regenerați rezumatul",
-  "Regenerate summary?": "Regenerați rezumatul?",
   "Reload": "Reîncarcă",
   "Remove": "Elimină",
   "Remove {name}": "Elimină {name}",
@@ -385,7 +384,6 @@
   "Sum up the meeting so far": "Rezumă întâlnirea până acum",
   "Summarizing…": "Se generează rezumatul…",
   "Summary": "Rezumat",
-  "Summary actions": "Acțiuni rezumat",
   "Sure. The site goes live on Tuesday.": "Sigur. Site-ul se lansează marți.",
   "System Audio Recording Only": "Numai înregistrare audio sistem",
   "System Settings is open at {pane}.": "Configurări sistem e deschis la {pane}.",
@@ -697,5 +695,11 @@
   "Dock only": "Doar Dock",
   "Summary language": "Limba rezumatului",
   "Same as the meeting": "Aceeași ca în întâlnire",
-  "Used for new summaries and when you write them again.": "Folosită pentru rezumate noi și când le rescrii."
+  "Used for new summaries and when you write them again.": "Folosită pentru rezumate noi și când le rescrii.",
+  "Available after recording": "Disponibil după înregistrare",
+  "Writing the summary": "Se scrie rezumatul",
+  "Regenerate": "Regenerează",
+  "Note for the summary": "Instrucțiune pentru rezumat",
+  "Add a note, like shorter or in Spanish": "Adaugă o notă, precum mai scurt sau în spaniolă",
+  "Waiting for Yogurt AI to download": "Se așteaptă descărcarea Yogurt AI"
 }

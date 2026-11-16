@@ -305,7 +305,6 @@
   "Recording {title}": "Merakam {title}",
   "Redo": "Buat Semula",
   "Regenerate summary": "Jana semula ringkasan",
-  "Regenerate summary?": "Jana semula ringkasan?",
   "Reload": "Muat Semula",
   "Remove": "Alih keluar",
   "Remove {name}": "Alih keluar {name}",
@@ -369,7 +368,6 @@
   "Sum up the meeting so far": "Ringkaskan mesyuarat setakat ini",
   "Summarizing…": "Meringkaskan…",
   "Summary": "Ringkasan",
-  "Summary actions": "Tindakan ringkasan",
   "Sure. The site goes live on Tuesday.": "Baiklah. Laman web dilancarkan pada hari Selasa.",
   "System Audio Recording Only": "Rakaman Audio Sistem Sahaja",
   "System Settings is open at {pane}.": "Seting Sistem dibuka di {pane}.",
@@ -638,5 +636,11 @@
   "Dock only": "Dock sahaja",
   "Summary language": "Bahasa ringkasan",
   "Same as the meeting": "Sama seperti mesyuarat",
-  "Used for new summaries and when you write them again.": "Digunakan untuk ringkasan baharu dan apabila ditulis semula."
+  "Used for new summaries and when you write them again.": "Digunakan untuk ringkasan baharu dan apabila ditulis semula.",
+  "Available after recording": "Tersedia selepas rakaman",
+  "Writing the summary": "Sedang menulis ringkasan",
+  "Regenerate": "Jana semula",
+  "Note for the summary": "Arahan untuk ringkasan",
+  "Add a note, like shorter or in Spanish": "Tambah arahan, seperti lebih pendek atau bahasa Sepanyol",
+  "Waiting for Yogurt AI to download": "Menunggu muat turun Yogurt AI"
 }

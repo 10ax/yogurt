@@ -317,7 +317,6 @@
   "Recording {title}": "Enregistrement de {title}",
   "Redo": "Rétablir",
   "Regenerate summary": "Régénérer le résumé",
-  "Regenerate summary?": "Régénérer le résumé ?",
   "Reload": "Recharger",
   "Remove": "Supprimer",
   "Remove {name}": "Supprimer {name}",
@@ -385,7 +384,6 @@
   "Sum up the meeting so far": "Résume la réunion jusqu’ici",
   "Summarizing…": "Résumé en cours…",
   "Summary": "Résumé",
-  "Summary actions": "Actions du résumé",
   "Sure. The site goes live on Tuesday.": "Bien sûr. Le site est mis en ligne mardi.",
   "System Audio Recording Only": "Enregistrement de l’audio du système uniquement",
   "System Settings is open at {pane}.": "Réglages Système est ouvert sur {pane}.",
@@ -696,5 +694,11 @@
   "Dock only": "Dock uniquement",
   "Summary language": "Langue des résumés",
   "Same as the meeting": "Celle de la réunion",
-  "Used for new summaries and when you write them again.": "Utilisée pour les nouveaux résumés et leur réécriture."
+  "Used for new summaries and when you write them again.": "Utilisée pour les nouveaux résumés et leur réécriture.",
+  "Available after recording": "Disponible après l’enregistrement",
+  "Writing the summary": "Rédaction du résumé",
+  "Regenerate": "Régénérer",
+  "Note for the summary": "Consigne pour le résumé",
+  "Add a note, like shorter or in Spanish": "Ajoutez une consigne, comme plus court ou en espagnol",
+  "Waiting for Yogurt AI to download": "En attente du téléchargement de l’IA Yogurt"
 }

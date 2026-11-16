@@ -13,51 +13,59 @@ async function launchEdited() {
   await app.evaluate(() => (globalThis as unknown as { __fake__: { manyMeetings(o: { n: number; clean: boolean }): void } }).__fake__.manyMeetings({ n: 1, clean: true }))
   await page.reload()
   await page.getByTestId('past-note').click()
-  const editor = page.getByTestId('note-enhanced-editor'), trigger = page.getByTestId('note-view-menu')
+  const editor = page.getByTestId('note-enhanced-editor'), trigger = page.getByTestId('note-menu-button')
   const exact = 'My edited notes must survive a cancelled rewrite.'
   await editor.fill(exact)
   await expect(page.getByTestId('note-save-status')).toHaveAttribute('data-state', 'saved')
   return { app, page, editor, trigger, exact }
 }
 
-test('keyboard rewrite confirmation starts on Cancel, respects later Search, and restores its trigger on dismissal', async () => {
+test('keyboard regeneration focuses the optional note, respects Search, and restores its trigger on dismissal', async () => {
   const { app, page, editor, trigger, exact } = await launchEdited()
   try {
     await expect(page.getByRole('tablist')).toHaveCount(1)
     await expect(page.getByRole('tablist').getByRole('tab')).toHaveText(['Transcript', 'My notes', 'Summary'])
-    await expect(page.getByRole('tablist').getByRole('button', { name: 'Summary actions' })).toHaveCount(0)
+    await expect(page.getByTestId('note-view-menu')).toHaveCount(0)
     await expect(page.getByRole('textbox', { name: 'Summary', exact: true })).toBeVisible()
     await trigger.focus()
     await page.keyboard.press('Enter')
+    await expect(page.getByTestId('note-rename')).toBeFocused()
+    await page.keyboard.press('ArrowDown')
+    await page.keyboard.press('ArrowDown')
     await expect(page.getByTestId('note-write-again')).toBeFocused()
     await expect(page.getByTestId('note-write-again')).toHaveText('Regenerate summary')
     await page.keyboard.press('Enter')
-    const dialog = page.getByRole('alertdialog', { name: 'Regenerate summary?' })
+    const dialog = page.getByRole('dialog', { name: 'Regenerate summary' })
     await expect(dialog).toBeVisible()
     await expect(dialog).toHaveAttribute('aria-describedby', 'note-rewrite-description')
-    await expect(page.getByTestId('note-write-again-cancel')).toBeFocused()
+    await expect(page.getByTestId('note-regenerate-input')).toBeFocused()
     await page.keyboard.press('Meta+k')
     await expect(page.getByTestId('search-input')).toBeFocused()
     await page.keyboard.press('Escape')
     await expect(page.getByTestId('search')).toHaveCount(0)
     await expect(dialog).toBeVisible()
-    await expect(page.getByTestId('note-write-again-cancel')).toBeFocused()
+    await expect(page.getByTestId('note-regenerate-input')).toBeFocused()
     await page.keyboard.press('Escape')
     await expect(dialog).toHaveCount(0)
     await expect(trigger).toBeFocused()
     await expect(editor).toHaveText(exact)
     await page.keyboard.press('Enter')
+    await page.keyboard.press('ArrowDown')
+    await page.keyboard.press('ArrowDown')
     await page.keyboard.press('Enter')
-    await expect(page.getByTestId('note-write-again-cancel')).toBeFocused()
-    // Return on the initial focus cancels; replacing edits still needs an explicit confirmation.
-    await page.keyboard.press('Enter')
+    await expect(page.getByTestId('note-regenerate-input')).toBeFocused()
+    // Escape discards the one-time note without changing the saved summary.
+    await page.getByTestId('note-regenerate-input').fill('shorter')
+    await page.keyboard.press('Escape')
     await expect(dialog).toHaveCount(0)
     await expect(trigger).toBeFocused()
     await expect(editor).toHaveText(exact)
     await expect(page.getByTestId('note-enhanced')).toHaveAttribute('data-status', 'done')
     await page.keyboard.press('Enter')
     await page.getByTestId('note-write-again').press('Enter')
-    await expect(page.getByTestId('note-write-again-cancel')).toBeFocused()
+    await expect(page.getByTestId('note-regenerate-input')).toBeFocused()
+    await expect(page.getByTestId('note-regenerate-input')).toHaveValue('')
+    await page.getByTestId('note-regenerate-input').fill('shorter')
     await page.keyboard.press('Tab')
     await expect(page.getByTestId('note-write-again-confirm')).toBeFocused()
     await page.keyboard.press('Enter')
@@ -70,9 +78,6 @@ test('keyboard rewrite confirmation starts on Cancel, respects later Search, and
 test('explicit rewrite confirmation closes before a delayed save; a failed save still prevents generation', async () => {
   const { app, page, editor, trigger } = await launchEdited()
   try {
-    await trigger.click()
-    await page.getByTestId('note-write-again').click()
-    await expect(page.getByTestId('note-confirm')).toBeVisible()
     await app.evaluate(({ ipcMain }) => {
       type Invoke = (event: Electron.IpcMainInvokeEvent, ...args: unknown[]) => unknown
       const original = (ipcMain as unknown as { _invokeHandlers: Map<string, Invoke> })._invokeHandlers.get('notes:set-enhanced')!
@@ -89,6 +94,9 @@ test('explicit rewrite confirmation closes before a delayed save; a failed save 
     })
     const latest = 'This edit still needs its save acknowledged.'
     await editor.fill(latest)
+    await trigger.click()
+    await page.getByTestId('note-write-again').click()
+    await expect(page.getByTestId('note-confirm')).toBeVisible()
     await page.getByTestId('note-write-again-confirm').click()
     await expect.poll(() => app.evaluate(() => (globalThis as unknown as { __saveRequested: boolean }).__saveRequested)).toBe(true)
     await expect(page.getByTestId('note-confirm')).toHaveCount(0)

@@ -314,7 +314,6 @@
   "Recording {title}": "Kaydediliyor: {title}",
   "Redo": "Yinele",
   "Regenerate summary": "Özeti yeniden oluştur",
-  "Regenerate summary?": "Özet yeniden oluşturulsun mu?",
   "Reload": "Yeniden Yükle",
   "Remove": "Kaldır",
   "Remove {name}": "Kaldır: {name}",
@@ -381,7 +380,6 @@
   "Sum up the meeting so far": "Toplantıyı şimdiye kadar özetle",
   "Summarizing…": "Özetleniyor…",
   "Summary": "Özet",
-  "Summary actions": "Özet işlemleri",
   "Sure. The site goes live on Tuesday.": "Tabii. Site salı günü yayına giriyor.",
   "System Audio Recording Only": "Yalnızca Sistem Sesi Kaydı",
   "System Settings is open at {pane}.": "Sistem Ayarları şu bölümde açık: {pane}.",
@@ -668,5 +666,11 @@
   "Dock only": "Yalnızca Dock",
   "Summary language": "Özet dili",
   "Same as the meeting": "Toplantıyla aynı",
-  "Used for new summaries and when you write them again.": "Yeni özetlerde ve özetleri yeniden yazarken kullanılır."
+  "Used for new summaries and when you write them again.": "Yeni özetlerde ve özetleri yeniden yazarken kullanılır.",
+  "Available after recording": "Kayıttan sonra kullanılabilir",
+  "Writing the summary": "Özet yazılıyor",
+  "Regenerate": "Yeniden oluştur",
+  "Note for the summary": "Özet için talimat",
+  "Add a note, like shorter or in Spanish": "Daha kısa veya İspanyolca gibi bir not ekleyin",
+  "Waiting for Yogurt AI to download": "Yogurt AI indirmesi bekleniyor"
 }

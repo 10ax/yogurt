@@ -9,6 +9,20 @@ const words = (s: string) => s.split(/\s+/).filter(Boolean).length
 
 describe('enhancePrompt', () => {
   const base = { title: 'Launch sync', attendees: [{ name: 'Maya Chen', email: null }], mine: '- ship Tuesday\n- pricing?', transcript: 'You: Hi.\nMaya Chen: Hello.', language: 'Spanish' }
+  it('keeps the default prompt byte-for-byte for an absent or blank rewrite note', () => {
+    expect(enhancePrompt({ ...base, note: '' })).toBe(enhancePrompt(base))
+    expect(enhancePrompt({ ...base, note: '  ' })).toBe(enhancePrompt(base))
+  })
+  it('adds a bounded presentation instruction after the full built-in prompt', () => {
+    const original = enhancePrompt(base)
+    const prompt = enhancePrompt({ ...base, note: '  shorter, in Spanish  ' })
+    expect(prompt.startsWith(original)).toBe(true)
+    expect(prompt).toContain('take precedence over the defaults above')
+    expect(prompt).toContain('never invent facts')
+    expect(prompt.endsWith('"shorter, in Spanish"')).toBe(true)
+    expect(enhancePrompt({ ...base, note: 'x'.repeat(300) })).toContain('"' + 'x'.repeat(240) + '"')
+    expect(tidyNotes('## Plan\nA short paragraph.\nA second paragraph.', true)).toBe('## Plan\nA short paragraph.\nA second paragraph.')
+  })
   it('carries the person\'s own notes, the transcript and the language', () => {
     const p = enhancePrompt(base)
     expect(p).toContain('- ship Tuesday\n- pricing?')
@@ -180,6 +194,13 @@ describe('tidyNotes and markMine', () => {
   it('drops a preamble, code fences and a closing remark', () => {
     expect(tidyNotes('Sure! Here are your notes:\n```markdown\n## Plan\n- Ship it\n```\nLet me know if you need anything else.')).toBe('## Plan\n- Ship it')
   })
+  it.each([
+    '## Plan\nShip on Tuesday.\nKeep the first release small.',
+    'Ship on Tuesday.\nKeep the first release small.',
+    '| Task | Due |\n| --- | --- |\n| Release | Tuesday |',
+  ])('removes rewrite wrappers while keeping the whole body (%s)', body => {
+    expect(tidyNotes(`Sure! Here is the shorter version:\n\n${body}\n\nLet me know if you would like any changes.`, true)).toBe(body)
+  })
   it('marks a bullet that says what the person wrote, when the model did not', () => {
     const md = markMine('## Plan\n- Ship the site on Tuesday\n- Budget is fine', '- ship site tuesday')
     expect(md).toBe('## Plan\n- <mine>Ship the site on Tuesday</mine>\n- Budget is fine')
@@ -280,13 +301,13 @@ describe('enhance', () => {
     // their notes steer the summary; nothing of theirs is pasted in after it
     expect(md).toBe('## Done\n- **You:** x')
   })
-  it('a long meeting reuses the part summaries written while it was recorded, and summarises only the rest', async () => {
+  it.each([undefined, 'Write a shorter summary in Spanish'])('a long meeting reuses part summaries and applies the rewrite note only to the final summary (%s)', async note => {
     const lines = transcriptText(segs).split('\n')
     const earlier = [{ lines: lines.slice(0, 150), summary: '- early topic0' }]
     const summarised: string[] = []
     const parts: Array<[number, number]> = []
     let last = ''
-    await enhance({ meeting, mine: '', segments: segs, language: 'en' }, {
+    await enhance({ meeting, mine: '', segments: segs, language: 'en', note }, {
       contextSize: 8192, count: async (xs) => xs.map(words),
       chat: async (prompt, onToken, o) => {
         if (o?.summary) { summarised.push(prompt); return `- ${(prompt.match(/topic\d+/g) ?? []).join(' ')}` }
@@ -299,6 +320,7 @@ describe('enhance', () => {
     expect(parts[0][0]).toBe(2)
     expect(last).toContain('- early topic0')
     expect(last).toContain('topic399')
+    if (note) { expect(last).toContain(note); expect(summarised.join('\n')).not.toContain(note) }
   })
   it('a part whose lines changed since (new speaker letters) is summarised again', async () => {
     const earlier = [{ lines: ['Speaker Z: not what was said'], summary: '- stale' }]
@@ -437,4 +459,39 @@ describe('summary language preference', () => {
     expect(prompts[0]).toContain('Enviar el plan.')
     expect(prompts[0]).toContain('By default, write in German')
   })
+})
+
+it.each(['in Spanish', 'shorter'])('keeps the summary language default and rewrite instruction %s through next steps and titles', async (note) => {
+  const prompts: string[] = []
+  let askTitle: ((llm: Llm) => Promise<string>) | undefined
+  const llm: Llm = {
+    contextSize: 32000, count: async xs => xs.map(words),
+    chat: async prompt => { prompts.push(prompt); return prompt.startsWith('Now') ? 'NONE' : '## Plan\nA short paragraph.' },
+  }
+  const result = await enhance({ meeting: { title: 'Plan', attendees: [] }, mine: '', segments: [seg('me', 0, 'Release on Tuesday.')], language: 'en', summaryLanguage: 'fr', note, titleLater: ask => { askTitle = ask } }, llm, () => {})
+  await askTitle!(llm)
+  expect(result).toBe('## Plan\nA short paragraph.')
+  expect(prompts).toHaveLength(3)
+  expect(prompts.every(prompt => prompt.includes(note))).toBe(true)
+  expect(prompts[0]).toContain('By default, write in French')
+  expect(prompts[0]).toContain('A rewrite note asking for another language takes precedence')
+  expect(prompts[0].indexOf(JSON.stringify(note))).toBeGreaterThan(prompts[0].indexOf('By default, write in French'))
+  expect(prompts[1]).toContain('heading in the same language as the notes')
+  expect(prompts[2]).toContain('title, in the same language as the notes')
+  for (const prompt of prompts.slice(1)) {
+    expect(prompt).not.toContain('French')
+    expect(prompt).not.toContain('English')
+  }
+  expect(prompts[1]).toContain('excludes next steps')
+  expect(prompts[2]).toContain('other requests apply only to the notes')
+})
+
+it('cleans a shorter rewrite with a lead-in line and a closing remark', async () => {
+  const body = '## Plan\n- Ship on Tuesday.\n- Keep the first release small.'
+  const llm: Llm = {
+    contextSize: 32000, count: async xs => xs.map(words),
+    chat: async prompt => prompt.startsWith('Now') ? 'NONE' : `Here is a shorter version:\n${body}\nLet me know if you need anything else.`,
+  }
+  const result = await enhance({ meeting: { title: 'Plan', attendees: [] }, mine: '', segments: [seg('me', 0, 'Release on Tuesday.')], language: 'en', note: 'shorter' }, llm, () => {})
+  expect(result).toBe(body)
 })

@@ -314,7 +314,6 @@
   "Recording {title}": "Tallennetaan {title}",
   "Redo": "Tee uudelleen",
   "Regenerate summary": "Luo yhteenveto uudelleen",
-  "Regenerate summary?": "Luodaanko yhteenveto uudelleen?",
   "Reload": "Lataa uudelleen",
   "Remove": "Poista",
   "Remove {name}": "Poista {name}",
@@ -381,7 +380,6 @@
   "Sum up the meeting so far": "Tee yhteenveto kokouksesta tähän asti",
   "Summarizing…": "Tehdään yhteenvetoa…",
   "Summary": "Yhteenveto",
-  "Summary actions": "Yhteenvedon toiminnot",
   "Sure. The site goes live on Tuesday.": "Selvä. Sivusto julkaistaan tiistaina.",
   "System Audio Recording Only": "Vain järjestelmän äänen tallennus",
   "System Settings is open at {pane}.": "Järjestelmäasetukset on auki kohdassa {pane}.",
@@ -686,5 +684,11 @@
   "Dock only": "Vain Dock",
   "Summary language": "Yhteenvedon kieli",
   "Same as the meeting": "Sama kuin kokouksessa",
-  "Used for new summaries and when you write them again.": "Käytetään uusissa ja uudelleen kirjoitetuissa yhteenvedoissa."
+  "Used for new summaries and when you write them again.": "Käytetään uusissa ja uudelleen kirjoitetuissa yhteenvedoissa.",
+  "Available after recording": "Käytettävissä tallennuksen jälkeen",
+  "Writing the summary": "Yhteenvetoa kirjoitetaan",
+  "Regenerate": "Luo uudelleen",
+  "Note for the summary": "Ohje yhteenvedolle",
+  "Add a note, like shorter or in Spanish": "Lisää ohje, kuten lyhyemmin tai espanjaksi",
+  "Waiting for Yogurt AI to download": "Odotetaan Yogurt AI:n latausta"
 }

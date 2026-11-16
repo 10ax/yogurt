@@ -21,13 +21,14 @@ function picker(autoFocus = true, suggestedId?: string) {
   const html = renderToStaticMarkup(createElement(FolderPicker, { meetingId: 'meeting', testId: 'picker', onNew() {}, autoFocus, suggestedId }))
   const first = html.match(/<button\b[\s\S]*?<\/button>/)![0]
   const focus = vi.fn()
-  const querySelector = vi.fn(() => ({ focus }))
+  // the suggested folder is marked in place; without one, the first option is focused
+  const querySelector = vi.fn((selector: string) => (selector === '[data-suggested]' ? (suggestedId && html.includes('data-suggested') ? { focus } : null) : { focus }))
   vi.mocked(useRef).mock.results[0].value.current = { querySelector }
   const [effect, dependencies] = vi.mocked(useEffect).mock.calls[0]
   return { first, focus, querySelector, effect, dependencies }
 }
 
-it.each([undefined, 'suggested'])('waits for folders, then focuses the first option (suggestion: %s)', suggestedId => {
+it.each([undefined, 'suggested'])('waits for folders, then focuses the suggested folder where it sits, else the first option (suggestion: %s)', suggestedId => {
   const loading = picker(true, suggestedId)
   loading.effect()
   expect(loading.focus).not.toHaveBeenCalled()
@@ -35,8 +36,10 @@ it.each([undefined, 'suggested'])('waits for folders, then focuses the first opt
   const ready = picker(true, suggestedId)
   expect(ready.dependencies).not.toEqual(loading.dependencies)
   ready.effect()
-  expect(ready.querySelector).toHaveBeenCalledWith('[role="menuitemcheckbox"], [role="menuitem"]')
-  expect(ready.first).toContain(`>${suggestedId ? suggested.name : alpha.name}</span>`)
+  if (suggestedId) expect(ready.querySelector).toHaveBeenCalledWith('[data-suggested]')
+  else expect(ready.querySelector).toHaveBeenCalledWith('[role="menuitemcheckbox"], [role="menuitem"]')
+  // the list keeps its order: the suggestion is not moved to the top
+  expect(ready.first).toContain(`>${alpha.name}</span>`)
   expect(ready.focus).toHaveBeenCalledOnce()
   state.all = [alpha, { ...suggested, count: 1 }]
   // Membership refreshes must not retrigger focus while the user navigates the menu.

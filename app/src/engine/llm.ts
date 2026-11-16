@@ -14,6 +14,8 @@ const toHistory = (messages: EngineMessage[]): ChatHistoryItem[] =>
  */
 export function createLlm() {
   let llama: Llama | undefined
+  /** the processor alone, when the graphics have no room at all (#57) */
+  let cpuLlama: Llama | undefined
   let model: LlamaModel | undefined
   let context: LlamaContext | undefined
   /** One sequence for the model's whole life: a request that starts like the last one only reads what's new */
@@ -71,15 +73,22 @@ export function createLlm() {
       // notes' context then doesn't fit (InsufficientMemoryError, every summary failing). So: load again leaving room for
       // the smallest context we accept, then with nothing on the card. A computer where it fits loads once, as before.
       // A model that doesn't fit on the card at all can fail to load outright (#37): that gets the same fewer layers.
-      for (const gpuLayers of [undefined, { fitContext: { contextSize: size.min } }, 0] as const) {
-        try { model = await l.loadModel(gpuLayers === undefined ? { modelPath } : { modelPath, gpuLayers }) } catch (e) {
-          if (gpuLayers === 0) throw e
-          console.warn('the notes model did not load on the graphics card; loading it again with fewer layers there', (e as Error).message)
+      // Integrated graphics can say the context won't fit even with no layers on them (an Intel Arc, #57): last, the
+      // graphics are left out altogether and the processor does it all.
+      const steps: Array<{ cpu?: true; gpuLayers?: { fitContext: { contextSize: number } } | 0 }> =
+        [{}, { gpuLayers: { fitContext: { contextSize: size.min } } }, { gpuLayers: 0 }, ...(l.gpu ? [{ cpu: true as const }] : [])]
+      let used = l
+      for (const [i, step] of steps.entries()) {
+        const last = i === steps.length - 1
+        used = step.cpu ? (cpuLlama ??= await getLlama({ gpu: false })) : l
+        try { model = await used.loadModel(step.gpuLayers === undefined ? { modelPath } : { modelPath, gpuLayers: step.gpuLayers }) } catch (e) {
+          if (last) throw e
+          console.warn('the notes model did not load; loading it again with fewer layers on the graphics', (e as Error).message)
           continue
         }
-        try { context = await model.createContext({ contextSize: size, ...threads(l) }); break } catch (e) {
-          if (!(e instanceof InsufficientMemoryError) || gpuLayers === 0 || model.gpuLayers === 0) throw e
-          console.warn('the notes did not fit next to the model on the graphics card; loading it again with fewer layers there', e.message)
+        try { context = await model.createContext({ contextSize: size, ...threads(used) }); break } catch (e) {
+          if (!(e instanceof InsufficientMemoryError) || last) throw e
+          console.warn('the notes did not fit next to the model; loading it again with fewer layers on the graphics', e.message)
           await model.dispose(); model = undefined
         }
       }
@@ -87,7 +96,7 @@ export function createLlm() {
       main = context.getSequence()
       // the first evaluation pages the weights in from disk: pay it here, not on the first word of the notes
       await main.evaluateWithoutGeneratingNewTokens(model.tokenize('Hello'))
-      return { contextSize: context.contextSize, gpu: model.gpuLayers === 0 ? false : l.gpu, gpuLayers: model.gpuLayers }
+      return { contextSize: context.contextSize, gpu: model.gpuLayers === 0 ? false : used.gpu, gpuLayers: model.gpuLayers }
     },
     count(texts: string[]): number[] {
       if (!model) throw new Error('No model loaded')

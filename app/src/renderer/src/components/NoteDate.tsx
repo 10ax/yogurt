@@ -148,7 +148,7 @@ function DateCard({ m, chip, motionProps, onClose }: { m: Meeting; chip: RefObje
         {!result ? loading
           : !available ? <div className="flex flex-wrap items-center gap-x-3 gap-y-2">
             <p role="status" className="text-xs text-muted">{result.status === 'error' ? t("Yogurt couldn't read your calendar") : t('Calendar access is off')}</p>
-            <div className="agenda-inspector-actions"><button ref={recovery} className="workspace-button agenda-open-note" onClick={result.status === 'error' ? () => setRevision(n => n + 1) : connect}>{result.status === 'error' ? t('Try again') : result.status === 'denied' ? t('Open System Settings') : t('Connect calendar')}</button></div>
+            <div className="ms-auto flex shrink-0"><button ref={recovery} className="workspace-button agenda-open-note" onClick={result.status === 'error' ? () => setRevision(n => n + 1) : connect}>{result.status === 'error' ? t('Try again') : result.status === 'denied' ? t('Open System Settings') : t('Connect calendar')}</button></div>
           </div>
           : !linked && <div className="note-date-empty-row">
             {!result.events.length && <p role="status" className="text-xs text-muted" data-testid="note-date-events-none" title={t('No events')}>{t('No events')}</p>}

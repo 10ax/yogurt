@@ -29,6 +29,8 @@ for (const theme of ['light', 'dark'] as const) for (const status of ['notDeterm
       const action = card.getByRole('button', { name: label, exact: true })
       await expect(action).toHaveClass('workspace-button agenda-open-note')
       await expect(action).toHaveCSS('height', '28px')
+      // the label fits its button: a collapsed button once let it spill over "Calendar access is off"
+      expect(await action.evaluate(el => el.scrollWidth <= el.clientWidth)).toBe(true)
       if (status === 'denied') {
         await action.click()
         await expect.poll(() => app.evaluate(() => (globalThis as any).__fake__.main().settingsOpened)).toBe(1)

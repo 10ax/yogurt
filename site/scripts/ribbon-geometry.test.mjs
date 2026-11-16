@@ -15,7 +15,6 @@ for(const width of [375,760,1280,1728,1729,2560,3840]){
   const g=ribbonGeometry(width,appWidth)
   for(const original of originals){
     const full=ribbonPath(original,g),fullPoints=numbers(full)
-    if(width<=1728)assert.equal(full,original,'preserve the approved laptop SVG exactly')
     let lastX=Infinity
     for(let step=0;step<=40;step++){
       const progress=g.covered+(1-g.covered)*step/40
@@ -24,13 +23,11 @@ for(const width of [375,760,1280,1728,1729,2560,3840]){
       assert(points.every(Number.isFinite))
       assert(points[0]<=lastX+1e-8,'end cap moves outward without reversing')
       lastX=points[0]
-      if(g.curved){
-        near(points[6],fullPoints[6]);near(points[7],fullPoints[7])
-        const t=(1-progress)/(1-g.covered)
-        for(const u of [0,.25,.5,.75,1]){
-          const actual=cubic(curve(points),u),expected=cubic(curve(fullPoints),t+(1-t)*u)
-          actual.forEach((value,i)=>near(value,expected[i]))
-        }
+      near(points[6],fullPoints[6]);near(points[7],fullPoints[7])
+      const t=(1-progress)/(1-g.covered)
+      for(const u of [0,.25,.5,.75,1]){
+        const actual=cubic(curve(points),u),expected=cubic(curve(fullPoints),t+(1-t)*u)
+        actual.forEach((value,i)=>near(value,expected[i]))
       }
     }
   }
@@ -44,4 +41,6 @@ for(const width of [375,760,1280,1728,1729,2560,3840]){
 // Approved C control points at 2560px, copied from the reviewed comparison geometry.
 const approved=[0,0,374,0,548,56.1792,680,112.3584,1280,367.7184]
 numbers(ribbonPath('M0 0 800 325',ribbonGeometry(2560,1200))).forEach((value,i)=>near(value,approved[i]))
-console.log('Approved C geometry, all band edges, monotonic entry and exact cubic trimming passed at phone, laptop and wide widths.')
+// Laptops get the same curved wings, not the old straight art.
+for(const width of [1280,1512])assert(ribbonPath('M0 0 800 325',ribbonGeometry(width,Math.min(width*.76,1200))).includes(' C'),'curved at laptop widths')
+console.log('Curved geometry at every width, all band edges, monotonic entry and exact cubic trimming passed at phone, laptop and wide widths.')

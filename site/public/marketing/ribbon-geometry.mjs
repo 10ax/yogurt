@@ -1,19 +1,14 @@
 export function ribbonGeometry(width,appWidth){
-  const curved=width>1728
-  return {curved,width:curved?width:1600,height:curved?1728*.4256:650,
-    gap:(width-appWidth)/2,baselineGap:(1728-appWidth)/2,
-    attachment:appWidth/Math.min(width,1728),covered:appWidth/width}
+  // Curved wings at every width; the art keeps its 1728px height cap and scales down below it
+  const art=Math.min(width,1728)
+  return {width,height:art*.4256,gap:(width-appWidth)/2,baselineGap:(art-appWidth)/2,
+    attachment:appWidth/art,covered:appWidth/width}
 }
 
 const mix=(a,b,t)=>a.map((value,i)=>value+(b[i]-value)*t)
 
 export function ribbonPath(original,g,progress=1){
-  if(!g.curved&&progress>=1)return original
   const points=original.match(/-?\d*\.?\d+/g).map(Number)
-  if(!g.curved){
-    const outer=y=>`${800*(1-progress)} ${325+(y-325)*progress}`
-    return original.endsWith('Z')?`M${outer(points[1])} 800 325 ${outer(points[5])}Z`:`M${outer(points[1])} 800 325`
-  }
   // Keep the remaining part of the exact cubic, so the edge grows without changing shape.
   const t=Math.max(0,Math.min(1,(1-progress)/(1-g.covered)))
   const edge=value=>{

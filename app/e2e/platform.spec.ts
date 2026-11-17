@@ -9,9 +9,9 @@ const launch = (env: Record<string, string> = {}) =>
   electron.launch({ args: [main], env: { ...process.env, YOGURT_FAKE: '1', YOGURT_USER_DATA: mkdtempSync(join(tmpdir(), 'yogurt-e2e-')), ...env } })
 
 for (const platform of ['win32', 'linux']) {
-  // Linux reads names from calls through AT-SPI (nothing to ask for, so it reads as on); Windows has none yet
-  const names = platform === 'linux'
-  test(`@everywhere on ${platform}: no agenda, and Settings has no calendar${names ? '' : ' or names from calls'}`, async () => {
+  // Linux reads names from calls through AT-SPI and Windows through UI Automation: nothing to ask for, so it reads as on
+  const names = true
+  test(`@everywhere on ${platform}: no agenda, and Settings has no calendar but names from calls`, async () => {
     const app = await launch({ YOGURT_FAKE_PLATFORM: platform })
     try {
       const page = await app.firstWindow()

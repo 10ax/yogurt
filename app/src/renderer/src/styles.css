@@ -331,6 +331,10 @@ html.widget { --pill:#232326;--pill-ink:#F7F7FA;--accent:#B780FF;--pill-accent:v
 .swap-text { display:inline-grid; }
 .swap-text>*,.swap-text::after { grid-area:1/1; }
 .swap-text[data-widest]::after { content:attr(data-widest);visibility:hidden;height:0;overflow:hidden; }
+.swap-text[data-resize] { display:inline-block;overflow:hidden;transition:width var(--dur-base) var(--ease-out); }
+.swap-text[data-resize]>span { display:block;width:max-content;white-space:nowrap; }
+.swap-text[data-resize] .swap-in { animation-name:motion-fade; }
+@media(prefers-reduced-motion:reduce) { .swap-text[data-resize] { transition:none; } }
 .swap-in { animation:swap-in var(--dur-base) var(--ease-out) both; }
 @keyframes swap-in { from { opacity:0;filter:blur(2px); } }
 .follow-arrow { transition:transform var(--dur-base) var(--ease-soft); }
@@ -612,7 +616,6 @@ input::selection, textarea::selection, .note-prose ::selection { background: var
 .chat-morph-surface { position:absolute;inset:-1px auto auto -1px;width:calc(100% + 2px);height:calc(100% + 2px);pointer-events:none;border:1px solid var(--line);border-radius:inherit;background:var(--float);box-shadow:0 16px 48px rgb(0 0 0 / .18),0 4px 12px rgb(0 0 0 / .08); }
 .chat-panel-contents { position:relative;display:flex;flex-direction:column;flex:1;min-height:0;min-width:0; }
 .chat-trigger[aria-expanded=true] { opacity:0; }
-.note-resume-action { min-width:160px; }
 [data-icon] { flex:none; }
 [data-icon=Loader] { animation:icon-spin 1s linear infinite; }
 [data-icon] path { transform-box:fill-box;transform-origin:center; }
@@ -952,7 +955,7 @@ html:not(.widget) button:focus-visible, html:not(.widget) input:focus-visible { 
 .summary-stop-icon { display:inline-grid;place-items:center;width:14px;height:14px; }
 .summary-stop-icon>* { grid-area:1/1;transition:opacity var(--dur-base) var(--ease-out); }
 .summary-stop-square { width:10px;height:10px;border-radius:2px;background:currentColor;opacity:0; }
-.note-resume-action[data-processing=true] { color:var(--muted);cursor:pointer; }
+.note-resume-action[data-processing=true] { cursor:pointer; }
 .note-resume-action[data-processing=true]:hover { background:var(--float); }
 .note-resume-action:is(:hover,:focus-visible) .summary-stop-icon>svg { opacity:0; }
 .note-resume-action:is(:hover,:focus-visible) .summary-stop-square { opacity:1; }

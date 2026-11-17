@@ -1,4 +1,4 @@
-import { useEffect, useRef, type ReactNode } from 'react'
+import { useEffect, useLayoutEffect, useRef, useState, type ReactNode } from 'react'
 
 /**
  * Icons that change in place: every option shares one grid cell, so nothing around it moves, and only the current
@@ -11,9 +11,21 @@ export function Swap<K extends string>({ show, options, className }: { show: K; 
   </span>
 }
 
-/** A label that changes in place: the new words soften in, and `widest` holds the width so the label never shifts. */
+/** `widest` reserves a fixed label width; without it, fit the current words and ease between widths. */
 export function SwapText({ text, widest }: { text: string; widest?: string }) {
-  const mounted = useRef(false)
+  const mounted = useRef(false), label = useRef<HTMLSpanElement>(null)
+  const [width, setWidth] = useState<number>()
   useEffect(() => { mounted.current = true }, [])
-  return <span className="swap-text" data-widest={widest}><span key={text} className={mounted.current ? 'swap-in' : undefined}>{text}</span></span>
+  useLayoutEffect(() => {
+    const el = label.current
+    if (widest != null || !el) return
+    const measure = () => setWidth(el.getBoundingClientRect().width)
+    measure()
+    const observer = new ResizeObserver(measure)
+    observer.observe(el)
+    return () => observer.disconnect()
+  }, [text, widest])
+  return <span className="swap-text" data-widest={widest} data-resize={widest == null || undefined} style={widest == null && width != null ? { width } : undefined}>
+    <span ref={label} key={text} className={mounted.current ? 'swap-in' : undefined}>{text}</span>
+  </span>
 }

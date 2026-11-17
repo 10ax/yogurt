@@ -22,32 +22,33 @@ for (const theme of ['light', 'dark'] as const) for (const status of ['notDeterm
       await page.getByTestId('note-date').click()
       const card = page.getByTestId('note-date-card')
       await expect(card.getByRole('button', { name: 'Close', exact: true })).toHaveCount(0)
-      await expect(card).toContainText('25 min')
+      if (status !== 'granted') await expect(card).toContainText('25 min')
       if (status !== 'granted') await expect(card.getByTestId('note-date-previous')).toHaveCount(0)
       await expect(card.getByTestId('note-date-heading')).toBeVisible()
-      const label = status === 'error' ? 'Try again' : status === 'denied' ? 'Open System Settings' : status === 'notDetermined' ? 'Connect calendar' : 'Link event'
-      const action = card.getByRole('button', { name: label, exact: true })
-      await expect(action).toHaveClass('workspace-button agenda-open-note')
-      await expect(action).toHaveCSS('height', '28px')
-      // the label fits its button: a collapsed button once let it spill over "Calendar access is off"
-      expect(await action.evaluate(el => el.scrollWidth <= el.clientWidth)).toBe(true)
-      if (status === 'denied') {
-        await action.click()
-        await expect.poll(() => app.evaluate(() => (globalThis as any).__fake__.main().settingsOpened)).toBe(1)
-        await expect(card).toContainText('Calendar access is off')
-        await app.evaluate(() => (globalThis as any).__fake__.calendarStatus('granted'))
-        await page.evaluate(() => window.dispatchEvent(new Event('focus')))
-      } else if (status === 'error') {
-        await expect(card).toContainText("Yogurt couldn't read your calendar")
-        await app.evaluate(() => (globalThis as any).__fake__.calendarStatus('granted'))
-        await action.click()
-      } else if (status === 'notDetermined') {
-        await expect(card).toContainText('Calendar access is off')
-        await action.click()
+      if (status !== 'granted') {
+        const label = status === 'error' ? 'Try again' : status === 'denied' ? 'Open System Settings' : 'Connect calendar'
+        const action = card.getByRole('button', { name: label, exact: true })
+        await expect(action).toHaveClass('workspace-button agenda-open-note')
+        await expect(action).toHaveCSS('height', '28px')
+        // the label fits its button: a collapsed button once let it spill over "Calendar access is off"
+        expect(await action.evaluate(el => el.scrollWidth <= el.clientWidth)).toBe(true)
+        if (status === 'denied') {
+          await action.click()
+          await expect.poll(() => app.evaluate(() => (globalThis as any).__fake__.main().settingsOpened)).toBe(1)
+          await expect(card).toContainText('Calendar access is off')
+          await app.evaluate(() => (globalThis as any).__fake__.calendarStatus('granted'))
+          await page.evaluate(() => window.dispatchEvent(new Event('focus')))
+        } else if (status === 'error') {
+          await expect(card).toContainText("Yogurt couldn't read your calendar")
+          await app.evaluate(() => (globalThis as any).__fake__.calendarStatus('granted'))
+          await action.click()
+        } else if (status === 'notDetermined') {
+          await expect(card).toContainText('Calendar access is off')
+          await action.click()
+        }
       }
       await expect(card.getByTestId('note-date-events-none')).toHaveText('No events')
-      await card.getByTestId('note-date-events-toggle').press('Enter')
-      await expect(card.getByTestId('note-date-previous')).toBeFocused()
+      await expect(card.getByTestId('note-date-events-toggle')).toHaveCount(0)
       const header = card.locator('.agenda-inspector-heading')
       const meetingDay = await header.getByTestId('note-date-heading').textContent()
       await expect(header.getByTestId('note-date-previous')).toBeVisible()

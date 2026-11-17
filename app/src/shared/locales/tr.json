@@ -1,5 +1,5 @@
 {
-  "Link event": "Etkinlik bağla",
+  "Other people": "Diğer kişiler",
   "No events": "Etkinlik yok",
   "Go to {date}": "Şu tarihe git: {date}",
   "Resume notes · {title}": "Not almaya devam et · {title}",
@@ -16,7 +16,6 @@
   "Open": "Aç",
   "Next day": "Sonraki gün",
   "Previous day": "Önceki gün",
-  "Link to a calendar event": "Bir takvim etkinliğine bağla",
   "Yogurt couldn't update the calendar link. Try again.": "Yogurt takvim bağlantısını güncelleyemedi. Yeniden deneyin.",
   "Keep the title, attendees and notes.": "Başlığı, katılımcıları ve notları koru.",
   "Unlink calendar event": "Takvim etkinliği bağlantısını kaldır",

@@ -10,6 +10,7 @@ import { agendaNoteAction } from '../../../shared/agendaNote'
 import { pickNext } from '../../../shared/comingUp'
 import { daysAgo, timeOf, useDay } from '../dates'
 import { eventPhase, shiftDay, stepAgendaDay, weekDates } from '../agenda'
+import { useJoinWindow } from '../useJoinWindow'
 import { useAgendaCard } from '../useAgendaCard'
 import { motion, scrollBehavior, usePopoverPresence } from '../motion'
 import { peopleSummary, personName, useMyName } from './People'
@@ -222,7 +223,8 @@ function EventDetails({ motionProps, event, recording, onOpen, onStart, now, onC
     document.addEventListener('keydown', escape, true)
     return () => { document.removeEventListener('pointerdown', outside); document.removeEventListener('keydown', escape, true) }
   }, [onClose, opener, motionProps.inert])
-  const url = event.url?.trim()
+  const joinable = useJoinWindow(event.start, event.end)
+  const url = joinable ? event.url?.trim() : undefined
   return <dialog {...motionProps} ref={panel} id="agenda-event-details" data-testid="event-details-content" className="agenda-inspector menu-entry" aria-labelledby="agenda-detail-title" onCancel={e => { e.preventDefault(); onClose() }}>
     <i className="agenda-inspector-arrow" aria-hidden="true" />
     <div className="agenda-inspector-content">

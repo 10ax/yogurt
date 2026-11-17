@@ -1,5 +1,5 @@
 {
-  "Link event": "ইভেন্ট লিঙ্ক করুন",
+  "Other people": "অন্যান্য ব্যক্তি",
   "No events": "কোনো ইভেন্ট নেই",
   "Go to {date}": "{date} তারিখে যান",
   "Resume notes · {title}": "নোট নেওয়া চালিয়ে যান · {title}",
@@ -16,7 +16,6 @@
   "Open": "খুলুন",
   "Next day": "পরের দিন",
   "Previous day": "আগের দিন",
-  "Link to a calendar event": "ক্যালেন্ডারের ইভেন্টে লিঙ্ক করুন",
   "Yogurt couldn't update the calendar link. Try again.": "Yogurt ক্যালেন্ডারের লিংক আপডেট করতে পারেনি। আবার চেষ্টা করুন।",
   "Keep the title, attendees and notes.": "শিরোনাম, অংশগ্রহণকারী ও নোট রাখুন।",
   "Unlink calendar event": "ক্যালেন্ডার ইভেন্টের সংযোগ সরান",

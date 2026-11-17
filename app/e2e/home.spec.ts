@@ -542,6 +542,10 @@ test('agenda detail cards support keyboard entry, dismissal and return focus wit
     await expect(details.getByTestId('event-open')).toBeFocused()
     await page.keyboard.press('Tab')
     await expect(details.getByRole('link', { name: 'Join meeting' })).toBeFocused()
+    await page.clock.setFixedTime(at.getTime() + 30 * 60_000)
+    await page.evaluate(() => window.dispatchEvent(new Event('focus')))
+    await expect(details.getByRole('link', { name: 'Join meeting' })).toHaveCount(0)
+    await expect(details.getByTestId('event-open')).toBeVisible()
     // The card is nonmodal: a click in the rest of the page dismisses it and still works.
     await page.getByTestId('nav-chat').click()
     await expect(page.getByTestId('chat-page')).toBeVisible()

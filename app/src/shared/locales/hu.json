@@ -1,5 +1,5 @@
 {
-  "Link event": "Esemény csatolása",
+  "Other people": "Más résztvevők",
   "No events": "Nincs esemény",
   "Go to {date}": "Ugrás erre a napra: {date}",
   "Resume notes · {title}": "Jegyzetelés folytatása · {title}",
@@ -16,7 +16,6 @@
   "Open": "Megnyitás",
   "Next day": "Következő nap",
   "Previous day": "Előző nap",
-  "Link to a calendar event": "Kapcsolás naptáreseményhez",
   "Yogurt couldn't update the calendar link. Try again.": "A Yogurt nem tudta frissíteni a naptárkapcsolatot. Próbáld újra.",
   "Keep the title, attendees and notes.": "A cím, a résztvevők és a jegyzetek megtartása.",
   "Unlink calendar event": "Naptáresemény leválasztása",

@@ -1,5 +1,5 @@
 {
-  "Link event": "連結活動",
+  "Other people": "其他人",
   "No events": "沒有活動",
   "Go to {date}": "前往{date}",
   "Resume notes · {title}": "繼續記筆記 · {title}",
@@ -16,7 +16,6 @@
   "Open": "開啟",
   "Next day": "後一天",
   "Previous day": "前一天",
-  "Link to a calendar event": "連結至行事曆活動",
   "Yogurt couldn't update the calendar link. Try again.": "Yogurt 無法更新行事曆連結。請再試一次。",
   "Keep the title, attendees and notes.": "保留標題、與會者和筆記。",
   "Unlink calendar event": "取消連結行事曆活動",

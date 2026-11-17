@@ -1,13 +1,14 @@
 import { afterEach, beforeEach, expect, it, vi } from 'vitest'
 import { createElement } from 'react'
 import { renderToStaticMarkup } from 'react-dom/server'
-import { timeOf } from '../src/renderer/src/dates'
+import { eventTimeRange } from '../src/shared/dates'
 import { NoteDate } from '../src/renderer/src/components/NoteDate'
 import type { CalEvent, CalendarStatus, Meeting } from '../src/shared/types'
 import { LOCALES, setLanguage, t } from '../src/shared/i18n'
 
 // SSR supplies settled hook states; interactions and async reads are covered by the CI spec.
-const state = vi.hoisted(() => ({ values: [] as unknown[], index: 0, keyboard: false, focusEffect: undefined as undefined | { run: () => void; previous: { current: unknown } } }))
+const state = vi.hoisted(() => ({ values: [] as unknown[], index: 0, keyboard: false, details: undefined as any, focusEffect: undefined as undefined | { run: () => void; previous: { current: unknown } } }))
+vi.mock('../src/renderer/src/useNoteCalendar', () => ({ useNoteCalendar: () => ({ details: state.details, refresh: vi.fn() }) }))
 vi.mock('react', async importOriginal => {
   const react = await importOriginal<typeof import('react')>()
   return { ...react,
@@ -24,10 +25,12 @@ beforeEach(() => { vi.useFakeTimers(); vi.setSystemTime(new Date(2026, 10, 13)) 
 afterEach(() => { vi.useRealTimers(); vi.unstubAllGlobals(); setLanguage('en') })
 const at = +new Date(2026, 10, 10, 12, 24)
 const meeting = { id: 'note', title: 'Planning', startedAt: at, durationMs: 420_000, eventId: null, attendees: [], state: 'done' } as unknown as Meeting
-function render(status?: CalendarStatus, { picking = false, linked = false, calendar = true, day = at, linking = false, loading = false, compact = false, keyboard = false, snapshot = {} as Partial<Meeting>, event = null as CalEvent | null, events = [] as CalEvent[] } = {}) {
+function render(status?: CalendarStatus, { picking = false, linked = false, calendar = true, day = at, linking = false, loading = false, compact = false, keyboard = false, snapshot = {} as Partial<Meeting>, event = null as CalEvent | null, events = [] as CalEvent[], colors = {} as Record<string, string> } = {}) {
   vi.stubGlobal('window', { yogurt: { capabilities: { calendar } }, matchMedia: () => ({ matches: false }) })
   state.index = 0; state.keyboard = keyboard; state.focusEffect = undefined
-  state.values = ['keyboard', { value: 'keyboard', pointer: false }, 0, picking, day, status ? { status, events: event ? [event, ...events.filter(e => e.id !== event.id)] : events } : undefined, linking, compact, false, loading ? 'skeleton' : 'waiting', linked ? 'event' : null]
+  const result = status ? { status, events: event ? [event, ...events.filter(e => e.id !== event.id)] : events } : undefined
+  state.details = linked && result ? { result, colors } : undefined
+  state.values = ['keyboard', { value: 'keyboard', pointer: false }, 0, picking, day, status ? { status, events: event ? [event, ...events.filter(e => e.id !== event.id)] : events } : undefined, linking, compact, false, loading ? 'skeleton' : 'waiting', linked ? 'event' : null, Date.now()]
   return renderToStaticMarkup(createElement(NoteDate, { m: { ...meeting, ...snapshot, eventId: linked ? 'event' : null } }))
 }
 
@@ -48,11 +51,13 @@ it.each([
     expect(html).not.toContain('class="underline"')
   }
 })
-it('keeps empty-day navigation in the same header before and during browsing', () => {
+it('shows empty-day choices and navigation immediately', () => {
   const html = render('granted')
-  expect(html).toContain('7 min')
+  expect(html).not.toContain('7 min')
   expect(html).toContain('No events')
-  expect(html).toContain('Link to a calendar event')
+  expect(html).not.toContain('Link to a calendar event')
+  expect(html).not.toContain('note-date-events-toggle')
+  expect(html).toContain('data-testid="note-date-events"')
   expect(html).not.toContain('note-date-days')
   expect(html).toContain('note-date-next')
   const picker = render('granted', { picking: true })
@@ -62,7 +67,7 @@ it('keeps empty-day navigation in the same header before and during browsing', (
 })
 it('keeps the unlinked picker ordered and separate from unlinking', () => {
   const events = [20, 1].map(n => ({ id: String(n), title: `Event ${n}`, start: at + n * 60_000, end: at + (n + 30) * 60_000, attendees: [], url: null }))
-  const html = render('granted', { picking: true, events })
+  const html = render('granted', { events })
   expect(html).toContain('data-event-id="1"')
   expect(html.indexOf('data-event-id="1"')).toBeLessThan(html.indexOf('data-event-id="20"'))
   expect(html).not.toContain('note-date-unlink')
@@ -84,7 +89,7 @@ it('uses existing short translations for every recovery and empty state in all 3
   expect(LOCALES).toHaveLength(32)
   for (const { id } of LOCALES) {
     setLanguage(id)
-    for (const key of ['Calendar access is off', "Yogurt couldn't read your calendar", 'Connect calendar', 'Open System Settings', 'Try again', 'No events', 'Link event', 'Previous day', 'Next day']) {
+    for (const key of ['Calendar access is off', "Yogurt couldn't read your calendar", 'Connect calendar', 'Open System Settings', 'Try again', 'No events', 'Previous day', 'Next day']) {
       expect(t(key)).toBeTruthy()
       expect(t(key)).not.toMatch(/[:：—\n]/)
       if (id !== 'en') expect(t(key)).not.toBe(key)
@@ -94,23 +99,23 @@ it('uses existing short translations for every recovery and empty state in all 3
 
 it('shows the selected date once with day buttons and no close button', () => {
   const day = +new Date(2026, 10, 11, 12, 24)
-  for (const linked of [false, true]) {
-    const html = render('granted', { picking: true, linked, day })
-    const header = html.match(/<div class="agenda-inspector-heading">[\s\S]*?<\/h3>[\s\S]*?<\/div><\/div>/)?.[0] ?? ''
-    expect(header).toContain('Wednesday, Nov 11')
-    expect(header).toContain('aria-live="polite"')
-    expect(header).toContain('note-date-previous')
-    expect(header.indexOf('note-date-previous')).toBeLessThan(header.indexOf('note-date-next'))
-    expect(html).not.toContain('note-date-close')
-    expect(html).not.toContain('aria-label="Close"')
-    expect(html.match(/>Wednesday, Nov 11<\/h3>/g)).toHaveLength(1)
-    expect(html).not.toContain('Tuesday, Nov 10')
-    expect(html).not.toContain('note-date-days')
-  }
+  const html = render('granted', { picking: true, day })
+  const header = html.match(/<div class="agenda-inspector-heading">[\s\S]*?<\/h3>[\s\S]*?<\/div><\/div>/)?.[0] ?? ''
+  expect(header).toContain('Wednesday, Nov 11')
+  expect(header).toContain('aria-live="polite"')
+  expect(header).toContain('note-date-previous')
+  expect(header.indexOf('note-date-previous')).toBeLessThan(header.indexOf('note-date-next'))
+  expect(html).not.toContain('note-date-close')
+  expect(html).not.toContain('aria-label="Close"')
+  expect(html.match(/>Wednesday, Nov 11<\/h3>/g)).toHaveLength(1)
+  expect(html).not.toContain('Tuesday, Nov 10')
+  expect(html).not.toContain('note-date-days')
 })
-it('keeps the meeting date as the linked detail heading and locks navigation while linking', () => {
+it('keeps the date on the chip when linked and locks unlinked navigation while linking', () => {
   const html = render('granted', { linked: true })
-  expect(html.match(/>Tuesday, Nov 10<\/h3>/g)).toHaveLength(1)
+  expect(html).not.toContain('note-date-heading')
+  expect(html).not.toContain('note-date-next')
+  expect(html).not.toContain('note-date-previous')
   expect(html).toContain('note-date-events-toggle')
   const busy = render('granted', { picking: true, linking: true })
   for (const direction of ['previous', 'next']) expect(busy).toMatch(new RegExp(`data-testid="note-date-${direction}"[^>]*disabled=""`))
@@ -120,11 +125,12 @@ it('places the linked actions directly under the title before details and access
   const event = { id: 'event', title: 'Planning', start: at, end: at + 1_800_000, attendees: [], url: null }
   for (const status of ['granted', 'denied'] as const) {
     const html = render(status, { linked: true, picking: true, events: [event, { ...event, id: 'alias', aliases: ['event'] }], event: status === 'granted' ? event : null })
-    expect(html.match(/Planning/g)).toHaveLength(1)
+    expect(html.match(/>Planning<\/strong>/g)).toHaveLength(1)
     expect(html).not.toContain('data-event-id="event"')
     expect(html).not.toContain('data-event-id="alias"')
     expect(html.indexOf('note-date-events-toggle')).toBeLessThan(html.indexOf('note-date-unlink'))
-    expect(html.indexOf('note-date-unlink')).toBeLessThan(html.indexOf('note-date-details'))
+    expect(html).not.toContain('note-date-details')
+    expect(html.indexOf('note-date-time')).toBeLessThan(html.indexOf('note-date-unlink'))
     if (status === 'denied') expect(html.indexOf('note-date-unlink')).toBeLessThan(html.indexOf('Open System Settings'))
   }
 })
@@ -161,21 +167,20 @@ it('shows only Unlink and its description for linked notes, regardless of calend
     }
   }
   const unlinked = render('granted', { events: [event] })
-  expect(unlinked).toContain('Link event')
-  expect(unlinked).not.toContain('data-testid="note-date-events"')
+  expect(unlinked).not.toContain('Link event')
+  expect(unlinked).toContain('data-testid="note-date-events"')
+  expect(unlinked).toContain('Design review')
   const choosing = render('granted', { picking: true, events: [event] })
   expect(choosing).toContain('Design review')
   expect(choosing).not.toContain('note-date-unlink')
 })
-it('keeps A details visible while the attached picker stays mounted and becomes inert when closed', () => {
+it('keeps the event block visible while the attached picker stays mounted and becomes inert when closed', () => {
   for (const picking of [false, true]) {
     const html = render('granted', { linked: true, picking })
     const picker = html.match(/class="accordion note-date-motion note-date-picker-motion"[^>]*>/)?.[0]
-    const details = html.match(/class="accordion note-date-motion note-date-details-motion"[^>]*>/)?.[0]
     expect(picker).toContain(`data-open="${picking}"`)
-    expect(details).toContain('data-open="true"')
-    expect(details).not.toContain('inert=')
-    expect(details).not.toContain('aria-hidden="true"')
+    expect(html).toContain('class="note-date-identity"')
+    expect(html).not.toContain('note-date-details-motion')
     expect(picker).toContain(`aria-hidden="${!picking}"`)
     if (picking) expect(picker).not.toContain('inert=')
     else expect(picker).toContain('inert=""')
@@ -191,9 +196,9 @@ it('keeps the linked title, time range and calendar when access is off, using th
     const html = render(status, { linked: true, snapshot, event: status === 'granted' ? event : null })
     expect(html).toContain('Calendar title')
     expect(html).not.toContain('My renamed note')
-    expect(html).toContain(`${timeOf(event.start)} – ${timeOf(event.end)}`)
+    expect(html).toContain(eventTimeRange(event.start, event.end))
     expect(html).toContain('Work')
-    expect(html).toContain('Team calendar')
+    expect(html).not.toContain('Team calendar')
     expect(html).not.toContain('7 min')
     if (status === 'denied') {
       expect(html).toContain('Calendar access is off')
@@ -214,5 +219,48 @@ it.each([false, true])('only moves picker focus for keyboard activation, keyboar
     effect.previous.current = { focus }
     effect.run()
     expect(focus).toHaveBeenCalledTimes(keyboard && picking ? 1 : 0)
+  }
+})
+
+it('joins calendar color by id without a grey fallback and keeps the active call link', () => {
+  vi.setSystemTime(at)
+  const event = { id: 'event', title: 'Planning', start: at, end: at + 1_800_000, attendees: [], url: 'https://call.example/meeting', calendar: { id: 'work', name: 'Work', source: 'Account' } }
+  const html = render('granted', { linked: true, event, colors: { work: '#438879', other: '#112233' } })
+  expect(html).toContain('background-color:#438879')
+  expect(html).toContain('href="https://call.example/meeting"')
+  expect(html).toContain('Join meeting')
+  expect(html).toContain('class="note-date-actions" aria-busy="false"')
+  expect(html).not.toContain('loading-placeholder')
+  expect(html).not.toContain('Open calendar')
+  const missing = render('granted', { linked: true, event, colors: { other: '#112233' } })
+  expect(missing).toContain('class="note-date-color note-date-reveal" data-ready="false"')
+  expect(missing).not.toContain('background-color:var(--muted)')
+})
+
+it('reserves linked loading space immediately without a skeleton or a grey mark', () => {
+  vi.setSystemTime(at)
+  const snapshot = { eventStartedAt: at, eventEndedAt: at + 1_800_000 }
+  const waiting = render(undefined, { linked: true, snapshot })
+  const slow = render(undefined, { linked: true, loading: true, snapshot })
+  for (const html of [waiting, slow]) {
+    expect(html).toContain('class="note-date-actions" aria-busy="true"')
+    expect(html).toContain('class="note-date-calendar note-date-reveal" data-ready="false"')
+    expect(html).toContain('class="note-date-color note-date-reveal" data-ready="false"')
+    expect(html).not.toContain('background-color:var(--muted)')
+    expect(html).not.toContain('loading-placeholder')
+    expect(html).not.toContain('loading-bar')
+    expect(html).not.toContain('href=')
+  }
+})
+
+it.each([[-600_001, false], [-600_000, true], [0, true], [1_799_999, true], [1_800_000, false], [7 * 86_400_000, false]])('only shows the Join row during the event window at offset %s', (offset, visible) => {
+  vi.setSystemTime(at + Number(offset))
+  const event = { id: 'event', title: 'Planning', start: at, end: at + 1_800_000, attendees: [], url: 'https://call.example/meeting' }
+  const html = render('granted', { linked: true, event })
+  expect(html.includes('Join meeting')).toBe(visible)
+  expect(html.includes('class="note-date-actions"')).toBe(visible)
+  if (!visible) {
+    const pending = render(undefined, { linked: true, snapshot: { eventStartedAt: at, eventEndedAt: event.end } })
+    expect(pending).not.toContain('class="note-date-actions"')
   }
 })

@@ -1,5 +1,5 @@
 {
-  "Link event": "Länka händelse",
+  "Other people": "Andra personer",
   "No events": "Inga händelser",
   "Go to {date}": "Gå till {date}",
   "Resume notes · {title}": "Fortsätt anteckna · {title}",
@@ -16,7 +16,6 @@
   "Open": "Öppna",
   "Next day": "Nästa dag",
   "Previous day": "Föregående dag",
-  "Link to a calendar event": "Länka till en kalenderhändelse",
   "Yogurt couldn't update the calendar link. Try again.": "Yogurt kunde inte uppdatera kopplingen till kalendern. Försök igen.",
   "Keep the title, attendees and notes.": "Behåll titel, deltagare och anteckningar.",
   "Unlink calendar event": "Koppla bort kalenderhändelse",

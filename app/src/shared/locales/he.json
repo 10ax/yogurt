@@ -1,5 +1,5 @@
 {
-  "Link event": "קישור אירוע",
+  "Other people": "אנשים אחרים",
   "No events": "אין אירועים",
   "Go to {date}": "מעבר אל {date}",
   "Resume notes · {title}": "המשך כתיבת הערות · {title}",
@@ -16,7 +16,6 @@
   "Open": "פתיחה",
   "Next day": "היום הבא",
   "Previous day": "היום הקודם",
-  "Link to a calendar event": "קישור לאירוע ביומן",
   "Yogurt couldn't update the calendar link. Try again.": "Yogurt לא הצליח לעדכן את הקישור ליומן. כדאי לנסות שוב.",
   "Keep the title, attendees and notes.": "לשמור את הכותרת, המשתתפים וההערות.",
   "Unlink calendar event": "ניתוק אירוע היומן",

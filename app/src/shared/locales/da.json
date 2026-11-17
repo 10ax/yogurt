@@ -1,5 +1,5 @@
 {
-  "Link event": "Tilknyt begivenhed",
+  "Other people": "Andre personer",
   "No events": "Ingen begivenheder",
   "Go to {date}": "Gå til {date}",
   "Resume notes · {title}": "Fortsæt noter · {title}",
@@ -16,7 +16,6 @@
   "Open": "Åbn",
   "Next day": "Næste dag",
   "Previous day": "Forrige dag",
-  "Link to a calendar event": "Tilknyt en kalenderbegivenhed",
   "Yogurt couldn't update the calendar link. Try again.": "Yogurt kunne ikke opdatere koblingen til kalenderen. Prøv igen.",
   "Keep the title, attendees and notes.": "Behold titel, deltagere og noter.",
   "Unlink calendar event": "Fjern kobling til kalenderbegivenhed",

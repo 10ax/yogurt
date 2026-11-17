@@ -1,5 +1,5 @@
 {
-  "Link event": "Propojit událost",
+  "Other people": "Ostatní lidé",
   "No events": "Žádné události",
   "Go to {date}": "Přejít na {date}",
   "Resume notes · {title}": "Pokračovat v poznámkách · {title}",
@@ -16,7 +16,6 @@
   "Open": "Otevřít",
   "Next day": "Další den",
   "Previous day": "Předchozí den",
-  "Link to a calendar event": "Propojit s událostí v kalendáři",
   "Yogurt couldn't update the calendar link. Try again.": "Yogurt nemohl aktualizovat propojení s kalendářem. Zkuste to znovu.",
   "Keep the title, attendees and notes.": "Zachovat název, účastníky a poznámky.",
   "Unlink calendar event": "Odpojit událost z kalendáře",

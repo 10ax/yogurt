@@ -1,5 +1,5 @@
 {
-  "Link event": "Liên kết sự kiện",
+  "Other people": "Những người khác",
   "No events": "Không có sự kiện",
   "Go to {date}": "Đi đến {date}",
   "Resume notes · {title}": "Tiếp tục ghi chú · {title}",
@@ -16,7 +16,6 @@
   "Open": "Mở",
   "Next day": "Ngày tiếp theo",
   "Previous day": "Ngày trước",
-  "Link to a calendar event": "Liên kết với sự kiện lịch",
   "Yogurt couldn't update the calendar link. Try again.": "Yogurt không cập nhật được liên kết lịch. Hãy thử lại.",
   "Keep the title, attendees and notes.": "Giữ tiêu đề, người tham dự và ghi chú.",
   "Unlink calendar event": "Bỏ liên kết sự kiện lịch",

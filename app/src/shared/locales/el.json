@@ -1,5 +1,5 @@
 {
-  "Link event": "Σύνδεση συμβάντος",
+  "Other people": "Άλλα άτομα",
   "No events": "Κανένα συμβάν",
   "Go to {date}": "Μετάβαση στις {date}",
   "Resume notes · {title}": "Συνέχιση σημειώσεων · {title}",
@@ -16,7 +16,6 @@
   "Open": "Άνοιγμα",
   "Next day": "Επόμενη ημέρα",
   "Previous day": "Προηγούμενη ημέρα",
-  "Link to a calendar event": "Σύνδεση με συμβάν ημερολογίου",
   "Yogurt couldn't update the calendar link. Try again.": "Το Yogurt δεν μπόρεσε να ενημερώσει τη σύνδεση με το ημερολόγιο. Δοκιμάστε ξανά.",
   "Keep the title, attendees and notes.": "Διατήρηση τίτλου, συμμετεχόντων και σημειώσεων.",
   "Unlink calendar event": "Αποσύνδεση συμβάντος ημερολογίου",

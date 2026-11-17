@@ -1,5 +1,5 @@
 {
-  "Link event": "Liitä tapahtuma",
+  "Other people": "Muut henkilöt",
   "No events": "Ei tapahtumia",
   "Go to {date}": "Siirry päivään {date}",
   "Resume notes · {title}": "Jatka muistiinpanoja · {title}",
@@ -16,7 +16,6 @@
   "Open": "Avaa",
   "Next day": "Seuraava päivä",
   "Previous day": "Edellinen päivä",
-  "Link to a calendar event": "Liitä kalenteritapahtumaan",
   "Yogurt couldn't update the calendar link. Try again.": "Yogurt ei voinut päivittää kalenterilinkkiä. Yritä uudelleen.",
   "Keep the title, attendees and notes.": "Säilytä otsikko, osallistujat ja muistiinpanot.",
   "Unlink calendar event": "Irrota kalenteritapahtuma",

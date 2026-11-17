@@ -12,3 +12,7 @@ export function pickNext(events: CalEvent[], now: number): string | undefined {
   const on = events.filter((e) => e.start <= now && e.end > now).sort((a, b) => b.start - a.start)
   return on[0]?.id
 }
+
+export const JOIN_EARLY_MS = 10 * MIN
+export const canJoinEvent = (start: number, end: number | null | undefined, now: number): boolean =>
+  end != null && now >= start - JOIN_EARLY_MS && now < end

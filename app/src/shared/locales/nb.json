@@ -1,5 +1,5 @@
 {
-  "Link event": "Koble til hendelse",
+  "Other people": "Andre personer",
   "No events": "Ingen hendelser",
   "Go to {date}": "Gå til {date}",
   "Resume notes · {title}": "Fortsett notater · {title}",
@@ -16,7 +16,6 @@
   "Open": "Åpne",
   "Next day": "Neste dag",
   "Previous day": "Forrige dag",
-  "Link to a calendar event": "Koble til en kalenderhendelse",
   "Yogurt couldn't update the calendar link. Try again.": "Yogurt kunne ikke oppdatere koblingen til kalenderen. Prøv igjen.",
   "Keep the title, attendees and notes.": "Behold tittel, deltakere og notater.",
   "Unlink calendar event": "Koble fra kalenderhendelse",

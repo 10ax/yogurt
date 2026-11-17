@@ -1,5 +1,5 @@
 {
-  "Link event": "Пов’язати подію",
+  "Other people": "Інші учасники",
   "No events": "Немає подій",
   "Go to {date}": "Перейти до {date}",
   "Resume notes · {title}": "Продовжити нотатки · {title}",
@@ -16,7 +16,6 @@
   "Open": "Відкрити",
   "Next day": "Наступний день",
   "Previous day": "Попередній день",
-  "Link to a calendar event": "Пов’язати з подією календаря",
   "Yogurt couldn't update the calendar link. Try again.": "Yogurt не зміг оновити зв’язок із календарем. Спробуйте ще раз.",
   "Keep the title, attendees and notes.": "Залишити назву, учасників і нотатки.",
   "Unlink calendar event": "Відв’язати подію календаря",

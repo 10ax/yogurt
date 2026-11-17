@@ -1,6 +1,6 @@
 import { attendeeSuggestions, searchPersonKey } from '../../../shared/searchPeople'
 import { usePopoverPresence } from '../motion'
-import { attendeePrivacy, emailName } from '../../../shared/people'
+import { attendeePrivacy, emailName, groupPeople, initials } from '../../../shared/people'
 import { toasts } from './TrashToast'
 import { useCallback, useEffect, useId, useRef, useState, type KeyboardEvent, type RefObject } from 'react'
 import { useNotePopover } from '../useNotePopover'
@@ -108,18 +108,22 @@ function Card({ m, me, motionProps, chip, onClose }: { m: Meeting; me: string; m
   const key = (e: KeyboardEvent) => {
     if (e.key === 'Escape') { e.preventDefault(); e.stopPropagation(); onClose() }
   }
-  // the person themself first, marked; an invite that lists them too shows them once
+  // Keep original attendee indices when grouping; an invite lists the person themself once.
   const others = m.attendees.map((p, i) => ({ p, i })).filter(({ p }) => !same(p.name, me))
+
+  const groups = groupPeople<{ p: Person; i: number; mine?: boolean }>([{ p: { name: me || t('Me'), email: m.attendees.find(p => same(p.name, me))?.email ?? null }, i: -1, mine: true }, ...others])
 
   return (
     <div ref={card} data-testid="people-card" {...motionProps} data-anchor="start" role="dialog" aria-label={t('People')} onKeyDown={key}
       className="people-card menu-entry absolute start-0 top-full z-30 mt-2 w-[min(340px,calc(100vw-48px))] rounded-lg border border-line bg-float text-ink shadow-[var(--shadow)]">
-      <ul data-testid="people-list" className="people-list max-h-64 overflow-y-auto p-1.5">
-        <Row name={me || t('Me')} email={m.attendees.find(p => same(p.name, me))?.email} mine />
-        {others.map(({ p, i }) => (
-          <Row key={p.email || i} name={personName(p.name)} email={p.email} onRename={name => window.yogurt.meetings.renameAttendee(m.id, i, name, p)} onRemove={() => void save(m.attendees.filter((_, j) => j !== i))} />
-        ))}
-      </ul>
+      <div data-testid="people-list" className="people-list grouped-people overflow-y-auto p-1.5">
+        {groups.map(group => <section key={group.domain} aria-label={group.label || t('Other people')}>
+          <h4 className="company-heading" title={group.domain || undefined}>{group.label || t('Other people')}</h4>
+          <ul>{group.people.map(({ p, i, mine }) => <Row key={p.email || i} name={personName(p.name)} email={p.email} mine={mine}
+            onRename={mine ? undefined : name => window.yogurt.meetings.renameAttendee(m.id, i, name, p)}
+            onRemove={mine ? undefined : () => void save(m.attendees.filter((_, j) => j !== i))} />)}</ul>
+        </section>)}
+      </div>
       <div className={`border-t border-line ${adding ? 'p-3' : ''}`}>
         <button data-testid="people-add-open" onClick={() => { setAdding(true); input.current?.focus() }} className={`flex w-full items-center gap-2 text-start text-[13px] text-muted ${adding ? 'mb-2' : 'h-11 px-4 hover:bg-card'}`}><Plus size={14} aria-hidden="true" />{t('Add an attendee')}</button>
         {adding && <div className="people-add-field flex h-9 items-center rounded-md border border-line bg-card px-2.5">
@@ -171,12 +175,13 @@ function Row({ name, email, mine, onRemove, onRename }: { name: string; email?: 
   }
   return (
     <li data-testid="people-row" data-me={mine ? '' : undefined} className={`person-row flex ${email ? 'min-h-[52px]' : 'min-h-10'} items-center gap-2 rounded-md px-2.5 py-1.5`}>
+      <span className="person-initials" aria-hidden="true">{initials(name)}</span>
       <div className="min-w-0 flex-1 text-[13px]" title={email ?? undefined}>
         {editing ? <input data-testid="people-rename" autoFocus value={draft} disabled={saving} maxLength={200} aria-label={t('Rename')} onChange={e => setDraft(e.target.value)}
           onKeyDown={e => { if (e.key === 'Enter') { e.preventDefault(); void save() } if (e.key === 'Escape') { e.preventDefault(); e.stopPropagation(); stopEditing() } }} className="w-full rounded border border-line bg-card px-1 py-0.5" />
           : onRename ? <button ref={nameButton} data-testid="people-name" title={t('Rename')} className="block max-w-full truncate text-start" onClick={() => { setDraft(name); setEditing(true) }}>{name}</button>
-          : <span>{name}{mine && <span className="text-muted"> {t('(me)')}</span>}</span>}
-        {email && <span data-testid="people-email" className="block break-words text-xs leading-[17px] text-muted">{email}</span>}
+          : <span className="block truncate">{name}{mine && <span className="text-muted"> {t('(me)')}</span>}</span>}
+        {email && <span data-testid="people-email" className="block truncate text-xs leading-[17px] text-muted">{email}</span>}
       </div>
       {onRename && !editing && <button data-testid="people-edit" aria-label={t('Rename')} title={t('Rename')} onClick={() => { setDraft(name); setEditing(true) }} className="person-remove grid size-6 shrink-0 place-items-center rounded text-muted hover:bg-[var(--line)] hover:text-ink"><Pencil size={14} strokeWidth={1.75} aria-hidden="true" /></button>}
       {onRemove && (

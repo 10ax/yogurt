@@ -1,5 +1,5 @@
 {
-  "Link event": "关联活动",
+  "Other people": "其他人",
   "No events": "没有活动",
   "Go to {date}": "转到{date}",
   "Resume notes · {title}": "继续记笔记 · {title}",
@@ -16,7 +16,6 @@
   "Open": "打开",
   "Next day": "后一天",
   "Previous day": "前一天",
-  "Link to a calendar event": "关联到日历活动",
   "Yogurt couldn't update the calendar link. Try again.": "Yogurt 无法更新日历链接。请重试。",
   "Keep the title, attendees and notes.": "保留标题、参会人和笔记。",
   "Unlink calendar event": "取消关联日历事件",

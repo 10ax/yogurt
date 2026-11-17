@@ -1,5 +1,5 @@
 {
-  "Link event": "I-link ang event",
+  "Other people": "Iba pang tao",
   "No events": "Walang event",
   "Go to {date}": "Pumunta sa {date}",
   "Resume notes · {title}": "Ipagpatuloy ang mga tala · {title}",
@@ -16,7 +16,6 @@
   "Open": "Buksan",
   "Next day": "Susunod na araw",
   "Previous day": "Nakaraang araw",
-  "Link to a calendar event": "I-link sa isang kaganapan sa kalendaryo",
   "Yogurt couldn't update the calendar link. Try again.": "Hindi ma-update ng Yogurt ang link sa calendar. Subukan ulit.",
   "Keep the title, attendees and notes.": "Panatilihin ang pamagat, mga kalahok at mga note.",
   "Unlink calendar event": "Alisin ang link sa event ng calendar",

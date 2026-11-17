@@ -27,3 +27,14 @@ export function noteDateLabel(ms: number): string {
 /** 10:30 AM, 10:30, as the interface's language writes it */
 export const timeOf = (ms: number) => new Date(ms).toLocaleTimeString(language(), { hour: 'numeric', minute: '2-digit' })
 
+/** Let the locale place a shared day period before or after the range. */
+export function eventTimeRange(start: number, end: number | null | undefined, locale = language()): string {
+  const format = new Intl.DateTimeFormat(locale, { hour: 'numeric', minute: '2-digit' })
+  if (end == null) return format.format(start)
+  const period = (at: number) => format.formatToParts(at).find(part => part.type === 'dayPeriod')?.value
+  const sharedPeriod = period(start)
+  if (end >= start && sharedPeriod && sharedPeriod === period(end) && new Date(start).toDateString() === new Date(end).toDateString()) {
+    return format.formatRange(start, end)
+  }
+  return `${format.format(start)} – ${format.format(end)}`
+}

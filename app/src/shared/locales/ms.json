@@ -1,5 +1,5 @@
 {
-  "Link event": "Pautkan acara",
+  "Other people": "Orang lain",
   "No events": "Tiada acara",
   "Go to {date}": "Pergi ke {date}",
   "Resume notes · {title}": "Sambung catatan · {title}",
@@ -16,7 +16,6 @@
   "Open": "Buka",
   "Next day": "Hari seterusnya",
   "Previous day": "Hari sebelumnya",
-  "Link to a calendar event": "Pautkan ke acara kalendar",
   "Yogurt couldn't update the calendar link. Try again.": "Yogurt tidak dapat mengemas kini pautan kalendar. Cuba lagi.",
   "Keep the title, attendees and notes.": "Kekalkan tajuk, peserta dan nota.",
   "Unlink calendar event": "Nyahpaut acara kalendar",

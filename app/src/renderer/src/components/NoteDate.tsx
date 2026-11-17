@@ -1,10 +1,13 @@
 import { usePopoverPresence } from '../motion'
 import { Component, createRef, useCallback, useEffect, useLayoutEffect, useRef, useState, type ReactNode, type RefObject } from 'react'
 import { ScrollFade } from './ScrollFade'
-import { CalendarDays, ChevronDown, ChevronLeft, ChevronRight, Clock, ExternalLink, Link2, Link2Off } from 'lucide-react'
+import { CalendarDays, ChevronDown, ChevronLeft, ChevronRight, Clock, ExternalLink, Link2Off } from 'lucide-react'
 import type { CalEvent, CalendarStatus, Meeting } from '../../../shared/types'
 import { language, t } from '../../../shared/i18n'
 import { noteDateLabel, timeOf } from '../dates'
+import { eventTimeRange } from '../../../shared/dates'
+import { useJoinWindow } from '../useJoinWindow'
+import { useNoteCalendar, type NoteCalendar } from '../useNoteCalendar'
 import { useNotePopover } from '../useNotePopover'
 import { useLoadingState } from '../useLoadingState'
 import { nearestEvents, shiftCalendarDay } from '../../../shared/calendarPicker'
@@ -14,17 +17,18 @@ export function NoteDate({ m }: { m: Meeting }) {
   const [open, setOpen] = useState<false | 'pointer' | 'keyboard'>(false)
   const presence = usePopoverPresence(open)
   const chip = useRef<HTMLButtonElement>(null)
+  const { details, refresh } = useNoteCalendar(m)
   const close = useCallback(() => { setOpen(false); chip.current?.focus({ preventScroll: true }) }, [])
   return <div className="relative">
     <button ref={chip} data-testid="note-date" aria-haspopup="dialog" aria-expanded={!!open} onClick={e => setOpen(o => o ? false : e.detail > 0 ? 'pointer' : 'keyboard')}
       className="note-chip flex items-center gap-1.5 rounded-md border border-line px-2.5 text-[13px] text-muted">
       <CalendarDays size={14} strokeWidth={1.75} aria-hidden="true" />{noteDateLabel(m.startedAt)}
     </button>
-    {presence.value && <DateCard key={m.id} m={m} chip={chip} motionProps={presence.props} onClose={close} />}
+    {presence.value && <DateCard key={m.id} m={m} details={details} refreshLinked={refresh} chip={chip} motionProps={presence.props} onClose={close} />}
   </div>
 }
 
-function DateCard({ m, chip, motionProps, onClose }: { m: Meeting; chip: RefObject<HTMLButtonElement | null>; motionProps: ReturnType<typeof usePopoverPresence>['props']; onClose: (restore?: boolean) => void }) {
+function DateCard({ m, details, refreshLinked, chip, motionProps, onClose }: { m: Meeting; details?: NoteCalendar; refreshLinked: () => void; chip: RefObject<HTMLButtonElement | null>; motionProps: ReturnType<typeof usePopoverPresence>['props']; onClose: (restore?: boolean) => void }) {
   const card = useRef<HTMLDivElement>(null)
   // no calendar on this computer (Windows, Linux): the date and length only, as for a note with no event
   const calendar = window.yogurt.capabilities.calendar
@@ -32,26 +36,33 @@ function DateCard({ m, chip, motionProps, onClose }: { m: Meeting; chip: RefObje
   const [revision, setRevision] = useState(0)
   const [picking, setPicking] = useState(false)
   const [day, setDay] = useState(m.eventStartedAt ?? m.startedAt)
-  const [result, setResult] = useState<Awaited<ReturnType<typeof window.yogurt.calendar.day>>>()
+  const [dayResult, setResult] = useState<Awaited<ReturnType<typeof window.yogurt.calendar.day>> | undefined>(details?.result)
+  const result = linked ? details?.result : dayResult
+  const reserveCalendar = useRef(linked && !details)
   const [linking, setLinking] = useState(false)
   const heading = useRef<HTMLHeadingElement>(null)
   const [compactDate, setCompactDate] = useState(false)
-  const loadingPhase = useLoadingState(calendar && !result)
+  const loadingPhase = useLoadingState(calendar && !linked && !result)
   const pickerKeyboard = useRef(false)
   const previous = useRef<HTMLButtonElement>(null)
   const toggle = useRef<HTMLButtonElement>(null)
   const recovery = useRef<HTMLButtonElement>(null)
   useNotePopover(card, chip, onClose, !motionProps.inert)
   const days = useRef(new Map<string, Awaited<ReturnType<typeof window.yogurt.calendar.day>>>())
+  if (details) {
+    if (details.result.status !== 'granted') days.current.clear()
+    days.current.set(new Date(m.eventStartedAt ?? m.startedAt).toDateString(), details.result)
+  }
   const [selection, setSelection] = useState(m.eventId)
   // Keep the card mounted, but never commit the previous link's picker or day.
   if (selection !== m.eventId) {
     const nextDay = m.eventStartedAt ?? m.startedAt
+    reserveCalendar.current = linked && !details
     setSelection(m.eventId); setPicking(false); setDay(nextDay)
     setResult(days.current.get(new Date(nextDay).toDateString()))
   }
   useEffect(() => {
-    if (!calendar) return
+    if (!calendar || linked) return
     let active = true
     void window.yogurt.calendar.day(day).catch(() => ({ status: 'error' as const, events: [] })).then(value => {
       if (!active) return
@@ -60,7 +71,7 @@ function DateCard({ m, chip, motionProps, onClose }: { m: Meeting; chip: RefObje
       setResult(value)
     })
     return () => { active = false }
-  }, [calendar, day, revision])
+  }, [calendar, linked, day, revision])
   const browse = (nextDay: number) => {
     setResult(days.current.get(new Date(nextDay).toDateString()))
     setDay(nextDay)
@@ -72,24 +83,26 @@ function DateCard({ m, chip, motionProps, onClose }: { m: Meeting; chip: RefObje
   const eventResult = new Date(day).toDateString() === eventDay ? result : days.current.get(eventDay)
   const event = linked ? eventResult?.events.find(e => e.id === m.eventId || e.aliases?.includes(m.eventId!)) ?? (eventResult ? null : undefined) : null
   useEffect(() => {
-    if (!calendar) return
+    if (!calendar || linked) return
     const refresh = () => setRevision(n => n + 1)
     const off = window.yogurt.calendar.onChange(refresh)
     window.addEventListener('focus', refresh)
     return () => { off(); window.removeEventListener('focus', refresh) }
-  }, [calendar])
-  const connect = () => void window.yogurt.calendar.connect().then(() => setRevision(n => n + 1), () => setResult({ status: 'error', events: [] }))
+  }, [calendar, linked])
+  const refresh = () => linked ? refreshLinked() : setRevision(n => n + 1)
+  const connect = () => void window.yogurt.calendar.connect().then(refresh, () => linked ? refreshLinked() : setResult({ status: 'error', events: [] }))
   const available = result?.status === 'granted'
-  const browsing = picking && (!result || available)
+  const browsing = calendar && !linked && (!result || available)
   useEffect(() => {
     if (picking && pickerKeyboard.current && !linked && result && !available) recovery.current?.focus({ preventScroll: true })
   }, [picking, linked, result, available])
-  const otherDay = new Date(day).toDateString() !== new Date(m.eventStartedAt ?? m.startedAt).toDateString()
   const at = event?.start ?? (linked ? m.eventStartedAt : null) ?? m.startedAt
   const eventEnd = event?.end ?? (linked ? m.eventEndedAt : null)
   const eventCalendar = event?.calendar ?? (linked && m.eventCalendarName ? { name: m.eventCalendarName, source: m.eventCalendarSource } : null)
   const minutes = Math.max(0, Math.round((m.durationMs ?? (m.endedAt ? m.endedAt - m.startedAt : m.state === 'recording' ? Date.now() - m.startedAt : 0)) / 60_000))
-  const url = event?.url?.trim()
+  const joinable = useJoinWindow(at, eventEnd)
+  const url = joinable ? event?.url?.trim() : undefined
+  const color = event?.calendar?.id ? details?.colors[event.calendar.id] : undefined
   const date = new Date(browsing ? day : at)
   const dateOptions: Intl.DateTimeFormatOptions = { month: 'short', day: 'numeric', ...(date.getFullYear() === new Date().getFullYear() ? {} : { year: 'numeric' }) }
   const fullDate = date.toLocaleDateString(language(), { ...dateOptions, weekday: 'long' })
@@ -106,56 +119,60 @@ function DateCard({ m, chip, motionProps, onClose }: { m: Meeting; chip: RefObje
     const observer = new ResizeObserver(measure)
     observer.observe(el)
     return () => observer.disconnect()
-  }, [fullDate])
+  }, [fullDate, linked])
   const loading = loadingPhase !== 'skeleton' ? null : <div className="loading-content" data-loading-phase={loadingPhase} aria-busy="true">
     <div className="loading-placeholder"><span role="status" className="sr-only">{t('Looking at your calendar…')}</span>
       <div className="loading-mask" aria-hidden="true"><span className="loading-bar" style={{ width: '65%' }} /></div>
     </div>
   </div>
-  return <div ref={card} data-testid="note-date-card" {...motionProps} data-anchor="start" data-picking={picking} role="dialog" aria-label={t('Date')}
+  const recoveryAction = result && !available ? <div className="note-date-access flex flex-wrap items-center gap-x-3 gap-y-2">
+    <p role="status" className="text-xs text-muted">{result.status === 'error' ? t("Yogurt couldn't read your calendar") : t('Calendar access is off')}</p>
+    <div className="ms-auto flex shrink-0"><button ref={recovery} className="workspace-button agenda-open-note" onClick={result.status === 'error' ? refresh : connect}>{result.status === 'error' ? t('Try again') : result.status === 'denied' ? t('Open System Settings') : t('Connect calendar')}</button></div>
+  </div> : null
+  return <div ref={card} data-testid="note-date-card" {...motionProps} data-anchor="start" data-picking={browsing || picking} role="dialog" aria-label={t('Date')}
     className="people-card menu-entry note-date-card absolute start-0 top-full z-30 mt-2 w-[min(340px,calc(100vw-48px))] rounded-lg border border-line bg-float text-ink shadow-[var(--shadow)]"
-    onKeyDown={e => { if (e.key === 'Escape') { e.preventDefault(); e.stopPropagation(); onClose() } }}>
-    <NoteDateBody view={`${m.eventId ?? 'unlinked'}/${!linked && picking ? 'picker' : 'details'}/${result?.status ?? (loadingPhase === 'skeleton' ? 'skeleton' : 'waiting')}`}>
-      <div className="agenda-inspector-heading">
+    onKeyDown={e => { if (e.key === 'Escape') { e.preventDefault(); e.stopPropagation(); if (linked && picking) { setPicking(false); toggle.current?.focus({ preventScroll: true }) } else onClose() } }}>
+    <NoteDateBody view={`${m.eventId ?? 'unlinked'}/${browsing ? 'picker' : 'details'}/${linked ? 'linked' : result?.status ?? (loadingPhase === 'skeleton' ? 'skeleton' : 'waiting')}`}>
+      {!linked && <div className="agenda-inspector-heading">
         <h3 ref={heading} data-testid="note-date-heading" tabIndex={-1} aria-live="polite" aria-label={fullDate} title={fullDate}>{compactDate ? shortDate : fullDate}</h3>
         <div className="flex shrink-0 items-center gap-1">
-          {(available || browsing) && <>
+          {(available || (picking && browsing)) && <>
             <button type="button" ref={previous} className="workspace-icon" data-testid="note-date-previous" aria-label={t('Previous day')} disabled={linking} onClick={e => { pickerKeyboard.current = e.detail === 0; setPicking(true); browse(shiftCalendarDay(day, -1)) }}><ChevronLeft size={15} aria-hidden="true" /></button>
             <button type="button" className="workspace-icon" data-testid="note-date-next" aria-label={t('Next day')} disabled={linking} onClick={e => { pickerKeyboard.current = e.detail === 0; setPicking(true); browse(shiftCalendarDay(day, 1)) }}><ChevronRight size={15} aria-hidden="true" /></button>
           </>}
         </div>
-      </div>
+      </div>}
       {linked && <div className="note-date-linked">
-        <button ref={toggle} data-testid="note-date-events-toggle" className="note-date-event-toggle text-sm font-medium" aria-expanded={picking} disabled={linking} onClick={e => { pickerKeyboard.current = e.detail === 0; if (otherDay) { browse(m.eventStartedAt ?? m.startedAt); setPicking(false) } else setPicking(v => !v) }}><span>{event?.title || m.eventTitle || m.title}</span><ChevronDown size={15} aria-hidden="true" /></button>
+        <button type="button" ref={toggle} data-testid="note-date-events-toggle" className="note-date-event-toggle" aria-expanded={picking} disabled={linking} onClick={e => { pickerKeyboard.current = e.detail === 0; setPicking(v => !v) }}>
+          <span className="note-date-color note-date-reveal" data-ready={!!color} aria-hidden="true" style={{ backgroundColor: color }} />
+          <span className="note-date-identity"><strong title={event?.title || m.eventTitle || m.title}>{event?.title || m.eventTitle || m.title}</strong>
+            <span className="note-date-time">{eventEnd != null ? eventTimeRange(at, eventEnd) : `${timeOf(at)} · ${t('{count} min', { count: minutes })}`}</span>
+            {(eventCalendar?.name || reserveCalendar.current) && <span className="note-date-calendar note-date-reveal" data-ready={!!eventCalendar?.name} title={eventCalendar?.name}>{eventCalendar?.name}</span>}
+          </span>
+          <ChevronDown size={15} aria-hidden="true" />
+        </button>
         <div className="accordion note-date-motion note-date-picker-motion" data-open={picking} aria-hidden={!picking} inert={!picking}>
-          <div><div className="note-date-picker-space"><EventPicker keyboard={pickerKeyboard.current} open={picking} m={m} day={day} result={result} loading={loading} previous={toggle} linking={linking} onLinking={setLinking} onLinked={() => requestAnimationFrame(() => toggle.current?.focus({ preventScroll: true }))} /></div></div>
+          <div><div className="note-date-picker-space"><EventPicker keyboard={pickerKeyboard.current} open={picking} m={m} day={day} result={result} loading={loading} previous={toggle} linking={linking} onLinking={setLinking} onLinked={() => requestAnimationFrame(() => (toggle.current ?? heading.current)?.focus({ preventScroll: true }))} /></div></div>
         </div>
       </div>}
-      {(!browsing || linked) && <div className="accordion note-date-motion note-date-details-motion" data-open={true}><div><div className="note-date-details"><div className="agenda-inspector-line"><Clock size={15} aria-hidden="true" /><div>
+      {!linked && !browsing && <div className="accordion note-date-motion note-date-details-motion" data-open={true}><div><div className="note-date-details"><div className="agenda-inspector-line"><Clock size={15} aria-hidden="true" /><div>
         <p>{timeOf(at)}{eventEnd != null ? ` – ${timeOf(eventEnd)}` : ` · ${t('{count} min', { count: minutes })}`}</p>
       </div></div>
-      {linked && available && event === null && <p role="status" className="text-xs text-muted">{t('Calendar event unavailable')}
-        <button className="ms-2 underline" onClick={() => setRevision(n => n + 1)}>{t('Try again')}</button>
-      </p>}
-      {(eventCalendar || url) && <div className="agenda-inspector-footer">
-        {eventCalendar && <div className="agenda-inspector-line"><CalendarDays size={15} aria-hidden="true" /><p>{eventCalendar.name}<span className="agenda-inspector-muted">{eventCalendar.source}</span></p></div>}
-        {url && <div className="agenda-inspector-actions">
-          <a className="workspace-button agenda-open-note" title={t('Join meeting')} href={url} target="_blank" rel="noreferrer"><span>{t('Join meeting')}</span><ExternalLink size={12} aria-hidden="true" /></a>
-        </div>}
-      </div>}
       </div></div></div>}
-      {calendar && result?.status !== 'unsupported' && !browsing && <>
-        {!result ? loading
-          : !available ? <div className="flex flex-wrap items-center gap-x-3 gap-y-2">
-            <p role="status" className="text-xs text-muted">{result.status === 'error' ? t("Yogurt couldn't read your calendar") : t('Calendar access is off')}</p>
-            <div className="ms-auto flex shrink-0"><button ref={recovery} className="workspace-button agenda-open-note" onClick={result.status === 'error' ? () => setRevision(n => n + 1) : connect}>{result.status === 'error' ? t('Try again') : result.status === 'denied' ? t('Open System Settings') : t('Connect calendar')}</button></div>
-          </div>
-          : !linked && <div className="note-date-empty-row">
-            {!result.events.length && <p role="status" className="text-xs text-muted" data-testid="note-date-events-none" title={t('No events')}>{t('No events')}</p>}
-            <div className="ms-auto flex shrink-0"><button ref={toggle} data-testid="note-date-events-toggle" className="workspace-button agenda-open-note" title={t('Link to a calendar event')} aria-expanded={browsing} onClick={e => { pickerKeyboard.current = e.detail === 0; setPicking(true) }}><Link2 size={13} aria-hidden="true" /><span>{t('Link event')}</span></button></div>
+      {linked && ((joinable && !result) || url || (result && (!available || event === null))) && <div className="note-date-actions" aria-busy={!result}>
+        <div className="note-date-reveal" data-ready={!!result}>
+          {available && event === null && <div className="note-date-access flex items-center gap-3 text-xs text-muted">
+            <p role="status">{t('Calendar event unavailable')}</p>
+            <button className="ms-auto shrink-0 underline" onClick={refresh}>{t('Try again')}</button>
           </div>}
-      </>}
-      {picking && !linked && <EventPicker keyboard={pickerKeyboard.current} m={m} day={day} result={result} loading={loading} previous={previous} linking={linking} onLinking={setLinking} onLinked={() => requestAnimationFrame(() => toggle.current?.focus({ preventScroll: true }))} />}
+          {url && <div className="agenda-inspector-actions">
+            <a className="workspace-button agenda-open-note" title={t('Join meeting')} href={url} target="_blank" rel="noreferrer"><span>{t('Join meeting')}</span><ExternalLink size={12} aria-hidden="true" /></a>
+          </div>}
+          {result?.status !== 'unsupported' && recoveryAction}
+        </div>
+      </div>}
+      {calendar && !linked && result?.status !== 'unsupported' && !browsing && recoveryAction}
+      {browsing && <EventPicker keyboard={pickerKeyboard.current} m={m} day={day} result={result} loading={loading} previous={previous} linking={linking} onLinking={setLinking} onLinked={() => requestAnimationFrame(() => (toggle.current ?? heading.current)?.focus({ preventScroll: true }))} />}
     </NoteDateBody>
   </div>
 }

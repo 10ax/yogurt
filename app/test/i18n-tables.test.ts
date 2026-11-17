@@ -287,3 +287,12 @@ it('translates the summary language setting in every locale', () => {
     }
   }
 })
+
+it('translates the ungrouped people heading in every locale', () => {
+  expect(keys).toContain('Other people')
+  for (const { id } of LOCALES) {
+    expect(load(id)['Other people']).toBeTypeOf('string')
+    expect(load(id)['Other people']).not.toBe('')
+    if (id !== 'en') expect(load(id)['Other people']).not.toBe('Other people')
+  }
+})

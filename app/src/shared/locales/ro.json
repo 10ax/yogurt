@@ -1,5 +1,5 @@
 {
-  "Link event": "Leagă eveniment",
+  "Other people": "Alte persoane",
   "No events": "Niciun eveniment",
   "Go to {date}": "Mergi la {date}",
   "Resume notes · {title}": "Reia notițele · {title}",
@@ -16,7 +16,6 @@
   "Open": "Deschide",
   "Next day": "Ziua următoare",
   "Previous day": "Ziua precedentă",
-  "Link to a calendar event": "Leagă de un eveniment din calendar",
   "Yogurt couldn't update the calendar link. Try again.": "Yogurt nu a putut actualiza legătura cu calendarul. Încercați din nou.",
   "Keep the title, attendees and notes.": "Păstrați titlul, participanții și notițele.",
   "Unlink calendar event": "Dezlegați evenimentul din calendar",

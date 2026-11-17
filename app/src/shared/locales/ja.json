@@ -1,5 +1,5 @@
 {
-  "Link event": "予定にリンク",
+  "Other people": "その他の参加者",
   "No events": "予定はありません",
   "Go to {date}": "{date}に移動",
   "Resume notes · {title}": "メモを再開 · {title}",
@@ -16,7 +16,6 @@
   "Open": "開く",
   "Next day": "次の日",
   "Previous day": "前の日",
-  "Link to a calendar event": "カレンダーの予定にリンク",
   "Yogurt couldn't update the calendar link. Try again.": "Yogurtはカレンダーとのリンクを更新できませんでした。もう一度お試しください。",
   "Keep the title, attendees and notes.": "タイトル、参加者、メモは残します。",
   "Unlink calendar event": "カレンダーの予定とのリンクを解除",

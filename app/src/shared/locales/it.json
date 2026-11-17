@@ -1,5 +1,5 @@
 {
-  "Link event": "Collega evento",
+  "Other people": "Altre persone",
   "No events": "Nessun evento",
   "Go to {date}": "Vai al {date}",
   "Resume notes · {title}": "Riprendi gli appunti · {title}",
@@ -16,7 +16,6 @@
   "Open": "Apri",
   "Next day": "Giorno successivo",
   "Previous day": "Giorno precedente",
-  "Link to a calendar event": "Collega a un evento del calendario",
   "Yogurt couldn't update the calendar link. Try again.": "Yogurt non è riuscito ad aggiornare il collegamento al calendario. Riprova.",
   "Keep the title, attendees and notes.": "Mantieni titolo, partecipanti e note.",
   "Unlink calendar event": "Scollega evento del calendario",

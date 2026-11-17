@@ -1,5 +1,5 @@
 {
-  "Link event": "Afspraak koppelen",
+  "Other people": "Andere personen",
   "No events": "Geen afspraken",
   "Go to {date}": "Ga naar {date}",
   "Resume notes · {title}": "Notities hervatten · {title}",
@@ -16,7 +16,6 @@
   "Open": "Openen",
   "Next day": "Volgende dag",
   "Previous day": "Vorige dag",
-  "Link to a calendar event": "Koppelen aan een agenda-afspraak",
   "Yogurt couldn't update the calendar link. Try again.": "Yogurt kon de koppeling met de agenda niet bijwerken. Probeer het opnieuw.",
   "Keep the title, attendees and notes.": "Titel, deelnemers en notities behouden.",
   "Unlink calendar event": "Agenda-item ontkoppelen",

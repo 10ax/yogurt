@@ -1,5 +1,5 @@
 {
-  "Link event": "Связать событие",
+  "Other people": "Другие участники",
   "No events": "Нет событий",
   "Go to {date}": "Перейти к {date}",
   "Resume notes · {title}": "Продолжить заметки · {title}",
@@ -16,7 +16,6 @@
   "Open": "Открыть",
   "Next day": "Следующий день",
   "Previous day": "Предыдущий день",
-  "Link to a calendar event": "Связать с событием календаря",
   "Yogurt couldn't update the calendar link. Try again.": "Yogurt не смог обновить связь с календарём. Попробуйте снова.",
   "Keep the title, attendees and notes.": "Оставить название, участников и заметки.",
   "Unlink calendar event": "Отвязать событие календаря",

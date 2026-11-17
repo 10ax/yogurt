@@ -14,3 +14,22 @@ export function resolvedPersonName(email: string, display: string | null, seen: 
   names.sort((a, b) => b.trim().split(/\s+/).length - a.trim().split(/\s+/).length || b.length - a.length)
   return names[0] || fallback
 }
+
+// shortcut: company labels use domain text, use verified organization metadata when available.
+export function groupPeople<Row extends { p: Person }>(rows: Row[]) {
+  const groups = new Map<string, { domain: string; label: string; people: Row[] }>()
+  const personal = new Set(['gmail.com', 'outlook.com', 'hotmail.com', 'icloud.com', 'yahoo.com', 'proton.me', 'protonmail.com', 'mail.example'])
+  for (const row of rows) {
+    const email = row.p.email?.trim().toLowerCase() ?? ''
+    const match = /^[^\s@]+@([^\s@]+\.[^\s@]+)$/.exec(email)
+    const domain = match && !personal.has(match[1]) ? match[1] : ''
+    const label = domain ? domain.split('.')[0].replace(/[-_]+/g, ' ').replace(/\b\w/g, c => c.toUpperCase()) : ''
+    if (!groups.has(domain)) groups.set(domain, { domain, label, people: [] })
+    groups.get(domain)!.people.push(row)
+  }
+  return [...groups.values()].sort((a, b) => !a.domain ? 1 : !b.domain ? -1 : a.label.localeCompare(b.label))
+}
+
+export function initials(name: string): string {
+  return name.trim().split(/\s+/).filter(Boolean).filter((_, i, a) => i === 0 || i === a.length - 1).map(s => Array.from(s)[0]).join('').toLocaleUpperCase()
+}

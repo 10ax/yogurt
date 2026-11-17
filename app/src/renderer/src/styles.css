@@ -759,6 +759,12 @@ html:not(.widget) button:focus-visible, html:not(.widget) input:focus-visible { 
 .people-card { display:flex;flex-direction:column;max-height:var(--people-available-height,calc(100dvh - 200px));overflow-y:auto;overscroll-behavior:contain; }
 .people-card > * { flex-shrink:0; }
 .people-card .people-list { flex-shrink:1;min-height:40px;overscroll-behavior:contain; }
+.grouped-people { max-height:386px; }
+.grouped-people section+section { margin-top:6px; }
+.company-heading { font-size:11px;line-height:16px;font-weight:500;color:var(--muted);padding:8px 10px 3px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis; }
+.grouped-people .person-row { gap:9px; }
+.person-initials { display:grid;place-items:center;width:28px;height:28px;flex:none;border-radius:50%;background:var(--control);font-size:10px;font-weight:500;color:var(--muted); }
+
 
 /* Name ink comes from the same folder token in both transcript surfaces. */
 :is(.line-who,.widget-preview-speaker)[data-folder-color] { color:var(--folder-ink); }
@@ -771,26 +777,45 @@ html:not(.widget) button:focus-visible, html:not(.widget) input:focus-visible { 
 @media (prefers-reduced-motion:reduce) { .note-date-card { --note-date-ms:0ms; } }
 .note-date-card .agenda-inspector-heading h3 { flex:1;white-space:nowrap;overflow:hidden;text-overflow:ellipsis; }
 .note-date-linked { display:flex;flex-direction:column; }
-.note-date-picker-space { padding-top:8px; }
-.note-date-motion,.note-date-motion[data-open=true] { transition:grid-template-rows var(--note-date-ms) var(--note-date-ease),margin-top var(--note-date-ms) var(--note-date-ease); }
+.note-date-picker-space { padding-top:0; }
+.note-date-linked .note-date-picker-motion { margin-inline:-8px; }
+.note-date-linked .note-date-picker-motion[data-open=true] { margin-top:12px; }
+/* the open Unlink row sits as close to the bottom edge as the event row sits to the top (both pull their hover box into the padding) */
+.note-date-linked:last-child .note-date-picker-motion[data-open=true] { margin-bottom:-8px; }
+.note-date-motion,.note-date-motion[data-open=true] { transition:grid-template-rows var(--note-date-ms) var(--note-date-ease),margin-top var(--note-date-ms) var(--note-date-ease),margin-bottom var(--note-date-ms) var(--note-date-ease); }
 .note-date-motion>* { transition:opacity var(--note-date-ms) var(--note-date-ease),visibility 0s var(--note-date-ms); }
 .note-date-motion[data-open=true]>* { transition:opacity var(--note-date-ms) var(--note-date-ease),visibility 0s; }
 /* Cancel the parent's row gap as the compact switcher replaces the details. */
 .note-date-details-motion[data-open=false] { margin-top:-16px; }
-.note-date-linked .note-date-picker { border:1px solid var(--line);border-radius:6px;padding:4px;background:var(--card); }
+.note-date-linked .note-date-link { gap:6px; }
 .note-date-details { display:flex;flex-direction:column;gap:16px; }
-.note-date-empty-row { display:flex;align-items:center;justify-content:space-between;gap:8px;white-space:nowrap; }
-.note-date-empty-row>p { min-width:0;overflow:hidden;text-overflow:ellipsis; }
 .note-date-event-toggle[aria-expanded=true]>svg { transform:rotate(180deg); }
-.note-date-event-toggle { display:flex;align-items:center;gap:8px;width:100%;text-align:start;border-radius:4px; }
-.note-date-event-toggle>span { white-space:nowrap;flex:1;min-width:0;overflow:hidden;text-overflow:ellipsis; }
-/* centred under the day arrow above it: that 28px button hangs 4px past the edge, so its 15px icon sits 2.5px further in */
-.note-date-event-toggle>svg { flex:none;margin-inline-end:2.5px;color:var(--muted);transition:transform var(--note-date-ms) var(--note-date-ease); }
+.note-date-event-toggle { display:flex;align-items:flex-start;gap:10px;width:calc(100% + 16px);margin:-8px;padding:8px;border-radius:6px;text-align:start; }
+.note-date-color { width:10px;height:10px;border-radius:3px;flex:none;margin-top:5px; }
+/* Keep late linked-event data in its reserved space instead of resizing the card. */
+.note-date-actions { min-height:28px; }
+.note-date-actions .note-date-access { flex-wrap:nowrap; }
+.note-date-actions p { min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap; }
+.note-date-reveal { opacity:1;transition:opacity var(--dur-micro) var(--ease-out); }
+.note-date-reveal[data-ready=false] { opacity:0; }
+@media (prefers-reduced-motion:reduce) { .note-date-reveal { transition:none; } }
+
+.note-date-identity { min-width:0;flex:1; }
+.note-date-identity>strong,.note-date-time,.note-date-calendar { display:block;overflow:hidden;text-overflow:ellipsis;white-space:nowrap; }
+.note-date-identity>strong { font-size:14px;font-weight:600;line-height:21px; }
+.note-date-time { font-size:12px;line-height:18px;color:var(--written);margin-top:3px; }
+.note-date-calendar { min-height:16px;font-size:11px;line-height:16px;color:var(--muted);margin-top:3px; }
+.note-date-event-toggle>svg { flex:none;margin-top:3px;color:var(--muted);transition:transform var(--note-date-ms) var(--note-date-ease); }
+.note-date-linked :is(.note-date-event-toggle,.note-date-link):hover:not(:disabled) { background:var(--row-hover); }
+.note-date-linked :is(.note-date-event-toggle,.note-date-link):active:not(:disabled) { background:var(--control-pressed); }
+.note-date-linked :is(.note-date-event-toggle,.note-date-link):focus-visible { outline:2px solid var(--focus);outline-offset:-2px; }
 @media (prefers-reduced-motion:reduce) { .note-date-motion,.note-date-motion[data-open=true],.note-date-motion>*,.note-date-motion[data-open=true]>*,.note-date-event-toggle>svg { transition:none; } }
 .note-date-link { display:flex;align-items:center;gap:8px;width:100%;padding:8px;border-radius:6px;text-align:start;font-size:12px;color:var(--muted); }
 .note-date-link:hover,.note-date-event:hover { background:var(--card);color:var(--ink); }
 .note-date-card .note-date-picker button:focus-visible { outline-offset:-2px; }
-.note-date-link small { display:block;margin-top:3px;font-size:11px; }
+.note-date-link>span { min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap; }
+.note-date-link>svg { flex:none; }
+.note-date-link small { display:block;margin-top:3px;font-size:11px;overflow:hidden;text-overflow:ellipsis; }
 .note-date-events { max-height:240px;overflow-y:auto;overscroll-behavior:contain; }
 .note-date-events>p { padding:12px 8px;font-size:12px;color:var(--muted); }
 .note-date-event { display:flex;align-items:center;gap:8px;width:100%;padding:8px;border-radius:6px;text-align:start; }

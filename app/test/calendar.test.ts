@@ -3,7 +3,7 @@ import { join } from 'node:path'
 import { tmpdir } from 'node:os'
 import { loadSettings, updateSettings } from '../src/main/settings'
 import { afterEach, beforeEach, describe, expect, it } from 'vitest'
-import { calendars, calendarStatus, meetingLink, parseEvents, refreshCalendarStatus, requestCalendarAccess, setCalendarSelection, setCalendarSupported, setHelper, upcoming } from '../src/main/calendar'
+import { calendars, calendarStatus, meetingLink, parseEvents, refreshCalendarStatus, requestCalendarAccess, setCalendarLinkSource, setCalendarSelection, setCalendarSupported, setHelper, upcoming } from '../src/main/calendar'
 
 const fixture = JSON.parse(readFileSync(join(__dirname, 'fixtures/helper-events.json'), 'utf8'))
 
@@ -178,5 +178,62 @@ describe('a computer without a calendar (Windows, Linux)', () => {
     expect(await upcoming(0, 1e12)).toEqual([])
     expect(calendarStatus()).toBe('unsupported')
     expect(calls).toEqual([])
+  })
+})
+
+describe('Windows and Linux: the calendar comes from calendar links, not the system helper', () => {
+  afterEach(() => { setCalendarLinkSource(null); setCalendarSupported(true) })
+  it('status, calendars and events come from the links; the helper is never asked; hidden calendars stay out', async () => {
+    const asked: string[] = []
+    setHelper(async (args) => { asked.push(args[0]); return null })
+    setCalendarSupported(false)
+    let linked = false
+    setCalendarLinkSource({
+      status: () => (linked ? 'granted' : 'notDetermined'),
+      calendars: async () => [{ id: 'l1', name: 'Work', source: 'calendar.google.com' }, { id: 'l2', name: 'Home', source: 'example.com' }],
+      events: async () => [
+        { id: 'a|1', externalId: 'a', title: 'Standup', start: '2026-11-17T17:00:00.000Z', end: '2026-11-17T17:15:00.000Z', attendees: [{ name: 'Dana Smith', email: 'dana@example.com' }], url: null, location: null, notes: 'https://meet.google.com/abc-defg-hij', calendarId: 'l1', calendar: 'Work', calendarSource: 'Calendar link', me: null },
+        { id: 'b|1', externalId: 'b', title: 'Dentist', start: '2026-11-17T19:00:00.000Z', end: '2026-11-17T20:00:00.000Z', attendees: [], url: null, location: null, notes: null, calendarId: 'l2', calendar: 'Home', calendarSource: 'Calendar link', me: null },
+      ],
+    })
+    expect(await refreshCalendarStatus()).toBe('notDetermined')
+    linked = true
+    expect(await requestCalendarAccess()).toBe('granted')
+    expect((await calendars()).map((c) => c.name)).toEqual(['Work', 'Home'])
+    setCalendarSelection(() => ({ hiddenCalendarIds: ['l2'] }))
+    const got = await upcoming(Date.parse('2026-11-17T00:00:00Z'), Date.parse('2026-11-18T00:00:00Z'))
+    expect(got).toEqual([expect.objectContaining({ title: 'Standup', url: 'https://meet.google.com/abc-defg-hij', attendees: [{ name: 'Dana Smith', email: 'dana@example.com' }] })])
+    expect(asked).toEqual([])
+    setCalendarSelection(() => ({}))
+  })
+})
+
+describe('a Mac: calendar links sit alongside the built-in calendar (Settings → Calendars → Add a calendar link)', () => {
+  afterEach(() => { setCalendarLinkSource(null); setCalendarSupported(true); setCalendarSelection(() => ({})) })
+  const linkEvent = { id: 'x|1', externalId: 'x', title: 'Book club', start: '2026-11-17T20:00:00.000Z', end: '2026-11-17T21:00:00.000Z', attendees: [], url: null, location: null, notes: null, calendarId: 'l1', calendar: 'Club', calendarSource: 'Calendar link', me: null }
+  const macRow = { id: 'm1', title: 'Standup', start: '2026-11-17T17:00:00.000Z', end: '2026-11-17T17:15:00.000Z', attendees: [], calendarId: 'work', calendar: 'Work' }
+  const links = (linked: boolean) => ({ status: () => (linked ? 'granted' as const : 'notDetermined' as const), calendars: async () => (linked ? [{ id: 'l1', name: 'Club', source: 'example.com' }] : []), events: async () => (linked ? [linkEvent] : []) })
+  const day = [Date.parse('2026-11-17T00:00:00Z'), Date.parse('2026-11-18T00:00:00Z')] as const
+
+  it('both: the Mac calendars and the links, their events together', async () => {
+    setHelper(async (args) => args[0] === 'calendar-status' ? { status: 'granted' } : args[0] === 'calendars' ? [{ id: 'work', name: 'Work', source: 'iCloud' }] : [macRow])
+    setCalendarLinkSource(links(true), { alongside: true })
+    expect(await refreshCalendarStatus()).toBe('granted')
+    expect((await calendars()).map((c) => c.name)).toEqual(['Work', 'Club'])
+    expect((await upcoming(...day)).map((e) => e.title).sort()).toEqual(['Book club', 'Standup'])
+  })
+  it('a link alone, without the Mac calendar allowed, still fills the agenda; the Mac is still asked with its own prompt', async () => {
+    const asked: string[] = []
+    setHelper(async (args) => { asked.push(args[0]); return args[0] === 'calendar-status' || args[0] === 'calendar-auth' ? { status: 'notDetermined' } : [] })
+    setCalendarLinkSource(links(true), { alongside: true })
+    expect(await refreshCalendarStatus()).toBe('granted')
+    expect((await upcoming(...day)).map((e) => e.title)).toEqual(['Book club'])
+    await requestCalendarAccess()
+    expect(asked).toContain('calendar-auth')
+  })
+  it('no link: exactly the Mac as before', async () => {
+    setHelper(async (args) => args[0] === 'calendar-status' ? { status: 'denied' } : [])
+    setCalendarLinkSource(links(false), { alongside: true })
+    expect(await refreshCalendarStatus()).toBe('denied')
   })
 })

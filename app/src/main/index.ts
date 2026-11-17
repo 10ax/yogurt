@@ -13,7 +13,7 @@ import { isAppRoute } from '../shared/routes'
 import { resumesNote } from '../shared/agendaNote'
 import { relaunchOptions, stripAppImageEnv } from './relaunch'
 import { capabilities, micListHelper, platformOf, supportedKinds } from '../shared/platform'
-import { app, BrowserWindow, dialog, ipcMain, nativeTheme, Notification, protocol, shell } from 'electron'
+import { app, BrowserWindow, dialog, ipcMain, nativeTheme, Notification, protocol, safeStorage, shell } from 'electron'
 import { existsSync, mkdirSync, readFileSync, writeFileSync } from 'node:fs'
 import os from 'node:os'
 import { basename, join } from 'node:path'
@@ -40,7 +40,9 @@ import { SetupController } from './setup'
 import { fakeMeasure, measureSpeed, speedClipPath, speedStore } from './asr/speedCheck'
 import { vadModelPath, whisperServerPath } from './asr/server'
 import { openStore, type Store } from './store'
-import { calendars, eventIds, matchesEvent, setCalendarSelection, calendarStatus, createHelperRunner, helperPath, killAllHelpers, refreshCalendarStatus, requestCalendarAccess, runHelper, setCalendarSupported, setHelper, upcoming, type CalEvent } from './calendar'
+import { calendars, eventIds, matchesEvent, setCalendarSelection, calendarStatus, createHelperRunner, helperPath, killAllHelpers, refreshCalendarStatus, requestCalendarAccess, runHelper, setCalendarLinkSource, systemCalendarStatus, setCalendarSupported, setHelper, upcoming, type CalEvent } from './calendar'
+import { createCalendarLinks } from './calendarLink'
+import { getCalendar } from './calendarLink/get'
 import { createSignals } from './detectSignals'
 import { Watcher } from './watch'
 import { createPrompts } from './prompts'
@@ -114,7 +116,8 @@ app.on('second-instance', (_e, argv) => { if (app.isReady() && !startedHidden(pr
 
 /** Links open in the user's browser, never inside the app window. */
 function openExternally(url: string) {
-  if (!isFake() && /^https:\/\//.test(url)) void shell.openExternal(url)
+  // fake mode opens nothing (tests), unless a person trying it by hand asks for links (YOGURT_FAKE_OPEN_LINKS=1)
+  if ((!isFake() || process.env.YOGURT_FAKE_OPEN_LINKS === '1') && /^https:\/\//.test(url)) void shell.openExternal(url)
 }
 
 let updateWidgetVisibility = () => {}
@@ -183,7 +186,7 @@ function createSetup(): SetupController {
 /** what the speed check found (Windows and Linux) */
 const speedFile = () => join(userDataDir(), 'speech-speed.json')
 
-/** What this computer can do (fake mode can pretend with YOGURT_FAKE_PLATFORM): Windows and Linux have no calendar or names from calls yet */
+/** What this computer can do (fake mode can pretend with YOGURT_FAKE_PLATFORM): Windows and Linux read their calendar from a calendar link */
 const platform = platformOf(process.platform, process.env)
 const caps = capabilities(platform)
 setCalendarSupported(caps.calendar)
@@ -474,8 +477,17 @@ app.whenReady().then(() => {
   if (isFake()) setHelper(fakeHelper)
   // a moved or reinstalled Yogurt loses its login item: put it back if the person wanted it
   if (!isFake()) syncLoginItem(settings.openAtLogin)
+  // Windows and Linux: the calendar is a pasted private calendar address, kept sealed with the system keychain
+  // a Mac: the same links, next to its own calendars (Settings → Calendars → Add a calendar link)
+  const calendarLinks = caps.calendar ? createCalendarLinks({
+    file: join(userDataDir(), 'settings.json'), get: getCalendar,
+    seal: (plain) => (safeStorage.isEncryptionAvailable() ? `k:${safeStorage.encryptString(plain).toString('base64')}` : `p:${plain}`),
+    open: (sealed) => (sealed.startsWith('k:') ? safeStorage.decryptString(Buffer.from(sealed.slice(2), 'base64')) : sealed.replace(/^p:/, '')),
+  }) : null
+  if (calendarLinks) setCalendarLinkSource(calendarLinks, { alongside: !caps.calendarLink })
   hookPreferences({
     file: join(userDataDir(), 'settings.json'), permissions, kinds: supportedKinds(caps), os: platform,
+    ...(calendarLinks && caps.calendarLink ? { calendarLinked: () => calendarLinks.status() === 'granted' } : {}),
     // fake mode asks the first-run questions only when a test sets the permissions
     ask: !isFake() || !!process.env.YOGURT_FAKE_PERMISSIONS,
     setLogin: (on) => { if (!isFake()) setLoginItem(on) },
@@ -949,7 +961,9 @@ app.whenReady().then(() => {
   })
   const calendarList = async () => {
     const list = await calendars(), settings = loadSettings(settingsFile), hidden = settings.hiddenCalendarIds ?? []
-    return { status: calendarStatus(), hideEventsWithoutCallLink: settings.hideEventsWithoutCallLink === true, calendars: list.map((c) => ({ ...c, enabled: !hidden.includes(c.id) })) }
+    const linkIds = new Set(calendarLinks?.list().map((l) => l.id) ?? [])
+    return { status: calendarStatus(), systemStatus: systemCalendarStatus(), hideEventsWithoutCallLink: settings.hideEventsWithoutCallLink === true,
+      calendars: list.map((c) => ({ ...c, enabled: !hidden.includes(c.id), ...(linkIds.has(c.id) ? { link: true } : {}) })) }
   }
   ipcMain.handle('calendar:list', calendarList)
   ipcMain.handle('calendar:set-enabled', async (_e, id: unknown, enabled: unknown) => {
@@ -983,7 +997,22 @@ app.whenReady().then(() => {
     return { status: calendarStatus(), events }
   })
   // not asked yet: the Mac's own question; turned off: the Mac's settings, where only the person can turn it on
+  ipcMain.handle('calendar:links', () => calendarLinks?.list() ?? [])
+  ipcMain.handle('calendar:add-link', async (_e, url: unknown) => {
+    if (!calendarLinks || typeof url !== 'string' || url.length > 4096) return { ok: false, error: 'bad-url' }
+    const got = await calendarLinks.add(url)
+    if (got.ok) { await refreshCalendarStatus(); refreshCalendarConsumers(); win?.webContents.send('calendar:changed') }
+    return got
+  })
+  ipcMain.handle('calendar:remove-link', async (_e, id: unknown) => {
+    if (!calendarLinks || typeof id !== 'string') return false
+    calendarLinks.remove(id)
+    await refreshCalendarStatus(); refreshCalendarConsumers(); win?.webContents.send('calendar:changed')
+    return true
+  })
   ipcMain.handle('calendar:connect', async () => {
+    // a calendar link is pasted in Settings' calendars: the same form as the first run's
+    if (calendarLinks && caps.calendarLink) { goTo('/settings'); return refreshCalendarStatus() }
     const was = await refreshCalendarStatus()
     if (was === 'notDetermined') return requestCalendarAccess()
     if (was === 'denied') {

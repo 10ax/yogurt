@@ -40,7 +40,7 @@ it.each(['hasText', 'reduced', 'hidden'] as const)('suppresses opening with %s, 
   s.dispose()
 })
 
-it.each(['hasText', 'reduced', 'hidden'] as const)('cancels a running opening on %s and waits a full idle interval', flag => {
+it.each(['reduced', 'hidden'] as const)('cancels a running opening on %s and waits a full idle interval', flag => {
   const s = setup()
   vi.advanceTimersByTime(TRACER_DELAY_MS)
   expect(s.play).toHaveBeenCalledTimes(1)
@@ -65,6 +65,8 @@ it('repeats at eight-second start-to-start intervals only while empty, unfocused
   vi.advanceTimersByTime(1)
   expect(s.play).toHaveBeenCalledTimes(2)
   s.update({ ...idle, focused: true })
+  expect(s.stop).toHaveBeenCalledTimes(1)
+  vi.advanceTimersByTime(TRACER_LAP_MS)
   expect(s.stop).toHaveBeenCalledTimes(2)
   vi.advanceTimersByTime(24000)
   expect(s.play).toHaveBeenCalledTimes(2)
@@ -119,4 +121,24 @@ it('disposes timers on close and gets a fresh opening lap on reopen', () => {
   next.dispose()
   expect(next.stop).toHaveBeenCalledTimes(1)
   expect(vi.getTimerCount()).toBe(0)
+})
+
+// Both the initial invitation and a later idle lap survive active editing.
+it.each([false, true])('finishes the original lap through typing, clearing, focus and hover without restarting (idle lap %s)', later => {
+  const s = setup()
+  vi.advanceTimersByTime(TRACER_DELAY_MS + (later ? 8000 : 0))
+  const plays = later ? 2 : 1, stops = later ? 1 : 0
+  vi.advanceTimersByTime(200)
+  s.update({ ...idle, focused: true, hovered: true, hasText: true })
+  vi.advanceTimersByTime(300)
+  s.update({ ...idle, focused: true })
+  s.update({ ...idle, focused: true, hasText: true })
+  vi.advanceTimersByTime(TRACER_LAP_MS - 501)
+  expect(s.stop).toHaveBeenCalledTimes(stops)
+  expect(s.play).toHaveBeenCalledTimes(plays)
+  vi.advanceTimersByTime(1)
+  expect(s.stop).toHaveBeenCalledTimes(stops + 1)
+  vi.advanceTimersByTime(24000)
+  expect(s.play).toHaveBeenCalledTimes(plays)
+  s.dispose()
 })

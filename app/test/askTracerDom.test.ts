@@ -4,7 +4,7 @@ import { TRACER_DELAY_MS, TRACER_LAP_MS } from '../src/shared/askTracer'
 
 afterEach(() => { vi.useRealTimers(); vi.unstubAllGlobals() })
 
-it('animates explicit dash offsets, follows the composer size, and cancels on native input and cleanup', () => {
+it('animates explicit dash offsets, follows the composer size, and finishes through native input and cleans up', () => {
   vi.useFakeTimers()
   const node = () => {
     const element = {
@@ -43,7 +43,11 @@ it('animates explicit dash offsets, follows the composer size, and cancels on na
   vi.advanceTimersByTime(TRACER_DELAY_MS)
   for (let i = 0; i < 20; i++) expect(nodes[i + 1].animate).toHaveBeenCalledWith(
     [{ strokeDashoffset: String(-i), easing: 'cubic-bezier(.37,0,.63,1)' }, { strokeDashoffset: String(-i - 100) }], { duration: TRACER_LAP_MS, easing: 'linear' })
-  field.value = 'Draft'; box.dispatchEvent(new Event('input'))
+  vi.advanceTimersByTime(200)
+  field.value = 'Draft'; box.dispatchEvent(new Event('input')); tracer.update()
+  bounds = { width: 350, height: 190 }; resize()
+  for (const element of nodes) expect(element.animate.mock.results[0].value.cancel).not.toHaveBeenCalled()
+  vi.advanceTimersByTime(TRACER_LAP_MS - 200)
   for (const element of nodes) expect(element.animate.mock.results[0].value.cancel).toHaveBeenCalledOnce()
   vi.advanceTimersByTime(24000)
   expect(nodes[0].animate).toHaveBeenCalledOnce()

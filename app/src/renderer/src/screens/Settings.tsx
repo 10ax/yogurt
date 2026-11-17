@@ -294,7 +294,7 @@ export function PermissionRow({ kind, status, onAsk }: { kind: PermissionKind; s
         </p>
         <p className="settings-description">{c.reason}</p>
       </div>
-      {status !== 'restricted' && (ask || settingsPage(window.yogurt.os, kind)) ? (
+      {status !== 'restricted' && (ask || settingsPage(globalThis.window?.yogurt?.os ?? 'darwin', kind)) ? (
         <button data-testid={ask ? 'permission-ask' : 'permission-open'} onClick={ask ? onAsk : () => void window.yogurt.permissions.open(kind)}
           className={`workspace-button settings-action${granted ? '' : ' primary'}`}>
           <span>{!status || granted ? t('Manage') : turnOn ? t('Turn on') : osWords({ mac: t('Open System Settings'), other: t('Open Settings') })}</span>

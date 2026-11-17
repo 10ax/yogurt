@@ -44,7 +44,7 @@ const TERMINAL = /[.!?…](?=$|[\s"'”’)\]]|\p{Lu})/u
 const CLOSING = /^[ \t]*([.!?…"'”’)\]]+)/u
 
 /** Move only sentence punctuation, retaining the Markdown marks on the text it came from. */
-function placeCitations(nodes: PMNode[], pending: boolean): PMNode[] {
+function placeCitations(nodes: PMNode[], pending: boolean, meetings?: Map<number, string>): PMNode[] {
   const out: PMNode[] = []
   for (let i = 0; i < nodes.length; i++) {
     const node = nodes[i]
@@ -82,6 +82,16 @@ function placeCitations(nodes: PMNode[], pending: boolean): PMNode[] {
     if (node.type === 'citation') node.attrs!.sentence = sentences.find(s => offset > s.index && offset <= s.end)?.text ?? ''
     offset += node.text?.length ?? 0
   }
+  if (meetings) {
+    const last = new Map<string, CitationMark>()
+    for (const node of out) if (node.type === 'citation') {
+      for (const mark of node.attrs!.marks as CitationMark[]) last.set(meetings.get(mark.source)!, mark)
+    }
+    for (const node of out) if (node.type === 'citation') {
+      // Keep empty marks as offsets so streamed word keys do not change when a pill moves.
+      node.attrs!.marks = (node.attrs!.marks as CitationMark[]).filter(mark => last.get(meetings.get(mark.source)!) === mark)
+    }
+  }
   const bound: PMNode[] = []
   for (const node of out) {
     if (node.type !== 'citation') { bound.push(node); continue }
@@ -99,7 +109,7 @@ function placeCitations(nodes: PMNode[], pending: boolean): PMNode[] {
   return bound
 }
 
-/** Keep the source IDs intact; visible numbers belong to meetings, in this answer's reading order. */
+/** Keep passage IDs intact; each paragraph retains its last supporting mark per meeting. */
 export function citationDoc(answer: string, sources: Array<{ n: number; meetingId: string }>, live = false): PMNode {
   const text = tidyCitations(live ? answer.replace(/\[[\d,\s]*$/, '') : answer, sources)
   const doc = mdToDoc(text.replace(/\n{2,}/g, '\n'), { streaming: live })
@@ -111,7 +121,7 @@ export function citationDoc(answer: string, sources: Array<{ n: number; meetingI
     if (node.type !== 'text') {
       if (!node.content) return [node]
       const content = node.content.flatMap(transform)
-      return [{ ...node, content: node.type === 'paragraph' || node.type === 'heading' ? placeCitations(content, node === pending) : content }]
+      return [{ ...node, content: node.type === 'paragraph' || node.type === 'heading' ? placeCitations(content, node === pending, node.type === 'paragraph' ? meetingOf : undefined) : content }]
     }
     const text = node.text ?? '', parts: PMNode[] = []
     let last = 0
@@ -144,6 +154,7 @@ export function citationExcerptLines(text: string): PMNode[][] {
 /** Transcript excerpts use the same parsing, without presenting formatting as part of someone's speech. */
 export const citationExcerptText = (text: string): string => citationExcerptLines(text).map(line => line.map(n => n.text ?? '').join('')).join('\n')
 
+const wordSegmenter = new Intl.Segmenter(undefined, { granularity: 'word' })
 const segmenter = new Intl.Segmenter(undefined, { granularity: 'sentence' })
 function sourceSentences(text: string): Array<{ text: string; index: number; end: number }> {
   let offset = 0
@@ -160,7 +171,14 @@ const tokens = (text: string) => new Set((text.toLowerCase().match(/[\p{L}\p{N}]
 
 /** The source is quoted, never generated. Ties (including no overlap) keep the earliest sentence. */
 export function citationPassage(excerpt: string, answerSentence: string): { before: string; match: string; after: string } {
-  const sentences = sourceSentences(citationExcerptText(excerpt)).map(s => s.text)
+  const paragraphs = (node: PMNode): string[] => node.type === 'heading' ? [] : node.type === 'paragraph'
+    ? [(node.content ?? []).map(n => n.text ?? '').join('')] : (node.content ?? []).flatMap(paragraphs)
+  const body = paragraphs(mdToDoc(excerpt.replace(/^[\t ]*#{4,6}[\t ]+/gm, '### '), { inlineCode: true })).join('\n')
+  const sentences = sourceSentences(body).map(s => s.text).filter(text => {
+    const words = [...wordSegmenter.segment(text)].filter(s => s.isWordLike).length
+    // Reject short labels and clipped tails, retaining short punctuated statements and unpunctuated speech.
+    return !/[:：…]$|\.{3}$/.test(text) && (words >= 3 || words >= 2 && /[.!?。！？]["'”’»）)\]]*$/.test(text))
+  })
   const answer = tokens(answerSentence)
   let best = 0, score = -1
   sentences.forEach((sentence, i) => {

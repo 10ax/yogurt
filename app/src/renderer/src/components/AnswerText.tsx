@@ -1,4 +1,4 @@
-import { Fragment, useId, useMemo, useRef, useState, type ReactNode } from 'react'
+import { Fragment, useId, useLayoutEffect, useMemo, useRef, useState, type ReactNode } from 'react'
 import { Popover } from '@base-ui/react/popover'
 import type { LibrarySource } from '../../../shared/types'
 import type { PMNode } from '../../../shared/markdown'
@@ -14,8 +14,9 @@ export function AnswerText({ md, live, sources, onSource }: {
   onSource: (s: LibrarySource, match?: string) => void
 }) {
   const id = useId(), [open, setOpen] = useState(false), [triggerId, setTriggerId] = useState<string | null>(null)
-  const [animate, setAnimate] = useState(false)
+  const [pinned, setPinned] = useState<string | null>(null)
   const suppressed = useRef<string | null>(null)
+  const actions = useRef<Popover.Root.Actions>(null)
   const doc = useMemo(() => {
     const doc = citationDoc(md, sources, live)
     const prepare = (node: PMNode) => {
@@ -26,50 +27,69 @@ export function AnswerText({ md, live, sources, onSource }: {
     prepare(doc)
     return doc
   }, [md, sources, live])
-  const ctx: Ctx = { live, at: { n: 0 }, id, sources, focus: (element) => {
+  useLayoutEffect(() => {
+    // A later streamed citation can replace the pill that owns the current preview.
+    if (triggerId && !document.getElementById(triggerId)) {
+      setPinned(null)
+      if (open) actions.current?.close()
+      else { actions.current?.unmount(); setTriggerId(null) }
+    }
+  }, [doc, open, triggerId])
+  const ctx: Ctx = { live, at: { n: 0 }, id, sources, pinned, focus: (element) => {
     if (!element.matches(':focus-visible')) return
     if (suppressed.current === element.id) { suppressed.current = null; return }
-    setAnimate(false); setTriggerId(element.id); setOpen(true)
-  }, blur: () => { suppressed.current = null }, activate: element => { suppressed.current = null; setAnimate(false); setTriggerId(element.id); setOpen(true) },
+    setPinned(null); setTriggerId(element.id); setOpen(true)
+  }, blur: () => { suppressed.current = null },
   dismiss: element => {
     if (!open || triggerId !== element.id) return false
-    setOpen(false)
+    setPinned(null); setOpen(false)
     return true
   } }
-  return <Popover.Root<{ source: LibrarySource; sentence: string }> open={open} triggerId={triggerId} onOpenChange={(next, details) => {
-    if (!next && details.reason === 'trigger-press' && 'detail' in details.event && details.event.detail === 0) { details.cancel(); return }
+  return <Popover.Root<{ source: LibrarySource; sentence: string }> actionsRef={actions} open={open} triggerId={triggerId} onOpenChange={(next, details) => {
+    const trigger = triggerId ? document.getElementById(triggerId) : null
+    const popup = document.getElementById(trigger?.getAttribute('aria-controls') ?? '')
+    const focused = open && (trigger === document.activeElement || !!popup?.contains(document.activeElement))
+    if (details.reason === 'trigger-hover' && (pinned || focused && (!next || details.trigger?.id !== triggerId))) { details.cancel(); return }
+    if (!next && details.reason === 'focus-out' && (pinned || trigger?.matches(':hover') || popup?.matches(':hover'))) { details.cancel(); return }
+    if (details.reason === 'trigger-press') {
+      // Base UI lets a patient click close a hover preview; our first click always pins it.
+      const pin = pinned !== details.trigger?.id
+      if (next !== pin) details.cancel()
+      setPinned(pin ? details.trigger?.id ?? triggerId : null)
+      next = pin
+    } else if (!next) setPinned(null)
     if (details.reason === 'escape-key' && document.activeElement?.closest('.citation-card')) {
       suppressed.current = triggerId
       if (triggerId) document.getElementById(triggerId)?.focus({ preventScroll: true })
     }
     if (next) {
-      if (!open || details.trigger?.id !== triggerId) setAnimate(details.reason === 'trigger-hover' || (details.reason === 'trigger-press' && 'detail' in details.event && details.event.detail > 0))
       setTriggerId(details.trigger?.id ?? triggerId)
     }
     setOpen(next)
   }}>{({ payload }) => { ctx.at.n = 0; return <>
     {(doc.content ?? []).map(n => render(n, ctx))}
-    {payload && <SourceCitationCard key={triggerId} source={payload.source} sentence={payload.sentence} triggerId={triggerId} animate={animate} onOpen={match => { setOpen(false); onSource(payload.source, match) }} />}
+    {payload && <SourceCitationCard key={triggerId} source={payload.source} sentence={payload.sentence} triggerId={triggerId} animate onOpen={match => { setPinned(null); setOpen(false); onSource(payload.source, match) }} />}
   </> }}</Popover.Root>
 }
 
-type Ctx = { live: boolean; at: { n: number }; id: string; sources: LibrarySource[]; focus: (element: HTMLElement) => void; blur: () => void; activate: (element: HTMLElement) => void; dismiss: (element: HTMLElement) => boolean }
+type Ctx = { live: boolean; at: { n: number }; id: string; sources: LibrarySource[]; pinned: string | null; focus: (element: HTMLElement) => void; blur: () => void; dismiss: (element: HTMLElement) => boolean }
 
 function render(node: PMNode, c: Ctx): ReactNode {
   const key = `${node.type}-${c.at.n}`
   if (node.type === 'citation') {
     c.at.n += Number(node.attrs?.length ?? 0)
+    if (!(node.attrs!.marks as CitationMark[]).length) return null
     return <span className="citation-group" data-gap={node.attrs!.gap || undefined} data-single={(node.attrs!.marks as CitationMark[]).length === 1 || undefined} key={key}>{(node.attrs!.marks as CitationMark[]).map((mark, i) => {
       const source = c.sources.find(s => s.n === mark.source)!
       const title = source.title || t('Untitled')
-      return <Popover.Trigger key={mark.source} id={`${c.id}-${key}-${mark.source}`} payload={(node.attrs!.payloads as Array<{ source: LibrarySource; sentence: string }>)[i]} openOnHover delay={100} closeDelay={180}
+      const id = `${c.id}-${key}-${mark.source}`
+      return <Popover.Trigger key={mark.source} id={id} payload={(node.attrs!.payloads as Array<{ source: LibrarySource; sentence: string }>)[i]} openOnHover delay={120} closeDelay={180} aria-pressed={c.pinned === id}
         className="source-citation" data-testid="source-citation" data-meeting={source.meetingId} data-at={source.atMs ?? undefined}
-        aria-label={`${mark.number}: ${title} · ${dayLabel(source.startedAt)}`} onFocus={e => c.focus(e.currentTarget)} onBlur={c.blur} onKeyDown={e => {
-          if (e.key === 'Enter') { e.preventDefault(); c.activate(e.currentTarget) }
+        aria-label={`${title} · ${dayLabel(source.startedAt)}`} onFocus={e => c.focus(e.currentTarget)} onBlur={c.blur} onKeyDown={e => {
           // Consume Escape before the containing note panel handles it.
           if (e.key === 'Escape' && c.dismiss(e.currentTarget)) { e.preventDefault(); e.stopPropagation() }
         }}>
-        {mark.number}
+        <span className="source-name">{title}</span>
       </Popover.Trigger>
     })}</span>
   }

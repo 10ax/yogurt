@@ -1,6 +1,6 @@
 import { describe, expect, it } from 'vitest'
 import type { PMNode } from '../src/shared/markdown'
-import { citationPassage, citationTargetIndex, citationExcerptLines, citationExcerptText, citationDoc, citedIn, tidyCitations } from '../src/shared/citations'
+import { type CitationMark, citationPassage, citationTargetIndex, citationExcerptLines, citationExcerptText, citationDoc, citedIn, tidyCitations } from '../src/shared/citations'
 
 /** sources numbered from 1, one letter per source naming its meeting: 'aab' is two parts of a, then b */
 const of = (meetings: string) => [...meetings].map((meetingId, i) => ({ n: i + 1, meetingId }))
@@ -36,12 +36,12 @@ describe('citations in an answer', () => {
 })
 
 const citationNodes = (node: PMNode): PMNode[] => node.type === 'citation' ? [node] : (node.content ?? []).flatMap(citationNodes)
-const marks = (answer: string, sources = of('aab'), live = false) => citationNodes(citationDoc(answer, sources, live)).flatMap(n => n.attrs!.marks)
+const marks = (answer: string, sources = of('aab'), live = false) => citationNodes(citationDoc(answer, sources, live)).flatMap(n => n.attrs!.marks as CitationMark[])
 
 describe('numbered citation Markdown', () => {
-  it('numbers meetings by first appearance, reusing the number but keeping the specific chunk', () => {
+  it('keeps the last supporting passage per meeting and its original meeting identity', () => {
     expect(marks('First [3]. Next [2]. Another part [1].')).toEqual([
-      { source: 3, number: 1 }, { source: 2, number: 2 }, { source: 1, number: 2 },
+      { source: 3, number: 1 }, { source: 1, number: 2 },
     ])
     expect(marks('A new answer [1].')).toEqual([{ source: 1, number: 1 }])
   })
@@ -69,7 +69,7 @@ describe('numbered citation Markdown', () => {
   it('keeps earlier numbers while streaming, waits for an incomplete mark, and matches the saved result', () => {
     const prefix = 'First [3]. Next [2].'
     expect(marks(prefix + ' And [1', of('aab'), true)).toEqual(marks(prefix))
-    expect(marks(prefix + ' And [1].', of('aab'), true)).toEqual([...marks(prefix), { source: 1, number: 2 }])
+    expect(marks(prefix + ' And [1].', of('aab'), true)).toEqual([{ source: 3, number: 1 }, { source: 1, number: 2 }])
     expect(citationDoc(prefix, of('aab'), true)).toEqual(citationDoc(prefix, of('aab')))
   })
 })
@@ -171,7 +171,7 @@ describe('citation passages', () => {
   it('handles Unicode, repeated words, ties, empty excerpts and no overlap deterministically', () => {
     expect(citationPassage('Launch launch launch. Launch pricing.', 'Launch pricing.').match).toBe('Launch pricing.')
     expect(citationPassage('Le café ouvre lundi. Le café ferme mardi.', 'Café mardi.').match).toBe('Le café ferme mardi.')
-    expect(citationPassage('First. Next.', 'No overlap.')).toEqual({ before: '', match: 'First.', after: 'Next.' })
+    expect(citationPassage('Next steps\nWe reviewed the plan. We agreed to proceed.', 'No overlap.')).toEqual({ before: '', match: 'We reviewed the plan.', after: 'We agreed to proceed.' })
     expect(citationPassage('', 'Anything.')).toEqual({ before: '', match: '', after: '' })
   })
   it('finds the matching source block without punctuation, Markdown or speaker-prefix differences', () => {
@@ -181,5 +181,41 @@ describe('citation passages', () => {
     expect(citationTargetIndex(['Ship Tuesday.', 'Other text.', 'Ship Tuesday.'], 'Ship Tuesday.', 2)).toBe(2)
     expect(citationTargetIndex(['Changed source.'], 'The launch is Tuesday.')).toBe(-1)
     expect(citationTargetIndex([''], '')).toBe(-1)
+  })
+})
+
+describe('one meeting pill per paragraph', () => {
+  it('keeps interleaved meetings at their last support, ahead of unrelated trailing text', () => {
+    const doc = citationDoc('First [1]. Other [2]. **Last** [3]. Unrelated ending.', of('aba'))
+    const nodes = citationNodes(doc)
+    expect(nodes.flatMap(n => n.attrs!.marks as CitationMark[]).map(m => m.source)).toEqual([2, 3])
+    expect(nodes.find(n => (n.attrs!.marks as CitationMark[]).some((m: { source: number }) => m.source === 3))?.attrs!.sentence).toBe('Last.')
+    expect(doc.content![0].content!.at(-1)).toMatchObject({ type: 'text', text: ' Unrelated ending.' })
+    expect(JSON.stringify(doc)).toContain('bold')
+  })
+  it('collapses grouped passages independently in paragraphs and list items', () => {
+    expect(marks('Both [1, 2]. Again [3].\n\nAgain [1].\n- First [1]. Last [3].\n- Other [1].', of('aba')).map(m => m.source)).toEqual([2, 3, 1, 3, 1])
+  })
+  it('keeps offsets when a duplicate pill moves during streaming and waits for a complete new mark', () => {
+    const answer = 'First [1]. Last [2].'
+    expect(marks('First [1]. Last [2', of('aa'), true).map(m => m.source)).toEqual([1])
+    const doc = citationDoc(answer, of('aa'), true), nodes = citationNodes(doc)
+    expect(nodes.map(n => (n.attrs!.marks as CitationMark[]).map((m: { source: number }) => m.source))).toEqual([[], [2]])
+    expect(nodes.map(n => n.attrs!.length)).toEqual([3, 3])
+    expect(doc).toEqual(citationDoc(answer, of('aa')))
+  })
+})
+
+describe('citation sentence candidates', () => {
+  it('skips headings even when they overlap the claim more than its supporting sentence', () => {
+    expect(citationPassage('## Next steps for the release\nWe reviewed the draft. Send the release plan on Thursday. Review feedback on Friday.', 'The next steps for the release are to send the plan.')).toEqual({ before: 'We reviewed the draft.', match: 'Send the release plan on Thursday.', after: 'Review feedback on Friday.' })
+  })
+  it('skips plain labels, one-word fragments and clipped tails instead of using them as fallback', () => {
+    expect(citationPassage('Next steps\nThursday\nWe agreed to send the plan.\nPending…', 'What happened?')).toEqual({ before: '', match: 'We agreed to send the plan.', after: '' })
+    expect(citationPassage('## Next steps\nPending\nNext steps', 'Next steps')).toEqual({ before: '', match: '', after: '' })
+  })
+  it('keeps short complete statements and non-English sentences without inventing words', () => {
+    expect(citationPassage('## Planning\nShip Tuesday. Review feedback on Friday.', 'Ship Tuesday').match).toBe('Ship Tuesday.')
+    expect(citationPassage('## 次の手順\n計画を木曜日に送ります。金曜日に確認します。', '木曜日に送ります').match).toBe('計画を木曜日に送ります。')
   })
 })

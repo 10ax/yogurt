@@ -3,9 +3,6 @@ import { citationCardPassage, citationLineWindow } from '../src/shared/citationC
 import { turns } from '../src/shared/transcript'
 import { SPEAKER_COLORS } from '../src/shared/speakerColors'
 import type { LibrarySource } from '../src/shared/types'
-import { createElement } from 'react'
-import { renderToStaticMarkup } from 'react-dom/server'
-import { NotesPassage } from '../src/renderer/src/components/SourceCitation'
 
 const source: LibrarySource = { n: 1, meetingId: 'm', title: 'Standup', startedAt: 0, atMs: null }
 const transcript: LibrarySource = { ...source, atMs: 0, excerpt: 'You: The review is done.\nJenny: We can move the handoff to tomorrow.\nThem: That gives everyone time to check the notes.', transcript: {
@@ -17,23 +14,15 @@ const transcript: LibrarySource = { ...source, atMs: 0, excerpt: 'You: The revie
 } }
 
 describe('citation card source treatment', () => {
-  it('keeps notes bullets, inline formatting and the matched item wash', () => {
+  it('selects the supporting quote from a notes bullet without adding its neighbors', () => {
     const preview = citationCardPassage({ ...source, excerpt: '## Next steps\n- **You:** Send the plan.\n- **Jenny:** Book the room.\n- Review on Friday.' }, 'Jenny will book the room.')
-    const html = renderToStaticMarkup(createElement(NotesPassage, { preview }))
-    expect(html).toContain('<ul>')
-    expect(html.match(/<li>/g)).toHaveLength(3)
-    expect(html).toContain('<span class="citation-match"><strong>Jenny:</strong> Book the room.</span>')
-    expect(html).not.toContain('Next steps')
+    expect(preview.match.text).toBe('Jenny: Book the room.')
+    expect(preview.match.text).not.toContain('Next steps')
   })
-  it('retains list numbering and keeps sentences from one item in one list item', () => {
+  it('selects the supporting sentence inside a numbered item without its list number', () => {
     const preview = citationCardPassage({ ...source, excerpt: '4. Check the draft.\n5. **Send** the plan. Include the budget.\n6. Meet on Friday.' }, 'Include the budget.')
-    const html = renderToStaticMarkup(createElement(NotesPassage, { preview }))
-    expect(html).toContain('<ol start="5">')
-    expect(html.match(/<li value=/g)).toHaveLength(2)
-    expect(html).toContain('<li value="5">')
-    expect(html).toContain('<li value="6">')
-    expect(html).toContain('<strong>Send</strong> the plan.')
-    expect(html).toContain('<span class="citation-match">Include the budget.</span>')
+    expect(preview.match.text).toBe('Include the budget.')
+    expect(preview.match.text).not.toContain('Send the plan')
   })
   it('renders notes with safe inline Markdown and the exact matched sentence', () => {
     const card = citationCardPassage({ ...source, excerpt: 'QA is Tuesday. **Publish** the *release notes* on `Wednesday`. Ann will share [the link](https://example.com).' }, 'Publish the release notes on Wednesday.')

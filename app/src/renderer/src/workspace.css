@@ -293,54 +293,36 @@
 .app-toast-close:hover { color:var(--ink);background:var(--control); }
 .app-toast button:focus-visible { outline:2px solid var(--focus);outline-offset:2px; }
 
-/* Citations: numbered marks, with only the surface joining through goo. */
+/* Meeting source pills, with only the preview surface joining through goo. */
 .citation-anchor { white-space:nowrap; }
-.citation-group { display:inline-flex;align-items:baseline;gap:1px;position:relative;top:-1ex;vertical-align:baseline;line-height:0;white-space:nowrap; }
-.citation-group[data-gap] { margin-inline-start:.18em; }
-.source-citation { display:inline-flex;align-items:center;justify-content:center;position:relative;height:1em;padding:0;border:0;border-radius:5px;background:transparent;color:var(--accent);font-size:.68em;font-weight:500;line-height:1;letter-spacing:1px; }
-/* A lone mark keeps a generous pointer target without adding space to the sentence. */
-.source-citation::before { content:"";position:absolute;inset:-6px 0; }
-.citation-group[data-single] .source-citation::before { inset:-6px -9px; }
+.citation-group { display:inline-flex;align-items:baseline;gap:4px;position:relative;vertical-align:baseline;line-height:1;margin-inline:2px 0;white-space:nowrap; }
+/* The folder-chip shape fits inside the answer line; its invisible target stays 24px high. */
+.source-citation { display:inline-flex;align-items:center;justify-content:center;position:relative;height:18px;max-width:180px;padding:0 7px;border:1px solid var(--line);border-radius:999px;background:var(--card);color:var(--written);font-size:13px;font-weight:400;line-height:16px;letter-spacing:0; }
+.source-name { min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap; }
+.source-citation::before { content:"";position:absolute;top:50%;left:50%;width:max(100%,24px);height:max(100%,24px);transform:translate(-50%,-50%); }
+.citation-anchor:has(.citation-group:not([data-single])) { white-space:normal; }
+.citation-group:not([data-single]) { display:inline;white-space:normal; }
+/* Focus guards may sit between triggers; their insertion must not change the gap. */
+.citation-group:not([data-single]) .source-citation~.source-citation { margin-inline-start:4px; }
+.source-citation:hover,.source-citation[aria-expanded=true] { background:var(--accent-soft);border-color:color-mix(in srgb,var(--accent) 20%,var(--line));color:var(--ink); }
 .source-citation:focus-visible { outline:2px solid var(--focus);outline-offset:1px; }
 .citation-positioner { z-index:100; }
 .citation-positioner[data-anchor-hidden] { visibility:hidden;pointer-events:none; }
-.citation-card { position:relative;isolation:isolate;width:380px;max-width:calc(100vw - 24px);color:var(--ink);text-align:start;font-size:13px;line-height:1.5;letter-spacing:-.012em;transition:opacity 160ms ease-out;outline:none; }
+.citation-card { position:relative;isolation:isolate;width:fit-content;min-width:min(280px,calc(100vw - 24px));max-width:min(400px,calc(100vw - 24px));color:var(--ink);text-align:start;font-size:14px;line-height:1.5;letter-spacing:-.012em;transition:opacity 160ms ease-out;outline:none; }
 .citation-card[data-animate=false] { transition:none; }
 .citation-card[data-ending-style] { opacity:0; }
 .citation-filter { position:absolute;pointer-events:none; }
 .citation-liquid,.citation-edge { position:absolute;inset:0;z-index:-1;pointer-events:none; }
 .citation-mass { position:absolute;inset:0;border-radius:12px;background:var(--float);transform-origin:0 0; }
 .citation-edge { border:1px solid var(--line);border-radius:12px;box-shadow:var(--shadow-soft); }
-.citation-content { padding:12px; }
-.citation-heading { display:flex;align-items:baseline;justify-content:space-between;gap:10px;line-height:18px; }
-.citation-title { min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;margin:0;font-size:13px;line-height:18px;font-weight:600; }
-.citation-date { flex:none;font-size:10px;color:var(--muted);white-space:nowrap; }
-.citation-excerpt { display:-webkit-box;-webkit-box-orient:vertical;-webkit-line-clamp:6;margin:8px 0 0;color:var(--muted);font-size:13px;line-height:20px;overflow-wrap:anywhere;max-height:120px;overflow:clip; }
-.citation-match { color:var(--ink); }
-.citation-passage { margin-top:8px;color:var(--muted); }
-.citation-passage [hidden] { display:none!important; }
-.citation-lines { display:-webkit-box;-webkit-box-orient:vertical;overflow:clip;overflow-wrap:anywhere; }
-.citation-transcript { margin-top:12px;display:flex;flex-direction:column;gap:6px; }
-.citation-transcript .transcript-turn { display:flex;flex-direction:column;align-items:flex-start;gap:5px; }
-.citation-transcript .transcript-turn[data-track=me] { align-items:flex-end; }
-.citation-transcript .bubble { margin:0; }
-.citation-transcript .bubble+.bubble { margin-top:1px; }
-.citation-transcript .bubble:not([data-continuation]) { width:85%; }
-.citation-transcript .bubble[data-continuation] { margin-inline:12px; }
-.citation-speaker { padding-inline:4px;font-size:12px;font-weight:500;line-height:18px; }
-.citation-notes { font-size:13px;line-height:20px; }
-.citation-notes p { margin:0; }
-.citation-notes ul,.citation-notes ol { margin:0;padding-inline-start:18px; }
-.citation-notes ul { list-style-type:disc; }
-.citation-notes ol { list-style-type:decimal; }
-.citation-notes li+li { margin-top:4px; }
-.citation-notes li:not(:has([data-citation-part]:not([hidden]))) { display:none; }
-.citation-notes [data-citation-part]+[data-citation-part] { margin-top:8px; }
-.citation-notes .citation-match { background:color-mix(in srgb,var(--accent) 10%,transparent);border-radius:3px;box-decoration-break:clone;-webkit-box-decoration-break:clone; }
-.citation-notes code { font-size:.92em; }
-.citation-footer { display:flex;align-items:center;justify-content:flex-end;gap:12px;margin-top:8px;font-size:11px;color:var(--muted); }
-.citation-footer>span { margin-inline-end:auto; }
-.citation-open { display:inline-flex;align-items:center;gap:5px;height:24px;padding:2px 5px;border-radius:4px;background:transparent;color:var(--muted);font-size:11px;line-height:20px; }
+.citation-content { padding:12px 14px; }
+.citation-heading { display:flex;align-items:baseline;justify-content:flex-start;gap:6px;min-width:0;color:var(--muted);font-size:12px;line-height:18px; }
+.citation-title { flex:0 1 auto;min-width:0;max-width:260px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;margin:0;color:var(--muted);font-size:12px;line-height:18px;font-weight:400; }
+.citation-date { flex:none;font-size:12px;line-height:18px;white-space:nowrap; }
+.citation-quote { margin:8px 0;color:var(--ink);font-size:14px;line-height:21px;font-weight:400;letter-spacing:0;overflow-wrap:anywhere;max-height:min(320px,calc(100vh - 160px));overflow:auto; }
+.citation-context { color:var(--written); }
+.citation-footer { display:flex;align-items:center;justify-content:flex-end;margin:4px 0 0;font-size:11px;color:var(--muted); }
+.citation-open { display:inline-flex;align-items:center;gap:5px;height:24px;padding:2px 4px;border-radius:4px;background:transparent;color:var(--muted);font-size:11px;line-height:20px; }
 .citation-open:hover { background:var(--control-hover);color:var(--ink); }
 .citation-open:active { background:var(--control-pressed); }
 .citation-open:focus-visible { outline:2px solid var(--focus);outline-offset:2px; }

@@ -24,7 +24,12 @@ const before = (pairs: string[] = []): EngineMessage[] => pairs.map((content, i)
  * one sequence for its whole life, let go when the queue says so. It remembers what the sequence starts with, so a
  * read ahead only sends what is new.
  */
-export function createNotesModel(o: { engine: Engine; modelPath: () => string | undefined; onLoaded?: (path: string) => void }) {
+export function createNotesModel(o: { engine: Engine; modelPath: () => string | undefined; onLoaded?: (path: string) => void
+  /** the context to load with (smaller on a Mac with little memory; notes split a long meeting into parts to fit) */
+  contextSize?: number
+  /** let go of what must not sit in memory next to the model (whisper-server on a Mac with little memory) */
+  beforeLoad?: () => Promise<void>
+}) {
   let loaded: { path: string; contextSize: number } | undefined
   let loading: Promise<{ path: string; contextSize: number }> | undefined
   /** the text the model's sequence starts with (the first message of what it last read): what a read ahead builds on */
@@ -38,7 +43,7 @@ export function createNotesModel(o: { engine: Engine; modelPath: () => string | 
     held = ''
     loaded = undefined
     const t0 = performance.now()
-    loading ??= o.engine.load(path, CONTEXT, MIN_CONTEXT).then((r) => {
+    loading ??= (async () => { await o.beforeLoad?.().catch((e) => console.error('letting go before the notes model loads failed', e)) })().then(() => o.engine.load(path, o.contextSize ?? CONTEXT, MIN_CONTEXT)).then((r) => {
       console.info('TIMING', `load ${((performance.now() - t0) / 1000).toFixed(1)} s`)
       o.onLoaded?.(path)
       return (loaded = { path, contextSize: r.contextSize })

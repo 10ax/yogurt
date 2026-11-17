@@ -333,4 +333,16 @@ export async function settleTranscription(capMs = 20_000): Promise<void> {
 }
 
 /** Quitting: whisper-server goes with the app */
+/**
+ * A Mac with little memory: whisper-server goes now, not ten minutes after the last meeting, so the notes model does not
+ * load next to it (a 24 GB Mac froze with both loaded). Never while a meeting or a saved recording is being transcribed.
+ */
+export async function releaseIdleSpeech(): Promise<void> {
+  if (sessions.size || !server) return
+  clearTimeout(idleTimer)
+  const s = server
+  server = undefined; serverKey = undefined
+  await s.stop().catch((e) => console.error('stopping whisper-server failed', e))
+}
+
 export function stopTranscriptionServer() { clearTimeout(idleTimer); server?.kill(); server = undefined; serverKey = undefined }

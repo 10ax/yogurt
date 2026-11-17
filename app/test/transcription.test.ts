@@ -2,7 +2,7 @@ import { EventEmitter } from 'node:events'
 import { PassThrough } from 'node:stream'
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest'
 import { Capture, encodeFrame, hookCapture, recordingFinished, type CaptureProc } from '../src/main/capture'
-import { hookTranscription, transcribeRecorded, settleTranscription, speechLocaleFor, spokenChanged, stopTranscriptionServer, transcribing } from '../src/main/asr'
+import { hookTranscription, transcribeRecorded, settleTranscription, speechLocaleFor, spokenChanged, stopTranscriptionServer, transcribing, releaseIdleSpeech } from '../src/main/asr'
 import type { Spoken } from '../src/shared/spoken'
 import type { TranscriptPartial } from '../src/shared/types'
 import { openStore, type Meeting, type Store } from '../src/main/store'
@@ -261,6 +261,29 @@ describe('whisper-server between meetings', () => {
     expect(s.made).toHaveLength(2)
     expect(s.made[1].urls).toBe(1)
     await h.end(b)
+  })
+  it('a small Mac lets an idle whisper-server go at once, before the notes model loads next to it (a 24 GB Mac froze)', async () => {
+    const s = fakeServers()
+    const h = hooks(s.make, 60_000)
+    const a = meeting()
+    h.begin(a); await h.end(a)
+    expect(s.made[0].stops).toBe(0)
+    await releaseIdleSpeech()
+    expect(s.made[0].stops).toBe(1)
+    // the next meeting starts a new one
+    const b = meeting()
+    h.begin(b)
+    expect(s.made).toHaveLength(2)
+    await h.end(b)
+  })
+  it('never while a meeting is still being transcribed', async () => {
+    const s = fakeServers()
+    const h = hooks(s.make, 60_000)
+    const a = meeting()
+    h.begin(a)
+    await releaseIdleSpeech()
+    expect(s.made[0].stops).toBe(0)
+    await h.end(a)
   })
   it('a meeting starting before the wait is up keeps the same server running', async () => {
     const s = fakeServers()

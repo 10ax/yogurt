@@ -1,3 +1,4 @@
+import { CONTEXT } from '../../shared/engine-protocol'
 /**
  * readahead: reading a meeting into the model ahead of what will ask about it (while it is recorded, readAhead.ts; when
  * its Ask opens, chat.ts warm); it comes late, never while a small Mac records, and is never run again.
@@ -18,6 +19,15 @@ export const IDLE_UNLOAD_MS = 10 * 60_000
  * (25.8 decimal GB), so the line sits halfway to 32 GB rather than on an exact number.
  */
 export const isSmallMac = (totalBytes: number): boolean => totalBytes < 28 * 2 ** 30
+
+/**
+ * How the notes model shares memory. A small Mac (under 28 GB) froze with whisper-server and the 26B model loaded
+ * together: there whisper goes before the model loads, the model loads with half the context (long meetings are written
+ * in parts), and it goes a minute after the last job instead of ten.
+ */
+export function notesMemory(smallMac: boolean): { contextSize: number; idleMs: number; releaseSpeech: boolean } {
+  return smallMac ? { contextSize: 16_384, idleMs: 60_000, releaseSpeech: true } : { contextSize: CONTEXT, idleMs: IDLE_UNLOAD_MS, releaseSpeech: false }
+}
 
 /** On a bigger Mac, audio waiting for transcription past this stops model work; it starts again under RESUME_MS */
 export const BACKLOG_MS = 30_000

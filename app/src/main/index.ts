@@ -1,3 +1,4 @@
+import { hookRendererErrors } from './rendererErrors'
 import { matchSearchPeople, searchPersonKey } from '../shared/searchPeople'
 import { resolvePeople } from './people'
 import { createFolderSuggestions } from './folderSuggestions'
@@ -89,6 +90,7 @@ if (process.platform === 'win32') app.setAppUserModelId('so.yogurt.app')
 app.setPath('userData', userDataDir())
 mkdirSync(userDataDir(), { recursive: true })
 logToFile(join(userDataDir(), 'logs', 'main.log'))
+hookRendererErrors()
 // logged, never a dialog: one bad message or a failed promise must not stop a recording
 process.on('unhandledRejection', (err) => console.error('unhandled rejection', err))
 process.on('uncaughtException', (err) => console.error('uncaught exception', err))

@@ -1,3 +1,6 @@
+import { RendererGuard, RendererFailureTest } from './components/RendererGuard'
+import { installNoteLifecycle } from './noteLifecycle'
+import { installRendererErrors } from './rendererErrors'
 import { installScrollActivity } from './scrollActivity'
 import { StrictMode } from 'react'
 import { createRoot } from 'react-dom/client'
@@ -14,10 +17,11 @@ const Which = location.hash === '#prompt' ? Prompt : location.hash === '#widget'
 document.documentElement.classList.toggle('main-window', Which === App)
 // Windows and Linux: the system's window buttons over the top right, no traffic lights (workspace.css)
 if (window.yogurt.platform !== 'darwin') document.documentElement.dataset.chrome = 'overlay'
-if (Which === App) installScrollActivity(document)
+installRendererErrors()
+if (Which === App) { installScrollActivity(document); installNoteLifecycle() }
 // everything re-renders in a newly picked language, in every window at once
 function Page() { useLanguage(); return <Which /> }
-const render = () => createRoot(document.getElementById('root')!).render(<StrictMode><Page /></StrictMode>)
+const render = () => createRoot(document.getElementById('root')!).render(<StrictMode><RendererGuard><RendererFailureTest><Page /></RendererFailureTest></RendererGuard></StrictMode>)
 window.yogurt.settings.onLanguage(applyLanguage)
 // the interface language first, so no window flashes English (or the wrong direction)
 window.yogurt.settings.get().then((s) => applyLanguage(s.locale), () => {}).finally(render)

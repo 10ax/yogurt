@@ -3,7 +3,6 @@ import { MeetingListLoading } from './screens/Home'
 import { StartRecording } from './components/StartRecording'
 import { useEffect, useRef, useState } from 'react'
 import { rememberScrollPositions } from './useScrollMemory'
-import { flushOpenNotes, handoffOpenNotes } from './noteAutosave'
 import { Onboarding } from './screens/Onboarding'
 import { Note } from './screens/Note'
 import { Home } from './screens/Home'
@@ -22,22 +21,6 @@ import { useFolders } from './folders'
 import type { LibrarySource, MeetingView, OnboardingPlan, SetupState } from '../../shared/types'
 
 export function App() {
-  useEffect(() => {
-    const off = window.yogurt.notes.onFlushRequest((closing) => {
-      // No new typing between a graceful quit's final flush and window teardown.
-      document.body.inert = closing
-      return closing ? flushOpenNotes() : Promise.resolve(true)
-    })
-    // Main retains a failed final edit even after this renderer closes or reloads.
-    const handoff = (e: BeforeUnloadEvent) => {
-      // A failed database write is retained in main. A failed IPC handoff must keep this renderer alive.
-      if (!handoffOpenNotes()) { e.preventDefault(); e.returnValue = '' }
-    }
-    const hidden = () => { if (document.visibilityState === 'hidden') void flushOpenNotes() }
-    window.addEventListener('beforeunload', handoff)
-    document.addEventListener('visibilitychange', hidden)
-    return () => { off(); window.removeEventListener('beforeunload', handoff); document.removeEventListener('visibilitychange', hidden) }
-  }, [])
   const [setup, setSetup] = useState<SetupState>()
   // where the app was told to go, e.g. /note/<id>
   const [route, setRouteNow] = useState('')

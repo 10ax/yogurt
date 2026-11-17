@@ -1,3 +1,4 @@
+import type { RendererError } from './rendererError'
 import type { WidgetLayout, WidgetSurface } from './widgetMorph'
 import type { ContextChip, ContextTarget } from './askContext'
 import type { FolderAppearance } from './folderAppearance'
@@ -23,6 +24,7 @@ export type MeetingCard = StoredMeetingCard & { paused?: true }
 
 /** What the window sees of the app: window.yogurt (the preload bridge, contextIsolation on) */
 export type YogurtApi = {
+  reportRendererError(report: RendererError): void
   platform: NodeJS.Platform
   /** the computer the screens are for: the real one, or in fake mode the one YOGURT_FAKE_PLATFORM pretends to be (shortcut keys follow it) */
   os: string

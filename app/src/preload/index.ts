@@ -4,6 +4,7 @@ import { capabilities, platformOf } from '../shared/platform'
 import type { ChatView, ConversationSummary, ConversationView, NoteView, PromptAction, SetupState, UpdateStatus, WidgetView, YogurtApi } from '../shared/types'
 
 const api: YogurtApi = {
+  reportRendererError: report => ipcRenderer.send('renderer:error', report),
   platform: process.platform,
   os: platformOf(process.platform, process.env),
   capabilities: capabilities(platformOf(process.platform, process.env)),

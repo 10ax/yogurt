@@ -900,3 +900,9 @@ html:not(.widget) button:focus-visible, html:not(.widget) input:focus-visible { 
 .note-resume-action:is(:hover,:focus-visible) .summary-stop-square { opacity:1; }
 .summary-stopped { display:flex;flex-direction:column;align-items:flex-start;gap:8px;color:var(--muted);font-size:13px; }
 @media (prefers-reduced-motion:reduce) { .summary-stop-icon>* { transition:none; } }
+
+/* Recovery remains opaque even when the rest of the React tree has been removed. */
+.renderer-recovery { position:relative;display:grid;place-items:center;height:100%;padding:72px 24px 24px;background:var(--bg);color:var(--ink); }
+.renderer-recovery-titlebar { position:absolute;inset:0 0 auto;height:52px; }
+.renderer-recovery-content { display:flex;flex-direction:column;align-items:center;gap:16px;max-width:360px;text-align:center;font-size:14px; }
+.renderer-recovery-content .modal-button { width:auto;min-width:80px; }

@@ -116,6 +116,34 @@ describe('transcribe', () => {
     expect(s.seen.map((x) => x.fields.language)).toEqual(['auto', 'auto', 'spanish', 'english'])
   })
 
+  it('follows a switch: two lines in a row clearly in another language move the lock, each read in the language it was said in', async () => {
+    // locked on English; then two Spanish lines (whisper, told English, still guesses Spanish from the audio)
+    const s = await stub([say('Hello everyone thanks for coming'), say('Hola a todos gracias', 'spanish'), say('Hola a todos gracias', 'spanish'),
+      say('Seguimos con el plan de hoy', 'spanish'), say('Seguimos con el plan de hoy', 'spanish'), say('Y luego la demo', 'spanish')])
+    const t = createTranscriber({ url: async () => s.url })
+    await t(chunk('them', 0))
+    expect((await t(chunk('them', 2000))).map((l) => l.text)).toEqual(['Hola a todos gracias'])
+    await t(chunk('them', 4000))
+    await t(chunk('them', 6000))
+    // the first Spanish line is read again in Spanish (not as English), and after the second the track is Spanish
+    expect(s.seen.map((x) => x.fields.language)).toEqual(['auto', 'english', 'spanish', 'english', 'spanish', 'spanish'])
+  })
+
+  it('English only (the default) never looks for a switch: one request per line, nothing read again', async () => {
+    const s = await stub([say('Hello everyone'), say('Hola a todos gracias', 'spanish'), say('Hola a todos gracias', 'spanish')])
+    const t = createTranscriber({ url: async () => s.url, language: () => 'en' })
+    await t(chunk('them', 0)); await t(chunk('them', 2000)); await t(chunk('them', 4000))
+    expect(s.seen).toHaveLength(3)
+    expect(s.seen.map((x) => x.fields.language)).toEqual(['en', 'en', 'en'])
+  })
+
+  it('one line in another language (a name, a quote) keeps the lock', async () => {
+    const s = await stub([say('Hello everyone thanks for coming'), say('Bonjour mes amis', 'french'), say('Bonjour mes amis', 'french'), say('Back to the plan for today')])
+    const t = createTranscriber({ url: async () => s.url })
+    await t(chunk('them', 0)); await t(chunk('them', 2000)); await t(chunk('them', 4000))
+    expect(s.seen.map((x) => x.fields.language)).toEqual(['auto', 'english', 'french', 'english'])
+  })
+
   it('does not lock on a doubtful first guess', async () => {
     const s = await stub([say('Uh huh', 'welsh', 0.4), say('Right then, see you soon', 'english', 0.95), say('Fine by me')])
     const tr = createTranscriber({ url: async () => s.url })

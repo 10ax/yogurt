@@ -63,15 +63,22 @@ export const requestTimeoutMs = (samples: number): number => Math.max(30_000, Ma
 const MIN_LOCK_PROB = 0.8
 const MIN_CLEAR_MS = 300
 const MIN_LOCK_TOKENS = 2
+/** how sure whisper must be that a locked track is now in another language, and how many lines in a row, to follow it */
+const SWITCH_PROB = 0.9
+const SWITCH_LINES = 2
 
 /**
  * Sends chunks to whisper-server's /inference. Auto-detecting the language on every short chunk flips on short sentences,
  * so once a track has been heard clearly in one language, later chunks on it are told that language.
  * An empty or garbled answer on a locked track asks again with the language open; the lock goes only if that hears something.
+ * People switch languages too: whisper still guesses each chunk's language from the audio, so a line clearly in another
+ * one is read again in it, and two such lines in a row move the lock (one, like a name or a quote, doesn't).
  */
 export function createTranscriber(o: Opts): Transcribe {
   const fetchFn = o.fetchFn ?? fetch
   const locked: Partial<Record<Track, string>> = {}
+  /** lines in a row a locked track was clearly heard in another language */
+  const strays: Partial<Record<Track, number>> = {}
 
   const call = async (c: Chunk, language: string, partial = false, guess = !partial): Promise<{ lines: Line[]; text: string; language: string; prob: number }> => {
     let used: string | undefined
@@ -136,6 +143,16 @@ export function createTranscriber(o: Opts): Transcribe {
       // nothing in any language (VAD found no speech, or only made-up lines): the lock stays
       if (open.text.trim()) { delete locked[c.track]; r = open }
     }
+    // told the locked language, yet clearly in another: read again in that one, and after a few such lines follow it
+    if (had && locked[c.track] === had && r.language !== 'auto' && r.language !== had && r.prob >= SWITCH_PROB && tokens(r.text).length >= MIN_LOCK_TOKENS) {
+      const heard = r.language
+      const again = await call(c, heard)
+      if (again.text.trim() && !isGarbled(again.text)) {
+        r = { ...again, language: heard, prob: Math.max(again.prob, r.prob) }
+        strays[c.track] = (strays[c.track] ?? 0) + 1
+        if (strays[c.track]! >= SWITCH_LINES) { locked[c.track] = heard; strays[c.track] = 0 }
+      }
+    } else if (r.language === had) strays[c.track] = 0
     if (r.language !== 'auto' && r.text.trim() && !isGarbled(r.text)) o.onLanguage?.(c.track, r.language, r.text.length, !!had)
     if (!locked[c.track] && r.language !== 'auto' && r.prob >= MIN_LOCK_PROB && !isGarbled(r.text) && tokens(r.text).length >= MIN_LOCK_TOKENS) locked[c.track] = r.language
     return r.lines

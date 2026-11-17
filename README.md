@@ -32,8 +32,8 @@
 - **Meeting summaries.** Yogurt writes up the conversation and any notes you add.
 - **Private by default.** Your audio, transcripts and AI processing stay on your computer.
 - **Free and open source.** You can use Yogurt without an account.
-- **Who said what.** Yogurt names speakers from Zoom, Teams and Meet on Mac only.
-- **Languages.** Multi-language mode transcribes 99 languages.
+- **Who said what.** Yogurt names speakers from Zoom, Teams and Meet on Mac, Windows and Linux.
+- **Languages.** Multi-language mode transcribes 99 languages, follows each side of the call in its own language, and keeps up when someone switches languages mid-meeting.
 - **Recording reminders.** Yogurt offers to record when a supported call starts.
 - **Answers with sources.** Yogurt answers questions across meetings and links to the source.
 - **Folders and search.** You can find meetings by folder, title, notes or transcript.
@@ -67,7 +67,7 @@ Meeting data stays local; Yogurt goes online for model downloads and update chec
 
 <br>
 
-> A Mac with Apple silicon and macOS 14.4 or newer, a 64-bit PC with Windows 10 (version 2004) or newer, or a 64-bit Linux computer with Ubuntu 22.04 or newer. Each needs at least 8 GB of memory. If your computer is too slow, Yogurt tells you during setup. Calendar and speaker names from calls are Mac only for now.
+> A Mac with Apple silicon and macOS 14.4 or newer, a 64-bit PC with Windows 10 (version 2004) or newer, or a 64-bit Linux computer with Ubuntu 22.04 or newer. Each needs at least 8 GB of memory. If your computer is too slow, Yogurt tells you during setup. On Windows and Linux, you connect your calendar with a private calendar link.
 
 </details>
 
@@ -147,7 +147,9 @@ Meeting data stays local; Yogurt goes online for model downloads and update chec
 
 <br>
 
-> Pick **Multi-language** in **Settings → Language → Spoken language** to transcribe 99 languages. You can also switch from the **English** menu in a note’s footer before or during recording. English only is the default. Summaries follow the meeting’s main language; answers follow your question’s language. Settings also offers 32 app languages.
+> Pick **Multi-language** in **Settings → Language → Spoken language** to transcribe 99 languages. You can also switch from the **English** menu in a note’s footer before or during recording. English only is the default, and it’s the fastest and most accurate choice for English meetings.
+>
+> In Multi-language mode, you and the other side of the call can each speak your own language, and Yogurt follows along when someone switches languages mid-meeting. Summaries follow the meeting’s main language, or the one you pick in **Settings → Summary language**. Answers in Ask follow your question’s language. Settings also offers 32 app languages.
 
 </details>
 

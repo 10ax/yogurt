@@ -15,8 +15,8 @@ pnpm --dir site test
 pnpm --dir site build
 ```
 
-The bundle defaults to `origin/main` without changing the checkout. Set `YOGURT_APP_REF` to another local commit when needed. No archived-source overrides are needed at `0d26a16`: main includes the wordmark change and replaces the old rings with the Ask flare and Summary outline. Its manifest records the app commit, source overrides, source files and output hashes. `SITE_URL` changes the local origin used by the still exporter; `CHROME_BIN` changes its browser executable. The exporter uses headless Chrome directly, not Electron or Playwright.
+The bundle defaults to `origin/main` without changing the checkout. Set `YOGURT_APP_REF` to another local commit when needed. No archived-source overrides are needed at `72c9c0b`: main includes the wordmark change and replaces the old rings with the Ask flare and Summary outline. Its manifest records the app commit, source overrides, source files and output hashes. `SITE_URL` changes the local origin used by the still exporter; `CHROME_BIN` changes its browser executable. The exporter uses headless Chrome directly, not Electron or Playwright.
 
-`timeline.mjs` owns the 39-second hero sequence. `bridge.mjs` provides the in-memory app bridge and drives the editor and cursor. `fragments.tsx` renders the three How it works surfaces. Desktop fragments animate; phone and reduced-motion layouts use the completed exports. `frame.css` styles only the isolated frames. Page layout stays in `public/marketing/site.css`.
+`timeline.mjs` owns the 39-second hero sequence. `bridge.mjs` provides the in-memory app bridge and drives the editor and cursor. Native capabilities are disabled and updates stay idle in the browser-only fixture. `fragments.tsx` renders the three How it works surfaces. Desktop fragments animate; phone and reduced-motion layouts use the completed exports. `frame.css` styles only the isolated frames. Page layout stays in `public/marketing/site.css`.
 
 The Vite-only `renderer` directory is excluded from Next's typecheck: its `@app` imports are resolved from the archived app source by `bundle.mjs`.

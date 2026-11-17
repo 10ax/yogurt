@@ -38,7 +38,9 @@ const saveMine = (_id,text,revision) => { notes.mine=text; notes.saves.mine={rev
 const widget = () => meeting.state !== 'recording' ? null : ({ kind: 'recording', meetingId: meeting.id, title: meeting.title, elapsedMs: 720000 + (time >= timing.resume ? 0 : time) * 1000, at: Date.now(), note: null })
 window.yogurt = {
   platform: 'darwin', fake: true,
+  capabilities: { calendar: false, callNames: false, permissionPrompts: false, mediaPause: false },
   setup: { state: read({}), onState: off },
+  updates: { status: read({ version: '', available: false, on: false, state: 'idle' }), onStatus: off },
   widget: { state: async () => widget(), onState: events.widget.on, onLevel: events.level.on },
   meetings: { get: read(meeting), onChange: events.meeting.on, stop: async () => {}, resume: async () => { document.documentElement.dataset.resumeClicked='true'; return {id:meeting.id} } },
   notes: { get: read(notes), onChange: events.notes.on, onFlushRequest: off, keptEdits: noop, setMine: async (...args) => saveMine(...args), setEnhanced: read({revision:0,status:'failed'}), flushSync: (id,side,text,revision) => side==='mine' ? saveMine(id,text,revision) : {revision,status:'saved'} },

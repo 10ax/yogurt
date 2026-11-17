@@ -61,10 +61,11 @@ try {
   for(const seconds of [21,27]) {
     await evaluate(`window.postMessage({type:'yogurt-hero-time',seconds:${seconds}},location.origin)`)
     await pause(300)
-    const resting=await evaluate(`(()=>{const editor=document.querySelector('[data-testid=note-enhanced-editor]'),pane=editor.closest('.note-notes-pane'),heading=editor.querySelector('h2');return {top:pane.scrollTop,headingVisible:heading.getBoundingClientRect().top>=pane.getBoundingClientRect().top,generating:pane.closest('.note-reading-frame').dataset.generating}})()`)
+    const resting=await evaluate(`(()=>{const editor=document.querySelector('[data-testid=note-enhanced-editor]'),pane=editor.closest('.note-notes-pane'),heading=editor.querySelector('h2');return {top:pane.scrollTop,headingVisible:heading.getBoundingClientRect().top>=pane.getBoundingClientRect().top,summaryFits:pane.scrollHeight<=pane.clientHeight+1,lastLineVisible:editor.lastElementChild.getBoundingClientRect().bottom<=pane.getBoundingClientRect().bottom-20,generating:pane.closest('.note-reading-frame').dataset.generating}})()`)
     assert.equal(resting.generating,'false')
     assert.equal(resting.top,0,'completed live Summary rests at the top, including during Ask')
     assert(resting.headingVisible,'the complete Summary heading stays below the tab bar')
+    assert(resting.summaryFits && resting.lastLineVisible,'the complete Summary fits above the bottom fade')
   }
   assert.deepEqual(errors,[],'live Summary and Ask have no runtime errors')
   await call('Emulation.setEmulatedMedia',{features:[{name:'prefers-color-scheme',value:'light'},{name:'prefers-reduced-motion',value:'reduce'}]})

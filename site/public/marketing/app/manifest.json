@@ -1,7 +1,7 @@
 {
-  "appCommit": "0d26a16cf00781d2b0d0c557cd1bdd3fc730cc0d",
+  "appCommit": "72c9c0b2b8fd3d47c74af6821c5ddac8f920cb58",
   "sourceOverrides": {},
-  "generatedAt": "2026-11-16T17:01:24.988Z",
+  "generatedAt": "2026-11-17T17:00:34.023Z",
   "source": "app/src/renderer",
   "fixture": "site/renderer/bridge.mjs",
   "nativeCode": false,
@@ -45,6 +45,7 @@
     "app/src/renderer/src/components/Player.tsx",
     "app/src/renderer/src/components/RecordingHint.tsx",
     "app/src/renderer/src/components/RecordingTime.tsx",
+    "app/src/renderer/src/components/RegenerateForm.tsx",
     "app/src/renderer/src/components/ScrollFade.tsx",
     "app/src/renderer/src/components/ShareMenu.tsx",
     "app/src/renderer/src/components/SourceCitation.tsx",
@@ -53,8 +54,9 @@
     "app/src/renderer/src/components/Swap.tsx",
     "app/src/renderer/src/components/ThinkingDots.tsx",
     "app/src/renderer/src/components/Transcript.tsx",
+    "app/src/renderer/src/components/TranscriptFind.tsx",
     "app/src/renderer/src/components/TrashToast.tsx",
-    "app/src/renderer/src/components/ViewPill.tsx",
+    "app/src/renderer/src/components/UpdateReady.tsx",
     "app/src/renderer/src/components/Workspace.tsx",
     "app/src/renderer/src/dates.ts",
     "app/src/renderer/src/folderSelection.ts",
@@ -62,19 +64,24 @@
     "app/src/renderer/src/followLatest.ts",
     "app/src/renderer/src/i18n.tsx",
     "app/src/renderer/src/keys.ts",
+    "app/src/renderer/src/meetingRowMotion.ts",
     "app/src/renderer/src/meetingSelection.ts",
     "app/src/renderer/src/mentionPlacement.ts",
     "app/src/renderer/src/motion.ts",
     "app/src/renderer/src/noteAutosave.ts",
     "app/src/renderer/src/noteMerge.ts",
     "app/src/renderer/src/notesSetup.ts",
+    "app/src/renderer/src/playerVisibility.ts",
     "app/src/renderer/src/screens/Note.tsx",
     "app/src/renderer/src/streamingInk.ts",
     "app/src/renderer/src/styles.css",
     "app/src/renderer/src/summaryPresentation.ts",
+    "app/src/renderer/src/transcriptFindRanges.ts",
     "app/src/renderer/src/trashMeetings.ts",
     "app/src/renderer/src/useFollowLatest.ts",
+    "app/src/renderer/src/useJoinWindow.ts",
     "app/src/renderer/src/useLoadingState.ts",
+    "app/src/renderer/src/useNoteCalendar.ts",
     "app/src/renderer/src/useNotePopover.ts",
     "app/src/renderer/src/useScrollMemory.ts",
     "app/src/renderer/src/useSmoothText.ts",
@@ -85,11 +92,11 @@
     "app/src/shared/calendarPicker.ts",
     "app/src/shared/citationCard.ts",
     "app/src/shared/citations.ts",
+    "app/src/shared/comingUp.ts",
     "app/src/shared/dates.ts",
     "app/src/shared/exportNotes.ts",
     "app/src/shared/folderAppearance.ts",
     "app/src/shared/follow.ts",
-    "app/src/shared/highlight.ts",
     "app/src/shared/i18n.ts",
     "app/src/shared/inkArrival.ts",
     "app/src/shared/liveWords.ts",
@@ -98,6 +105,7 @@
     "app/src/shared/markdown.ts",
     "app/src/shared/people.ts",
     "app/src/shared/platform.ts",
+    "app/src/shared/rewriteNote.ts",
     "app/src/shared/searchPeople.ts",
     "app/src/shared/searchQuery.ts",
     "app/src/shared/smoothText.ts",
@@ -105,6 +113,7 @@
     "app/src/shared/speakerColors.ts",
     "app/src/shared/spoken.ts",
     "app/src/shared/transcript.ts",
+    "app/src/shared/transcriptFind.ts",
     "app/src/shared/wave.ts"
   ],
   "files": {
@@ -119,15 +128,15 @@
       "sha256": "45e4eb19dcb4fc8ce3825d6cfeeb1d8f8d7a16e09ee4583a005518c880f028e4"
     },
     "renderer.css": {
-      "bytes": 259636,
-      "gzipBytes": 85081,
-      "sha256": "8fcf68ee28496ea66fbc7a4f0229cd64fe5f87213299d40902bd2870cdee28c3"
+      "bytes": 269515,
+      "gzipBytes": 86731,
+      "sha256": "726dadfdc50c18719d94b26d306006ed7282ea6b7316fc759d8a81b2f33a8933"
     },
     "renderer.js": {
-      "bytes": 1474360,
-      "gzipBytes": 453619,
-      "sha256": "0b209ac67984776ecac7ff5c310faf77df0f3c7e7342b0df344168f898f00920"
+      "bytes": 1506411,
+      "gzipBytes": 463504,
+      "sha256": "600bb37261749c88c2aa89560633299a27f550f244a664b2c85d7522394098ef"
     }
   },
-  "totalGzipBytes": 539064
+  "totalGzipBytes": 550599
 }

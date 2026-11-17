@@ -12,6 +12,7 @@ import { useLanguage } from '../i18n'
 import { bubbles, clock, echoRuns, filterLines, lineAt, recentRuns, stableKeys, turns, withLive, type LiveSaid } from '../../../shared/transcript'
 import { markWords } from '../../../shared/highlight'
 import { Player, type PlayerHandle } from './Player'
+import { attachPlayerVisibility } from '../playerVisibility'
 import { rememberedScroll, useScrollMemory } from '../useScrollMemory'
 import { followGlide, scrollBehavior } from '../motion'
 import { followTarget, inView } from '../../../shared/follow'
@@ -186,16 +187,17 @@ export function Transcript({ id, recording, inline = false, active = true, onClo
   const playable = tracks.length > 0
   const playbackDock = useRef<HTMLDivElement>(null)
   const [playbackInset, setPlaybackInset] = useState(0)
+  const visibility = useRef<ReturnType<typeof attachPlayerVisibility> | null>(null)
   useLayoutEffect(() => {
     const dock = playbackDock.current
-    if (!inline || !dock) { setPlaybackInset(0); return }
+    if (!dock) { setPlaybackInset(0); return }
     // Reserve the actual controls height, including playback errors and larger text.
-    const measure = () => setPlaybackInset(dock.getBoundingClientRect().height + 16)
+    const measure = () => setPlaybackInset(dock.getBoundingClientRect().height + 28)
     measure()
     const observer = new ResizeObserver(measure)
     observer.observe(dock)
     return () => observer.disconnect()
-  }, [inline, playable, active])
+  }, [playable, active])
 
   // the line being played: found by a binary search on each tick, drawn only when it changes
   const [shownKey, setShownKey] = useState<string>()
@@ -213,6 +215,13 @@ export function Transcript({ id, recording, inline = false, active = true, onClo
   // follow the newest line while recording, unless they scrolled up to read
   const scrollKey = `transcript/${id}`
   const list = useScrollMemory<HTMLOListElement>(scrollKey, active && loaded)
+  useLayoutEffect(() => {
+    const el = list.current, dock = playbackDock.current
+    if (!active || !playable || !el || !dock) return
+    const controls = attachPlayerVisibility(el, dock)
+    visibility.current = controls
+    return () => { controls.dispose(); visibility.current = null }
+  }, [id, active, playable])
   const stick = useRef(rememberedScroll(scrollKey) === undefined)
   const [behind, setBehind] = useState(false)
   const onScroll = () => {
@@ -225,9 +234,9 @@ export function Transcript({ id, recording, inline = false, active = true, onClo
   }
   useLayoutEffect(() => {
     const el = list.current
-    if (active && recording && el && stick.current) el.scrollTop = el.scrollHeight
+    if (active && recording && el && stick.current) { visibility.current?.programmatic(); el.scrollTop = el.scrollHeight }
   }, [lines, liveSaid, recording, active])
-  const toLatest = () => { const el = list.current; if (el) { stick.current = true; setBehind(false); el.scrollTo({ top: el.scrollHeight, behavior: scrollBehavior() }) } }
+  const toLatest = () => { const el = list.current; if (el) { visibility.current?.programmatic(); stick.current = true; setBehind(false); el.scrollTo({ top: el.scrollHeight, behavior: scrollBehavior() }) } }
 
   // playing follows along: the line being played kept comfortably in view, until they scroll it out of sight
   const rowOf = (k?: string) => (k ? list.current?.querySelector<HTMLElement>(`[data-key="${CSS.escape(k)}"]`) ?? null : null)
@@ -261,6 +270,7 @@ export function Transcript({ id, recording, inline = false, active = true, onClo
       }))
       ours.current = motion
     }
+    visibility.current?.programmatic()
     ours.current.to(to)
   }
   // An explicit seek asks to follow again, even paused or within the same line. Ordinary ticks respect reading elsewhere.
@@ -313,7 +323,7 @@ export function Transcript({ id, recording, inline = false, active = true, onClo
     stick.current = false
     setShowAll(true)
     setFocusedKey(key(l)); setFocusKey(key(l))
-    requestAnimationFrame(() => rowOf(key(l))?.scrollIntoView({ block: 'center' }))
+    requestAnimationFrame(() => { visibility.current?.programmatic(); rowOf(key(l))?.scrollIntoView({ block: 'center' }) })
   }, [focus?.seq, lines, active])
   useEffect(() => {
     if (!focusedKey) return
@@ -328,7 +338,7 @@ export function Transcript({ id, recording, inline = false, active = true, onClo
     if (!playable || !row || row !== e.target) return
     const i = shownLines.findIndex((l) => key(l) === row.dataset.key)
     if (i < 0) return
-    const go = (j: number) => { const next = rowOf(key(shownLines[Math.max(0, Math.min(shownLines.length - 1, j))])); next?.focus(); next?.scrollIntoView({ block: 'nearest' }) }
+    const go = (j: number) => { const next = rowOf(key(shownLines[Math.max(0, Math.min(shownLines.length - 1, j))])); visibility.current?.programmatic(); next?.focus({ preventScroll: true }); next?.scrollIntoView({ block: 'nearest' }) }
     if (e.key === 'ArrowDown') { e.preventDefault(); go(i + 1) }
     else if (e.key === 'ArrowUp') { e.preventDefault(); go(i - 1) }
     else if (e.key === 'Home') { e.preventDefault(); go(0) }
@@ -349,7 +359,7 @@ export function Transcript({ id, recording, inline = false, active = true, onClo
       <div className="transcript-toolbar">
         <label className="transcript-search-field">
           <SearchIcon size={14} strokeWidth={1.75} aria-hidden="true" className="shrink-0 text-muted" />
-          <input data-testid="transcript-search" value={query} onChange={(e) => setQuery(e.target.value)} placeholder={t('Search')} aria-label={t('Search the transcript')} spellCheck={false} />
+          <input data-testid="transcript-search" value={query} onChange={(e) => { visibility.current?.programmatic(); setQuery(e.target.value) }} placeholder={t('Search')} aria-label={t('Search the transcript')} spellCheck={false} />
         </label>
         {!inline && onClose && <div className="transcript-actions"><button data-testid="transcript-close" onClick={onClose} aria-label={t('Hide transcript')} title={t('Hide transcript')} className="ghost-btn !p-1.5"><ChevronDown size={15} aria-hidden="true" /></button></div>}
       </div>
@@ -364,7 +374,7 @@ export function Transcript({ id, recording, inline = false, active = true, onClo
           {loadingPhase !== 'ready' && <li className="loading-placeholder"><Loading layout="transcript" /></li>}
           {loaded && allLines.length === 0 && liveSaid.length === 0 && <li data-testid="transcript-empty" className="note-empty empty-state"><div className="empty-state-content"><div className="empty-tile"><AudioLines size={28} strokeWidth={1.5} aria-hidden="true" /></div>{t('Nothing heard yet.')}</div></li>}
           {allLines.length > 0 && grouped.length === 0 && <li data-testid="transcript-none" className="note-empty">{t('Nothing found for “{query}”.', { query: typed })}</li>}
-          {drawn.earlier > 0 && <li className="flex justify-center"><button data-testid="transcript-earlier" onClick={() => { stick.current = false; setShowAll(true) }} className="ghost-btn !px-2 !py-1 text-xs text-muted">{t('Show earlier lines')}</button></li>}
+          {drawn.earlier > 0 && <li className="flex justify-center"><button data-testid="transcript-earlier" onClick={() => { visibility.current?.programmatic(); stick.current = false; setShowAll(true) }} className="ghost-btn !px-2 !py-1 text-xs text-muted">{t('Show earlier lines')}</button></li>}
           {drawn.runs.map(run => <Fragment key={run.k}>
             {turns(run.lines).map((turn) => {
             const me = turn[0].track === 'me', first = turn[0]
@@ -407,7 +417,7 @@ export function Transcript({ id, recording, inline = false, active = true, onClo
           </button>
         )}
       </div>
-      {active && playable && <div ref={playbackDock} className="transcript-player-dock"><Player ref={player} id={id} tracks={tracks} onTime={onTime} onPlaying={setAudioOn} /></div>}
+      {active && playable && <div ref={playbackDock} className="transcript-player-dock"><Player ref={player} id={id} tracks={tracks} onTime={onTime} onPlaying={setAudioOn} onBusy={on => visibility.current?.pin(on)} /></div>}
     </Surface>
   )
 }

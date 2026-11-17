@@ -23,10 +23,11 @@ const DRIFT_S = 0.08
  * `onTime` gets the spot while it plays and when it is moved (paused too, so the line stays marked where it stopped),
  * with `seek` for an explicit move, and null once the meeting or panel changes; `onPlaying` whether any side is playing.
  */
-type PlayerProps = { id: string; tracks: Track[]; ref?: Ref<PlayerHandle>; onTime?: (ms: number | null, seek?: boolean) => void; onPlaying?: (on: boolean) => void }
+type PlayerProps = { id: string; tracks: Track[]; ref?: Ref<PlayerHandle>; onTime?: (ms: number | null, seek?: boolean) => void; onPlaying?: (on: boolean) => void; onBusy?: (on: boolean) => void }
 export function Player(props: PlayerProps) { return props.tracks.length ? <MeetingPlayer key={props.id} {...props} /> : null }
-function MeetingPlayer({ id, tracks, ref, onTime, onPlaying }: PlayerProps) {
+function MeetingPlayer({ id, tracks, ref, onTime, onPlaying, onBusy }: PlayerProps) {
   const [confirm, setConfirm] = useState(false)
+  const [menuOpen, setMenuOpen] = useState(false)
   const [deleted, setDeleted] = useState(false)
   const menuButton = useRef<HTMLButtonElement>(null)
   const els = useRef<Partial<Record<Track, HTMLAudioElement>>>({})
@@ -43,6 +44,8 @@ function MeetingPlayer({ id, tracks, ref, onTime, onPlaying }: PlayerProps) {
   onTimeRef.current = onTime
   const onPlayingRef = useRef(onPlaying)
   onPlayingRef.current = onPlaying
+  const onBusyRef = useRef(onBusy)
+  onBusyRef.current = onBusy
   /** nothing is marked until it has played or been moved */
   const touched = useRef(false)
   const rateRef = useRef(rate)
@@ -91,6 +94,7 @@ function MeetingPlayer({ id, tracks, ref, onTime, onPlaying }: PlayerProps) {
   // React lets go of the elements (els) before this cleanup runs, and an audio let go keeps playing: pause every one it had
   useEffect(() => () => { for (const a of owned.current) a.pause(); owned.current.clear(); onTimeRef.current?.(null) }, [id])
   useEffect(() => { onPlayingRef.current?.(playing) }, [playing])
+  useEffect(() => { onBusyRef.current?.(playing || menuOpen || confirm) }, [playing, menuOpen, confirm])
 
   const changed = () => setPlaying(anyPlaying())
   const tick = (a: HTMLAudioElement) => {
@@ -113,7 +117,7 @@ function MeetingPlayer({ id, tracks, ref, onTime, onPlaying }: PlayerProps) {
   const note = broken.length === 0 ? null : shown.length === 0 ? t("This recording can't be played.") : t("Part of this recording can't be played.")
   if (deleted) return null
   return (
-    <div data-testid="player" className="mx-4 mb-4 rounded-xl border border-line bg-float p-2 text-xs text-muted shadow-[var(--shadow-soft)]">
+    <div data-testid="player" className="transcript-player text-xs text-muted">
       {shown.map((tr) => (
         <audio key={tr} data-testid={`player-audio-${tr}`} data-track={tr} preload="metadata" src={`yogurt-audio://${id}/${tr}`}
           ref={(a) => { if (a) { els.current[tr] = a; owned.current.add(a) } else delete els.current[tr] }}
@@ -124,10 +128,10 @@ function MeetingPlayer({ id, tracks, ref, onTime, onPlaying }: PlayerProps) {
           onError={(e) => { failed(tr, e.currentTarget); changed() }} />
       ))}
       {note && <p data-testid="player-note" role="status" className={shown.length ? 'px-1.5 pb-1.5' : 'px-1.5 py-1'}>{note}</p>}
-      <div className="flex items-center gap-2.5">
+      <div className="flex items-center gap-2">
         {shown.length > 0 && <>
           <button data-testid="player-toggle" aria-label={playing ? t('Pause') : t('Play')} onClick={() => (playing ? pause() : play())}
-            className="player-btn flex size-7 shrink-0 items-center justify-center rounded-md bg-accent text-accent-ink">
+            className="player-btn flex size-[26px] shrink-0 items-center justify-center rounded-full bg-accent text-accent-ink">
             <Swap show={playing ? 'pause' : 'play'} options={{ play: <Play size={13} fill="currentColor" strokeWidth={0} className="ms-0.5" />, pause: <Pause size={13} fill="currentColor" strokeWidth={0} /> }} />
           </button>
           <span className="w-9 shrink-0 text-end tabular-nums">{clock(time * 1000)}</span>
@@ -136,11 +140,11 @@ function MeetingPlayer({ id, tracks, ref, onTime, onPlaying }: PlayerProps) {
           <span className="w-9 shrink-0 tabular-nums">{clock(duration * 1000)}</span>
           <button data-testid="player-speed" aria-label={t('Playback speed {rate}', { rate: rateText })}
             onClick={() => setRate((r) => RATES[(RATES.indexOf(r) + 1) % RATES.length])}
-            className="ghost-btn h-7 w-10 shrink-0 justify-center !px-0 tabular-nums">
+            className="ghost-btn h-7 w-[30px] shrink-0 justify-center !px-0 tabular-nums">
             {rateText}
           </button>
         </>}
-          <Menu.Root modal={false}>
+          <Menu.Root modal={false} onOpenChange={setMenuOpen}>
             <Menu.Trigger ref={menuButton} data-testid="recording-menu" aria-label={t('More')} title={t('More')}
               className="bar-btn ms-auto grid size-7 shrink-0 place-items-center rounded-md text-muted"><Ellipsis size={17} aria-hidden="true" /></Menu.Trigger>
             <Menu.Portal>

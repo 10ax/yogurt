@@ -60,11 +60,15 @@ async function expectQuietLayout(page: Page, upgrading: boolean, failed: boolean
     range.selectNodeContents(line)
     return range.getClientRects().length === 1 && line.scrollWidth <= line.clientWidth
   }))).toBe(true)
-  const line = (await popup.locator('.notes-download-support').boundingBox())!
   if (upgrading || failed) {
-    const actions = (await popup.locator('.notes-download-actions').boundingBox())!
-    if (failed) expect(actions.y).toBeGreaterThanOrEqual(line.y + line.height)
-    else expect(Math.abs(actions.y + actions.height / 2 - line.y - line.height / 2)).toBeLessThan(1)
+    // Both rectangles must come from the same frame while the popover is entering.
+    const gap = () => popup.evaluate((el, stacked) => {
+      const line = el.querySelector('.notes-download-support')!.getBoundingClientRect()
+      const actions = el.querySelector('.notes-download-actions')!.getBoundingClientRect()
+      return stacked ? actions.top - line.bottom : Math.abs(actions.y + actions.height / 2 - line.y - line.height / 2)
+    }, failed)
+    if (failed) await expect.poll(gap).toBeGreaterThanOrEqual(0)
+    else await expect.poll(gap).toBeLessThan(1)
   }
   if (upgrading) await expect(popup.getByTestId('notes-setup-skip')).toHaveCSS('text-decoration-line', 'none')
   await expect(popup.locator('.notes-download-next')).toHaveCount(0)

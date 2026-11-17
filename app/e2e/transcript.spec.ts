@@ -288,13 +288,15 @@ async function stopped(app: ElectronApplication, page: Page) {
   return (await page.evaluate(() => window.yogurt.nav.current())).slice('/note/'.length)
 }
 
-test('the transcript scrolls behind its player and the final line can clear the controls', async () => {
+test('the transcript scrolls behind its pill and the final line can clear the controls', async () => {
   const { app, page } = await launch()
   try {
     await stopped(app, page)
     const list = page.getByTestId('transcript'), player = page.getByTestId('player')
     const bottom = (await list.boundingBox())!
     const controls = (await player.boundingBox())!
+    expect(controls.width).toBeLessThanOrEqual(412)
+    await expect(player).toHaveCSS('border-radius', '22px')
     expect(bottom.y + bottom.height).toBeGreaterThan(controls.y + controls.height)
     const footer = (await page.locator('.note-footer').boundingBox())!
     expect(footer.y - controls.y - controls.height).toBeLessThanOrEqual(12)
@@ -568,4 +570,77 @@ test('paused, the mark stays and nothing scrolls; clicking a line follows again;
     expect(await scrollTop()).toBe(searched)
     await expect(page.getByTestId('transcript-follow')).toHaveCount(0)
   } finally { await app.close() }
+})
+
+for (const colorScheme of ['light', 'dark'] as const) test(`the player pill hides only for reading scrolls in ${colorScheme}`, async ({}, testInfo) => {
+  const { app, page } = await launch()
+  try {
+    await page.context().tracing.start({ screenshots: true, snapshots: true })
+    await page.emulateMedia({ colorScheme, reducedMotion: 'no-preference' })
+    const id = await fake<string>(app, 'bigMeeting', 400)
+    await fake(app, 'go', `/note/${id}`)
+    await page.getByTestId('note-transcript-toggle').click()
+    const list = page.getByTestId('transcript'), player = page.getByTestId('player')
+    const dock = page.locator('.transcript-player-dock')
+    await expect(player).toBeVisible()
+    await expect(list).toHaveAttribute('data-loaded', 'true')
+    await expect(page.getByTestId('transcript-line')).toHaveCount(400)
+    await expect.poll(() => list.evaluate(el => el.clientHeight > 0 && el.scrollHeight - el.clientHeight > 600)).toBe(true)
+    // Hover waits for the live list to receive input after the tab's view transition.
+    await list.hover()
+    // Moving the list without user input never hides the controls.
+    await list.evaluate(el => { el.scrollTop = 240 })
+    await expect.poll(() => list.evaluate(el => el.scrollTop)).toBe(240)
+    await expect(dock).toHaveAttribute('data-hidden', 'false')
+    await page.mouse.wheel(0, 120)
+    await expect(dock).toHaveAttribute('data-hidden', 'true')
+    await expect.poll(() => list.evaluate(el => el.scrollTop)).toBeGreaterThanOrEqual(264)
+    await expect(player).toHaveCSS('opacity', '0')
+    await page.mouse.wheel(0, -40)
+    await expect(dock).toHaveAttribute('data-hidden', 'false')
+    await expect(player).toHaveCSS('opacity', '1')
+    // Opacity finishes before the return spring settles.
+    await expect.poll(() => player.evaluate(el => el.getAnimations().length)).toBe(0)
+    await page.mouse.wheel(0, 120)
+    await expect(dock).toHaveAttribute('data-hidden', 'true')
+    await expect(dock).toHaveAttribute('data-hidden', 'false', { timeout: 2000 })
+    await expect(player).toHaveCSS('opacity', '1')
+    await expect.poll(() => player.evaluate(el => el.getAnimations().length)).toBe(0)
+
+    await page.getByTestId('player-toggle').focus()
+    await page.mouse.wheel(0, 120)
+    await expect(dock).toHaveAttribute('data-hidden', 'false')
+    await page.getByTestId('recording-menu').click()
+    await expect(page.getByTestId('recording-delete')).toBeVisible()
+    await list.hover()
+    await page.mouse.wheel(0, 120)
+    await expect(dock).toHaveAttribute('data-hidden', 'false')
+    await page.keyboard.press('Escape')
+    await page.getByTestId('player-toggle').click()
+    await expect(page.getByTestId('player-toggle')).toHaveAttribute('aria-label', 'Pause')
+    await list.evaluate(el => { el.tabIndex = -1; el.focus({ preventScroll: true }) })
+    await list.hover()
+    await page.mouse.wheel(0, 120)
+    await expect(dock).toHaveAttribute('data-hidden', 'false')
+
+    await page.getByTestId('player-toggle').click()
+    await expect(page.getByTestId('player-toggle')).toHaveAttribute('aria-label', 'Play')
+    await page.emulateMedia({ colorScheme, reducedMotion: 'reduce' })
+    await list.evaluate(el => { el.focus({ preventScroll: true }); el.scrollTop = 240 })
+    await expect.poll(() => list.evaluate(el => el.scrollTop)).toBe(240)
+    await list.hover()
+    await page.mouse.wheel(0, 120)
+    await expect(dock).toHaveAttribute('data-hidden', 'true')
+    await expect(player).toHaveCSS('transform', 'none')
+    await expect(player).toHaveCSS('transition-property', 'opacity')
+    await list.evaluate(el => { el.scrollTop = el.scrollHeight })
+    await expect(dock).toHaveAttribute('data-hidden', 'false')
+    await expect(player).toHaveCSS('opacity', '1')
+    await expect.poll(() => player.evaluate(el => el.getAnimations().length)).toBe(0)
+    const last = (await page.getByTestId('transcript-turn').last().boundingBox())!
+    const pill = (await player.boundingBox())!
+    expect(last.y + last.height).toBeLessThan(pill.y)
+  } finally {
+    await page.context().tracing.stop({ path: testInfo.outputPath('trace.zip') }).finally(() => app.close())
+  }
 })

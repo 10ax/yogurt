@@ -114,6 +114,27 @@ describe('Google Meet', () => {
     expect(readCall('meet', [meetWindow([meetTile('Dana Smith', ['Abc12'])])], { talkingClasses: ['Abc12'] }).speaking).toEqual(['Dana Smith'])
   })
 
+  it("Meet's own words are never people: lobby, toasts, sharing, leaving and controls (#71)", () => {
+    const ui = ['Ready to join?', 'In 2 mins', 'Looking for others in the call...', 'Mon, Nov 16', 'Your camera is on.', 'Background is now blurred',
+      'Reducing noise', 'Continuous chat is turned off', 'Messages will not be saved', 'Presentation is starting...', 'Select a tab to share',
+      'Share with tab audio', 'Quarterly plan - Google Docs', 'Alex Doe has left the meeting', 'No one else is in this meeting',
+      'Returning to home screen in 60 seconds.', 'Meet', 'Reframe', 'Turn off camera (⌘ + e)', 'Learn more about Gemini in Meetings.', 'Chat / People panel is open']
+    const r = readCall('meet', [meetWindow([meetTile('Dana Smith'), ...ui.map((u) => meetTile(u))])])
+    expect(r.participants).toEqual(['Dana Smith'])
+  })
+
+  it('a name in a toast or status area is not a tile (#71)', () => {
+    const toast = node('AXGroup', { s: 'AXApplicationStatus' }, meetTile('Ann Lee'))
+    const alert = node('alert', {}, meetTile('Bo Park'))
+    expect(readCall('meet', [meetWindow([meetTile('Dana Smith'), toast, alert])]).participants).toEqual(['Dana Smith'])
+  })
+
+  it('real names of every shape still count', () => {
+    const names = ['Dana Smith', 'Ana María de la Cruz', 'Mary-Jane O\'Neil', 'J. R. Smith', 'Ludwig van Beethoven', '李雷', 'jiwon', 'Ann Lee (Presenting)']
+    expect(readCall('meet', [meetWindow(names.map((n) => meetTile(n)))]).participants)
+      .toEqual(['Dana Smith', 'Ana María de la Cruz', 'Mary-Jane O\'Neil', 'J. R. Smith', 'Ludwig van Beethoven', '李雷', 'jiwon', 'Ann Lee'])
+  })
+
   it('only windows showing a Meet call are read', () => {
     expect(readCall('meet', [meetWindow([meetTile('Dana Smith', ['v5h6Xc'])], 'Inbox - Gmail')]).participants).toEqual([])
   })
@@ -192,10 +213,20 @@ describe('Microsoft Teams', () => {
 })
 
 describe('summarize: a short picture of the tree for the log', () => {
-  it('counts roles and shows the first texts, with ids and classes', () => {
-    const s = summarize([zoomWindow(['Dana Smith, Computer audio unmuted, Active speaker'])], 4)
-    expect(s.split('\n')[0]).toMatch(/^roles: AXWindow=1 .*AXTabGroup=1/)
-    expect(s).toContain('AXTabGroup "Dana Smith, Computer audio unmuted, Active speaker"')
-    expect(s.split('\n')).toHaveLength(5)
+  it("counts roles and shows ids, classes and the app's own words, never a name or anything said", () => {
+    const captions = node('AXGroup', { i: 'captions' }, node('AXStaticText', { v: 'we can sign the renewal with Acme on Friday' }))
+    const s = summarize([zoomWindow(['Dana Smith, Computer audio unmuted, Active speaker'], ['Alex Morgan (me)'], [captions])], 40)
+    expect(s.split('\n')[0]).toMatch(/^roles: .*AXWindow=1 .*AXTabGroup=1/)
+    expect(s).toContain('AXTabGroup "‹10›, Computer audio unmuted, Active speaker"')
+    expect(s).toContain('AXButton#audio')
+    expect(s).toContain('AXOutline "Participants list"')
+    expect(s).toContain('AXGroup#captions')
+    for (const secret of ['Dana', 'Alex', 'renewal', 'Acme', 'Friday']) expect(s).not.toContain(secret)
+  })
+  it('keeps at most max lines, and a window title only as words the app owns', () => {
+    const s = summarize([win(node('AXWindow', {}, node('AXButton', { d: 'Leave' }), node('AXStaticText', { v: 'Budget review' })), 'Meet - abc-defg-hij')], 2)
+    expect(s.split('\n')).toHaveLength(3)
+    expect(s).toContain('window "Meet - ‹12›"')
+    expect(s).not.toContain('abc-defg-hij')
   })
 })

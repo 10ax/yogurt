@@ -17,7 +17,7 @@ const pendingStops = new Map<string, Meeting>()
 export type RecordingStart = Meeting & { resume?: { part: number; startMs: number; startedAt: number; capturedMs: number } }
 type Hook = (m: RecordingStart) => void
 let clock: { startedAt: number; before: number; pausedAt: number | null; pausedMs: number; measured: boolean } | null = null
-const starts: Hook[] = [], stops: Hook[] = [], savedStops: Hook[] = [], changes: Hook[] = []
+const starts: Hook[] = [], stops: Hook[] = [], savedStops: Hook[] = [], changes: Hook[] = [], binds: Hook[] = []
 const on = (list: Hook[]) => (fn: Hook) => { list.push(fn); return () => { const i = list.indexOf(fn); if (i >= 0) list.splice(i, 1) } }
 /** called after a meeting starts (capture hooks in here) */
 export const onMeetingStart = on(starts)
@@ -27,6 +27,8 @@ export const onMeetingStop = on(stops)
 export const onMeetingStopSaved = on(savedStops)
 /** called after any change to a meeting, for the windows to refresh */
 export const onMeetingChange = on(changes)
+/** called when a recording started without an app learns it from the mic (watch.ts) */
+export const onMeetingBound = on(binds)
 
 // A hook that throws must never take the recording down with it
 function run(list: Hook[], m: RecordingStart) {
@@ -76,7 +78,9 @@ export function startMeeting(p: { title: string; event: CalEvent | null; app: st
 /** Bind only the current, unbound recording; persist it for recovery and diagnostics. */
 export function bindMeetingApp(id: string, app: string): Meeting | undefined {
   if (!active || active.id !== id || active.app) return undefined
-  return update(id, { app })
+  const m = update(id, { app })
+  if (m) run(binds, m)
+  return m
 }
 
 /** Prepare an agenda without opening the microphone or joining the post-recording recovery queue. */

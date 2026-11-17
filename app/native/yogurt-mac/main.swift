@@ -269,6 +269,28 @@ func axCopy(_ e: AXUIElement, depth: Int, maxDepth: Int, budget: inout Int, zoom
 }
 
 /** the windows of a call app that hold the call */
+let callControls: Set<String> = ["leave", "leave call", "hang up", "end call", "mute mic", "unmute mic", "close participants pane"]
+
+/// Whether a window has a button that only a call has, looking at no more than `budget` elements
+func hasCallControl(_ w: AXUIElement, budget: Int = 1500) -> Bool {
+  var left = budget, queue = [w]
+  while !queue.isEmpty && left > 0 {
+    let e = queue.removeFirst(); left -= 1
+    let role = axText(axAttr(e, kAXRoleAttribute)) ?? ""
+    if role == "AXButton" || role == "AXMenuItem" || role == "AXCheckBox" {
+      for key in [kAXDescriptionAttribute, kAXTitleAttribute] as [String] {
+        // a label can carry its shortcut: "Leave (⌘⇧H)"
+        if let s = axText(axAttr(e, key)) {
+          let plain = s.replacingOccurrences(of: #"\s*\([^)]*\)\s*$"#, with: "", options: .regularExpression).trimmingCharacters(in: .whitespaces).lowercased()
+          if callControls.contains(plain) { return true }
+        }
+      }
+    }
+    queue.append(contentsOf: (axAttr(e, kAXChildrenAttribute) as? [AXUIElement]) ?? [])
+  }
+  return false
+}
+
 func callWindows(_ app: AXUIElement, _ id: String) -> [AXUIElement] {
   let all = (axAttr(app, kAXWindowsAttribute) as? [AXUIElement]) ?? []
   if id == "us.zoom.xos" {
@@ -277,7 +299,9 @@ func callWindows(_ app: AXUIElement, _ id: String) -> [AXUIElement] {
       return ident.hasPrefix("zm.meeting") || title.hasPrefix("Zoom Meeting") || title.hasPrefix("Zoom Webinar")
     }
   }
-  if id.hasPrefix("com.microsoft.teams") { return all }
+  // Teams keeps its chat and calendar in windows shaped like the call's: only a window with a call control (Leave,
+  // Mute) is a call, so an open chat can't hide a call in another app (#72). The same controls as Linux (calls.rs).
+  if id.hasPrefix("com.microsoft.teams") { return all.filter { hasCallControl($0) } }
   // Webex's meeting surfaces have stable accessibility identifiers; exclude its home window so it cannot hide another
   // call app when a recording was started by hand.
   if id == "Cisco-Systems.Spark" || id == "com.cisco.webexmeetingsapp" {

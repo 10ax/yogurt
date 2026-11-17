@@ -43,7 +43,7 @@ import { calendars, eventIds, matchesEvent, setCalendarSelection, calendarStatus
 import { createSignals } from './detectSignals'
 import { Watcher } from './watch'
 import { createPrompts } from './prompts'
-import { activeMeeting, bindMeetingApp, getMeeting, initMeetings, onMeetingChange, onMeetingStart, onMeetingStop, onMeetingStopSaved, refreshEventSnapshots, linkEvent, unlinkEvent, prepareMeeting, startPreparedMeeting, resumeMeeting, pauseMeetingClock, renameMeeting, retryStopSave, setAttendees, startMeeting, stopMeeting, stopSavePending, withStopState } from './meeting'
+import { activeMeeting, bindMeetingApp, getMeeting, initMeetings, onMeetingBound, onMeetingChange, onMeetingStart, onMeetingStop, onMeetingStopSaved, refreshEventSnapshots, linkEvent, unlinkEvent, prepareMeeting, startPreparedMeeting, resumeMeeting, pauseMeetingClock, renameMeeting, retryStopSave, setAttendees, startMeeting, stopMeeting, stopSavePending, withStopState } from './meeting'
 import { deleteMeeting } from './deleteMeeting'
 import { emptyTrash, moveToTrash, purgeTrash } from './trash'
 import { isId, text } from './ipcArgs'
@@ -521,7 +521,7 @@ app.whenReady().then(() => {
     transcribed: async (id) => { await recordingFinished(id); await transcriptFinished(id) },
     // people seen in the call joined the meeting: unedited notes already written get written again for them
     changed: (id) => { win?.webContents.send('transcript:speakers', id); sendWidgetTranscript('transcript:speakers', id); win?.webContents.send('meetings:changed'); notes.applyPeople(id) },
-    onStart: onMeetingStart, onStop: onMeetingStop, onCapture: onCaptureStart,
+    onStart: onMeetingStart, onStop: onMeetingStop, onCapture: onCaptureStart, onBind: onMeetingBound,
   })
   // Windows and Linux: whisper left the graphics card in a meeting, so the speed check (timed with it) runs again next start
   onWhisperGpuOff(() => speedStore(speedFile()).forget())

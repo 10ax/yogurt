@@ -159,10 +159,33 @@ const TILE_UP = 7
 /** text in Meet's window that is never a person: times, the meeting code, chat */
 const NOT_A_NAME = /^\d{1,2}[:.]\d{2}(\s?[AP]M)?$|^[a-z]{3}-[a-z]{4}-[a-z]{3}$|says in chat|^(AM|PM)$|^\d+$/i
 
+/** Meet's own words that stand alone like a name */
+const MEET_WORDS = new Set(['meet', 'reframe', 'captions', 'chat', 'people', 'activities', 'host controls', 'present', 'raise hand', 'reactions'])
+/** lowercase words that sit inside real names: Ana María de la Cruz, Ludwig van Beethoven */
+const PARTICLES = new Set(['de', 'del', 'della', 'der', 'den', 'di', 'da', 'das', 'do', 'dos', 'du', 'la', 'le', 'van', 'von', 'ter', 'ten', 'y', 'e', 'bin', 'binti', 'al', 'el', 'ibn', 'zu'])
+
+/**
+ * A tile's name, or null for anything else Meet writes in a box of its own (#71): sentences from toasts and the lobby
+ * ("Your camera is on.", "Reducing noise"), times and dates, a shared tab's title ("Plan - Google Docs") and control
+ * labels. A name has no digits, no sentence ending, at most five words, and in a name of several words every word
+ * starts with a capital letter (or is a particle like "de", or comes from a script without capitals). Getting a person
+ * wrong means Them for their lines, never another name.
+ */
 function meetName(text: string): string | null {
   const name = text.normalize('NFKC').replace(/\s*\((presenting|presentation|you)[^)]*\)\s*$/i, '').trim()
-  return name.length >= 2 && name.length <= 60 && /\p{L}/u.test(name) && !NOT_A_NAME.test(name) ? name : null
+  if (name.length < 2 || name.length > 60 || !/\p{L}/u.test(name) || NOT_A_NAME.test(name)) return null
+  if (/\d|[?!…:/⌘]|\.\.|\s[-–—|]\s/.test(name) || MEET_WORDS.has(low(name))) return null
+  const words = name.split(/\s+/)
+  // "Jr." and initials end with a period; a sentence does
+  if (/\.$/.test(name) && words.at(-1)!.replace(/\.$/, '').length > 2) return null
+  if (words.length > 5) return null
+  if (words.length > 1 && words.some((w) => /^\p{Ll}/u.test(w) && !PARTICLES.has(w))) return null
+  return name
 }
+
+/** a toast, banner or other live area: Meet's messages, never a tile (a role on Linux and Windows, a subrole on a Mac) */
+const LIVE = new Set(['alert', 'notification', 'status bar', 'status', 'log', 'marquee', 'timer', 'AXApplicationAlert', 'AXApplicationStatus', 'AXApplicationLog', 'AXApplicationTimer', 'AXApplicationMarquee'])
+const isLive = (n: AxNode) => LIVE.has(n.r) || (!!n.s && LIVE.has(n.s))
 
 function readMeet(windows: AxWindow[], o: { talkingClasses?: string[] }): CallReading {
   const marks = new Set(o.talkingClasses ?? MEET_TALKING_CLASSES)
@@ -171,7 +194,7 @@ function readMeet(windows: AxWindow[], o: { talkingClasses?: string[] }): CallRe
     if (w.title && !/\bMeet\b/.test(w.title)) continue
     const skip = new Set((w.title ?? '').split(/\s+[-–—]\s+/).map(low))
     walk(w.tree, (n, up) => {
-      if (!STATIC_TEXT.has(n.r) || up.length < TILE_UP) return
+      if (!STATIC_TEXT.has(n.r) || up.length < TILE_UP || up.some(isLive)) return
       const text = n.v ?? n.t
       if (!text) return
       const name = meetName(text)
@@ -308,14 +331,29 @@ export function readCall(kind: CallKind, windows: AxWindow[], o: { talkingClasse
  * A short picture of a window's tree for the log, so a real call shows what its app gives: element counts by role,
  * and the first lines of text with their role (and DOM classes on Meet's tiles). Names stay on the Mac (the log does).
  */
+/** words the call apps write themselves: their status, roles, lists and controls. Anything else may be a name, a caption
+ * or a document title, and stays out of the log */
+const APP_WORDS = new Set([...ZOOM.flat().map(low), ...TALKING.map(low), 'zoom meeting', 'zoom webinar', 'meeting', 'meet', 'microsoft teams',
+  'you', 'leave', 'leave call', 'hang up', 'end call', 'mute mic', 'unmute mic', 'mute my audio', 'unmute my audio', 'participants', 'attendees', 'people'])
+const appWord = (x: string) => APP_WORDS.has(low(x)) || OTHER_STATUS.test(x) || TEAMS_STATUS.test(x) || TEAMS_ROLE.test(x) || TEAMS_SAYS.test(x)
+
+/** Text for the log: the app's own words kept, every other piece shown only by its length ("‹10›, Active speaker") */
+export function redact(text: string): string {
+  return text.replace(/\s+/g, ' ').trim().split(/(\s*,\s*|\s+[-–—|]\s+)/).map((part, i) => (i % 2 || !part || appWord(part) ? part : `‹${part.length}›`)).join('').slice(0, 120)
+}
+
+/**
+ * A short picture of the call window for main.log: role counts, then each element's role, id, classes and words.
+ * main.log is pasted into public issues, so names, captions and titles never go in: only the app's own words do.
+ */
 export function summarize(windows: AxWindow[], max = 60): string {
   const roles = new Map<string, number>()
   const lines: string[] = []
   for (const w of windows) {
-    lines.push(`window "${(w.title ?? '').slice(0, 60)}"${w.id ? ` id=${w.id}` : ''}`)
+    lines.push(`window "${redact(w.title ?? '')}"${w.id ? ` id=${w.id}` : ''}`)
     walk(w.tree, (n, up) => {
       roles.set(n.r, (roles.get(n.r) ?? 0) + 1)
-      const said = texts(n).map((x) => x.replace(/\s+/g, ' ').slice(0, 80))
+      const said = texts(n).map(redact)
       if ((said.length || n.i) && lines.length < max) lines.push(`${'  '.repeat(Math.min(up.length, 12))}${n.r}${n.i ? `#${n.i}` : ''} ${said.map((x) => JSON.stringify(x)).join(' ')}${n.c?.length ? ` .${n.c.slice(0, 6).join('.')}` : ''}`)
     })
   }

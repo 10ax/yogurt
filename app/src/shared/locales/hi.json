@@ -674,5 +674,12 @@
   "Waiting for Yogurt AI to download": "Yogurt AI डाउनलोड होने का इंतज़ार",
   "Stop summary": "सारांश रोकें",
   "Summary stopped.": "सारांश बनाना रोक दिया गया।",
-  "This window couldn't be displayed.": "यह विंडो दिखाई नहीं जा सकी।"
+  "This window couldn't be displayed.": "यह विंडो दिखाई नहीं जा सकी।",
+  "{current} of {count}": {
+    "one": "{count} में से {current}",
+    "other": "{count} में से {current}"
+  },
+  "No matches": "कोई मेल नहीं",
+  "Previous match": "पिछला मेल",
+  "Next match": "अगला मेल"
 }

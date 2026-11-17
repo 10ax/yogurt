@@ -696,5 +696,12 @@
   "Waiting for Yogurt AI to download": "ממתינים להורדת Yogurt AI",
   "Stop summary": "עצירת הסיכום",
   "Summary stopped.": "הסיכום נעצר.",
-  "This window couldn't be displayed.": "לא ניתן היה להציג חלון זה."
+  "This window couldn't be displayed.": "לא ניתן היה להציג חלון זה.",
+  "{current} of {count}": {
+    "one": "{current} מתוך {count}",
+    "other": "{current} מתוך {count}"
+  },
+  "No matches": "אין התאמות",
+  "Previous match": "ההתאמה הקודמת",
+  "Next match": "ההתאמה הבאה"
 }

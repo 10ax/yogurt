@@ -209,5 +209,13 @@
   "Waiting for Yogurt AI to download": "Waiting for Yogurt AI to download",
   "Stop summary": "Stop summary",
   "Summary stopped.": "Summary stopped.",
-  "This window couldn't be displayed.": "This window couldn't be displayed."
+  "This window couldn't be displayed.": "This window couldn't be displayed.",
+  "Close": "Close",
+  "{current} of {count}": {
+    "one": "{current} of {count}",
+    "other": "{current} of {count}"
+  },
+  "No matches": "No matches",
+  "Previous match": "Previous match",
+  "Next match": "Next match"
 }

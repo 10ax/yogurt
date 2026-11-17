@@ -717,5 +717,12 @@
   "Waiting for Yogurt AI to download": "Čekání na stažení Yogurt AI",
   "Stop summary": "Zastavit shrnutí",
   "Summary stopped.": "Vytváření shrnutí zastaveno.",
-  "This window couldn't be displayed.": "Toto okno se nepodařilo zobrazit."
+  "This window couldn't be displayed.": "Toto okno se nepodařilo zobrazit.",
+  "{current} of {count}": {
+    "one": "{current} z {count}",
+    "other": "{current} z {count}"
+  },
+  "No matches": "Žádné shody",
+  "Previous match": "Předchozí shoda",
+  "Next match": "Další shoda"
 }

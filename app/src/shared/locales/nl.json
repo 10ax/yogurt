@@ -686,5 +686,12 @@
   "Waiting for Yogurt AI to download": "Wachten op de download van Yogurt AI",
   "Stop summary": "Samenvatting stoppen",
   "Summary stopped.": "Samenvatting gestopt.",
-  "This window couldn't be displayed.": "Dit venster kon niet worden weergegeven."
+  "This window couldn't be displayed.": "Dit venster kon niet worden weergegeven.",
+  "{current} of {count}": {
+    "one": "{current} van {count}",
+    "other": "{current} van {count}"
+  },
+  "No matches": "Geen overeenkomsten",
+  "Previous match": "Vorige overeenkomst",
+  "Next match": "Volgende overeenkomst"
 }

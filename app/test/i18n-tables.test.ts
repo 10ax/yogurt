@@ -296,3 +296,15 @@ it('translates the ungrouped people heading in every locale', () => {
     if (id !== 'en') expect(load(id)['Other people']).not.toBe('Other people')
   }
 })
+
+it('translates transcript match counts and navigation in every locale', () => {
+  for (const { id } of LOCALES) {
+    for (const key of ['{current} of {count}', 'No matches', 'Previous match', 'Next match']) {
+      expect(keys).toContain(key)
+      const entry = load(id)[key]
+      expect(entry).toBeDefined()
+      expect(forms(entry).every(value => value.trim().length > 0)).toBe(true)
+      if (id !== 'en') expect(forms(entry)).not.toContain(key)
+    }
+  }
+})

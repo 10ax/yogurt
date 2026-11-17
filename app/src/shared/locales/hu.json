@@ -674,5 +674,12 @@
   "Waiting for Yogurt AI to download": "Várakozás a Yogurt AI letöltésére",
   "Stop summary": "Összefoglalás leállítása",
   "Summary stopped.": "Az összefoglalás leállt.",
-  "This window couldn't be displayed.": "Ez az ablak nem jeleníthető meg."
+  "This window couldn't be displayed.": "Ez az ablak nem jeleníthető meg.",
+  "{current} of {count}": {
+    "one": "{current} / {count}",
+    "other": "{current} / {count}"
+  },
+  "No matches": "Nincs találat",
+  "Previous match": "Előző találat",
+  "Next match": "Következő találat"
 }

@@ -644,5 +644,12 @@
   "Waiting for Yogurt AI to download": "Yogurt AI 다운로드 대기 중",
   "Stop summary": "요약 중지",
   "Summary stopped.": "요약이 중지되었습니다.",
-  "This window couldn't be displayed.": "이 창을 표시할 수 없습니다."
+  "This window couldn't be displayed.": "이 창을 표시할 수 없습니다.",
+  "{current} of {count}": {
+    "one": "{count}개 중 {current}번째",
+    "other": "{count}개 중 {current}번째"
+  },
+  "No matches": "일치하는 결과 없음",
+  "Previous match": "이전 일치 항목",
+  "Next match": "다음 일치 항목"
 }

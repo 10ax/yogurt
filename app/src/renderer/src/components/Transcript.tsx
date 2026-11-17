@@ -4,13 +4,12 @@ import { ScrollFade } from './ScrollFade'
 import { Loading } from './Loading'
 import { useLoadingState } from '../useLoadingState'
 import { Fragment, memo, useCallback, useEffect, useLayoutEffect, useMemo, useRef, useState, type CSSProperties, type KeyboardEvent, type MouseEvent } from 'react'
-import { createPortal } from 'react-dom'
-import { AudioLines, ArrowDown, ChevronDown, Search as SearchIcon } from 'lucide-react'
+import { AudioLines, ArrowDown } from 'lucide-react'
 import type { Segment, TranscriptPartial } from '../../../shared/types'
 import { t } from '../../../shared/i18n'
 import { useLanguage } from '../i18n'
-import { bubbles, clock, echoRuns, filterLines, lineAt, recentRuns, stableKeys, turns, withLive, type LiveSaid } from '../../../shared/transcript'
-import { markWords } from '../../../shared/highlight'
+import { bubbles, clock, echoRuns, lineAt, recentRuns, stableKeys, turns, withLive, type LiveSaid } from '../../../shared/transcript'
+import { TranscriptFind } from './TranscriptFind'
 import { Player, type PlayerHandle } from './Player'
 import { attachPlayerVisibility } from '../playerVisibility'
 import { rememberedScroll, useScrollMemory } from '../useScrollMemory'
@@ -116,7 +115,7 @@ type RowProps = {
   line: Line
   /** the line an answer across meetings pointed to */
   focused?: boolean
-  name: string; query: string
+  name: string
   playing: boolean; playable: boolean; focusable: boolean
   /** arrived while watching: fades in, or settles in place where live words stood for it */
   arrived: 'fade' | 'settle' | null
@@ -126,7 +125,7 @@ type RowProps = {
  * One line of the transcript, a stretch of text in its bubble (who said it heads the turn). Drawn again only when what
  * it shows changes (a long meeting has thousands).
  */
-const Row = memo(function Row({ line: l, focused, name, query, playing, playable, focusable, arrived, onPlay, onFocusLine }: RowProps) {
+const Row = memo(function Row({ line: l, focused, name, playing, playable, focusable, arrived, onPlay, onFocusLine }: RowProps) {
   // memo skips it otherwise when the language changes
   useLanguage()
   if (window.yogurt.fake) (window as unknown as { __rowRenders?: number }).__rowRenders = ((window as unknown as { __rowRenders?: number }).__rowRenders ?? 0) + 1
@@ -139,7 +138,7 @@ const Row = memo(function Row({ line: l, focused, name, query, playing, playable
       data-hidden={l.hidden || undefined} data-focused={focused || undefined}
       className={`line ${arrived === 'fade' ? 'line-in' : arrived === 'settle' ? 'line-settle' : ''} ${playable ? 'line-playable cursor-pointer' : ''}`}>
       <span data-testid="transcript-text">
-        {query ? markWords(l.text, query).map((p, i) => (p.hit ? <mark key={i} className="search-mark">{p.text}</mark> : <span key={i}>{p.text}</span>)) : l.text}
+        {l.text}
       </span>
       <time data-testid="transcript-time" className="sr-only">{time}</time>
     </span>
@@ -160,11 +159,11 @@ export function Transcript({ id, recording, inline = false, active = true, onClo
   const { live: liveSaid, previewed } = useLive(id, recording)
   // the mic's copy of the call (hidden as an echo) never shows
   const timeline = useMemo(() => echoRuns(withLive(allLines, liveSaid)).filter(run => !run.echo), [allLines, liveSaid])
-  const lines = useMemo(() => timeline.flatMap(run => run.lines.filter((l): l is Line => !('live' in l))), [timeline])
-  const [query, setQuery] = useState('')
+  const lines = useMemo(() => echoRuns(allLines).filter(run => !run.echo).flatMap(run => run.lines), [allLines])
+  const [finding, setFinding] = useState(false)
   // a long recording draws its latest lines; the earlier ones on request (recentRuns)
   const [showAll, setShowAll] = useState(false)
-  useEffect(() => { setQuery(''); setShowAll(false) }, [id])
+  useEffect(() => { setFinding(false); setShowAll(false) }, [id])
 
   // the recording is only playable once it is finished
   const [tracks, setTracks] = useState<Array<'me' | 'them'>>([])
@@ -234,8 +233,8 @@ export function Transcript({ id, recording, inline = false, active = true, onClo
   }
   useLayoutEffect(() => {
     const el = list.current
-    if (active && recording && el && stick.current) { visibility.current?.programmatic(); el.scrollTop = el.scrollHeight }
-  }, [lines, liveSaid, recording, active])
+    if (active && recording && !finding && el && stick.current) { visibility.current?.programmatic(); el.scrollTop = el.scrollHeight }
+  }, [lines, liveSaid, recording, active, finding])
   const toLatest = () => { const el = list.current; if (el) { visibility.current?.programmatic(); stick.current = true; setBehind(false); el.scrollTo({ top: el.scrollHeight, behavior: scrollBehavior() }) } }
 
   // playing follows along: the line being played kept comfortably in view, until they scroll it out of sight
@@ -259,7 +258,7 @@ export function Transcript({ id, recording, inline = false, active = true, onClo
   }
   const showPlaying = (always: boolean) => {
     const el = list.current, row = rowOf(shownKeyRef.current)
-    if (!el || !row || (!always && performance.now() - handsOn.current < HANDS_OFF_MS)) return
+    if (finding || !el || !row || (!always && performance.now() - handsOn.current < HANDS_OFF_MS)) return
     const { row: r, view } = measure(row)
     const to = followTarget(r, view, always)
     if (to === null || !ours.current && Math.abs(to - el.scrollTop) < 2) return
@@ -308,8 +307,6 @@ export function Transcript({ id, recording, inline = false, active = true, onClo
     player.current?.playFrom(l.startMs)
   }, [follow])
 
-  const shownLines = useMemo(() => filterLines(lines, query), [lines, query])
-
   // the line an answer pointed to: in the middle of the panel, marked, and the list's tab stop
   const [focusedKey, setFocusedKey] = useState<string>()
   const focusDone = useRef<number | undefined>(undefined)
@@ -332,48 +329,36 @@ export function Transcript({ id, recording, inline = false, active = true, onClo
   }, [focusedKey, focus?.seq])
   // one tab stop for the whole list (the line last focused, or playing, or the first); arrows move between lines
   const [focusKey, setFocusKey] = useState<string>()
-  const tabKey = focusKey ?? shownKey ?? (shownLines[0] && key(shownLines[0]))
+  const tabKey = focusKey ?? shownKey ?? (lines[0] && key(lines[0]))
   const onKeyDown = (e: KeyboardEvent<HTMLOListElement>) => {
     const row = (e.target as HTMLElement).closest<HTMLElement>('[data-testid="transcript-line"]')
     if (!playable || !row || row !== e.target) return
-    const i = shownLines.findIndex((l) => key(l) === row.dataset.key)
+    const i = lines.findIndex((l) => key(l) === row.dataset.key)
     if (i < 0) return
-    const go = (j: number) => { const next = rowOf(key(shownLines[Math.max(0, Math.min(shownLines.length - 1, j))])); visibility.current?.programmatic(); next?.focus({ preventScroll: true }); next?.scrollIntoView({ block: 'nearest' }) }
+    const go = (j: number) => { const next = rowOf(key(lines[Math.max(0, Math.min(lines.length - 1, j))])); visibility.current?.programmatic(); next?.focus({ preventScroll: true }); next?.scrollIntoView({ block: 'nearest' }) }
     if (e.key === 'ArrowDown') { e.preventDefault(); go(i + 1) }
     else if (e.key === 'ArrowUp') { e.preventDefault(); go(i - 1) }
     else if (e.key === 'Home') { e.preventDefault(); go(0) }
-    else if (e.key === 'End') { e.preventDefault(); go(shownLines.length - 1) }
-    else if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); follow(); player.current?.playFrom(shownLines[i].startMs) }
+    else if (e.key === 'End') { e.preventDefault(); go(lines.length - 1) }
+    else if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); follow(); player.current?.playFrom(lines[i].startMs) }
   }
 
-  const typed = query.trim()
-  // what is being said joins the bubble it carries on; not while searching
-  const grouped = useMemo(() => timeline.map(run => ({ ...run, k: key(run.lines[0]), lines: typed ? run.lines.filter(l => !('live' in l) && filterLines([l], typed).length) : run.lines })).filter(run => run.lines.length), [timeline, typed])
-  // while recording (not searching), the latest lines only: over hours every line on the page grew the window past a GB
-  const drawn = useMemo(() => (recording && !typed && !showAll ? recentRuns(grouped, LIVE_LINES, LIVE_STEP) : { runs: grouped, earlier: 0 }), [grouped, recording, typed, showAll])
-  /** the line being played is on screen, not left out by the search */
-  const playingShown = useMemo(() => !!shownKey && shownLines.some((l) => key(l) === shownKey), [shownKey, shownLines])
+  const grouped = useMemo(() => timeline.map(run => ({ ...run, k: key(run.lines[0]) })), [timeline])
+  const drawn = useMemo(() => (recording && !showAll ? recentRuns(grouped, LIVE_LINES, LIVE_STEP) : { runs: grouped, earlier: 0 }), [grouped, recording, showAll])
+  const find = useCallback((open: boolean) => {
+    setFinding(open)
+    if (open) { setShowAll(true); stick.current = false; ours.current?.stop(); ours.current = null }
+  }, [])
   const Surface = inline ? 'section' : 'aside'
-
-  const tools = (
-      <div className="transcript-toolbar">
-        <label className="transcript-search-field">
-          <SearchIcon size={14} strokeWidth={1.75} aria-hidden="true" className="shrink-0 text-muted" />
-          <input data-testid="transcript-search" value={query} onChange={(e) => { visibility.current?.programmatic(); setQuery(e.target.value) }} placeholder={t('Search')} aria-label={t('Search the transcript')} spellCheck={false} />
-        </label>
-        {!inline && onClose && <div className="transcript-actions"><button data-testid="transcript-close" onClick={onClose} aria-label={t('Hide transcript')} title={t('Hide transcript')} className="ghost-btn !p-1.5"><ChevronDown size={15} aria-hidden="true" /></button></div>}
-      </div>
-  )
 
   return (
     <Surface style={{ '--playback-inset': `${playbackInset}px` } as CSSProperties} data-testid="transcript-panel" aria-label={t('Transcript')} onKeyDown={(e) => { if (!inline && e.key === 'Escape') { e.stopPropagation(); onClose?.() } }}
       className={inline ? 'transcript-inline' : 'chat-in pointer-events-auto absolute inset-x-0 bottom-1 z-20 mx-auto flex h-[min(44vh,480px)] w-[min(720px,calc(100%-48px))] flex-col rounded-xl border border-line bg-float shadow-[var(--shadow)]'}>
-      {active && (toolbar ? createPortal(tools, toolbar) : tools)}
+      <TranscriptFind key={id} lines={lines} list={list} active={active} playbackInset={playbackInset} beforeScroll={() => visibility.current?.programmatic()} onFinding={find} toolbar={toolbar} onClose={!inline ? onClose : undefined} />
       <div className="transcript-scroll-wrap relative flex min-h-0 flex-1 flex-col">
         <ScrollFade enabled={active && loaded}><ol data-loaded={loaded} data-loading-phase={loadingPhase} data-testid="transcript" ref={list} onScroll={onScroll} onWheel={theirs} onTouchStart={theirs} onPointerDown={theirs} onKeyDownCapture={theirs} onKeyDown={onKeyDown} className="loading-content transcript-loading-content flex flex-1 flex-col gap-2 overflow-y-auto px-4 pb-4 pt-2 text-sm leading-[1.55]">
           {loadingPhase !== 'ready' && <li className="loading-placeholder"><Loading layout="transcript" /></li>}
           {loaded && allLines.length === 0 && liveSaid.length === 0 && <li data-testid="transcript-empty" className="note-empty empty-state"><div className="empty-state-content"><div className="empty-tile"><AudioLines size={28} strokeWidth={1.5} aria-hidden="true" /></div>{t('Nothing heard yet.')}</div></li>}
-          {allLines.length > 0 && grouped.length === 0 && <li data-testid="transcript-none" className="note-empty">{t('Nothing found for “{query}”.', { query: typed })}</li>}
           {drawn.earlier > 0 && <li className="flex justify-center"><button data-testid="transcript-earlier" onClick={() => { visibility.current?.programmatic(); stick.current = false; setShowAll(true) }} className="ghost-btn !px-2 !py-1 text-xs text-muted">{t('Show earlier lines')}</button></li>}
           {drawn.runs.map(run => <Fragment key={run.k}>
             {turns(run.lines).map((turn) => {
@@ -395,7 +380,7 @@ export function Transcript({ id, recording, inline = false, active = true, onClo
                       const k = key(x)
                       return (
                         <Fragment key={k}>{i > 0 && ' '}
-                          <Row line={x} focused={k === focusedKey} name={who(x)} query={typed}
+                          <Row line={x} focused={k === focusedKey} name={who(x)}
                             playing={k === shownKey} playable={playable} focusable={k === tabKey} arrived={live.current.has(k) ? (previewed(x) ? 'settle' : 'fade') : null} onPlay={onPlay} onFocusLine={setFocusKey} />
                         </Fragment>
                       )
@@ -406,12 +391,12 @@ export function Transcript({ id, recording, inline = false, active = true, onClo
             )
           })}</Fragment>)}
         </ol></ScrollFade>
-        {recording && behind && (
+        {recording && behind && !finding && (
           <button data-testid="transcript-latest" onClick={toLatest} className="absolute bottom-3 start-1/2 flex -translate-x-1/2 items-center gap-1 rounded-md border border-line bg-float px-3 py-1 text-xs shadow-[var(--shadow)] rtl:translate-x-1/2">
             <ArrowDown size={12} aria-hidden="true" />{t('Latest')}
           </button>
         )}
-        {!recording && audioOn && away && playingShown && (
+        {!recording && audioOn && away && shownKey && !finding && (
           <button data-testid="transcript-follow" onClick={backToPlaying} className="absolute bottom-3 start-1/2 flex -translate-x-1/2 items-center gap-1 rounded-md border border-line bg-float px-3 py-1 text-xs shadow-[var(--shadow)] rtl:translate-x-1/2">
             <ArrowDown size={12} aria-hidden="true" className="follow-arrow" data-up={away === 'up'} />{t('Back to playing')}
           </button>

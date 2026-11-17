@@ -702,5 +702,12 @@
   "Waiting for Yogurt AI to download": "En attente du téléchargement de l’IA Yogurt",
   "Stop summary": "Arrêter le résumé",
   "Summary stopped.": "Résumé arrêté.",
-  "This window couldn't be displayed.": "Cette fenêtre n’a pas pu être affichée."
+  "This window couldn't be displayed.": "Cette fenêtre n’a pas pu être affichée.",
+  "{current} of {count}": {
+    "one": "{current} sur {count}",
+    "other": "{current} sur {count}"
+  },
+  "No matches": "Aucune correspondance",
+  "Previous match": "Correspondance précédente",
+  "Next match": "Correspondance suivante"
 }

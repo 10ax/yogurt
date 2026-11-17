@@ -78,7 +78,7 @@ test('recording controls stay in the header and Ask lives in the footer with sta
     }
     expect((await page.getByTestId('transcript-panel').boundingBox())!.height).toBeGreaterThan(100)
     await page.getByTestId('transcript-panel').scrollIntoViewIfNeeded()
-    await expect(page.getByTestId('transcript-search')).toBeInViewport()
+    await expect(page.getByTestId('transcript-find-open')).toBeInViewport()
     await page.getByTestId('note-pause').scrollIntoViewIfNeeded()
     const recordingWidth = (await controls.boundingBox())!.width
     await page.getByTestId('note-pause').click()

@@ -714,5 +714,12 @@
   "Waiting for Yogurt AI to download": "Ожидание загрузки Yogurt AI",
   "Stop summary": "Остановить сводку",
   "Summary stopped.": "Создание сводки остановлено.",
-  "This window couldn't be displayed.": "Не удалось отобразить это окно."
+  "This window couldn't be displayed.": "Не удалось отобразить это окно.",
+  "{current} of {count}": {
+    "one": "{current} из {count}",
+    "other": "{current} из {count}"
+  },
+  "No matches": "Нет совпадений",
+  "Previous match": "Предыдущее совпадение",
+  "Next match": "Следующее совпадение"
 }

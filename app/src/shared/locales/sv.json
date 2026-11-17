@@ -686,5 +686,12 @@
   "Waiting for Yogurt AI to download": "Väntar på nedladdning av Yogurt AI",
   "Stop summary": "Stoppa sammanfattning",
   "Summary stopped.": "Sammanfattningen stoppades.",
-  "This window couldn't be displayed.": "Det här fönstret kunde inte visas."
+  "This window couldn't be displayed.": "Det här fönstret kunde inte visas.",
+  "{current} of {count}": {
+    "one": "{current} av {count}",
+    "other": "{current} av {count}"
+  },
+  "No matches": "Inga träffar",
+  "Previous match": "Föregående träff",
+  "Next match": "Nästa träff"
 }

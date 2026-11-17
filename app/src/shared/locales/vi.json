@@ -644,5 +644,12 @@
   "Waiting for Yogurt AI to download": "Đang chờ tải Yogurt AI",
   "Stop summary": "Dừng tóm tắt",
   "Summary stopped.": "Đã dừng tóm tắt.",
-  "This window couldn't be displayed.": "Không thể hiển thị cửa sổ này."
+  "This window couldn't be displayed.": "Không thể hiển thị cửa sổ này.",
+  "{current} of {count}": {
+    "one": "{current} trên {count}",
+    "other": "{current} trên {count}"
+  },
+  "No matches": "Không có kết quả",
+  "Previous match": "Kết quả trước",
+  "Next match": "Kết quả tiếp theo"
 }

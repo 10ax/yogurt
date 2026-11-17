@@ -686,5 +686,12 @@
   "Waiting for Yogurt AI to download": "Venter på download af Yogurt AI",
   "Stop summary": "Stop opsummering",
   "Summary stopped.": "Opsummering stoppet.",
-  "This window couldn't be displayed.": "Dette vindue kunne ikke vises."
+  "This window couldn't be displayed.": "Dette vindue kunne ikke vises.",
+  "{current} of {count}": {
+    "one": "{current} af {count}",
+    "other": "{current} af {count}"
+  },
+  "No matches": "Ingen resultater",
+  "Previous match": "Forrige resultat",
+  "Next match": "Næste resultat"
 }

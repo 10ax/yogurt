@@ -703,5 +703,12 @@
   "Waiting for Yogurt AI to download": "Se așteaptă descărcarea Yogurt AI",
   "Stop summary": "Oprește rezumatul",
   "Summary stopped.": "Rezumatul a fost oprit.",
-  "This window couldn't be displayed.": "Această fereastră nu a putut fi afișată."
+  "This window couldn't be displayed.": "Această fereastră nu a putut fi afișată.",
+  "{current} of {count}": {
+    "one": "{current} din {count}",
+    "other": "{current} din {count}"
+  },
+  "No matches": "Nicio potrivire",
+  "Previous match": "Potrivirea anterioară",
+  "Next match": "Potrivirea următoare"
 }

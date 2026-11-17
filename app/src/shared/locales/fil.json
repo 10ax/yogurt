@@ -686,5 +686,12 @@
   "Waiting for Yogurt AI to download": "Hinihintay ang pag-download ng Yogurt AI",
   "Stop summary": "Ihinto ang buod",
   "Summary stopped.": "Nahinto ang paggawa ng buod.",
-  "This window couldn't be displayed.": "Hindi maipakita ang window na ito."
+  "This window couldn't be displayed.": "Hindi maipakita ang window na ito.",
+  "{current} of {count}": {
+    "one": "{current} sa {count}",
+    "other": "{current} sa {count}"
+  },
+  "No matches": "Walang tugma",
+  "Previous match": "Nakaraang tugma",
+  "Next match": "Susunod na tugma"
 }

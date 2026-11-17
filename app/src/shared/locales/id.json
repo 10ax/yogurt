@@ -644,5 +644,12 @@
   "Waiting for Yogurt AI to download": "Menunggu unduhan Yogurt AI",
   "Stop summary": "Hentikan ringkasan",
   "Summary stopped.": "Pembuatan ringkasan dihentikan.",
-  "This window couldn't be displayed.": "Jendela ini tidak dapat ditampilkan."
+  "This window couldn't be displayed.": "Jendela ini tidak dapat ditampilkan.",
+  "{current} of {count}": {
+    "one": "{current} dari {count}",
+    "other": "{current} dari {count}"
+  },
+  "No matches": "Tidak ada kecocokan",
+  "Previous match": "Kecocokan sebelumnya",
+  "Next match": "Kecocokan berikutnya"
 }

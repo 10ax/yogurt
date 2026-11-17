@@ -1,16 +1,18 @@
-import { beforeEach, expect, it, vi } from 'vitest'
-import { createElement, useEffect, useRef } from 'react'
+import { afterEach, beforeEach, expect, it, vi } from 'vitest'
+import { createElement, useEffect, useLayoutEffect, useRef } from 'react'
 import { renderToStaticMarkup } from 'react-dom/server'
 import type { Folder } from '../src/shared/types'
-import { FolderPicker } from '../src/renderer/src/components/FolderPicker'
+import { FolderChip, FolderPicker } from '../src/renderer/src/components/FolderPicker'
 
 const state = vi.hoisted(() => ({ all: undefined as Folder[] | undefined }))
 vi.mock('react', async importOriginal => {
   const react = await importOriginal<typeof import('react')>()
-  return { ...react, useEffect: vi.fn(), useRef: vi.fn(react.useRef) }
+  return { ...react, useEffect: vi.fn(), useLayoutEffect: vi.fn(), useRef: vi.fn(react.useRef) }
 })
 vi.mock('../src/renderer/src/folders', () => ({ useFolders: (id?: string) => id ? [] : state.all, setMeetingsInFolder: vi.fn() }))
 vi.mock('../src/renderer/src/components/TrashToast', () => ({ toasts: { add: vi.fn(), close: vi.fn() } }))
+vi.mock('../src/renderer/src/motion', () => ({ useReducedMotion: () => false, usePopoverPresence: () => ({ value: false, props: {} }) }))
+afterEach(() => vi.unstubAllGlobals())
 const alpha: Folder = { id: 'alpha', name: 'Alpha', icon: 'folder', color: 'default', count: 0, createdAt: 1 }
 const suggested: Folder = { ...alpha, id: 'suggested', name: 'Suggested folder' }
 beforeEach(() => { vi.clearAllMocks(); state.all = undefined })
@@ -55,4 +57,23 @@ it('focuses New folder for an empty loaded list, and leaves other menu owners in
   const owned = picker(false)
   owned.effect()
   expect(owned.focus).not.toHaveBeenCalled()
+})
+
+it.each([false, true])('restores suggestion focus after the replacement DOM commits without stealing focus (row: %s)', row => {
+  renderToStaticMarkup(createElement(FolderChip, { meetingId: 'meeting', row, rowFolders: [], suggestion: { folder: suggested, dismiss() {} } }))
+  const refs = vi.mocked(useRef).mock.results.map(result => result.value)
+  const oldTarget = { focus: vi.fn() }, replacement = { focus: vi.fn() }, body = {}
+  refs[1].current = replacement
+  refs[2].current = oldTarget
+  const commit = vi.mocked(useLayoutEffect).mock.calls[0][0]
+  vi.stubGlobal('document', { body, activeElement: body })
+  commit()
+  expect((row ? oldTarget : replacement).focus).toHaveBeenCalledOnce()
+  expect((row ? replacement : oldTarget).focus).not.toHaveBeenCalled()
+  commit()
+  expect((row ? oldTarget : replacement).focus).toHaveBeenCalledOnce()
+  refs[2].current = oldTarget
+  vi.stubGlobal('document', { body, activeElement: {} })
+  commit()
+  expect((row ? oldTarget : replacement).focus).toHaveBeenCalledOnce()
 })

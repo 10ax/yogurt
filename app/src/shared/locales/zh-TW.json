@@ -644,5 +644,12 @@
   "Waiting for Yogurt AI to download": "等待下載 Yogurt AI",
   "Stop summary": "停止摘要",
   "Summary stopped.": "已停止摘要。",
-  "This window couldn't be displayed.": "無法顯示此視窗。"
+  "This window couldn't be displayed.": "無法顯示此視窗。",
+  "{current} of {count}": {
+    "one": "第 {current} 項，共 {count} 項",
+    "other": "第 {current} 項，共 {count} 項"
+  },
+  "No matches": "沒有相符結果",
+  "Previous match": "上一個相符項目",
+  "Next match": "下一個相符項目"
 }

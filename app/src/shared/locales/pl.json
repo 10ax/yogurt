@@ -722,5 +722,12 @@
   "Waiting for Yogurt AI to download": "Oczekiwanie na pobranie Yogurt AI",
   "Stop summary": "Zatrzymaj podsumowanie",
   "Summary stopped.": "Podsumowanie zatrzymane.",
-  "This window couldn't be displayed.": "Nie udało się wyświetlić tego okna."
+  "This window couldn't be displayed.": "Nie udało się wyświetlić tego okna.",
+  "{current} of {count}": {
+    "one": "{current} z {count}",
+    "other": "{current} z {count}"
+  },
+  "No matches": "Brak dopasowań",
+  "Previous match": "Poprzednie dopasowanie",
+  "Next match": "Następne dopasowanie"
 }

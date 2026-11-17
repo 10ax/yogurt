@@ -644,5 +644,12 @@
   "Waiting for Yogurt AI to download": "等待下载 Yogurt AI",
   "Stop summary": "停止总结",
   "Summary stopped.": "已停止总结。",
-  "This window couldn't be displayed.": "无法显示此窗口。"
+  "This window couldn't be displayed.": "无法显示此窗口。",
+  "{current} of {count}": {
+    "one": "第 {current} 项，共 {count} 项",
+    "other": "第 {current} 项，共 {count} 项"
+  },
+  "No matches": "无匹配结果",
+  "Previous match": "上一个匹配项",
+  "Next match": "下一个匹配项"
 }

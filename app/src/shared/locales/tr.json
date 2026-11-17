@@ -674,5 +674,12 @@
   "Waiting for Yogurt AI to download": "Yogurt AI indirmesi bekleniyor",
   "Stop summary": "Özeti durdur",
   "Summary stopped.": "Özet durduruldu.",
-  "This window couldn't be displayed.": "Bu pencere görüntülenemedi."
+  "This window couldn't be displayed.": "Bu pencere görüntülenemedi.",
+  "{current} of {count}": {
+    "one": "{count} sonuçtan {current}.",
+    "other": "{count} sonuçtan {current}."
+  },
+  "No matches": "Eşleşme yok",
+  "Previous match": "Önceki eşleşme",
+  "Next match": "Sonraki eşleşme"
 }

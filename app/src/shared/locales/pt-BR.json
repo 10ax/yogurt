@@ -702,5 +702,12 @@
   "Waiting for Yogurt AI to download": "Aguardando o download do Yogurt AI",
   "Stop summary": "Parar resumo",
   "Summary stopped.": "Resumo interrompido.",
-  "This window couldn't be displayed.": "Não foi possível exibir esta janela."
+  "This window couldn't be displayed.": "Não foi possível exibir esta janela.",
+  "{current} of {count}": {
+    "one": "{current} de {count}",
+    "other": "{current} de {count}"
+  },
+  "No matches": "Nenhum resultado",
+  "Previous match": "Resultado anterior",
+  "Next match": "Próximo resultado"
 }

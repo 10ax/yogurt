@@ -48,13 +48,6 @@ export function lineAt(lines: Array<{ startMs: number }>, ms: number): number {
   return found
 }
 
-/** The lines that hold every word typed (any case); all of them while nothing is typed */
-export function filterLines<L extends { text: string }>(lines: L[], query: string): L[] {
-  const words = query.toLocaleLowerCase().split(/\s+/).filter(Boolean)
-  if (!words.length) return lines
-  return lines.filter((l) => { const t = l.text.toLocaleLowerCase(); return words.every((w) => t.includes(w)) })
-}
-
 /** a pause this long between lines of one voice starts a new bubble, like a new thought */
 export const BUBBLE_GAP_MS = 1500
 

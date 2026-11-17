@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest'
-import { bubbles, clock, filterLines, lineAt, recentRuns, stableKeys, turns, withLive } from '../src/shared/transcript'
+import { bubbles, clock, lineAt, recentRuns, stableKeys, turns, withLive } from '../src/shared/transcript'
 
 const l = (track: 'me' | 'them', startMs: number, speaker: string | null = null, endMs = startMs + 2000) => ({ track, startMs, endMs, speaker, text: '' })
 
@@ -54,17 +54,6 @@ describe('lineAt', () => {
     for (let i = 0; i < 10_000; i++) lineAt(many, i * 4000)
     expect(performance.now() - t0).toBeLessThan(50)
     expect(lineAt(many, 1_234_567)).toBe(2469)
-  })
-})
-
-describe('searching the transcript', () => {
-  const lines = [{ ...l('me', 0), text: 'Hello everyone' }, { ...l('them', 3000, 'A'), text: 'The launch is on Tuesday' }, { ...l('them', 6000, 'A'), text: 'Tuesday works' }]
-  it('keeps every line with no query, and only the lines with the words typed, any case', () => {
-    expect(filterLines(lines, '')).toHaveLength(3)
-    expect(filterLines(lines, '   ')).toHaveLength(3)
-    expect(filterLines(lines, 'tuesday').map((x) => x.startMs)).toEqual([3000, 6000])
-    expect(filterLines(lines, 'LAUNCH tuesday').map((x) => x.startMs)).toEqual([3000])
-    expect(filterLines(lines, 'nothing here')).toEqual([])
   })
 })
 

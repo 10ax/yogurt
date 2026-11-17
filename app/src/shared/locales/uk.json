@@ -714,5 +714,12 @@
   "Waiting for Yogurt AI to download": "Очікування завантаження Yogurt AI",
   "Stop summary": "Зупинити підсумок",
   "Summary stopped.": "Створення підсумку зупинено.",
-  "This window couldn't be displayed.": "Не вдалося відобразити це вікно."
+  "This window couldn't be displayed.": "Не вдалося відобразити це вікно.",
+  "{current} of {count}": {
+    "one": "{current} із {count}",
+    "other": "{current} із {count}"
+  },
+  "No matches": "Немає збігів",
+  "Previous match": "Попередній збіг",
+  "Next match": "Наступний збіг"
 }

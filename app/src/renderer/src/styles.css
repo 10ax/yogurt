@@ -493,7 +493,7 @@ html.widget { --pill:#232326;--pill-ink:#F7F7FA;--accent:#B780FF;--pill-accent:v
 .modal-copy { padding:22px 20px 18px; }
 .modal-copy h2 { font-size:14px;line-height:20px;font-weight:600;letter-spacing:-.15px;overflow-wrap:anywhere; }
 .modal-copy p { margin-top:8px;color:var(--muted);font-size:12px;line-height:18px; }
-.inline-error { display:flex;align-items:center;gap:10px;padding:10px 12px;border:1px solid var(--line);border-radius:8px;background:var(--float);color:var(--written);font-size:13px;line-height:20px;text-align:start; }
+.inline-error { display:flex;align-items:center;gap:10px;padding:10px 12px;border:1px solid var(--line);border-radius:8px;background:var(--float);color:var(--written);font-size:13px;line-height:20px;text-align:start;text-overflow:ellipsis; }
 .inline-error>svg { flex:none;align-self:flex-start;margin-block-start:2px;color:var(--danger); }
 .inline-error>span { flex:1;min-width:0;overflow-wrap:anywhere; }
 .inline-error-action { flex:none;border-radius:4px;padding:2px 3px;color:var(--accent);font-size:12px;font-weight:500;text-decoration:underline;text-underline-offset:3px; }
@@ -666,21 +666,46 @@ input::selection, textarea::selection, .note-prose ::selection { background: var
 .note-record-action.primary:hover:not(:disabled) { background:var(--primary-hover); }
 @media(prefers-reduced-motion:reduce) { .note-record-action { transition:none; } }
 [data-testid="transcript-panel"] { border-radius: 12px; }
-.note-primary-tools { display:flex;align-items:center;align-self:flex-start;height:34px;margin-inline-start:auto;min-width:0; }
-.note-primary-tools .transcript-toolbar { padding:0;border:0;flex-wrap:nowrap; }
+.note-primary-tools { display:flex;align-items:center;align-self:flex-start;height:34px;margin-inline-start:auto;min-width:32px;flex:1;container-type:inline-size; }
+.note-primary-tools .transcript-toolbar { padding:0;border:0;flex-wrap:nowrap;width:100%;justify-content:flex-end; }
+.note-primary-tools .transcript-find-clip { width:clamp(240px,100cqw,376px); }
 .note-primary-tools .transcript-actions { order:-1;margin-inline-start:0; }
 .transcript-toolbar { display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:8px 16px;padding:10px 12px;border-bottom:1px solid var(--line); }
-.transcript-search-field { display:flex;align-items:center;gap:8px;flex:0 1 auto;width:68px;max-width:100%;min-width:32px;height:32px;padding-inline:0;border:1px solid transparent;border-radius:6px;background:transparent; }
-.transcript-search-field { transition:background-color var(--dur-micro) ease,border-color var(--dur-micro) ease; }
-@media(prefers-reduced-motion:reduce) { .transcript-search-field { transition:none; } }
-/* collapsed it reads as a button: a pointer, no hover box (with no padding yet it hugged the word); it opens on click */
-.transcript-search-field,.transcript-search-field [data-testid="transcript-search"] { cursor:pointer; }
-.transcript-search-field:focus-within [data-testid="transcript-search"],.transcript-search-field:has(input:not(:placeholder-shown)) [data-testid="transcript-search"] { cursor:text; }
-.transcript-search-field:focus-within,.transcript-search-field:has(input:not(:placeholder-shown)) { width:224px;padding-inline:10px;border-color:var(--line);background:var(--control); }
-.transcript-search-field:focus-within { border-color:var(--accent); }
-[data-testid="transcript-search"] { min-width:0;width:100%;height:100%;padding:0;border:0;background:transparent;color:var(--ink);font-size:13px;font-weight:500;line-height:20px;text-align:start; }
+.note-primary-tabs { z-index:2; }
+.transcript-find { position:relative;width:32px;height:32px;z-index:2;clip-path:inset(-4px -4px -4px -600px); }
+.transcript-find-trigger { width:32px;height:32px;justify-content:center;padding:0;opacity:1;transition:opacity var(--dur-micro) var(--ease-out) var(--dur-micro); }
+.transcript-find[data-open=true] .transcript-find-trigger { opacity:0;pointer-events:none;transition-delay:0s; }
+.transcript-find-clip { position:absolute;inset-inline-end:0;top:0;width:min(376px,calc(100vw - 48px));height:32px;overflow:hidden;border-radius:6px;opacity:0;pointer-events:none;transform:translateX(calc(100% - 32px));transition:transform var(--dur-micro) var(--ease-out),opacity var(--dur-micro) var(--ease-out); }
+.transcript-search-field { display:flex;align-items:center;gap:8px;height:32px;padding-inline:10px 4px;background:var(--control);border-radius:6px;transform:translateX(calc(32px - 100%));transition:transform var(--dur-micro) var(--ease-out); }
+.transcript-find[data-open=true] .transcript-find-clip { opacity:1;pointer-events:auto;transform:none;transition-duration:var(--dur-base); }
+.transcript-find[data-open=true] .transcript-search-field { transform:none;transition-duration:var(--dur-base); }
+.transcript-search-field:focus-within { box-shadow:inset 0 0 0 1px color-mix(in srgb,var(--ink) 22%,transparent); }
+[data-testid="transcript-search"] { flex:1;min-width:0;width:0;height:100%;padding:0;border:0;background:transparent;color:var(--ink);font-size:13px;font-weight:400;line-height:20px;text-align:start; }
 [data-testid="transcript-search"]::placeholder { color:var(--muted); }
 [data-testid="transcript-search"]:focus-visible { outline:none;box-shadow:none; }
+.transcript-find-controls { display:flex;align-items:center;gap:8px;flex:none; }
+.transcript-find-results { display:flex;align-items:center;gap:8px;flex:none;opacity:0;pointer-events:none;transition:opacity var(--dur-micro) var(--ease-out); }
+.transcript-find-results[data-visible=true] { opacity:1;pointer-events:auto; }
+.transcript-find-count { display:grid;flex:none;color:var(--muted);font-size:11px;line-height:20px;font-variant-numeric:tabular-nums;white-space:nowrap;text-align:end; }
+.transcript-find-count>span { grid-area:1/1; }
+.transcript-find-reserve { visibility:hidden; }
+.transcript-find-arrows { display:flex;align-items:center;gap:2px;flex:none; }
+.transcript-find-controls .ghost-btn { display:grid;place-items:center;width:24px;height:24px;padding:0;flex:none; }
+.transcript-find-controls .ghost-btn:disabled { opacity:.35;background:transparent;color:var(--muted);cursor:default; }
+.transcript-find-controls svg { display:block; }
+/* The trigger finishes fading before the close glyph appears in its old position. */
+.transcript-find-close { opacity:0;transition:opacity var(--dur-micro) var(--ease-out); }
+.transcript-find[data-open=true] .transcript-find-close { opacity:1;transition-delay:var(--dur-micro); }
+::highlight(transcript-find) { background:var(--accent-soft);color:var(--ink); }
+::highlight(transcript-find-current) { background:var(--primary);color:#FFFFFF; }
+.transcript-find:dir(rtl) { clip-path:inset(-4px -600px -4px -4px); }
+.transcript-find:dir(rtl) .transcript-find-clip { transform:translateX(calc(32px - 100%)); }
+.transcript-find:dir(rtl) .transcript-search-field { transform:translateX(calc(100% - 32px)); }
+.transcript-find:dir(rtl)[data-open=true] :is(.transcript-find-clip,.transcript-search-field) { transform:none; }
+.note-primary-tools [data-find-below=true] .transcript-find { clip-path:inset(-4px -4px -48px -600px); }
+.note-primary-tools [data-find-below=true] .transcript-find:dir(rtl) { clip-path:inset(-4px -600px -48px -4px); }
+.note-primary-tools [data-find-below=true] .transcript-find-clip { top:40px;width:min(376px,calc(100vw - 60px)); }
+@media(prefers-reduced-motion:reduce) { .transcript-find[data-open] :is(.transcript-find-trigger,.transcript-find-clip,.transcript-search-field,.transcript-find-results,.transcript-find-close) { transition:none; } }
 .transcript-actions { display:flex;align-items:center;gap:4px;margin-inline-start:auto; }
 
 /* Electron zoom can make the CSS viewport narrower than the native window minimum. */
@@ -692,8 +717,6 @@ input::selection, textarea::selection, .note-prose ::selection { background: var
   .note-header-actions { gap:8px; }
   .note-primary-tabs { margin-top:12px;gap:16px;flex-wrap:wrap; }
   .note-primary-tools { max-width:100%; }
-  .note-primary-tools .transcript-search-field { width:32px;min-width:32px; }
-  .note-primary-tools .transcript-search-field:focus-within,.note-primary-tools .transcript-search-field:has(input:not(:placeholder-shown)) { width:160px; }
 }
 /* At large zoom, let the page scroll instead of compressing the transcript to a single line. */
 @media (max-height:420px) {

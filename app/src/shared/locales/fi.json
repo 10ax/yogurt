@@ -692,5 +692,12 @@
   "Waiting for Yogurt AI to download": "Odotetaan Yogurt AI:n latausta",
   "Stop summary": "Pysäytä yhteenveto",
   "Summary stopped.": "Yhteenvedon luonti pysäytetty.",
-  "This window couldn't be displayed.": "Tätä ikkunaa ei voitu näyttää."
+  "This window couldn't be displayed.": "Tätä ikkunaa ei voitu näyttää.",
+  "{current} of {count}": {
+    "one": "{current}/{count}",
+    "other": "{current}/{count}"
+  },
+  "No matches": "Ei osumia",
+  "Previous match": "Edellinen osuma",
+  "Next match": "Seuraava osuma"
 }

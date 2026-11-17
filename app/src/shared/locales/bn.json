@@ -674,5 +674,12 @@
   "Waiting for Yogurt AI to download": "Yogurt AI ডাউনলোডের অপেক্ষায়",
   "Stop summary": "সারসংক্ষেপ বন্ধ করুন",
   "Summary stopped.": "সারসংক্ষেপ তৈরি বন্ধ হয়েছে।",
-  "This window couldn't be displayed.": "এই উইন্ডোটি দেখানো যায়নি।"
+  "This window couldn't be displayed.": "এই উইন্ডোটি দেখানো যায়নি।",
+  "{current} of {count}": {
+    "one": "{count}টির মধ্যে {current}",
+    "other": "{count}টির মধ্যে {current}"
+  },
+  "No matches": "কোনো মিল নেই",
+  "Previous match": "আগের মিল",
+  "Next match": "পরের মিল"
 }

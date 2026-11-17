@@ -644,5 +644,12 @@
   "Waiting for Yogurt AI to download": "Yogurt AIのダウンロードを待機中",
   "Stop summary": "要約を停止",
   "Summary stopped.": "要約を停止しました。",
-  "This window couldn't be displayed.": "このウィンドウを表示できませんでした。"
+  "This window couldn't be displayed.": "このウィンドウを表示できませんでした。",
+  "{current} of {count}": {
+    "one": "{count} 件中 {current} 件目",
+    "other": "{count} 件中 {current} 件目"
+  },
+  "No matches": "一致する結果なし",
+  "Previous match": "前の一致",
+  "Next match": "次の一致"
 }

@@ -599,7 +599,6 @@
     "other": "{count} встречи перемещены в Корзину"
   },
   "Recorded with {app}": "Записано в {app}",
-  "A new version of Yogurt is ready": "Новая версия Yogurt готова",
   "Upgrading AI": "Улучшение ИИ",
   "Upgrading AI · {percent}": "Улучшение ИИ · {percent}",
   "AI upgrade paused": "Улучшение ИИ приостановлено",
@@ -721,5 +720,12 @@
   },
   "No matches": "Нет совпадений",
   "Previous match": "Предыдущее совпадение",
-  "Next match": "Следующее совпадение"
+  "Next match": "Следующее совпадение",
+  "Update ready": "Обновление готово",
+  "Installs when you restart Yogurt": "Установится при перезапуске Yogurt",
+  "You can restart after recording": "Можно перезапустить после записи",
+  "Later": "Позже",
+  "Restart": "Перезапустить",
+  "Yogurt couldn't restart. Try again.": "Не удалось перезапустить Yogurt. Попробуйте ещё раз.",
+  "Yogurt {version}": "Yogurt {version}"
 }

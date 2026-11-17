@@ -626,7 +626,6 @@
     "other": "تم نقل {count} اجتماع إلى سلة المهملات"
   },
   "Recorded with {app}": "سُجّل باستخدام {app}",
-  "A new version of Yogurt is ready": "إصدار جديد من Yogurt جاهز",
   "Upgrading AI": "جارٍ ترقية الذكاء الاصطناعي",
   "Upgrading AI · {percent}": "جارٍ ترقية الذكاء الاصطناعي · {percent}",
   "AI upgrade paused": "ترقية الذكاء الاصطناعي متوقفة مؤقتًا",
@@ -749,5 +748,12 @@
   },
   "No matches": "لا توجد نتائج",
   "Previous match": "النتيجة السابقة",
-  "Next match": "النتيجة التالية"
+  "Next match": "النتيجة التالية",
+  "Update ready": "التحديث جاهز",
+  "Installs when you restart Yogurt": "يُثبّت عند إعادة تشغيل Yogurt",
+  "You can restart after recording": "يمكنك إعادة التشغيل بعد التسجيل",
+  "Later": "لاحقًا",
+  "Restart": "إعادة التشغيل",
+  "Yogurt couldn't restart. Try again.": "تعذّرت إعادة تشغيل Yogurt. حاول مجددًا.",
+  "Yogurt {version}": "Yogurt {version}"
 }

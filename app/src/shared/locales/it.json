@@ -589,7 +589,6 @@
     "other": "{count} riunioni spostate nel Cestino"
   },
   "Recorded with {app}": "Registrato con {app}",
-  "A new version of Yogurt is ready": "Una nuova versione di Yogurt è pronta",
   "Upgrading AI": "Miglioramento dell’IA",
   "Upgrading AI · {percent}": "Miglioramento dell’IA · {percent}",
   "AI upgrade paused": "Miglioramento dell’IA in pausa",
@@ -712,5 +711,12 @@
   },
   "No matches": "Nessuna corrispondenza",
   "Previous match": "Corrispondenza precedente",
-  "Next match": "Corrispondenza successiva"
+  "Next match": "Corrispondenza successiva",
+  "Update ready": "Aggiornamento pronto",
+  "Installs when you restart Yogurt": "Si installa al riavvio di Yogurt",
+  "You can restart after recording": "Puoi riavviare dopo la registrazione",
+  "Later": "Più tardi",
+  "Restart": "Riavvia",
+  "Yogurt couldn't restart. Try again.": "Impossibile riavviare Yogurt. Riprova.",
+  "Yogurt {version}": "Yogurt {version}"
 }

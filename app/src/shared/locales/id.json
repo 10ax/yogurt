@@ -534,7 +534,6 @@
   "Move {count} meetings to Trash": "Pindahkan {count} rapat ke Sampah",
   "{count} meetings moved to Trash": "{count} rapat dipindahkan ke Sampah",
   "Recorded with {app}": "Direkam dengan {app}",
-  "A new version of Yogurt is ready": "Versi baru Yogurt sudah siap",
   "Upgrading AI": "Meningkatkan AI",
   "Upgrading AI · {percent}": "Meningkatkan AI · {percent}",
   "AI upgrade paused": "Peningkatan AI dijeda",
@@ -651,5 +650,12 @@
   },
   "No matches": "Tidak ada kecocokan",
   "Previous match": "Kecocokan sebelumnya",
-  "Next match": "Kecocokan berikutnya"
+  "Next match": "Kecocokan berikutnya",
+  "Update ready": "Pembaruan siap",
+  "Installs when you restart Yogurt": "Dipasang saat Yogurt dimulai ulang",
+  "You can restart after recording": "Anda dapat memulai ulang setelah merekam",
+  "Later": "Nanti",
+  "Restart": "Mulai ulang",
+  "Yogurt couldn't restart. Try again.": "Yogurt tidak dapat dimulai ulang. Coba lagi.",
+  "Yogurt {version}": "Yogurt {version}"
 }

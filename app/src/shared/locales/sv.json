@@ -576,7 +576,6 @@
     "other": "{count} möten flyttade till papperskorgen"
   },
   "Recorded with {app}": "Inspelat med {app}",
-  "A new version of Yogurt is ready": "En ny version av Yogurt är klar",
   "Upgrading AI": "Uppgraderar AI",
   "Upgrading AI · {percent}": "Uppgraderar AI · {percent}",
   "AI upgrade paused": "AI-uppgradering pausad",
@@ -693,5 +692,12 @@
   },
   "No matches": "Inga träffar",
   "Previous match": "Föregående träff",
-  "Next match": "Nästa träff"
+  "Next match": "Nästa träff",
+  "Update ready": "Uppdatering klar",
+  "Installs when you restart Yogurt": "Installeras när du startar om Yogurt",
+  "You can restart after recording": "Du kan starta om efter inspelningen",
+  "Later": "Senare",
+  "Restart": "Starta om",
+  "Yogurt couldn't restart. Try again.": "Yogurt kunde inte starta om. Försök igen.",
+  "Yogurt {version}": "Yogurt {version}"
 }

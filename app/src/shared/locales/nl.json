@@ -573,7 +573,6 @@
     "other": "{count} meetings naar prullenmand verplaatst"
   },
   "Recorded with {app}": "Opgenomen met {app}",
-  "A new version of Yogurt is ready": "Er is een nieuwe versie van Yogurt klaar",
   "Upgrading AI": "AI upgraden",
   "Upgrading AI · {percent}": "AI upgraden · {percent}",
   "AI upgrade paused": "AI-upgrade gepauzeerd",
@@ -693,5 +692,12 @@
   },
   "No matches": "Geen overeenkomsten",
   "Previous match": "Vorige overeenkomst",
-  "Next match": "Volgende overeenkomst"
+  "Next match": "Volgende overeenkomst",
+  "Update ready": "Update gereed",
+  "Installs when you restart Yogurt": "Wordt geïnstalleerd als je Yogurt herstart",
+  "You can restart after recording": "Je kunt herstarten na de opname",
+  "Later": "Later",
+  "Restart": "Herstarten",
+  "Yogurt couldn't restart. Try again.": "Yogurt kon niet herstarten. Probeer het opnieuw.",
+  "Yogurt {version}": "Yogurt {version}"
 }

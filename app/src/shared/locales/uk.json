@@ -599,7 +599,6 @@
     "other": "{count} зустрічі переміщено до Кошика"
   },
   "Recorded with {app}": "Записано в {app}",
-  "A new version of Yogurt is ready": "Нова версія Yogurt готова",
   "Upgrading AI": "Покращення ШІ",
   "Upgrading AI · {percent}": "Покращення ШІ · {percent}",
   "AI upgrade paused": "Покращення ШІ призупинено",
@@ -721,5 +720,12 @@
   },
   "No matches": "Немає збігів",
   "Previous match": "Попередній збіг",
-  "Next match": "Наступний збіг"
+  "Next match": "Наступний збіг",
+  "Update ready": "Оновлення готове",
+  "Installs when you restart Yogurt": "Встановиться після перезапуску Yogurt",
+  "You can restart after recording": "Можна перезапустити після запису",
+  "Later": "Пізніше",
+  "Restart": "Перезапустити",
+  "Yogurt couldn't restart. Try again.": "Не вдалося перезапустити Yogurt. Спробуйте ще раз.",
+  "Yogurt {version}": "Yogurt {version}"
 }

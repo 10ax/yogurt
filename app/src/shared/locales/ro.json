@@ -589,7 +589,6 @@
     "other": "{count} de întâlniri mutate în Coș"
   },
   "Recorded with {app}": "Înregistrat cu {app}",
-  "A new version of Yogurt is ready": "O versiune nouă de Yogurt este gata",
   "Upgrading AI": "Îmbunătățire AI",
   "Upgrading AI · {percent}": "Îmbunătățire AI · {percent}",
   "AI upgrade paused": "Îmbunătățirea AI este în pauză",
@@ -710,5 +709,12 @@
   },
   "No matches": "Nicio potrivire",
   "Previous match": "Potrivirea anterioară",
-  "Next match": "Potrivirea următoare"
+  "Next match": "Potrivirea următoare",
+  "Update ready": "Actualizare pregătită",
+  "Installs when you restart Yogurt": "Se instalează când repornești Yogurt",
+  "You can restart after recording": "Poți reporni după înregistrare",
+  "Later": "Mai târziu",
+  "Restart": "Repornește",
+  "Yogurt couldn't restart. Try again.": "Yogurt nu a putut reporni. Încearcă din nou.",
+  "Yogurt {version}": "Yogurt {version}"
 }

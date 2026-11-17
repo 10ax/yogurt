@@ -137,16 +137,16 @@ export function TranscriptFind({ lines, list, active, playbackInset, beforeScrol
           <span id={countId} data-testid="transcript-find-count" role="status" aria-live="polite" aria-atomic="true">{searching ? matches.length ? t('{current} of {count}', { current: index + 1, count: matches.length }) : t('No matches') : ''}</span>
         </span>
         <span className="transcript-find-arrows">
-          <button type="button" data-testid="transcript-find-previous" className="ghost-btn" disabled={!matches.length} aria-label={t('Previous match')} title={`${t('Previous match')} (⇧Enter · ${keys('⇧⌘G')})`} aria-keyshortcuts={`Shift+Enter ${onMac() ? 'Meta' : 'Control'}+Shift+G`} onClick={() => move(-1)}><ChevronUp size={14} strokeWidth={1.75} aria-hidden="true" /></button>
-          <button type="button" data-testid="transcript-find-next" className="ghost-btn" disabled={!matches.length} aria-label={t('Next match')} title={`${t('Next match')} (Enter · ${keys('⌘G')})`} aria-keyshortcuts={`Enter ${onMac() ? 'Meta' : 'Control'}+G`} onClick={() => move(1)}><ChevronDown size={14} strokeWidth={1.75} aria-hidden="true" /></button>
+          <button type="button" data-testid="transcript-find-previous" className="ghost-btn workspace-icon" disabled={!matches.length} aria-label={t('Previous match')} title={`${t('Previous match')} (⇧Enter · ${keys('⇧⌘G')})`} aria-keyshortcuts={`Shift+Enter ${onMac() ? 'Meta' : 'Control'}+Shift+G`} onClick={() => move(-1)}><ChevronUp size={14} strokeWidth={1.75} aria-hidden="true" /></button>
+          <button type="button" data-testid="transcript-find-next" className="ghost-btn workspace-icon" disabled={!matches.length} aria-label={t('Next match')} title={`${t('Next match')} (Enter · ${keys('⌘G')})`} aria-keyshortcuts={`Enter ${onMac() ? 'Meta' : 'Control'}+G`} onClick={() => move(1)}><ChevronDown size={14} strokeWidth={1.75} aria-hidden="true" /></button>
         </span>
         </span>
-        <button type="button" data-testid="transcript-find-close" className="ghost-btn transcript-find-close" aria-label={t('Close')} title={`${t('Close')} (Esc)`} aria-keyshortcuts="Escape" onClick={close}><X size={14} strokeWidth={1.75} aria-hidden="true" /></button>
+        <button type="button" data-testid="transcript-find-close" className="ghost-btn workspace-icon transcript-find-close" aria-label={t('Close')} title={`${t('Close')} (Esc)`} aria-keyshortcuts="Escape" onClick={close}><X size={14} strokeWidth={1.75} aria-hidden="true" /></button>
         </span>
       </div>
     </div>
   </div>
-    {onClose && <div className="transcript-actions"><button data-testid="transcript-close" onClick={onClose} aria-label={t('Hide transcript')} title={t('Hide transcript')} className="ghost-btn !p-1.5"><ChevronDown size={15} aria-hidden="true" /></button></div>}
+    {onClose && <div className="transcript-actions"><button data-testid="transcript-close" onClick={onClose} aria-label={t('Hide transcript')} title={t('Hide transcript')} className="ghost-btn workspace-icon"><ChevronDown size={15} aria-hidden="true" /></button></div>}
   </div>
   return active ? toolbar ? createPortal(control, toolbar) : control : null
 }

@@ -55,7 +55,7 @@ export function NoteMenu({ recording, savePending, onRename, onDelete, folders, 
   return (
     <div ref={root} className="relative">
       <button ref={button} data-testid="note-menu-button" aria-haspopup={rewriteOpen ? "dialog" : "menu"} aria-expanded={!!open || rewriteOpen} aria-label={t('More')} title={t('More')}
-        onClick={(e) => { if (rewriteOpen) close(); else setOpen((o) => o ? false : e.detail > 0 ? 'pointer' : 'keyboard') }} className="bar-btn grid size-7 place-items-center rounded-md text-muted"><Ellipsis size={17} strokeWidth={1.75} aria-hidden="true" /></button>
+        onClick={(e) => { if (rewriteOpen) close(); else setOpen((o) => o ? false : e.detail > 0 ? 'pointer' : 'keyboard') }} className="ghost-btn workspace-icon"><Ellipsis size={17} strokeWidth={1.75} aria-hidden="true" /></button>
       {presence.value === 'rewrite' ? (
         <div key="rewrite" role="dialog" data-testid="note-regenerate" aria-label={hasSummary ? t('Regenerate summary') : t('Generate summary')}
           aria-describedby={edited ? 'note-rewrite-description' : undefined} {...presence.props} data-anchor="end"

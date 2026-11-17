@@ -49,7 +49,7 @@ export function SourceCitationCard({ source, sentence, triggerId, animate, onOpe
           </div>
           {preview.match.text && <blockquote className="citation-quote" data-testid="citation-excerpt" dir="auto"><q>{preview.before.text && <span className="citation-context">{preview.before.text} </span>}<span className="citation-match">{preview.match.text}</span>{preview.after.text && <span className="citation-context"> {preview.after.text}</span>}</q></blockquote>}
           <div className="citation-footer">
-            <button className="citation-open" data-testid="citation-open" aria-label={t('Open {source}', { source: title })} onClick={() => onOpen(preview.match.text)}>{t('Open')}<ArrowUpRight size={12} aria-hidden="true" /></button>
+            <button className="ghost-btn" data-testid="citation-open" aria-label={t('Open {source}', { source: title })} onClick={() => onOpen(preview.match.text)}>{t('Open')}<ArrowUpRight size={12} aria-hidden="true" /></button>
           </div>
         </div>
       </Popover.Popup>

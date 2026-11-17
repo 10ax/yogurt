@@ -654,7 +654,7 @@ it.each(['picker', 'pill'])('clears saved and draft scope from the %s and keeps 
   const scope = [...c.initial.chips, ...c.initial.draftChips]
   c.popup().onOpenChange(true)
   await c.lookup()
-  find(c.render(), control === 'picker' ? 'ask-picker-clear' : 'ask-scope-clear').props.onClick()
+  find(c.render(), control === 'picker' ? 'text-action ask-picker-clear' : 'ask-scope-clear').props.onClick()
   await c.flush()
   expect(c.removeContext.mock.calls).toEqual(scope.map(chip => [c.initial.id, chip]))
   expect(c.popup().open).toBe(true)

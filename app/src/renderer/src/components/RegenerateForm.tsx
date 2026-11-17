@@ -11,7 +11,7 @@ export function RegenerateForm({ active, edited, disabled, hasSummary, onClose, 
   const action = hasSummary ? t('Regenerate summary') : t('Generate summary')
   return <form onSubmit={(e) => { e.preventDefault(); if (!disabled) onSubmit(note.trim()) }}>
     <div className="summary-regenerate-heading"><span>{action}</span>
-      <button type="button" className="bar-btn" aria-label={t('Close')} onClick={onClose}><X size={14} aria-hidden="true" /></button>
+      <button type="button" className="ghost-btn workspace-icon" aria-label={t('Close')} onClick={onClose}><X size={14} aria-hidden="true" /></button>
     </div>
     <input autoFocus data-testid="note-regenerate-input" className="summary-regenerate-input" aria-label={t('Note for the summary')}
       placeholder={t('Add a note, like shorter or in Spanish')} maxLength={REWRITE_NOTE_MAX} value={note}

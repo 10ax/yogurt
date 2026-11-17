@@ -46,8 +46,8 @@ test('meeting tools expose all copy choices, an anchored search, and a multiline
     await expect(close).toHaveAttribute('title', 'Close (Esc)')
     await expect(page.locator('.transcript-find-controls')).toHaveCSS('gap', '8px')
     for (const arrow of [previous, next, close]) {
-      await expect(arrow).toHaveCSS('width', '24px')
-      await expect(arrow).toHaveCSS('height', '24px')
+      await expect(arrow).toHaveCSS('width', '28px')
+      await expect(arrow).toHaveCSS('height', '28px')
       await expect(arrow.locator('svg')).toHaveAttribute('width', '14')
     }
     const arrowX = (await next.boundingBox())!.x

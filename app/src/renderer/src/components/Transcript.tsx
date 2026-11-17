@@ -359,7 +359,7 @@ export function Transcript({ id, recording, inline = false, active = true, onClo
         <ScrollFade enabled={active && loaded}><ol data-loaded={loaded} data-loading-phase={loadingPhase} data-testid="transcript" ref={list} onScroll={onScroll} onWheel={theirs} onTouchStart={theirs} onPointerDown={theirs} onKeyDownCapture={theirs} onKeyDown={onKeyDown} className="loading-content transcript-loading-content flex flex-1 flex-col gap-2 overflow-y-auto px-4 pb-4 pt-2 text-sm leading-[1.55]">
           {loadingPhase !== 'ready' && <li className="loading-placeholder"><Loading layout="transcript" /></li>}
           {loaded && allLines.length === 0 && liveSaid.length === 0 && <li data-testid="transcript-empty" className="note-empty empty-state"><div className="empty-state-content"><div className="empty-tile"><AudioLines size={28} strokeWidth={1.5} aria-hidden="true" /></div>{t('Nothing heard yet.')}</div></li>}
-          {drawn.earlier > 0 && <li className="flex justify-center"><button data-testid="transcript-earlier" onClick={() => { visibility.current?.programmatic(); stick.current = false; setShowAll(true) }} className="ghost-btn !px-2 !py-1 text-xs text-muted">{t('Show earlier lines')}</button></li>}
+          {drawn.earlier > 0 && <li className="flex justify-center"><button data-testid="transcript-earlier" onClick={() => { visibility.current?.programmatic(); stick.current = false; setShowAll(true) }} className="ghost-btn">{t('Show earlier lines')}</button></li>}
           {drawn.runs.map(run => <Fragment key={run.k}>
             {turns(run.lines).map((turn) => {
             const me = turn[0].track === 'me', first = turn[0]
@@ -392,12 +392,12 @@ export function Transcript({ id, recording, inline = false, active = true, onClo
           })}</Fragment>)}
         </ol></ScrollFade>
         {recording && behind && !finding && (
-          <button data-testid="transcript-latest" onClick={toLatest} className="absolute bottom-3 start-1/2 flex -translate-x-1/2 items-center gap-1 rounded-md border border-line bg-float px-3 py-1 text-xs shadow-[var(--shadow)] rtl:translate-x-1/2">
+          <button data-testid="transcript-latest" onClick={toLatest} className="workspace-button absolute bottom-3 start-1/2 -translate-x-1/2 rtl:translate-x-1/2">
             <ArrowDown size={12} aria-hidden="true" />{t('Latest')}
           </button>
         )}
         {!recording && audioOn && away && shownKey && !finding && (
-          <button data-testid="transcript-follow" onClick={backToPlaying} className="absolute bottom-3 start-1/2 flex -translate-x-1/2 items-center gap-1 rounded-md border border-line bg-float px-3 py-1 text-xs shadow-[var(--shadow)] rtl:translate-x-1/2">
+          <button data-testid="transcript-follow" onClick={backToPlaying} className="workspace-button absolute bottom-3 start-1/2 -translate-x-1/2 rtl:translate-x-1/2">
             <ArrowDown size={12} aria-hidden="true" className="follow-arrow" data-up={away === 'up'} />{t('Back to playing')}
           </button>
         )}

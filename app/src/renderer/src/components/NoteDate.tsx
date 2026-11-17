@@ -127,7 +127,7 @@ function DateCard({ m, details, refreshLinked, chip, motionProps, onClose }: { m
   </div>
   const recoveryAction = result && !available ? <div className="note-date-access flex flex-wrap items-center gap-x-3 gap-y-2">
     <p role="status" className="text-xs text-muted">{result.status === 'error' ? t("Yogurt couldn't read your calendar") : t('Calendar access is off')}</p>
-    <div className="ms-auto flex shrink-0"><button ref={recovery} className="workspace-button agenda-open-note" onClick={result.status === 'error' ? refresh : connect}>{result.status === 'error' ? t('Try again') : result.status === 'denied' ? t('Open System Settings') : t('Connect calendar')}</button></div>
+    <div className="ms-auto flex shrink-0"><button ref={recovery} className="workspace-button" onClick={result.status === 'error' ? refresh : connect}>{result.status === 'error' ? t('Try again') : result.status === 'denied' ? t('Open System Settings') : t('Connect calendar')}</button></div>
   </div> : null
   return <div ref={card} data-testid="note-date-card" {...motionProps} data-anchor="start" data-picking={browsing || picking} role="dialog" aria-label={t('Date')}
     className="people-card menu-entry note-date-card absolute start-0 top-full z-30 mt-2 w-[min(340px,calc(100vw-48px))] rounded-lg border border-line bg-float text-ink shadow-[var(--shadow)]"
@@ -137,8 +137,8 @@ function DateCard({ m, details, refreshLinked, chip, motionProps, onClose }: { m
         <h3 ref={heading} data-testid="note-date-heading" tabIndex={-1} aria-live="polite" aria-label={fullDate} title={fullDate}>{compactDate ? shortDate : fullDate}</h3>
         <div className="flex shrink-0 items-center gap-1">
           {(available || (picking && browsing)) && <>
-            <button type="button" ref={previous} className="workspace-icon" data-testid="note-date-previous" aria-label={t('Previous day')} disabled={linking} onClick={e => { pickerKeyboard.current = e.detail === 0; setPicking(true); browse(shiftCalendarDay(day, -1)) }}><ChevronLeft size={15} aria-hidden="true" /></button>
-            <button type="button" className="workspace-icon" data-testid="note-date-next" aria-label={t('Next day')} disabled={linking} onClick={e => { pickerKeyboard.current = e.detail === 0; setPicking(true); browse(shiftCalendarDay(day, 1)) }}><ChevronRight size={15} aria-hidden="true" /></button>
+            <button type="button" ref={previous} className="ghost-btn workspace-icon" data-testid="note-date-previous" aria-label={t('Previous day')} disabled={linking} onClick={e => { pickerKeyboard.current = e.detail === 0; setPicking(true); browse(shiftCalendarDay(day, -1)) }}><ChevronLeft size={15} aria-hidden="true" /></button>
+            <button type="button" className="ghost-btn workspace-icon" data-testid="note-date-next" aria-label={t('Next day')} disabled={linking} onClick={e => { pickerKeyboard.current = e.detail === 0; setPicking(true); browse(shiftCalendarDay(day, 1)) }}><ChevronRight size={15} aria-hidden="true" /></button>
           </>}
         </div>
       </div>}
@@ -163,10 +163,10 @@ function DateCard({ m, details, refreshLinked, chip, motionProps, onClose }: { m
         <div className="note-date-reveal" data-ready={!!result}>
           {available && event === null && <div className="note-date-access flex items-center gap-3 text-xs text-muted">
             <p role="status">{t('Calendar event unavailable')}</p>
-            <button className="ms-auto shrink-0 underline" onClick={refresh}>{t('Try again')}</button>
+            <button className="text-action ms-auto" onClick={refresh}>{t('Try again')}</button>
           </div>}
           {url && <div className="agenda-inspector-actions">
-            <a className="workspace-button agenda-open-note" title={t('Join meeting')} href={url} target="_blank" rel="noreferrer"><span>{t('Join meeting')}</span><ExternalLink size={12} aria-hidden="true" /></a>
+            <a className="workspace-button" title={t('Join meeting')} href={url} target="_blank" rel="noreferrer"><span>{t('Join meeting')}</span><ExternalLink size={12} aria-hidden="true" /></a>
           </div>}
           {result?.status !== 'unsupported' && recoveryAction}
         </div>

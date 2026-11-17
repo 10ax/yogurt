@@ -296,7 +296,9 @@ func callWindows(_ app: AXUIElement, _ id: String) -> [AXUIElement] {
   if id == "us.zoom.xos" {
     return all.filter { w in
       let ident = axText(axAttr(w, kAXIdentifierAttribute)) ?? "", title = axText(axAttr(w, kAXTitleAttribute)) ?? ""
-      return ident.hasPrefix("zm.meeting") || title.hasPrefix("Zoom Meeting") || title.hasPrefix("Zoom Webinar")
+      // while the person shares their screen Zoom hides the meeting window and shows its floating video window
+      // ("zoom floating video window"), which still shows the tiles and who is talking
+      return ident.hasPrefix("zm.meeting") || title.hasPrefix("Zoom Meeting") || title.hasPrefix("Zoom Webinar") || title == "zoom floating video window"
     }
   }
   // Teams keeps its chat and calendar in windows shaped like the call's: only a window with a call control (Leave,

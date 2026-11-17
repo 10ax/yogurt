@@ -1,6 +1,6 @@
 {
   "name": "@yogurt/app",
-  "version": "0.3.36",
+  "version": "0.3.37",
   "private": true,
   "type": "module",
   "main": "out/main/index.js",

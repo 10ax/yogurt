@@ -816,7 +816,7 @@ html:not(.widget) button:focus-visible, html:not(.widget) input:focus-visible { 
 .note-date-linked .note-date-link { gap:6px; }
 .note-date-details { display:flex;flex-direction:column;gap:16px; }
 .note-date-event-toggle[aria-expanded=true]>svg { transform:rotate(180deg); }
-.note-date-event-toggle { display:flex;align-items:flex-start;gap:10px;width:calc(100% + 16px);margin:-8px;padding:8px;border-radius:6px;text-align:start; }
+.note-date-event-toggle { display:flex;align-items:flex-start;gap:10px;width:calc(100% + 16px);margin:-8px;padding-block:3px 5px;padding-inline:8px 5px;border-radius:6px;text-align:start; }
 .note-date-color { width:10px;height:10px;border-radius:3px;flex:none;margin-top:5px; }
 /* Keep late linked-event data in its reserved space instead of resizing the card. */
 .note-date-actions { min-height:28px; }
@@ -831,7 +831,7 @@ html:not(.widget) button:focus-visible, html:not(.widget) input:focus-visible { 
 .note-date-identity>strong { font-size:14px;font-weight:600;line-height:21px; }
 .note-date-time { font-size:12px;line-height:18px;color:var(--written);margin-top:3px; }
 .note-date-calendar { min-height:16px;font-size:11px;line-height:16px;color:var(--muted);margin-top:3px; }
-.note-date-event-toggle>svg { flex:none;margin-top:3px;color:var(--muted);transition:transform var(--note-date-ms) var(--note-date-ease); }
+.note-date-event-toggle>svg { flex:none;margin-top:4px;color:var(--muted);transition:transform var(--note-date-ms) var(--note-date-ease); }
 .note-date-linked :is(.note-date-event-toggle,.note-date-link):hover:not(:disabled) { background:var(--row-hover); }
 .note-date-linked :is(.note-date-event-toggle,.note-date-link):active:not(:disabled) { background:var(--control-pressed); }
 .note-date-linked :is(.note-date-event-toggle,.note-date-link):focus-visible { outline:2px solid var(--focus);outline-offset:-2px; }

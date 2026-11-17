@@ -208,7 +208,7 @@
 .agenda-week button:not([aria-pressed=true]):not([aria-current=date]):hover b { background:var(--accent-soft); }
 .agenda-week [aria-pressed=true] b { color:var(--accent);background:var(--accent-soft);border-color:transparent; }
 .agenda-week [aria-current=date] b { color:#FFFFFF;background:var(--primary); }
-.agenda-day { display:flex;align-items:baseline;gap:9px;margin-bottom:16px; }
+.agenda-day { display:flex;align-items:baseline;gap:9px;margin-bottom:0; }
 .agenda-day h3 { font-size:13px;font-weight:600; }
 .agenda-day>span { font-size:11px;color:var(--muted); }
 .agenda-events { display:flex;flex-direction:column;gap:3px; }
@@ -265,7 +265,6 @@
   .native-agenda { padding-block:16px; }
   .agenda-navigation { margin-top:12px; }
   .agenda-week { padding-block:10px 12px;margin-bottom:12px; }
-  .agenda-day { margin-bottom:6px; }
 }
 .agenda-event[data-faded=true] :is(.agenda-time,.agenda-title,.agenda-marker) { color:var(--ink);opacity:.65; }
 .agenda-status { font-size:12px;line-height:1.65;color:var(--muted);padding:10px 0; }

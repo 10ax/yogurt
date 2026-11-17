@@ -481,8 +481,10 @@ app.whenReady().then(() => {
   // a Mac: the same links, next to its own calendars (Settings → Calendars → Add a calendar link)
   const calendarLinks = caps.calendar ? createCalendarLinks({
     file: join(userDataDir(), 'settings.json'), get: getCalendar,
-    seal: (plain) => (safeStorage.isEncryptionAvailable() ? `k:${safeStorage.encryptString(plain).toString('base64')}` : `p:${plain}`),
-    open: (sealed) => (sealed.startsWith('k:') ? safeStorage.decryptString(Buffer.from(sealed.slice(2), 'base64')) : sealed.replace(/^p:/, '')),
+    // no keychain (Linux without a secret service): scrambled, not encrypted, so the address isn't readable at a glance
+    seal: (plain) => (safeStorage.isEncryptionAvailable() ? `k:${safeStorage.encryptString(plain).toString('base64')}` : `b:${Buffer.from(plain).toString('base64')}`),
+    open: (sealed) => (sealed.startsWith('k:') ? safeStorage.decryptString(Buffer.from(sealed.slice(2), 'base64'))
+      : sealed.startsWith('b:') ? Buffer.from(sealed.slice(2), 'base64').toString() : sealed.replace(/^p:/, '')),
   }) : null
   if (calendarLinks) setCalendarLinkSource(calendarLinks, { alongside: !caps.calendarLink })
   hookPreferences({

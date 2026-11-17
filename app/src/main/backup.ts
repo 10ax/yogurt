@@ -1,6 +1,7 @@
 import { migrateMeetingChats } from './library/store'
 import backupFormat from '../shared/backupFormat.json'
 import { backfillPeople, mergePeople } from './people'
+import { ownAddress } from '../shared/people'
 import { constants, existsSync } from 'node:fs'
 import { cp, lstat, mkdir, mkdtemp, readFile, rename, rm, writeFile } from 'node:fs/promises'
 import { tmpdir } from 'node:os'
@@ -91,7 +92,7 @@ export function mergeBackup(into: DatabaseSync, from: DatabaseSync): { added: st
   const { add, skipped } = newIds(into, from)
   const chats = newIds(into, from, 'conversations').add
   const folders = tables(from).has('folder_meetings') ? newIds(into, from, 'folders').add : []
-  if (!add.length && !chats.length && !folders.length && !tables(from).has('people')) return { added: [], skipped }
+  if (!add.length && !chats.length && !folders.length && !tables(from).has('people') && !tables(from).has('own_emails')) return { added: [], skipped }
   // a backup from when voices had letters (Speaker A, B): those lines come in as Them, as this database's own did
   const lettered = tables(from).has('speakers')
   const plan = plans(into, from, [{ table: 'meetings', column: 'id' }, ...meetingTables(into)])
@@ -123,6 +124,13 @@ export function mergeBackup(into: DatabaseSync, from: DatabaseSync): { added: st
       for (const r of from.prepare('SELECT meeting_id, added_at FROM folder_meetings WHERE folder_id = ?').all(fid) as Row[]) link.run(fid, r.meeting_id, r.added_at, r.meeting_id)
     }
     migrateMeetingChats(into)
+    if (tables(from).has('own_emails')) {
+      const save = into.prepare('INSERT OR IGNORE INTO own_emails (email) VALUES (?)')
+      for (const row of from.prepare('SELECT email FROM own_emails').all()) {
+        const email = ownAddress(row.email)
+        if (email) save.run(email)
+      }
+    }
     mergePeople(into, from)
     backfillPeople(into)
     into.exec('COMMIT')

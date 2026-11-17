@@ -19,12 +19,12 @@ function nodes(tree: any): any[] {
   return [tree, ...[tree.props?.children].flat(Infinity).flatMap(nodes)]
 }
 const attendees = [{ name: 'Attendee One', email: 'one@zeta.example' }, { name: 'Attendee Two', email: 'two@alpha.example' }, { name: 'Self', email: 'self@zeta.example' }]
-const meeting = { id: 'note', attendees, startedAt: 1 } as Meeting
-function setup() {
+const meeting = { id: 'note', attendees, startedAt: 1, ownEmail: 'self@zeta.example' } as Meeting
+function setup(m: Meeting = meeting) {
   const renameAttendee = vi.fn().mockResolvedValue(true), setAttendees = vi.fn().mockResolvedValue(undefined)
   vi.stubGlobal('window', { yogurt: { meetings: { renameAttendee, setAttendees } } })
   hooks.values = [false, 'Self']; hooks.index = 0
-  const root = People({ m: meeting }) as any
+  const root = People({ m }) as any
   const element = root.props.children[1]
   hooks.values = []; hooks.index = 0
   const close = vi.fn()
@@ -55,4 +55,20 @@ it('retains keyboard entry for adding attendees and Escape dismissal', async () 
   expect(byId('people-add').props.value).toBe('')
   render().props.onKeyDown({ key: 'Escape', preventDefault: vi.fn(), stopPropagation: vi.fn() })
   expect(close).toHaveBeenCalledOnce()
+})
+it('groups the self row by the saved event address, even with no attendee of the same name', () => {
+  const m = { ...meeting, ownEmail: 'self@alpha.example', attendees: attendees.slice(0, 2) }
+  const { render } = setup(m)
+  const groups = nodes(render()).filter(n => n.type === 'section')
+  const alpha = groups.find(g => g.props['aria-label'] === 'Alpha')
+  const rows = nodes(alpha).filter(n => n.type?.name === 'Row')
+  expect(rows.map(r => r.props.email)).toEqual(['self@alpha.example', 'two@alpha.example'])
+  expect(rows[0].props.mine).toBe(true)
+  expect(rows[0].props.onRename).toBeUndefined(); expect(rows[0].props.onRemove).toBeUndefined()
+})
+it('does not invent the self address from a matching name and retains another person with the same name', () => {
+  const { render } = setup({ ...meeting, ownEmail: undefined })
+  expect(nodes(render()).find(n => n.type?.name === 'Row' && n.props.mine).props.email).toBeNull()
+  const other = setup({ ...meeting, ownEmail: 'mine@alpha.example' })
+  expect(nodes(other.render()).filter(n => n.type?.name === 'Row' && n.props.name === 'Self')).toHaveLength(2)
 })

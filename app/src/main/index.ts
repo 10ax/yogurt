@@ -40,7 +40,7 @@ import { SetupController } from './setup'
 import { fakeMeasure, measureSpeed, speedClipPath, speedStore } from './asr/speedCheck'
 import { vadModelPath, whisperServerPath } from './asr/server'
 import { openStore, type Store } from './store'
-import { calendars, eventIds, matchesEvent, setCalendarSelection, calendarStatus, createHelperRunner, helperPath, killAllHelpers, refreshCalendarStatus, requestCalendarAccess, runHelper, setCalendarLinkSource, systemCalendarStatus, setCalendarSupported, setHelper, upcoming, type CalEvent } from './calendar'
+import { calendars, eventIds, matchesEvent, setCalendarSelection, setCalendarOwnEmail, calendarStatus, createHelperRunner, helperPath, killAllHelpers, refreshCalendarStatus, requestCalendarAccess, runHelper, setCalendarLinkSource, systemCalendarStatus, setCalendarSupported, setHelper, upcoming, type CalEvent } from './calendar'
 import { createCalendarLinks } from './calendarLink'
 import { getCalendar } from './calendarLink/get'
 import { createSignals } from './detectSignals'
@@ -530,6 +530,10 @@ app.whenReady().then(() => {
   // the person's own names, never given to the other side: the one in Settings and the Mac's
   const settingsFile = join(userDataDir(), 'settings.json')
   setCalendarSelection(() => loadSettings(settingsFile))
+  setCalendarOwnEmail(email => {
+    try { if (store.rememberOwnEmail(email)) win?.webContents.send('meetings:changed') }
+    catch (e) { console.warn('could not save own calendar address', e) }
+  })
   const me = () => loadSettings(settingsFile).myName?.trim() || macName()
   setOwnerName(me)
   setJargon(() => cleanJargon(loadSettings(settingsFile).jargon))

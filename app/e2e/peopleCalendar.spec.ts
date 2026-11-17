@@ -14,7 +14,7 @@ for (const theme of ['light', 'dark'] as const) test(`split metadata popovers st
     const [meeting] = await page.evaluate(() => window.yogurt.meetings.cards({ limit: 1 }))
     await page.clock.setFixedTime(meeting.startedAt)
     const events = [{ id: 'linked-event', title: 'Planning with Jamie', start: new Date(meeting.startedAt).toISOString(), end: new Date(meeting.startedAt + 1_800_000).toISOString(),
-      attendees: [{ name: 'Jamie Quill', email: 'jamie@example.com' }], url: 'https://meet.google.com/fak-eeve-ntx', calendarId: 'work', calendar: 'Work', calendarSource: 'owner@example.com' }]
+      attendees: [{ name: 'Jamie Quill', email: 'jamie@example.com' }], url: 'https://meet.google.com/fak-eeve-ntx', calendarId: 'work', calendar: 'Work', calendarSource: 'owner@example.com', me: 'owner@example.com' }]
     const next = new Date(meeting.startedAt); next.setDate(next.getDate() + 1)
     events.push({ ...events[0], id: 'next-day-event', title: 'Next day review', start: next.toISOString(), end: new Date(+next + 1_800_000).toISOString() })
     await app.evaluate((_e, events) => (globalThis as unknown as { __fake__: { calendarEvents(events: unknown[]): void } }).__fake__.calendarEvents(events), events)
@@ -109,9 +109,10 @@ for (const theme of ['light', 'dark'] as const) test(`split metadata popovers st
     await page.getByTestId('note-attendees').click()
     await expect(date).toHaveCount(0)
     const people = page.getByTestId('people-card')
-    await expect(people.getByTestId('people-email')).toHaveText('jamie@example.com')
+    await expect(people.getByTestId('people-email')).toHaveText(['owner@example.com', 'jamie@example.com'])
+    await expect(people.locator('[data-me]')).toContainText('owner@example.com')
     await expect(people.getByRole('heading', { name: 'Example', exact: true })).toBeVisible()
-    await expect(people.getByRole('heading', { name: 'Other people', exact: true })).toBeVisible()
+    await expect(people.getByRole('heading', { name: 'Other people', exact: true })).toHaveCount(0)
     await expect(people.locator('.person-initials')).toHaveCount(2)
     await expect(people).not.toContainText('Planning with Jamie')
     // a mouse-opened card shows no row actions until hovered or reached by keyboard

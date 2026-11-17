@@ -3,7 +3,7 @@ import { matchSearchPeople, searchPersonKey, uniqueSearchPeople } from '../share
 import { oneEdit, parseSearchQuery, type SearchOptions } from '../shared/searchQuery'
 import { echoConfidence } from './asr/echo'
 import { backfillPeople, rememberPeople, resolvePeople } from './people'
-import { attendeeMembership, personEmail } from '../shared/people'
+import { attendeeMembership, matchingOwnEmail, ownAddress, personEmail } from '../shared/people'
 import type { FolderSuggestionRecord } from '../shared/folderSuggestion'
 import { unusedPreparedNote } from '../shared/agendaNote'
 import { speakerOrder } from '../shared/speakerColors'
@@ -25,6 +25,8 @@ export type Meeting = {
   eventTitle?: string | null
   eventCalendarName?: string | null
   eventCalendarSource?: string | null
+  /** The event address, or a known own address matching an attendee on an unlinked note. */
+  ownEmail?: string | null
   source?: string
   sourceId?: string
   app: string | null; attendees: Person[]; state: 'prepared' | 'recording' | 'stopped' | 'done'
@@ -57,6 +59,7 @@ const toMeeting = (r: Row): Meeting => ({
   titleSource: (r.title_source ?? 'user') as TitleSource,
   ...(r.source == null ? {} : { source: String(r.source) }),
   ...(r.source_id == null ? {} : { sourceId: String(r.source_id) }),
+  ...(r.own_email == null ? {} : { ownEmail: String(r.own_email) }),
   ...(r.event_started_at == null ? {} : { eventStartedAt: Number(r.event_started_at) }),
   ...(r.event_ended_at == null ? {} : { eventEndedAt: Number(r.event_ended_at) }),
   ...(r.event_title == null ? {} : { eventTitle: String(r.event_title) }),
@@ -152,6 +155,7 @@ export class Store {
     this.db.exec(`
       PRAGMA journal_mode = WAL;
       PRAGMA foreign_keys = ON;
+      CREATE TABLE IF NOT EXISTS own_emails (email TEXT PRIMARY KEY);
       CREATE TABLE IF NOT EXISTS meetings (
         id TEXT PRIMARY KEY, title TEXT NOT NULL, started_at INTEGER NOT NULL, ended_at INTEGER, event_id TEXT, app TEXT,
         attendees TEXT NOT NULL DEFAULT '[]', state TEXT NOT NULL, language TEXT);
@@ -206,7 +210,7 @@ export class Store {
     if (!meetingCols.includes('last_opened_at')) this.db.exec('ALTER TABLE meetings ADD COLUMN last_opened_at INTEGER')
     if (!meetingCols.includes('speaker_order')) this.db.exec("ALTER TABLE meetings ADD COLUMN speaker_order TEXT NOT NULL DEFAULT '[]'")
     for (const name of ['source', 'source_id']) if (!meetingCols.includes(name)) this.db.exec(`ALTER TABLE meetings ADD COLUMN ${name} TEXT`)
-    for (const [name, type] of [['event_ended_at', 'INTEGER'], ['event_title', 'TEXT'], ['event_calendar_name', 'TEXT'], ['event_calendar_source', 'TEXT']]) {
+    for (const [name, type] of [['event_ended_at', 'INTEGER'], ['event_title', 'TEXT'], ['event_calendar_name', 'TEXT'], ['event_calendar_source', 'TEXT'], ['own_email', 'TEXT']]) {
       if (!meetingCols.includes(name)) this.db.exec(`ALTER TABLE meetings ADD COLUMN ${name} ${type}`)
     }
     if (!meetingCols.includes('event_started_at')) this.db.exec('ALTER TABLE meetings ADD COLUMN event_started_at INTEGER')
@@ -264,8 +268,9 @@ export class Store {
     }
   }
   private readMeeting(r: Row): Meeting {
-    const m = toMeeting(r)
-    return { ...m, attendees: resolvePeople(this.db, m.attendees) }
+    const { ownEmail: savedOwnEmail, ...m } = toMeeting(r)
+    const ownEmail = m.eventId ? ownAddress(savedOwnEmail) : matchingOwnEmail(m.attendees, this.ownEmails())
+    return { ...m, ...(ownEmail ? { ownEmail } : {}), attendees: resolvePeople(this.db, m.attendees) }
   }
   renameAttendee(id: string, index: number, raw: string): boolean {
     const name = raw.replace(/\s+/g, ' ').trim().slice(0, 200)
@@ -288,20 +293,30 @@ export class Store {
       return true
     } catch (e) { this.db.exec('ROLLBACK TO rename_person; RELEASE rename_person'); throw e }
   }
+  ownEmails(): string[] {
+    return this.db.prepare('SELECT email FROM own_emails ORDER BY email').all().map(r => String(r.email))
+  }
+  rememberOwnEmail(value: string | null | undefined) {
+    const email = ownAddress(value)
+    return !!email && this.db.prepare('INSERT OR IGNORE INTO own_emails (email) VALUES (?)').run(email).changes > 0
+  }
   close() { this.db.close() }
 
   createMeeting(m: Omit<Meeting, 'id' | 'language' | 'titleSource'> & { language?: string | null; titleSource?: TitleSource }): Meeting {
     const id = randomUUID()
     const language = m.language ?? null
+    const ownEmail = m.eventId ? ownAddress(m.ownEmail) : null
+    this.rememberOwnEmail(ownEmail)
     const titleSource = m.titleSource ?? sourceOf(m.title, m.eventId)
-    this.db.prepare('INSERT INTO meetings (id, title, started_at, ended_at, event_id, app, attendees, state, language, title_source, duration_ms, event_started_at, event_ended_at, event_title, event_calendar_name, event_calendar_source) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)')
-      .run(id, m.title, m.startedAt, m.endedAt, m.eventId, m.app, JSON.stringify(m.attendees), m.state, language, titleSource, m.durationMs ?? null, m.eventStartedAt ?? null, m.eventEndedAt ?? null, m.eventTitle ?? null, m.eventCalendarName ?? null, m.eventCalendarSource ?? null)
+    this.db.prepare('INSERT INTO meetings (id, title, started_at, ended_at, event_id, app, attendees, state, language, title_source, duration_ms, event_started_at, event_ended_at, event_title, event_calendar_name, event_calendar_source, own_email) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)')
+      .run(id, m.title, m.startedAt, m.endedAt, m.eventId, m.app, JSON.stringify(m.attendees), m.state, language, titleSource, m.durationMs ?? null, m.eventStartedAt ?? null, m.eventEndedAt ?? null, m.eventTitle ?? null, m.eventCalendarName ?? null, m.eventCalendarSource ?? null, ownEmail)
     rememberPeople(this.db, m.attendees)
-    return { ...m, id, language, titleSource, attendees: resolvePeople(this.db, m.attendees) }
+    return this.meeting(id)!
   }
   updateMeeting(id: string, patch: Partial<Omit<Meeting, 'id'>>) {
+    if (patch.ownEmail) this.rememberOwnEmail(patch.ownEmail)
     if (patch.attendees) rememberPeople(this.db, patch.attendees)
-    const col: Record<string, string> = { title: 'title', startedAt: 'started_at', endedAt: 'ended_at', eventId: 'event_id', eventStartedAt: 'event_started_at', eventEndedAt: 'event_ended_at', eventTitle: 'event_title', eventCalendarName: 'event_calendar_name', eventCalendarSource: 'event_calendar_source', app: 'app', attendees: 'attendees', state: 'state', language: 'language', titleSource: 'title_source', durationMs: 'duration_ms', transcriptionPending: 'transcription_pending' }
+    const col: Record<string, string> = { title: 'title', startedAt: 'started_at', endedAt: 'ended_at', eventId: 'event_id', eventStartedAt: 'event_started_at', eventEndedAt: 'event_ended_at', eventTitle: 'event_title', eventCalendarName: 'event_calendar_name', eventCalendarSource: 'event_calendar_source', ownEmail: 'own_email', app: 'app', attendees: 'attendees', state: 'state', language: 'language', titleSource: 'title_source', durationMs: 'duration_ms', transcriptionPending: 'transcription_pending' }
     const keys = Object.keys(patch).filter((k) => k in col && (patch as Row)[k] !== undefined)
     if (!keys.length) return
     const vals = keys.map((k) => (k === 'attendees' ? JSON.stringify(patch.attendees) : k === 'transcriptionPending' ? Number(patch.transcriptionPending) : (patch as Row)[k]) as string | number | null)
@@ -309,9 +324,10 @@ export class Store {
   }
   /** Refresh every note still linked to this occurrence, including alternate calendar IDs. */
   rememberEvent(event: CalEvent): Meeting[] {
+    this.rememberOwnEmail(event.ownEmail)
     const ids = eventIds(event)
-    const values = [event.start, event.end, event.title, event.calendar?.name ?? null, event.calendar?.source ?? null]
-    const columns = ['event_started_at', 'event_ended_at', 'event_title', 'event_calendar_name', 'event_calendar_source']
+    const values = [event.start, event.end, event.title, event.calendar?.name ?? null, event.calendar?.source ?? null, ownAddress(event.ownEmail)]
+    const columns = ['event_started_at', 'event_ended_at', 'event_title', 'event_calendar_name', 'event_calendar_source', 'own_email']
     const rows = this.db.prepare(`UPDATE meetings SET ${columns.map(c => `${c} = ?`).join(', ')}
       WHERE event_id IN (${ids.map(() => '?').join(', ')}) AND (${columns.map(c => `${c} IS NOT ?`).join(' OR ')}) RETURNING *`)
       .all(...values, ...ids, ...values) as Row[]

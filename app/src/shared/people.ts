@@ -1,4 +1,11 @@
 import type { Person } from './types'
+export const ownAddress = (value: unknown): string | null => typeof value === 'string' && /^[^\s<>@]+@[^\s<>@]+\.[^\s<>@]+$/.test(value.trim()) ? value.trim().toLowerCase() : null
+/** Only an address already identified as ours can fill an unlinked note's self row. */
+export function matchingOwnEmail(people: Person[], emails: string[]): string | null {
+  const domains = new Set(people.map(p => ownAddress(p.email)?.split('@')[1]).filter(Boolean))
+  return emails.map(ownAddress).filter((email): email is string => !!email).sort().find(email => domains.has(email.split('@')[1])) ?? null
+}
+
 export const personEmail = (email: string) => email.trim().toLowerCase()
 export const attendeePrivacy = (focused: boolean, text: string) => focused || text.includes('@')
 export const attendeeMembership = (people: Person[]) => 'members:' + JSON.stringify(people.map(p => p.email ? `email:${personEmail(p.email)}` : `name:${p.name}`).sort())

@@ -5,9 +5,10 @@ import { helperFile } from '../shared/platform'
 import type { Person } from './store'
 import type { Settings } from './settings'
 import { noteOwnEmail } from './vocab'
+import { ownAddress } from '../shared/people'
 
 /** One meeting on the calendar, times in ms */
-export type CalEvent = { id: string; title: string; start: number; end: number; attendees: Person[]; url: string | null; calendar?: CalendarSource; aliases?: string[] }
+export type CalEvent = { id: string; title: string; start: number; end: number; attendees: Person[]; url: string | null; calendar?: CalendarSource; aliases?: string[]; ownEmail?: string | null }
 export type CalendarSource = { id: string; name: string; source: string; color?: string }
 export const eventIds = (event: CalEvent): string[] => [event.id, ...(event.aliases ?? [])]
 export const matchesEvent = (event: CalEvent, id: string | null): boolean => !!id && eventIds(event).includes(id)
@@ -106,6 +107,8 @@ export const meetingLink = (text: string | undefined | null): string | null => t
 
 const str = (v: unknown) => (typeof v === 'string' && v ? v : null)
 let calendarSelection = (): Pick<Settings, 'hiddenCalendarIds' | 'hideEventsWithoutCallLink'> => ({})
+let rememberOwnEmail = (_email: string) => {}
+export const setCalendarOwnEmail = (remember: typeof rememberOwnEmail) => { rememberOwnEmail = remember }
 export const setCalendarSelection = (read: typeof calendarSelection) => { calendarSelection = read }
 
 export async function calendars(): Promise<CalendarSource[]> {
@@ -127,9 +130,10 @@ export function parseEvents(raw: unknown, hidden: string[] = []): CalEvent[] {
     if (!r || typeof r !== 'object') continue
     const id = str(r.id), start = Date.parse(String(r.start)), end = Date.parse(String(r.end))
     // the helper leaves the person using this Mac out of the attendees, and gives their address on its own
-    noteOwnEmail(str(r.me))
+    const ownEmail = ownAddress(r.me)
     // a meeting shared onto a second calendar comes twice with the same id; once is enough, and the list needs ids to be unique
     if (!id || Number.isNaN(start) || Number.isNaN(end)) continue
+    if (ownEmail) { noteOwnEmail(ownEmail); rememberOwnEmail(ownEmail) }
     const attendees = (Array.isArray(r.attendees) ? r.attendees : []).flatMap((a: Record<string, unknown>) => {
       const name = str(a?.name), email = str(a?.email)
       return name || email ? [{ name: name ?? email!, email }] : []
@@ -139,7 +143,7 @@ export function parseEvents(raw: unknown, hidden: string[] = []): CalEvent[] {
     const key = identity ? JSON.stringify([identity, start, end]) : id
     const copies = groups.get(key) ?? []
     copies.push({
-      id, title: str(r.title) ?? '', start, end, attendees,
+      id, ...(ownEmail ? { ownEmail } : {}), title: str(r.title) ?? '', start, end, attendees,
       url: meetingLink(str(r.url)) ?? meetingLink(str(r.location)) ?? meetingLink(str(r.notes)),
       ...(calendarId ? { calendar: { id: calendarId, name: str(r.calendar) ?? '', source: str(r.calendarSource) ?? '' } } : {}),
     })

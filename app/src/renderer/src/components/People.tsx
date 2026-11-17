@@ -1,6 +1,6 @@
 import { attendeeSuggestions, searchPersonKey } from '../../../shared/searchPeople'
 import { usePopoverPresence } from '../motion'
-import { attendeePrivacy, emailName, groupPeople, initials } from '../../../shared/people'
+import { attendeePrivacy, emailName, groupPeople, initials, personEmail } from '../../../shared/people'
 import { toasts } from './TrashToast'
 import { useCallback, useEffect, useId, useRef, useState, type KeyboardEvent, type RefObject } from 'react'
 import { useNotePopover } from '../useNotePopover'
@@ -109,9 +109,9 @@ function Card({ m, me, motionProps, chip, onClose }: { m: Meeting; me: string; m
     if (e.key === 'Escape') { e.preventDefault(); e.stopPropagation(); onClose() }
   }
   // Keep original attendee indices when grouping; an invite lists the person themself once.
-  const others = m.attendees.map((p, i) => ({ p, i })).filter(({ p }) => !same(p.name, me))
+  const others = m.attendees.map((p, i) => ({ p, i })).filter(({ p }) => m.ownEmail && p.email ? personEmail(p.email) !== personEmail(m.ownEmail) : !same(p.name, me))
 
-  const groups = groupPeople<{ p: Person; i: number; mine?: boolean }>([{ p: { name: me || t('Me'), email: m.attendees.find(p => same(p.name, me))?.email ?? null }, i: -1, mine: true }, ...others])
+  const groups = groupPeople<{ p: Person; i: number; mine?: boolean }>([{ p: { name: me || t('Me'), email: m.ownEmail ?? null }, i: -1, mine: true }, ...others])
 
   return (
     <div ref={card} data-testid="people-card" {...motionProps} data-anchor="start" role="dialog" aria-label={t('People')} onKeyDown={key}

@@ -101,6 +101,23 @@ describe('the MCP server', () => {
     expect((await json(mcp, 'list_meetings', { limit: 1 })).map((m: { id: string }) => m.id)).toEqual([newer.id])
     expect((await json(mcp, 'list_meetings', { query: 'travel' })).map((m: { id: string }) => m.id)).toEqual([older.id])
   })
+  it("shares each meeting's calendar people with their emails", async () => {
+    const { mcp, older, newer } = setup()
+    const all = await json(mcp, 'list_meetings')
+    expect(all.find((m: { id: string }) => m.id === older.id).attendees).toEqual([{ name: 'Ann Lee', email: 'ann@acme.com' }])
+    expect(all.find((m: { id: string }) => m.id === newer.id).attendees).toEqual([])
+    expect((await json(mcp, 'get_meeting', { id: older.id })).attendees).toEqual([{ name: 'Ann Lee', email: 'ann@acme.com' }])
+  })
+  it('gives the calendar event a meeting is linked to: its title, times and calendar; null when it has none', async () => {
+    const { mcp, store, older } = setup()
+    const linked = store.createMeeting({ title: 'Weekly sync', startedAt: Date.parse('2026-11-03T15:02:00Z'), endedAt: Date.parse('2026-11-03T15:31:00Z'), eventId: 'evt-1',
+      eventStartedAt: Date.parse('2026-11-03T15:00:00Z'), eventEndedAt: Date.parse('2026-11-03T15:30:00Z'), eventTitle: 'Weekly sync with Acme', eventCalendarName: 'Work',
+      app: 'Meet', state: 'done', attendees: [{ name: 'Dana Smith', email: 'dana@acme.com' }, { name: 'Bo Park', email: null }] })
+    const m = await json(mcp, 'get_meeting', { id: linked.id })
+    expect(m.calendar_event).toEqual({ title: 'Weekly sync with Acme', start: '2026-11-03T15:00:00.000Z', end: '2026-11-03T15:30:00.000Z', calendar: 'Work' })
+    expect(m.attendees).toEqual([{ name: 'Dana Smith', email: 'dana@acme.com' }, { name: 'Bo Park', email: null }])
+    expect((await json(mcp, 'get_meeting', { id: older.id })).calendar_event).toBeNull()
+  })
   it('gives a meeting with its own notes and the written summary', async () => {
     const { mcp, older } = setup()
     expect(await json(mcp, 'get_meeting', { id: older.id })).toMatchObject({ id: older.id, title: 'Budget review', myNotes: 'travel flat', summary: '## Budget\n- Travel stays flat.' })

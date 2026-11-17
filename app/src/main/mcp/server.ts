@@ -28,9 +28,9 @@ const id = { type: 'string', description: 'The meeting id, from list_meetings or
 const readOnly = { readOnlyHint: true, destructiveHint: false, openWorldHint: false }
 /** The tools, in this computer's words: a Mac records AAC in .m4a, Windows and Linux Ogg Opus (a backup can bring either) */
 export const mcpTools = (platform: string) => [
-  { name: 'list_meetings', description: 'Meetings recorded in Yogurt, newest first: id, title, start and end (ISO times), people invited, call app. Optional query finds meetings by words in their title, transcript or notes.',
+  { name: 'list_meetings', description: 'Meetings recorded in Yogurt, newest first: id, title, start and end (ISO times), people invited (attendees: name and email from the calendar), call app. Optional query finds meetings by words in their title, transcript or notes.',
     inputSchema: { type: 'object', properties: { query: { type: 'string' }, limit: { type: 'number', description: 'Most to return (default 20, at most 100)' }, before: { type: 'string', description: 'Only meetings that started before this ISO time, to page back' } } } },
-  { name: 'get_meeting', description: "One meeting: its details, the notes the person typed (myNotes) and Yogurt's written summary (Markdown).",
+  { name: 'get_meeting', description: "One meeting: its details, its attendees with their emails, the calendar event it is linked to (calendar_event: title, start, end, calendar; null when none), the notes the person typed (myNotes) and Yogurt's written summary (Markdown).",
     inputSchema: { type: 'object', properties: { id }, required: ['id'] } },
   { name: 'get_transcript', description: 'What was said in a meeting, line by line with who said it. format "text" (default): "[mm:ss] Name: words" lines. format "lines": JSON with start_ms, end_ms, speaker, is_me and text. "Them" is the other side of the call when the call app gave no name.',
     inputSchema: { type: 'object', properties: { id, format: { type: 'string', enum: ['text', 'lines'] } }, required: ['id'] } },
@@ -53,7 +53,13 @@ const text = (v: unknown) => (typeof v === 'string' && v.trim() ? v.trim() : und
 export function createMcp(d: McpDeps): Mcp {
   const mac = (d.platform ?? 'darwin') === 'darwin'
   const listed = mcpTools(d.platform ?? 'darwin')
-  const summary = (m: Meeting) => ({ id: m.id, title: m.title, start: iso(m.startedAt), end: iso(m.endedAt), people: m.attendees.map((a) => a.name), app: m.app, recording: m.state === 'recording' })
+  // the calendar's people with their emails (null when the calendar gave none): another app can write to them or match them
+  const summary = (m: Meeting) => ({ id: m.id, title: m.title, start: iso(m.startedAt), end: iso(m.endedAt), people: m.attendees.map((a) => a.name),
+    attendees: m.attendees.map((a) => ({ name: a.name, email: a.email ?? null })), app: m.app, recording: m.state === 'recording' })
+  /** the calendar event the meeting is linked to, as last read (it stays without calendar access); null for none */
+  const calendarEvent = (m: Meeting) => (m.eventId
+    ? { title: m.eventTitle ?? null, start: iso(m.eventStartedAt ?? null), end: iso(m.eventEndedAt ?? null), calendar: m.eventCalendarName ?? null }
+    : null)
   const meetingOf = (v: unknown) => {
     const m = typeof v === 'string' ? d.store.meeting(v) : undefined
     // a meeting in the Trash is gone as far as AI apps can tell
@@ -75,7 +81,7 @@ export function createMcp(d: McpDeps): Mcp {
     async get_meeting(a) {
       const m = meetingOf(a.id)
       const n = d.store.notes(m.id)
-      return JSON.stringify({ ...summary(m), myNotes: n.mine, summary: n.enhanced }, null, 2)
+      return JSON.stringify({ ...summary(m), calendar_event: calendarEvent(m), myNotes: n.mine, summary: n.enhanced }, null, 2)
     },
     async get_transcript(a) {
       const m = meetingOf(a.id)

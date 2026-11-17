@@ -13,7 +13,7 @@ import { SpokenSetting } from '../components/SpokenSetting'
 import { useScrollMemory } from '../useScrollMemory'
 import { appShortcuts } from '../components/Shortcuts'
 import { CalendarSettings } from '../components/CalendarSettings'
-import { supportedKinds } from '../../../shared/platform'
+import { supportedKinds, settingsPage } from '../../../shared/platform'
 import { Swap, SwapText } from '../components/Swap'
 
 const THEMES = () => [['system', osWords({ mac: t('Match my Mac'), windows: t('Match Windows'), linux: t('Match my system') })], ['light', t('Light')], ['dark', t('Dark')]] as const
@@ -294,7 +294,7 @@ export function PermissionRow({ kind, status, onAsk }: { kind: PermissionKind; s
         </p>
         <p className="settings-description">{c.reason}</p>
       </div>
-      {status !== 'restricted' ? (
+      {status !== 'restricted' && (ask || settingsPage(window.yogurt.os, kind)) ? (
         <button data-testid={ask ? 'permission-ask' : 'permission-open'} onClick={ask ? onAsk : () => void window.yogurt.permissions.open(kind)}
           className={`workspace-button settings-action${granted ? '' : ' primary'}`}>
           <span>{!status || granted ? t('Manage') : turnOn ? t('Turn on') : osWords({ mac: t('Open System Settings'), other: t('Open Settings') })}</span>

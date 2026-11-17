@@ -23,6 +23,9 @@ for (const platform of ['win32', 'linux']) {
       await expect(page.getByTestId('permission-row')).toHaveCount(names ? 4 : 3)
       await expect(page.locator('[data-testid="permission-row"][data-kind="calendar"]')).toHaveCount(0)
       await expect(page.locator('[data-testid="permission-row"][data-kind="accessibility"]')).toHaveCount(names ? 1 : 0)
+      // Manage only where there is a page to open (#70): never on names from calls here, and on Linux nowhere
+      await expect(page.locator('[data-testid="permission-row"][data-kind="accessibility"] [data-testid="permission-open"]')).toHaveCount(0)
+      await expect(page.locator('[data-testid="permission-row"] [data-testid="permission-open"]')).toHaveCount(platform === 'win32' ? 3 : 0)
       await expect(page.getByTestId('calendar-settings')).toHaveCount(0)
     } finally { await app.close() }
   })

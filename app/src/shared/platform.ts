@@ -28,6 +28,14 @@ export function capabilities(platform: string): Capabilities {
   return { calendar: mac, callNames: mac || platform === 'linux' || platform === 'win32', permissionPrompts: mac, mediaPause: mac }
 }
 
+/** permission kinds Windows has a Settings page for (main/permissions.ts WINDOWS_SETTINGS has their links) */
+const WINDOWS_PAGES: ReadonlySet<PermissionKind> = new Set(['mic', 'systemAudio', 'notifications'])
+/** Whether a permission has a settings page to open here, so its row can offer Manage: every one on a Mac, the mic,
+ * sound and notifications on Windows, none on Linux (#70: Manage on names from calls did nothing on Windows) */
+export function settingsPage(platform: string, kind: PermissionKind): boolean {
+  return platform === 'darwin' || (platform === 'win32' && WINDOWS_PAGES.has(kind))
+}
+
 /** The computer Yogurt runs on. Only fake mode may pretend to be another one (YOGURT_FAKE_PLATFORM), so Mac tests can try the others' screens. */
 export function platformOf(real: string, env: Record<string, string | undefined>): string {
   const fake = env.YOGURT_FAKE === '1' ? env.YOGURT_FAKE_PLATFORM : undefined

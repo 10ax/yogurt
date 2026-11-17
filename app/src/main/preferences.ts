@@ -14,6 +14,10 @@ const isKind = (k: unknown): k is PermissionKind => PERMISSION_KINDS.includes(k 
  * Settings, the first run (intro and permissions) and home's Finish setup: permissions (read, asked, or their System Settings pane), open at login, theme.
  * ask: whether this run may show the first run at all (fake mode only when a test sets the permissions).
  */
+/** the first-run screens are on screen now (intro or permission steps, not yet finished): no call is offered meanwhile */
+let firstRunShowing = false
+export const onboardingShowing = (): boolean => firstRunShowing
+
 export function hookPreferences(d: { file: string; permissions: Permissions; ask: boolean; setLogin(on: boolean): void; setTrayVisible(on: boolean): void; setDockVisible(on: boolean): void; loginOn(saved: boolean | undefined): boolean; /** the Mac's full name */ macName(): string
   /** quit and open again, for a permission the Mac applies only then; false when it can't now (recording) */
   relaunch(): boolean
@@ -31,10 +35,12 @@ export function hookPreferences(d: { file: string; permissions: Permissions; ask
     if (d.slowStartMs) await new Promise((r) => setTimeout(r, d.slowStartMs))
     const s = loadSettings(d.file)
     if (!d.ask || s.welcomed) return { intro: false, steps: [] }
-    return firstRunPlan({ ask: d.ask, welcomed: !!s.welcomed, introSeen: !!s.introSeen, status: await d.permissions.status(), kinds })
+    const p = await firstRunPlan({ ask: d.ask, welcomed: !!s.welcomed, introSeen: !!s.introSeen, status: await d.permissions.status(), kinds })
+    firstRunShowing = p.intro || p.steps.length > 0
+    return p
   })()))
   ipcMain.handle('onboarding:intro-seen', () => { updateSettings(d.file, { introSeen: true }) })
-  ipcMain.handle('onboarding:done', () => { updateSettings(d.file, { welcomed: true }) })
+  ipcMain.handle('onboarding:done', () => { firstRunShowing = false; updateSettings(d.file, { welcomed: true }) })
   // home's Finish setup: what wasn't put away (fake mode, like the first run, only when a test sets the permissions)
   ipcMain.handle('onboarding:nudge', async () => (d.ask ? nudge(await d.permissions.status(), loadSettings(d.file).setupDismissed ?? [], kinds) : []))
   ipcMain.handle('onboarding:dismiss-nudge', async () => {

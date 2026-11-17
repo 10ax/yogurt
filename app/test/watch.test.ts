@@ -35,6 +35,17 @@ beforeEach(() => {
 })
 
 describe('start cards', () => {
+  it('offers nothing while the first run is still being set up, then offers the call once it is done', async () => {
+    let ready = false
+    const x = new Watcher({ read: async () => reading, now: () => clock, active: () => active, bindApp: (_id, app) => (active = { ...active!, app }),
+      offer: (p) => log.push('offer:' + p.key), askStop: () => log.push('stop'), hide: () => log.push('hide'), ready: () => ready })
+    reading = { micApps: [zoom], events: [] }
+    await x.tick(); await x.tick()
+    expect(log).toEqual([])
+    ready = true
+    await x.tick()
+    expect(log).toEqual(['offer:app:us.zoom.xos'])
+  })
   it('offers once per meeting, not on every tick', async () => {
     reading = { micApps: [zoom], events: [ev()] }
     await w.tick(); await w.tick(); await w.tick()

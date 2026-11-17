@@ -11,6 +11,8 @@ export type WatchDeps = {
   bindApp(id: string, app: string): Meeting | undefined
   /** offer to take notes */
   offer(p: Prompt): void
+  /** the first run is set up (onboarding done): until then no call is offered, the mic and models may not be ready */
+  ready?(): boolean
   /** ask whether to stop */
   askStop(m: Meeting): void
   /** take down whichever card is up */
@@ -78,7 +80,7 @@ export class Watcher {
     for (const k of [...this.dismissed]) {
       if (k.startsWith('app:') && !s.micApps.some((m) => callAppName(k.slice(4)) === callAppName(m.bundleId, s.runningApps))) this.dismissed.delete(k)
     }
-    const p = decide(s, now, this.dismissed)
+    const p = this.d.ready && !this.d.ready() ? null : decide(s, now, this.dismissed)
     if (!p) { if (this.shown) { this.shown = null; this.d.hide() } return }
     if (this.shown === p.key) return
     this.shown = p.key

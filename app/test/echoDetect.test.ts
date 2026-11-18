@@ -283,5 +283,6 @@ describe("round 3: the reviewer's turn-taking probe (shortened)", () => {
     let heard = 0
     for (let seed = 1; seed <= 6; seed++) { if (scene(seed, 0.15, [0.04], 1).end) heard++; if (scene(seed, 0.1, [0.02, 0.15], 1).end) heard++ }
     expect(heard).toBeGreaterThanOrEqual(9)
-  })
+    // twelve simulated calls: plain number crunching that needs more than 5 s on a busy machine
+  }, 30_000)
 })

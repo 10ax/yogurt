@@ -6,8 +6,10 @@ import type { NoteView } from '../src/shared/types'
 
 for (const theme of ['light', 'dark'] as const) for (const width of [420, 860]) {
   test(`summary frame follows writing and yields to reading at ${width}px in ${theme}`, async () => {
+    // the window's own setting (hidden locally, shown on CI): the summary unrolls on animation frames, which a hidden
+    // window pauses on Linux and Windows, so forcing it hidden left the summary empty now and then
     const app = await electron.launch({ args: [join(import.meta.dirname, '../out/main/index.js')], env: {
-      ...process.env, YOGURT_FAKE: '1', YOGURT_BACKGROUND: '1', YOGURT_USER_DATA: mkdtempSync(join(tmpdir(), 'yogurt-summary-rim-')),
+      ...process.env, YOGURT_FAKE: '1', YOGURT_USER_DATA: mkdtempSync(join(tmpdir(), 'yogurt-summary-rim-')),
     } })
     try {
       const page = await app.firstWindow()

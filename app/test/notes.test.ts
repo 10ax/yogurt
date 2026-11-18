@@ -15,6 +15,8 @@ afterEach(() => {
   dirs.splice(0).forEach((d) => rmSync(d, { recursive: true, force: true }))
 })
 const wait = (ms = 5) => new Promise((r) => setTimeout(r, ms))
+/** waits for what an assertion needs, up to 5 s: a fixed sleep was too short on a slow Windows runner */
+const until = (check: () => void) => vi.waitFor(check, { timeout: 5000, interval: 10 })
 
 function setup(o: { summaryLanguage?: () => string; me?: string; named?: () => Promise<void>; namesWaitMs?: number; reply?: string | ((prompt: string) => string); during?: () => void; load?: Promise<void>; title?: string; recording?: () => boolean; smallMac?: boolean; showLoading?: boolean } = {}) {
   const d = mkdtempSync(join(tmpdir(), 'yogurt-notes-'))
@@ -254,8 +256,7 @@ describe('hookNotes', () => {
     s.stop(); s.transcribed()
     await wait(10)
     expect(s.prompts).toEqual([])
-    await wait(60)
-    expect(s.store.notes(s.m.id).enhanced).not.toBeNull()
+    await until(() => expect(s.store.notes(s.m.id).enhanced).not.toBeNull())
   })
   it('edits to the enhanced notes are saved and marked as edited; writing again clears that', async () => {
     const s = setup()
@@ -308,26 +309,24 @@ describe('hookNotes', () => {
   it('at launch, writes the notes a quit left unwritten', async () => {
     const s = setup()
     s.notes.recover()
-    await wait(20)
-    expect(s.store.notes(s.m.id).enhanced).not.toBeNull()
+    await until(() => expect(s.store.notes(s.m.id).enhanced).not.toBeNull())
   })
   it('notes edited while the rewrite was being written keep the edit', async () => {
     // eslint-disable-next-line prefer-const
     let s: ReturnType<typeof setup>
     s = setup({ during: () => { if (s.prompts.length === 2) s.notes.setEnhanced(s.m.id, '## Edited') } })
-    s.stop(); s.transcribed(); await wait(20)
+    s.stop(); s.transcribed(); await until(() => expect(s.store.notes(s.m.id).enhanced).not.toBeNull())
     s.store.updateMeeting(s.m.id, { attendees: [{ name: 'Ann Lee', email: null }] })
     s.notes.applyPeople(s.m.id)
-    await wait(150)
-    expect(s.prompts).toHaveLength(2)
+    await until(() => expect(s.prompts).toHaveLength(2))
     expect(s.store.notes(s.m.id)).toMatchObject({ enhanced: '## Edited', edited: true })
   })
   it('an open note that kept its unsaved edits over the rewrite: the people still count as changed', async () => {
     const s = setup()
-    s.stop(); s.transcribed(); await wait(20)
+    s.stop(); s.transcribed(); await until(() => expect(s.store.notes(s.m.id).enhanced).not.toBeNull())
     s.store.updateMeeting(s.m.id, { attendees: [{ name: 'Ann Lee', email: null }] })
     s.notes.applyPeople(s.m.id)
-    await wait(150)
+    await until(() => expect(s.prompts).toHaveLength(2))
     expect(s.notes.view(s.m.id).peopleChanged).toBe(false)
     s.notes.keptEdits(s.m.id)
     s.notes.setEnhanced(s.m.id, '## Theirs, from before')
@@ -338,23 +337,21 @@ describe('hookNotes', () => {
     const people = (...names: string[]) => s.store.updateMeeting(s.m.id, { attendees: names.map((name) => ({ name, email: null })) })
     // eslint-disable-next-line prefer-const
     s = setup({ during: () => { if (s.prompts.length === 2) { people('Ann Lee', 'Bo Park'); s.notes.applyPeople(s.m.id) } } })
-    s.stop(); s.transcribed(); await wait(20)
+    s.stop(); s.transcribed(); await until(() => expect(s.store.notes(s.m.id).enhanced).not.toBeNull())
     people('Ann Lee')
     s.notes.applyPeople(s.m.id)
-    await wait(250)
-    expect(s.prompts).toHaveLength(3)
+    await until(() => expect(s.prompts).toHaveLength(3))
     expect(s.prompts[2]).toContain('Bo Park')
     expect(s.notes.view(s.m.id).peopleChanged).toBe(false)
   })
   it('people seen in the call after the notes were written (names from the call) get unedited notes written again too', async () => {
     const reply = (prompt: string) => `## Plan\n- ${prompt.includes('Cy Dao') ? 'Cy' : 'Someone'} ships Tuesday\n## Next steps\n- **You:** Ship`
     const s = setup({ reply })
-    s.stop(); s.transcribed(); await wait(20)
+    s.stop(); s.transcribed(); await until(() => expect(s.store.notes(s.m.id).enhanced).not.toBeNull())
     // what callNames does after the meeting: the attendees grow, then the notes hear of it
     s.store.updateMeeting(s.m.id, { attendees: [{ name: 'Cy Dao', email: null }] })
     s.notes.applyPeople(s.m.id)
-    await wait(150)
-    expect(s.store.notes(s.m.id).enhanced).toContain('Cy ships')
+    await until(() => expect(s.store.notes(s.m.id).enhanced).toContain('Cy ships'))
   })
   it('people added or removed after the notes were written: unedited notes are written again with them', async () => {
     const reply = (prompt: string) => `## Plan\n- ${prompt.includes('Maya Chen') ? 'Maya' : 'Someone'} ships Tuesday\n## Next steps\n- **You:** Ship`
@@ -366,8 +363,7 @@ describe('hookNotes', () => {
     // being written again on their own: no "write again?" hint meanwhile
     expect(s.notes.view(s.m.id).peopleChanged).toBe(false)
     expect(s.sent.at(-1)?.peopleChanged).toBe(false)
-    await wait(150)
-    expect(s.prompts).toHaveLength(2)
+    await until(() => expect(s.prompts).toHaveLength(2))
     expect(s.store.notes(s.m.id).enhanced).toContain('Maya ships')
     expect(s.notes.view(s.m.id).peopleChanged).toBe(false)
   })

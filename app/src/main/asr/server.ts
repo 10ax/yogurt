@@ -112,6 +112,10 @@ export function createWhisperServer(o: Opts) {
   let died = false
   /** a launch died before it answered, with gpuFallback: the graphics stay off from now on */
   let cpuOnly = false
+  /** hangs on the graphics card (gpuFallback): the second one turns them off (#76) */
+  let gpuHangs = 0
+  /** a hang on the graphics card twice (#76: a GTX 1050 Ti under Vulkan never answered) turns them off for good */
+  const GPU_HANGS = 2
 
   const launch = async (): Promise<string> => {
     if (o.pidFile) { mkdirSync(dirname(o.pidFile), { recursive: true }); killStale(o.pidFile, o.lookup) }
@@ -190,13 +194,20 @@ export function createWhisperServer(o: Opts) {
     resetBudget() { used = 0 },
     /**
      * It hangs or died: kill it and start another (the same relaunch as after a crash). `used` is the address the failed
-     * request went to; if a newer launch exists or is starting, another request already did this, so just wait for that one.
+     * request went to (`at`); if a newer launch exists or is starting, another request already did this, so just wait for that one.
      */
-    async wedged(used?: string): Promise<string> {
-      if (used === undefined || starting || launchUrl !== used) return self.url()
+    async wedged(at?: string): Promise<string> {
+      if (at === undefined || starting || launchUrl !== at) return self.url()
       const p = child
       if (p) { child = null; address = null; p.kill('SIGKILL') }
       died = true
+      if (o.gpuFallback && !cpuOnly && ++gpuHangs >= GPU_HANGS) {
+        cpuOnly = true
+        // a new way of running: the meeting's relaunches start over for it
+        used = 0
+        console.error('whisper-server hung twice on the graphics card; starting it again without it')
+        o.onGpuOff?.()
+      }
       return self.url()
     },
     /** does the server at this address (default: the current one) answer? */

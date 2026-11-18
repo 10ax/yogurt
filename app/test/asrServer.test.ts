@@ -114,6 +114,31 @@ describe.skipIf(process.platform === 'win32')('whisper server', () => {
     expect(args()).toContain('-ng')
   })
 
+  // #76: a GTX 1050 Ti under Vulkan loaded fine but never answered; three relaunches on the card, then empty transcripts
+  it('off a Mac, a server that hangs on the graphics card twice starts again without it, with its relaunches back', async () => {
+    const bin = fakeBinary(0, ['wedge', 'wedge', 'ok'])
+    const args = () => JSON.parse(readFileSync(join(bin, '../args'), 'utf8')) as string[]
+    const off = vi.fn()
+    const s = make(bin, { gpuFallback: true, onGpuOff: off, backoffMs: [0, 0] })
+    const first = await s.url()
+    expect(args()).not.toContain('-ng')
+    const second = await s.wedged(first)
+    expect(args()).not.toContain('-ng')
+    await s.wedged(second)
+    expect(args()).toContain('-ng')
+    expect(s.cpuOnly).toBe(true)
+    expect(off).toHaveBeenCalledTimes(1)
+    // the processor gets the meeting's relaunches afresh
+    const third = await s.url()
+    await expect(s.wedged(third)).resolves.toMatch(/^http/)
+  })
+  it('a Mac keeps its graphics however often it hangs (Metal)', async () => {
+    const bin = fakeBinary(0, ['wedge'])
+    const s = make(bin)
+    await s.wedged(await s.wedged(await s.url()))
+    expect(JSON.parse(readFileSync(join(bin, '../args'), 'utf8'))).not.toContain('-ng')
+  })
+
   it('a Mac never turns the graphics off, and one that crashes after loading keeps them', async () => {
     const mac = fakeBinary(0, ['die-loading', 'ok'])
     const s = make(mac)

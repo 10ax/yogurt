@@ -153,8 +153,10 @@ jobs:
     with:
       ref: ${{ needs.plan.outputs.ref }}
       release: true
-    # the Windows installer is signed with Artifact Signing once its secrets exist (preview.yml)
-    secrets: inherit
+    # the Windows installer is signed with Artifact Signing: GitHub hands the build a short-lived sign-in token (no stored secret)
+    permissions:
+      contents: read
+      id-token: write
 
   # only a pushed tag publishes, and only once all three built; a run by hand never does
   publish:

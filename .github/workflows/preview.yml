@@ -43,6 +43,8 @@ jobs:
             files: app/dist/Yogurt-linux-*.AppImage
     runs-on: ${{ matrix.os }}
     timeout-minutes: 120
+    # Azure trusts sign-in tokens from this repository's signing environment only (managed identity yogurt-github-signing)
+    environment: ${{ inputs.release && 'signing' || '' }}
     defaults:
       run:
         shell: bash
@@ -105,16 +107,22 @@ jobs:
       # unit tests run in ci.yml; a slower runner here only trips their timing checks
       - name: Build (helpers, whisper-server, app)
         run: pnpm -C app build
+      # a release signs in to Azure with GitHub's token for this run, so no password or key is stored anywhere
+      - name: Sign in to Azure (Windows release)
+        if: runner.os == 'Windows' && inputs.release && vars.AZURE_CLIENT_ID != ''
+        uses: azure/login@a641126d1b8aa4d1fa005f4f92df94a3a4c4c906 # v3.1.0
+        with:
+          client-id: ${{ vars.AZURE_CLIENT_ID }}
+          tenant-id: ${{ vars.AZURE_TENANT_ID }}
+          subscription-id: ${{ vars.AZURE_SUBSCRIPTION_ID }}
       - name: Package
         env:
           CSC_IDENTITY_AUTO_DISCOVERY: 'false'
           # a preview (by hand) was never released: it is marked so it never looks for updates (src/main/updates.ts)
           PREVIEW: ${{ inputs.release != true }}
-          # Windows releases are signed by Microsoft's Artifact Signing (account yogurt-signing, East US) once these
-          # three secrets exist; without them the installer stays unsigned, as before
-          AZURE_TENANT_ID: ${{ secrets.AZURE_TENANT_ID }}
-          AZURE_CLIENT_ID: ${{ secrets.AZURE_CLIENT_ID }}
-          AZURE_CLIENT_SECRET: ${{ secrets.AZURE_CLIENT_SECRET }}
+          # Windows releases are signed by Microsoft's Artifact Signing (account yogurt-signing, East US), using the Azure
+          # sign-in above; without the repository's Azure variables the installer stays unsigned
+          SIGN: ${{ inputs.release && vars.AZURE_CLIENT_ID != '' }}
           # the name on the certificate, exactly as Microsoft validated it
           PUBLISHER: ${{ vars.WINDOWS_PUBLISHER_NAME || 'Frigade Inc.' }}
           PROFILE: ${{ vars.WINDOWS_CERT_PROFILE || 'yogurt' }}
@@ -122,7 +130,7 @@ jobs:
           cd app
           set -- ${{ matrix.platform }} --publish never
           [ "$PREVIEW" = true ] && set -- "$@" -c.extraMetadata.yogurtPreview=true
-          if [ "$RUNNER_OS" = Windows ] && [ "$PREVIEW" != true ] && [ -n "$AZURE_CLIENT_SECRET" ]; then
+          if [ "$RUNNER_OS" = Windows ] && [ "$SIGN" = true ]; then
             echo "::notice::Signing the Windows installer as $PUBLISHER"
             set -- "$@" "-c.win.azureSignOptions.publisherName=$PUBLISHER" -c.win.azureSignOptions.endpoint=https://eus.codesigning.azure.net/ \
               -c.win.azureSignOptions.codeSigningAccountName=yogurt-signing "-c.win.azureSignOptions.certificateProfileName=$PROFILE"

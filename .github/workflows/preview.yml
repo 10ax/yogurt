@@ -105,12 +105,40 @@ jobs:
       # unit tests run in ci.yml; a slower runner here only trips their timing checks
       - name: Build (helpers, whisper-server, app)
         run: pnpm -C app build
-      - name: Package (unsigned)
+      - name: Package
         env:
           CSC_IDENTITY_AUTO_DISCOVERY: 'false'
           # a preview (by hand) was never released: it is marked so it never looks for updates (src/main/updates.ts)
           PREVIEW: ${{ inputs.release != true }}
-        run: cd app && pnpm exec electron-builder ${{ matrix.platform }} --publish never $([ "$PREVIEW" = true ] && echo -c.extraMetadata.yogurtPreview=true)
+          # Windows releases are signed by Microsoft's Artifact Signing (account yogurt-signing, East US) once these
+          # three secrets exist; without them the installer stays unsigned, as before
+          AZURE_TENANT_ID: ${{ secrets.AZURE_TENANT_ID }}
+          AZURE_CLIENT_ID: ${{ secrets.AZURE_CLIENT_ID }}
+          AZURE_CLIENT_SECRET: ${{ secrets.AZURE_CLIENT_SECRET }}
+          # the name on the certificate, exactly as Microsoft validated it
+          PUBLISHER: ${{ vars.WINDOWS_PUBLISHER_NAME || 'Frigade Inc.' }}
+          PROFILE: ${{ vars.WINDOWS_CERT_PROFILE || 'yogurt' }}
+        run: |
+          cd app
+          set -- ${{ matrix.platform }} --publish never
+          [ "$PREVIEW" = true ] && set -- "$@" -c.extraMetadata.yogurtPreview=true
+          if [ "$RUNNER_OS" = Windows ] && [ "$PREVIEW" != true ] && [ -n "$AZURE_CLIENT_SECRET" ]; then
+            echo "::notice::Signing the Windows installer as $PUBLISHER"
+            set -- "$@" "-c.win.azureSignOptions.publisherName=$PUBLISHER" -c.win.azureSignOptions.endpoint=https://eus.codesigning.azure.net/ \
+              -c.win.azureSignOptions.codeSigningAccountName=yogurt-signing "-c.win.azureSignOptions.certificateProfileName=$PROFILE"
+            echo "SIGNED=true" >> "$GITHUB_ENV"
+          fi
+          pnpm exec electron-builder "$@"
+      # a signed build must really be signed, the app and its installer both
+      - name: Check the signature
+        if: runner.os == 'Windows' && env.SIGNED == 'true'
+        shell: pwsh
+        run: |
+          foreach ($f in @('app/dist/Yogurt-windows-x64.exe', 'app/dist/win-unpacked/Yogurt.exe')) {
+            $s = Get-AuthenticodeSignature $f
+            Write-Host "$f : $($s.Status) $($s.SignerCertificate.Subject)"
+            if ($s.Status -ne 'Valid') { throw "$f is not signed: $($s.Status)" }
+          }
       # kept before the checks below, so testers get the installer even when one of them fails
       - uses: actions/upload-artifact@v4
         with:

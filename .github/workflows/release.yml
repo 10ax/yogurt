@@ -153,6 +153,8 @@ jobs:
     with:
       ref: ${{ needs.plan.outputs.ref }}
       release: true
+    # the Windows installer is signed with Artifact Signing once its secrets exist (preview.yml)
+    secrets: inherit
 
   # only a pushed tag publishes, and only once all three built; a run by hand never does
   publish:

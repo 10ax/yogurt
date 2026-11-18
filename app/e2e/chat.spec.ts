@@ -78,6 +78,8 @@ test('a narrow chat is modal, contains keyboard focus, and keeps its draft when 
     await expect(panel).toHaveAttribute('aria-modal', 'true')
     expect(await panel.evaluate((el) => el.matches(':modal'))).toBe(true)
     await expect(input).toBeFocused()
+    // the scope picker is disabled while the chat loads, and Tab skips a disabled button
+    await expect(panel.getByRole('button', { name: 'Choose meetings or folders' })).toBeEnabled()
     await page.keyboard.press('Tab')
     await expect(panel.getByRole('button', { name: 'Choose meetings or folders' })).toBeFocused()
     await page.keyboard.press('Escape')

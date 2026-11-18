@@ -46,9 +46,10 @@ test('the call ends: after the grace the recording stops by itself, with no ques
   try {
     await callAndRecord(app, page)
     await signals(app, { micApps: [], events: [event()] })
-    await advance(app, 9_000)
+    // the grace is 4 s (CALL_GONE_MS)
+    await advance(app, 3_000)
     await expect(page.getByTestId('note-state')).toHaveAttribute('data-state', 'recording')
-    await advance(app, 2_000)
+    await advance(app, 1_500)
     await expect(page.getByTestId('note-state')).toHaveAttribute('data-state', /^(stopped|done)$/)
     // nothing asked
     expect(cards(app)).toBe(0)
@@ -67,7 +68,7 @@ test('a blip shorter than the grace does nothing', async () => {
   try {
     await callAndRecord(app, page)
     await signals(app, { micApps: [], events: [event()] })
-    await advance(app, 6_000)
+    await advance(app, 2_000)
     await signals(app, { micApps: [zoom], events: [event()] })
     await advance(app, 6_000)
     await expect(page.getByTestId('note-state')).toHaveAttribute('data-state', 'recording')

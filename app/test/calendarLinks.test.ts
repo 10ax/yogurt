@@ -1,7 +1,8 @@
 import { mkdtempSync, readFileSync, rmSync } from 'node:fs'
 import { tmpdir } from 'node:os'
 import { join } from 'node:path'
-import { afterEach, describe, expect, it } from 'vitest'
+import ICAL from 'ical.js'
+import { afterEach, describe, expect, it, vi } from 'vitest'
 import { createCalendarLinks } from '../src/main/calendarLink'
 
 const ics = (name: string) => `BEGIN:VCALENDAR\nVERSION:2.0\nX-WR-CALNAME:${name}\nBEGIN:VEVENT\nUID:a@example.com\nSUMMARY:Standup\nDTSTART:20261117T170000Z\nDTEND:20261117T171500Z\nEND:VEVENT\nEND:VCALENDAR\n`
@@ -60,6 +61,14 @@ describe('calendar links (Windows and Linux): a private calendar address, kept o
     r.tick(5 * 60_000 + 1); fail = true
     expect((await r.links.events(...day)).map((e) => e.title)).toEqual(['Standup'])
     expect(r.fetched).toHaveLength(2)
+  })
+  it('reading the calendar again and again (call detection, the agenda) reuses the parsed feed until it is fetched again', async () => {
+    const r = rig(() => ics('Team'))
+    await r.links.add('https://calendar.google.com/calendar/ical/team/private-x/basic.ics')
+    const parse = vi.spyOn(ICAL, 'parse')
+    for (let i = 0; i < 5; i++) await r.links.events(...day)
+    expect(parse.mock.calls.length).toBeLessThanOrEqual(1)
+    parse.mockRestore()
   })
   it('removing the last address leaves no calendar', async () => {
     const r = rig(() => ics('Work'))

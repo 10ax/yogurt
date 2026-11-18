@@ -1,6 +1,6 @@
 import { randomUUID } from 'node:crypto'
 import { loadSettings, updateSettings } from '../settings'
-import { icsEvents, icsName, type RawEvent } from './ics'
+import { icsFeed, icsName, type IcsFeed, type RawEvent } from './ics'
 
 /**
  * Calendar links: Windows and Linux have no system calendar Yogurt can read, so the person pastes their calendar's
@@ -34,24 +34,27 @@ export function createCalendarLinks(d: {
   now?: () => number
 }) {
   const now = d.now ?? Date.now
-  const cache = new Map<string, { text: string; at: number }>()
+  // the feed is kept parsed with its text (#79: parsing it on every read, each minute, froze the app)
+  const cache = new Map<string, { text: string; at: number; feed?: IcsFeed }>()
   const stored = (): Stored[] => loadSettings(d.file).calendarLinks ?? []
   const urlOf = (l: Stored) => { try { return d.open(l.url) } catch { return null } }
 
   /** the feed's text: the cached copy for five minutes, a fresh one after, the last good copy when that fails */
-  async function text(l: Stored): Promise<string | null> {
+  async function feed(l: Stored): Promise<IcsFeed | null> {
     const hit = cache.get(l.id)
-    if (hit && now() - hit.at < REFRESH_MS) return hit.text
+    const parsed = (c: { text: string; feed?: IcsFeed }) => (c.feed ??= icsFeed(c.text, { id: l.id, name: l.name }))
+    if (hit && now() - hit.at < REFRESH_MS) return parsed(hit)
     const url = urlOf(l)
-    if (!url) return hit?.text ?? null
+    const last = () => (hit ? parsed(hit) : null)
+    if (!url) return last()
     try {
       const t = await d.get(url)
-      icsName(t)
-      cache.set(l.id, { text: t, at: now() })
-      return t
+      const entry = { text: t, at: now(), feed: icsFeed(t, { id: l.id, name: l.name }) }
+      cache.set(l.id, entry)
+      return entry.feed
     } catch (e) {
       console.warn('calendar link: could not read', l.host, e instanceof Error ? e.message : e)
-      return hit?.text ?? null
+      return last()
     }
   }
 
@@ -84,9 +87,10 @@ export function createCalendarLinks(d: {
     /** every link's events between two times; a link that can't be read gives none, never an error */
     async events(fromMs: number, toMs: number): Promise<RawEvent[]> {
       const all = await Promise.all(stored().map(async (l) => {
-        const t = await text(l)
-        if (!t) return []
-        try { return icsEvents(t, fromMs, toMs, { id: l.id, name: l.name }) } catch { return [] }
+        try {
+          const f = await feed(l)
+          return f ? f.events(fromMs, toMs) : []
+        } catch { return [] }
       }))
       return all.flat()
     },

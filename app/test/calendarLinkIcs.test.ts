@@ -1,5 +1,6 @@
-import { describe, expect, it } from 'vitest'
-import { icsEvents, icsName } from '../src/main/calendarLink/ics'
+import ICAL from 'ical.js'
+import { describe, expect, it, vi } from 'vitest'
+import { icsEvents, icsFeed, icsName } from '../src/main/calendarLink/ics'
 
 // A made-up feed in the shape Google's "Secret address in iCal format" gives: its own time zone, attendees, a Meet link
 const feed = (events: string) => `BEGIN:VCALENDAR
@@ -105,5 +106,44 @@ describe('a calendar link: events from an iCal feed, in the shape the Mac helper
 
   it('a feed that is not a calendar is an error, not an empty week', () => {
     expect(() => icsEvents('<html>Sign in</html>', 0, 1, link)).toThrow()
+  })
+
+  // #79: a work calendar with years of recurring meetings froze the app, every read walking each series from its start
+  const years = `BEGIN:VEVENT
+UID:standup@example.com
+SUMMARY:Standup
+DTSTART:20190107T170000Z
+DTEND:20190107T171500Z
+RRULE:FREQ=DAILY
+END:VEVENT
+BEGIN:VEVENT
+UID:standup@example.com
+RECURRENCE-ID:20261116T170000Z
+SUMMARY:Standup (moved)
+DTSTART:20261117T190000Z
+DTEND:20261117T191500Z
+END:VEVENT`
+  it('a series that has run for years: occurrences long before the window are not worked out one by one, and one moved into it still shows', () => {
+    const details = vi.spyOn(ICAL.Event.prototype, 'getOccurrenceDetails')
+    const got = icsEvents(feed(years), at('2026-11-17T00:00:00Z'), at('2026-11-18T00:00:00Z'), link)
+    expect(got.map((e) => [e.title, e.start])).toEqual([['Standup', '2026-11-17T17:00:00.000Z'], ['Standup (moved)', '2026-11-17T19:00:00.000Z']])
+    // the window and a week either side (kept for the next reads): about 15 of a daily series, not all ~2,900 since 2019
+    expect(details.mock.calls.length).toBeLessThan(20)
+    details.mockRestore()
+  })
+  it('building a feed of many events does not look through the whole feed once per event (thousands of events took seconds)', () => {
+    const many = Array.from({ length: 50 }, (_, i) => `BEGIN:VEVENT\nUID:one-${i}@example.com\nSUMMARY:One ${i}\nDTSTART:20190101T1000${String(i).padStart(2, '0')}Z\nDTEND:20190101T1100${String(i).padStart(2, '0')}Z\nEND:VEVENT`).join('\n')
+    const scans = vi.spyOn(ICAL.Component.prototype, 'getAllSubcomponents')
+    icsFeed(feed(`${years}\n${many}`), link)
+    expect(scans.mock.calls.length).toBeLessThan(10)
+    scans.mockRestore()
+  })
+  it('a feed is parsed once, however many windows are read from it', () => {
+    const parse = vi.spyOn(ICAL, 'parse')
+    const f = icsFeed(feed(years), link)
+    for (let d = 15; d <= 19; d++) f.events(at(`2026-11-${d}T00:00:00Z`), at(`2026-11-${d + 1}T00:00:00Z`))
+    expect(f.events(at('2026-11-17T00:00:00Z'), at('2026-11-18T00:00:00Z')).map((e) => e.title)).toEqual(['Standup', 'Standup (moved)'])
+    expect(parse).toHaveBeenCalledTimes(1)
+    parse.mockRestore()
   })
 })

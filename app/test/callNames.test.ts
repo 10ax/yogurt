@@ -54,7 +54,7 @@ function setup(o: { app?: string | null; attendees?: Meeting['attendees'] } = {}
   let transcribed!: () => void
   const done = new Promise<void>((r) => { transcribed = r })
   const hook = hookCallNames({
-    store, myNames: () => ['Alex Morgan'], transcribed: () => done, changed: (id) => changed.push(id), log: (s) => logs.push(s), now: () => clock,
+    store, myNames: () => ['Alex Morgan'], transcribed: () => done, changed: (id) => changed.push(id), log: (s) => logs.push(s), now: () => clock, every: () => {},
     watch: (ids, onLine) => { watched.push(ids); emit = onLine; return { stop: () => { stopped++ } } },
     onStart: (fn) => starts.push(fn), onStop: (fn) => stops.push(fn), onCapture: (fn) => captures.push(fn), onBind: (fn) => binds.push(fn),
   })
@@ -106,6 +106,22 @@ describe('Webex accessibility roster', () => {
 })
 
 describe('hookCallNames', () => {
+  it('a reader that goes quiet (no reading for over 5 s while recording) is started again, and the log says so', () => {
+    const s = setup()
+    s.start()
+    s.emit(zoomLine(1_000_000, ['Alex Morgan', 'Dana Smith'], 'Dana Smith'))
+    s.audio(0, 1_004_000); s.hook.checkQuiet()
+    expect(s.watched).toHaveLength(1)
+    s.audio(0, 1_006_500); s.hook.checkQuiet()
+    expect(s.stopped()).toBe(1)
+    expect(s.watched).toHaveLength(2)
+    expect(s.logs.some((l) => /went quiet/.test(l))).toBe(true)
+    // readings again: nothing more to do
+    s.emit(zoomLine(1_007_000, ['Alex Morgan', 'Dana Smith'], 'Dana Smith'))
+    s.audio(0, 1_009_000); s.hook.checkQuiet()
+    expect(s.watched).toHaveLength(2)
+  })
+
   it('a recording started by hand watches every call app until its app is known, then only that one (a Teams chat window cannot hide a Meet call, #72)', () => {
     const s = setup({ app: null })
     s.start()

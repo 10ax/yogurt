@@ -37,11 +37,15 @@ const kindOf = (bundleId: string): CallKind | null => Object.values(APPS).find((
 export const WATCH_EVERY_MS = 400
 /** the apps mark the person talking about this late (Zoom: about 0.75 to 1.2 s after they start) */
 const APP_LAG_MS = 750
+/** no reading for this long while recording: the reader is stuck (seen once, 11 minutes of Them), so it starts again */
+export const QUIET_MS = 5000
+/** at most this many fresh starts per meeting, so an app that never answers can't start readers forever */
+const MAX_RESTARTS = 20
 /** changes of who talks written to the log, per meeting (enough to check a real call, never a flood) */
 const LOGGED_CHANGES = 30
 
 type Sample = Omit<CallSample, 'ms'> & { t: number }
-type Session = { samples: Sample[]; priorLines: Set<number>; watch?: { stop(): void }; everyApp: boolean; offset?: number; startedAt: number; pictured: boolean; errors: Set<string>; last: string; logged: number }
+type Session = { ids: string[]; heardAt: number; restarts: number; samples: Sample[]; priorLines: Set<number>; watch?: { stop(): void }; everyApp: boolean; offset?: number; startedAt: number; pictured: boolean; errors: Set<string>; last: string; logged: number }
 
 export function hookCallNames(p: {
   store: Pick<Store, 'meeting' | 'segments' | 'setSegmentSpeakers' | 'updateMeeting'>
@@ -59,6 +63,8 @@ export function hookCallNames(p: {
   onBind?: (fn: (m: Meeting) => void) => unknown
   log?: (msg: string) => void
   now?: () => number
+  /** how the quiet check runs (every 2 s; tests call checkQuiet themselves) */
+  every?: (fn: () => void, ms: number) => unknown
 }) {
   // info, not log: main.log keeps info, warn and error, and these lines are how a call that stayed Them gets explained
   const log = p.log ?? ((s: string) => console.info(s))
@@ -73,6 +79,7 @@ export function hookCallNames(p: {
   }
 
   const onLine = (id: string, s: Session, l: WatchLine) => {
+    s.heardAt = now()
     if (l.error || !l.app || !l.windows) {
       const why = l.error ?? 'nothing read'
       if (!s.errors.has(why)) { s.errors.add(why); log(`call names: ${why}${why === 'not-trusted' ? ' (no Accessibility permission): the other side stays Them' : ''}`) }
@@ -93,7 +100,7 @@ export function hookCallNames(p: {
 
   p.onStart((m) => {
     const ids = watchIds(m.app)
-    const s: Session = { everyApp: !m.app, samples: [], priorLines: new Set(p.store.segments(m.id, { hidden: true }).map((line) => line.id)), startedAt: m.resume ? m.resume.startedAt - m.resume.startMs : m.startedAt, pictured: false, errors: new Set(), last: '', logged: 0 }
+    const s: Session = { ids, heardAt: now(), restarts: 0, everyApp: !m.app, samples: [], priorLines: new Set(p.store.segments(m.id, { hidden: true }).map((line) => line.id)), startedAt: m.resume ? m.resume.startedAt - m.resume.startMs : m.startedAt, pictured: false, errors: new Set(), last: '', logged: 0 }
     sessions.set(m.id, s)
     if (!ids.length) { log(`call names: ${m.app} can't be read, the other side is Them`); return }
     try { s.watch = p.watch(ids, (l) => onLine(m.id, s, l)) } catch (e) { console.error('call names: the watch did not start', e) }
@@ -107,6 +114,7 @@ export function hookCallNames(p: {
     s.everyApp = false
     s.watch?.stop(); s.watch = undefined
     const ids = watchIds(m.app)
+    s.ids = ids; s.heardAt = now()
     log(`call names: the call is in ${m.app}, reading only it`)
     if (!ids.length) return
     s.pictured = false
@@ -147,7 +155,21 @@ export function hookCallNames(p: {
     finals.set(m.id, final)
   })
 
+  /** a reader that stopped sending readings is stopped and started again (the cause is logged where it's known) */
+  function checkQuiet() {
+    for (const [id, s] of sessions) {
+      if (!s.watch || !s.ids.length || now() - s.heardAt <= QUIET_MS || s.restarts >= MAX_RESTARTS) continue
+      log(`call names: the reader went quiet for ${Math.round((now() - s.heardAt) / 1000)} s; starting it again`)
+      s.restarts++
+      s.watch.stop(); s.watch = undefined
+      s.heardAt = now()
+      try { s.watch = p.watch(s.ids, (l) => onLine(id, s, l)) } catch (e) { console.error('call names: the watch did not start', e) }
+    }
+  }
+  ;(p.every ?? ((fn, ms) => setInterval(fn, ms).unref()))(checkQuiet, 2000)
+
   return {
+    checkQuiet,
     /** the name for a line of the other side just heard, or null for Them */
     nameFor(meetingId: string, startMs: number, endMs: number): string | null {
       const s = sessions.get(meetingId)

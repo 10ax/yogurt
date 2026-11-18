@@ -178,10 +178,10 @@ describe('stop nudge', () => {
 describe('stops by itself when the call ends', () => {
   beforeEach(() => { active = meeting(); auto = true; w = autoWatcher() })
 
-  it('the call app lets go of the mic for 10 s: stops once, with no question', async () => {
+  it('the call app lets go of the mic for 4 s: stops once, with no question', async () => {
     reading = { micApps: [zoom], events: [] }; await w.tick()
     reading = { micApps: [], events: [] }
-    clock += 9_000; await w.tick()
+    clock += 3_000; await w.tick()
     expect(log).toEqual([])
     clock += 1_000; await w.tick(); await w.tick()
     expect(log).toEqual(['auto:m1'])
@@ -196,9 +196,9 @@ describe('stops by itself when the call ends', () => {
   })
   it('a blip shorter than the grace does nothing', async () => {
     reading = { micApps: [zoom], events: [] }; await w.tick()
-    reading = { micApps: [], events: [] }; clock += 6_000; await w.tick()
-    reading = { micApps: [zoom], events: [] }; clock += 3_000; await w.tick()
-    reading = { micApps: [], events: [] }; clock += 6_000; await w.tick()
+    reading = { micApps: [], events: [] }; clock += 2_000; await w.tick()
+    reading = { micApps: [zoom], events: [] }; clock += 1_500; await w.tick()
+    reading = { micApps: [], events: [] }; clock += 3_000; await w.tick()
     expect(log).toEqual([])
   })
   it('a Meet tab: the browser letting go of the mic ends it', async () => {
@@ -249,12 +249,12 @@ describe('binding a call after any recording start', () => {
     await w.tick(); clock += 10_000
     reading = { micApps: [mic], events: [], runningApps: [callAppId(mic.bundleId)!] }; await w.tick()
     expect(active?.app).toBe(appName)
-    reading = { micApps: [], events: [] }; clock += 9_999; await w.tick()
+    reading = { micApps: [], events: [] }; clock += 3_999; await w.tick()
     expect(log).toEqual([])
     clock++; await w.tick(); await w.tick()
     expect(log).toEqual(['auto:m1'])
     expect(info.mock.calls.map(([line]) => line)).toEqual([
-      'CALL watch meeting=m1 app=none', `CALL bind meeting=m1 app=${appName} via=mic`, `CALL gone meeting=m1 app=${appName} idle_ms=10000`,
+      'CALL watch meeting=m1 app=none', `CALL bind meeting=m1 app=${appName} via=mic`, `CALL gone meeting=m1 app=${appName} idle_ms=4000`,
     ])
     info.mockRestore()
   })

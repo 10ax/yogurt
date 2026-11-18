@@ -21,7 +21,7 @@ import { pathToFileURL } from 'node:url'
 import { isFake, userDataDir } from './paths'
 import { logToFile } from './log'
 import { loadSettings, localeOf, keepsRecording, recordingReminderOn, spokenSetting, stopsWhenCallEnds, updateSettings, visibilityOf, summaryLanguageSetting } from './settings'
-import { CALL_GONE_MS, useCallApps } from './detect'
+import { CALL_GONE_MS, useCallApps, watchEveryMs } from './detect'
 import { systemLocale } from './locale'
 import { language as uiLanguage, onLanguage, setLanguage, t } from '../shared/i18n'
 import bundledCatalog from '../../../catalog/catalog.json'
@@ -419,9 +419,11 @@ function startDetection() {
   refreshCalendarConsumers = () => { signals.invalidateCalendar(); void tray.refreshCalendar() }
   setTrayVisible = tray.setVisible
   trayShown = tray.shown
-  // cheap, and only while Yogurt runs
-  const timer = setInterval(() => void watcher.tick().catch((e) => console.error('detect failed', e)), 3000)
-  app.on('will-quit', () => clearInterval(timer))
+  // cheap, and only while Yogurt runs; more often while recording, so a call that ended stops within a few seconds
+  let timer: NodeJS.Timeout | undefined
+  const watchLoop = () => { timer = setTimeout(() => { void watcher.tick().catch((e) => console.error('detect failed', e)).finally(watchLoop) }, watchEveryMs(!!activeMeeting())) }
+  watchLoop()
+  app.on('will-quit', () => clearTimeout(timer))
   if (isFake()) {
     installFakeHooks({
       signals: async (r) => { signals.override(r); await watcher.tick() },

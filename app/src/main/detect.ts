@@ -131,8 +131,13 @@ export function ended(_s: Signals, micIdleMs: number, ctx?: { event: CalEvent | 
   return !!ctx?.event && ctx.now >= ctx.event.end + 5 * MIN && ctx.silentMs >= 60_000
 }
 
-/** How long the call app must be off the mic before a recording stops by itself: reconnecting, a new headset or Zoom's own mute let go for a moment */
-export const CALL_GONE_MS = 10_000
+/**
+ * How long the call app must be off the mic before a recording stops by itself: a new headset or Zoom's own mute let go
+ * for a moment. Short, so hanging up ends the note within a few seconds; a call that drops for longer can be resumed.
+ */
+export const CALL_GONE_MS = 4_000
+/** how often the call signals are read: more often while recording, so the end of a call is seen quickly */
+export const watchEveryMs = (recording: boolean): number => (recording ? 1_500 : 3_000)
 
 /**
  * Should the recording stop by itself? Only one tied to a call app (app) that was on the mic during this recording (seen),

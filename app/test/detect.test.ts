@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest'
-import { callAppId, tabTitleApp, CALL_GONE_MS, callGone, decide, ended, isOwnMicApp, useCallApps, type Signals } from '../src/main/detect'
+import { callAppId, tabTitleApp, CALL_GONE_MS, callGone, watchEveryMs, decide, ended, isOwnMicApp, useCallApps, type Signals } from '../src/main/detect'
 import type { CalEvent } from '../src/main/calendar'
 
 const NOW = Date.parse('2026-10-29T15:00:00Z')
@@ -116,9 +116,13 @@ describe('browser tab titles', () => {
 describe('callGone', () => {
   const call = { app: 'Zoom', seen: true, micIdleMs: 0 }
   it('a call app that let go of the mic for the grace has ended; a blip has not', () => {
-    expect(CALL_GONE_MS).toBe(10_000)
-    expect(callGone({ ...call, micIdleMs: 10_000 })).toBe(true)
-    expect(callGone({ ...call, micIdleMs: 9_999 })).toBe(false)
+    expect(CALL_GONE_MS).toBe(4_000)
+    expect(callGone({ ...call, micIdleMs: 4_000 })).toBe(true)
+    expect(callGone({ ...call, micIdleMs: 3_999 })).toBe(false)
+  })
+  it('checks more often while recording, so a call that ended stops within about 4 to 5.5 s', () => {
+    expect(watchEveryMs(true)).toBe(1_500)
+    expect(watchEveryMs(false)).toBe(3_000)
   })
   it('the grace can be shorter (fake mode)', () => {
     expect(callGone({ ...call, micIdleMs: 500, graceMs: 500 })).toBe(true)

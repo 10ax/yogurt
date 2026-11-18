@@ -71,14 +71,6 @@ Meeting data stays local; Yogurt goes online for model downloads and update chec
 
 </details>
 
-<details><summary><strong>Windows says “Windows protected your PC.” What do I do?</strong></summary>
-
-<br>
-
-> Click More info, then Run anyway. Windows shows this for new apps that aren’t signed with a Microsoft certificate yet. Yogurt is open source, so anyone can check what it does.
-
-</details>
-
 <details><summary><strong>Does Yogurt join my meetings?</strong></summary>
 
 <br>
